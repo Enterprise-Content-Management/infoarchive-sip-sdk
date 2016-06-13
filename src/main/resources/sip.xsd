@@ -1,0 +1,166 @@
+<!-- 
+  Copyright (c) 2015 EMC Corporation. All Rights Reserved.
+  EMC Confidential: Restricted Internal Distribution 
+-->
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:sip="urn:x-emc:ia:schema:sip:1.0" targetNamespace="urn:x-emc:ia:schema:sip:1.0">
+
+  <xs:element name="sip">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="dss">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="holding" nillable="false">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="64" />
+                    <xs:minLength value="1" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="id" nillable="false">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="64" />
+                    <xs:minLength value="1" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="pdi_schema" nillable="false">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="256" />
+                    <xs:minLength value="1" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="production_date" type="xs:dateTime" />
+              <xs:element name="base_retention_date" type="xs:dateTime" nillable="false" />
+              <xs:element name="producer" nillable="false">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="64" />
+                    <xs:minLength value="1" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="entity" nillable="false">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="64" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="priority" type="xs:int" nillable="false" />
+              <xs:element name="application" nillable="false">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="64" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="retention_class" nillable="false" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:minLength value="1" />
+                    <xs:maxLength value="64" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="production_date" type="xs:dateTime" nillable="false" />
+        <xs:element name="seqno" nillable="false">
+          <xs:simpleType>
+            <xs:restriction base="xs:int">
+              <xs:minInclusive value="1" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="is_last" type="xs:boolean" default="false" />
+        <xs:element name="aiu_count" nillable="false">
+          <xs:simpleType>
+            <xs:restriction base="xs:long">
+              <xs:minInclusive value="0" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="page_count" nillable="false" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:long">
+              <xs:minInclusive value="0" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element ref="sip:pdi_hash" minOccurs="0" />
+        <xs:element ref="sip:custom" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="pdi_hash">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="algorithm" use="required">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="MD2" />
+                <xs:enumeration value="MD5" />
+                <xs:enumeration value="SHA-1" />
+                <xs:enumeration value="SHA-256" />
+                <xs:enumeration value="SHA-384" />
+                <xs:enumeration value="SHA-512" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          <xs:attribute name="encoding" use="required">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="base64" />
+                <xs:enumeration value="hex" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="custom">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="sip:attributes" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="sip:data" minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="attributes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="10000" ref="sip:attribute" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="data">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:any processContents="lax" minOccurs="0" maxOccurs="10000" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="attribute">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="name" use="required" type="xs:string" />
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

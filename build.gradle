@@ -1,2 +1,89 @@
+import org.gradle.logging.internal.OutputEvent
+import org.gradle.logging.internal.OutputEventListener
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+
+repositories {
+  mavenCentral()
+}
+
+configurations {
+  commonsBeanutils {
+    exclude module: 'commons-collections'
+  }
+  commonsCodec
+  commonsCollections
+  commonsIo
+  evoInflector
+  validation
+  
+  compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, evoInflector, validation
+  testCompile.extendsFrom junit, mockito
+}
+
+dependencies {
+  commonsBeanutils "commons-beanutils:commons-beanutils:$commonsBeanutilsVersion"
+  commonsCodec "commons-codec:commons-codec:$commonsCodecVersion"
+  commonsCollections"commons-collections:commons-collections:$commonsCollectionsVersion"
+  commonsIo "commons-io:commons-io:$commonsIoVersion"
+  evoInflector "org.atteo:evo-inflector:$evoInflectorVersion"
+  junit "junit:junit:$junitVersion"
+  mockito "org.mockito:mockito-core:$mockitoVersion"
+  validation "javax.validation:validation-api:$validationVersion"
+}
+
+
+javadoc {
+  def overview = file('src/javadoc/overview.html')
+  title = "InfoArchive SIP SDK $version"
+  options.overview = overview
+  inputs.file overview
+  def events = []
+  def listener = { event -> events << event }
+  doFirst {
+    getLogging().addOutputEventListener(listener)
+  }
+  doLast {
+    getLogging().removeOutputEventListener(listener)
+    if (events.find { it.toString() =~ " warning: " } != null) {
+      throw new GradleException("Warnings in Javadoc, see output above");
+    }
+  }
+}
+
+jar {
+  from (javadoc.outputs) {
+    into 'javadoc'
+  }
+  from (sourceSets.main.allJava) {
+    into 'OSGI-OPT/src'
+  }
+}
+
+apply plugin: 'checkstyle'
+checkstyle {
+  configFile = file('config/checkstyle.xml')
+  toolVersion = '6.17'
+}
+
+apply plugin: 'pmd'
+pmd {
+  ignoreFailures = true
+  ruleSetFiles = files('config/pmd.xml')
+  toolVersion = '5.4.1'
+}
+  
+apply plugin: 'findbugs'
+findbugs {
+  ignoreFailures = true
+  toolVersion = '3.0.1'
+  excludeFilter = file('config/findbugs_filter.xml')
+}
+
+apply plugin: 'jacoco'
+jacoco {
+  toolVersion = '0.7.6.201602180812'
+}

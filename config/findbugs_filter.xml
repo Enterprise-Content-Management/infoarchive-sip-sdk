@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FindBugs exclusion filter common to all IAIS projects -->
+<FindBugsFilter>
+  <Match>
+    <Or>
+      <!--Too many false positives -->
+      <Bug pattern="BC_UNCONFIRMED_CAST" />
+      <!-- Too many false positives -->
+      <Bug pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" />
+      <!-- Converting all anonymous classes to static inner classes degrades readability -->
+      <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
+      <!-- Not relevant due to the use of unittest @Before -->
+      <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
+      <!-- Too many false positives, depends on external naming conventions -->
+      <Bug pattern="NM_CONFUSING" />
+      <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+    </Or>
+  </Match>
+  <Match>
+    <!-- Must be an instance method, or else JBehave will balk -->
+    <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
+    <Class name="com.emc.ia.ingestion.integration.SipIngestionFramework" />
+  </Match>
+  <Match>
+    <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
+    <Class name="com.emc.ia.ingestion.runtime.storm.topology.IngestionSurveillanceStats" />
+    <Method name="prepare" />
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
+    <Class name="~com\.emc\.ia\.sdk\.sip\.assembly\.(DataSubmissionSession|PackagingInformation)(\$.*)?" />
+  </Match>
+</FindBugsFilter>
