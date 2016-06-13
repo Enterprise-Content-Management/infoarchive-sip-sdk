@@ -34,10 +34,6 @@ subprojects {
   
   
   javadoc {
-    def overview = file('src/javadoc/overview.html')
-    title = "InfoArchive SIP SDK $version"
-    options.overview = overview
-    inputs.file overview
     def events = []
     def listener = { event -> events << event }
     doFirst {
@@ -86,16 +82,68 @@ subprojects {
   }
   
   apply plugin: 'eclipse'
-  eclipse.classpath.defaultOutputDir = project.file('classes')
+  eclipse.classpath {
+    defaultOutputDir = file('classes')
+    file.whenMerged { classpath ->
+      classpath.entries.removeAll { it.kind == 'lib' && it.path.contains("/$buildDir.name/") }
+    }
+  }
 
   apply plugin: 'idea'
 }
 
 
-project(':core') {
+project(':infoarchive-sip-sdk-core') {
   configurations {
     compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, evoInflector, validation
-  }  
+  }
+  
+  javadoc {
+    def overview = file('src/javadoc/overview.html')
+    title = "InfoArchive SIP SDK $version"
+    options.overview = overview
+    inputs.file overview
+  }
+}
+
+
+project(':infoarchive-sip-sdk-stringtemplate') {
+  configurations {
+    stringtemplate
+    compile.extendsFrom stringtemplate
+  }
+  
+  dependencies {
+    stringtemplate "org.antlr:ST4:$stringTemplateVersion"
+    compile project(':infoarchive-sip-sdk-core')
+    testCompile project(':infoarchive-sip-sdk-core').sourceSets.test.output
+  }
+}
+
+
+project(':infoarchive-sip-sdk-velocity') {
+  configurations {
+    velocity
+    velocityTools {
+      exclude group: 'org.apache.struts'
+      exclude module: 'commons-beanutils'
+      exclude module: 'commons-chain'
+      exclude module: 'commons-digester'
+      exclude module: 'commons-logging'
+      exclude module: 'commons-validator'
+      exclude module: 'dom4j'
+      exclude module: 'oro'
+      exclude module: 'sslext'
+    }
+    compile.extendsFrom commonsCollections, velocity, velocityTools
+  }
+  
+  dependencies {
+    velocity "org.apache.velocity:velocity:$velocityVersion"
+    velocityTools "org.apache.velocity:velocity-tools:$velocityToolsVersion"
+    compile project(':infoarchive-sip-sdk-core')
+    testCompile project(':infoarchive-sip-sdk-core').sourceSets.test.output
+  }
 }
 
 

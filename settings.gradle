@@ -1,3 +1,10 @@
 rootProject.name = 'infoarchive-sip-sdk'
 
 include 'core'
+project(':core').name = 'infoarchive-sip-sdk-core'
+
+include 'stringtemplate'
+project(':stringtemplate').name = 'infoarchive-sip-sdk-stringtemplate'
+
+include 'velocity'
+project(':velocity').name = 'infoarchive-sip-sdk-velocity'
