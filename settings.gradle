@@ -1,1 +1,3 @@
-rootProject.name = 'infoarchive-sip-sdk-core'
+rootProject.name = 'infoarchive-sip-sdk'
+
+include 'core'
