@@ -1,8 +1,9 @@
 # InfoArchive SIP SDK
 
-The EMC InfoArchive SIP SDK is a Java library that makes it quick and easy to create SIPs regardless of what type of
-data it contains or where that data originates from. A SIP is a package (a ZIP file) consisting of a packaging
-information, metadata (structured data in the form of XML) and optionally a collection of unstructured data (files).
+The [EMC InfoArchive](http://www.emc.com/enterprise-content-management/infoarchive/) SIP SDK is a Java library that 
+makes it quick and easy to create SIPs regardless of what type of data it contains or where that data originates
+from. A SIP (Submission Information Package) is a package consisting of packaging information, metadata (structured
+data in the form of XML) and optionally a collection of unstructured data files.
 
 It has long been perceived by partners and customers that creating SIPs is difficult. The EMC IA SIP SDK aims to make
 the process simpler by allowing a developer to easily and dynamically assembly both the XML file containing the
