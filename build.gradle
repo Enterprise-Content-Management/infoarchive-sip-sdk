@@ -58,6 +58,13 @@ subprojects {
     }
   }
   
+  test {
+    testLogging {
+      events "failed"
+      exceptionFormat "short"
+    }
+  }
+
   apply plugin: 'checkstyle'
   checkstyle {
     configFile = rootProject.file('config/checkstyle.xml')
