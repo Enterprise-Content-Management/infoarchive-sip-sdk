@@ -1,6 +1,8 @@
 import org.gradle.logging.internal.OutputEvent
 import org.gradle.logging.internal.OutputEventListener
 
+apply plugin: 'eclipse'
+
 subprojects {
   apply plugin: 'java'
   
