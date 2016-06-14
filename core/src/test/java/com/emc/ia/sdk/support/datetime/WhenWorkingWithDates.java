@@ -28,8 +28,12 @@ public class WhenWorkingWithDates {
     offset = Math.abs(offset);
     int tzHour = offset / 60 / 60;
     int tzMinute = offset / 60 % 60;
-    String expected = String.format("%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS%2$s%3$02d:%4$02d",
-        dateTime, sign, tzHour, tzMinute);
+    String expected = String.format("%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS%2$s", dateTime, sign);
+    if (tzHour == 0 && tzMinute == 0) {
+      expected += "Z";
+    } else {
+      expected += String.format("%02d:%02d", tzHour, tzMinute);
+    }
 
     String actual = Dates.toIso(dateTime);
 
