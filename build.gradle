@@ -1,5 +1,8 @@
-import org.gradle.logging.internal.OutputEvent
-import org.gradle.logging.internal.OutputEventListener
+import org.gradle.api.logging.StandardOutputListener
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.14'
+}
 
 apply plugin: 'eclipse'
 
@@ -37,12 +40,12 @@ subprojects {
   
   javadoc {
     def events = []
-    def listener = { event -> events << event }
+    StandardOutputListener listener = { event -> events << event }
     doFirst {
-      getLogging().addOutputEventListener(listener)
+      logging.addStandardOutputListener(listener)
     }
     doLast {
-      getLogging().removeOutputEventListener(listener)
+      logging.removeStandardOutputListener(listener)
       if (events.find { it.toString() =~ " warning: " } != null) {
         throw new GradleException("Warnings in Javadoc, see output above");
       }
