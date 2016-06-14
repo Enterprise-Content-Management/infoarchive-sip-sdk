@@ -33,6 +33,9 @@ public class WhenWorkingWithDates {
 
     String actual = Dates.toIso(dateTime);
 
+    if (!expected.equals(actual)) {
+      throw new IllegalStateException("Wanted " + expected + ", but got " + actual);
+    }
     assertEquals("Date time", expected, actual);
   }
 
