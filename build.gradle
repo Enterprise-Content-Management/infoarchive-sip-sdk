@@ -61,7 +61,9 @@ subprojects {
   test {
     testLogging {
       events "failed"
-      exceptionFormat "short"
+      showStandardStreams = true
+      showStackTraces = true
+      exceptionFormat "full"
     }
   }
 
