@@ -66,14 +66,12 @@ subprojects {
   
   apply plugin: 'pmd'
   pmd {
-    ignoreFailures = true
     ruleSetFiles = rootProject.files('config/pmd.xml')
     toolVersion = '5.4.1'
   }
     
   apply plugin: 'findbugs'
   findbugs {
-    ignoreFailures = true
     toolVersion = '3.0.1'
     excludeFilter = rootProject.file('config/findbugs_filter.xml')
   }
