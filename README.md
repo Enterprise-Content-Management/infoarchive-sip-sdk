@@ -1,3 +1,5 @@
+![License: MPL2](https://img.shields.io/badge/license-mpl2-blue.svg)
+
 # InfoArchive SIP SDK
 
 The [EMC InfoArchive](http://www.emc.com/enterprise-content-management/infoarchive/) SIP SDK is a Java library that 
