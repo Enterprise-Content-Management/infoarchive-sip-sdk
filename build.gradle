@@ -52,15 +52,18 @@ subprojects {
     }
   }
   
-  jar {
-    from (javadoc.outputs) {
-      into 'javadoc'
-    }
-    from (sourceSets.main.allJava) {
-      into 'OSGI-OPT/src'
-    }
+  // Sources & Javadoc jars are required for publishing to Maven Central
+  task jarSource(type: Jar) {
+    from sourceSets.main.allJava
+    classifier 'sources'
   }
+  task jarJavadoc(type: Jar) {
+    from javadoc.outputs
+    classifier 'javadoc'
+  }
+  assemble.dependsOn jarSource, jarJavadoc
   
+  // Need all test info on command-line for TravisCI
   test {
     testLogging {
       events "failed"
