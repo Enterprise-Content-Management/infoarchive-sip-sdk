@@ -52,16 +52,7 @@ subprojects {
     }
   }
   
-  // Sources & Javadoc jars are required for publishing to Maven Central
-  task jarSource(type: Jar) {
-    from sourceSets.main.allJava
-    classifier 'sources'
-  }
-  task jarJavadoc(type: Jar) {
-    from javadoc.outputs
-    classifier 'javadoc'
-  }
-  assemble.dependsOn jarSource, jarJavadoc
+  apply from: rootProject.file('publish.gradle')
   
   // Need all test info on command-line for TravisCI
   test {
@@ -91,10 +82,7 @@ subprojects {
     excludeFilter = rootProject.file('config/findbugs_filter.xml')
   }
   
-  apply plugin: 'jacoco'
-  jacoco {
-    toolVersion = '0.7.6.201602180812'
-  }
+  apply from: rootProject.file('coverage.gradle')
   
   apply plugin: 'eclipse'
   eclipse.classpath {
@@ -109,6 +97,8 @@ subprojects {
 
 
 project(':infoarchive-sip-sdk-core') {
+  description = 'A library that makes it quick and easy to create SIPs in InfoArchive'
+
   configurations {
     compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, evoInflector, validation
   }
@@ -123,6 +113,8 @@ project(':infoarchive-sip-sdk-core') {
 
 
 project(':infoarchive-sip-sdk-stringtemplate') {
+  description = 'A library for building SIP PDI using the StringTemplate template engine'
+
   configurations {
     stringtemplate
     compile.extendsFrom stringtemplate
@@ -137,6 +129,8 @@ project(':infoarchive-sip-sdk-stringtemplate') {
 
 
 project(':infoarchive-sip-sdk-velocity') {
+  description = 'A library for building SIP PDI using the Velocity template engine'
+
   configurations {
     velocity
     velocityTools {

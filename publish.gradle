@@ -1,0 +1,80 @@
+/*
+// See http://central.sonatype.org/pages/gradle.html
+apply plugin: 'maven'
+apply plugin: 'signing'
+*/
+
+task javadocJar(type: Jar) {
+  from javadoc
+  classifier 'javadoc'
+}
+
+task sourcesJar(type: Jar) {
+  from sourceSets.main.allSource
+  classifier 'sources'
+}
+
+assemble.dependsOn sourcesJar, javadocJar
+
+artifacts {
+  archives javadocJar, sourcesJar
+}
+
+/*
+signing {
+  sign configurations.archives
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      pom.project {
+        name 'InfoArchive SIP SDK'
+        packaging 'jar'
+        url 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk'
+
+        scm {
+          connection 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git'
+          developerConnection 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git'
+          url 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git'
+        }
+
+        licenses {
+          license {
+            name 'Mozilla Public License Version 2.0'
+            url 'https://www.mozilla.org/en-US/MPL/2.0/'
+          }
+        }
+
+        developers {
+          developer {
+            id 'ray'
+            name 'Remon Sinnema'
+            email 'remon.sinnema@emc.com'
+          }
+          developer {
+            id 'tord'
+            name 'Tord Svensson'
+            email 'tord.svensson@emc.com'
+          }
+          developer {
+            id 'mouli'
+            name 'Chandramouli Addaguduru'
+            email 'chandramouli.addaguduru@emc.com'
+          }
+        }
+      }
+    }
+  }
+}
+*/
