@@ -34,8 +34,8 @@ public class SimpleRestClient implements Closeable {
 
 	private final CloseableHttpClient client;
 	private final ObjectMapper mapper;
-	private final int STATUS_CODE_RANGE_MIN = 200;
-	private final int STATUS_CODE_RANGE_MAX = 300;
+	private final static int STATUS_CODE_RANGE_MIN = 200;
+	private final static int STATUS_CODE_RANGE_MAX = 300;
 
 	public SimpleRestClient() {
 		final HttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
