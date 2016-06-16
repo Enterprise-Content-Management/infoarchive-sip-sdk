@@ -62,6 +62,7 @@ subprojects {
       showStackTraces = true
       exceptionFormat "full"
     }
+    upToDateWhen { false } // Always run tests so that we have a test report on each build
   }
 
   apply plugin: 'checkstyle'
