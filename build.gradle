@@ -1,5 +1,12 @@
-import org.gradle.logging.internal.OutputEvent
-import org.gradle.logging.internal.OutputEventListener
+import org.gradle.api.logging.StandardOutputListener
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.14'
+}
+
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
 
 subprojects {
   apply plugin: 'java'
@@ -43,27 +50,31 @@ subprojects {
   
   javadoc {
     def events = []
-    def listener = { event -> events << event }
+    StandardOutputListener listener = { event -> events << event }
     doFirst {
-      getLogging().addOutputEventListener(listener)
+      logging.addStandardOutputListener(listener)
     }
     doLast {
-      getLogging().removeOutputEventListener(listener)
+      logging.removeStandardOutputListener(listener)
       if (events.find { it.toString() =~ " warning: " } != null) {
         throw new GradleException("Warnings in Javadoc, see output above");
       }
     }
   }
   
-  jar {
-    from (javadoc.outputs) {
-      into 'javadoc'
-    }
-    from (sourceSets.main.allJava) {
-      into 'OSGI-OPT/src'
-    }
-  }
+  apply from: rootProject.file('publish.gradle')
   
+  // Need all test info on command-line for TravisCI
+  test {
+    testLogging {
+      events "failed"
+      showStandardStreams = true
+      showStackTraces = true
+      exceptionFormat "full"
+    }
+    outputs.upToDateWhen { false } // Always run tests so that we have a test report on each build
+  }
+
   apply plugin: 'checkstyle'
   checkstyle {
     configFile = rootProject.file('config/checkstyle.xml')
@@ -72,22 +83,17 @@ subprojects {
   
   apply plugin: 'pmd'
   pmd {
-    ignoreFailures = true
     ruleSetFiles = rootProject.files('config/pmd.xml')
     toolVersion = '5.4.1'
   }
     
   apply plugin: 'findbugs'
   findbugs {
-    ignoreFailures = true
     toolVersion = '3.0.1'
     excludeFilter = rootProject.file('config/findbugs_filter.xml')
   }
   
-  apply plugin: 'jacoco'
-  jacoco {
-    toolVersion = '0.7.6.201602180812'
-  }
+  apply from: rootProject.file('coverage.gradle')
   
   apply plugin: 'eclipse'
   eclipse.classpath {

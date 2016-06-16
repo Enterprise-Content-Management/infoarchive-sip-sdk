@@ -44,7 +44,7 @@ public class WhenWorkingWithTime {
 
   @Test
   public void shouldScheduleTaskForLaterExecution() throws InterruptedException {
-    int sleep = random.integer(2, 10);
+    int sleep = random.integer(20, 30);
     final AtomicBoolean executed = new AtomicBoolean(false);
     clock.schedule(random.string(), sleep, TimeUnit.MILLISECONDS, () -> executed.set(true));
     assertFalse("Task run right away", executed.get());
