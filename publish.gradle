@@ -1,8 +1,6 @@
-/*
 // See http://central.sonatype.org/pages/gradle.html
 apply plugin: 'maven'
 apply plugin: 'signing'
-*/
 
 task javadocJar(type: Jar) {
   from javadoc
@@ -20,9 +18,14 @@ artifacts {
   archives javadocJar, sourcesJar
 }
 
-/*
 signing {
+  required { gradle.taskGraph.hasTask("uploadArchives") }
   sign configurations.archives
+}
+
+ext {
+  ossrhUsername = System.getenv('OSSRH_USERNAME')
+  ossrhPassword = System.getenv('OSSRH_PASSWORD')
 }
 
 uploadArchives {
@@ -40,6 +43,7 @@ uploadArchives {
 
       pom.project {
         name 'InfoArchive SIP SDK'
+        description 'A library that makes it quick and easy to create SIPs and ingest them into InfoArchive'
         packaging 'jar'
         url 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk'
 
@@ -77,4 +81,3 @@ uploadArchives {
     }
   }
 }
-*/
