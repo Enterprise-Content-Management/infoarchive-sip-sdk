@@ -1,6 +1,6 @@
 [![Travis](https://img.shields.io/travis/Enterprise-Content-Management/infoarchive-sip-sdk.svg)](https://travis-ci.org/Enterprise-Content-Management/infoarchive-sip-sdk)
 [![codecov.io](https://img.shields.io/codecov/c/github/Enterprise-Content-Management/infoarchive-sip-sdk.svg)](https://codecov.io/github/Enterprise-Content-Management/infoarchive-sip-sdk)
-[![GitHub release](https://img.shields.io/github/release/Enterprise-Content-Management/infoarchive-sip-sdk.svg)](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/releases/latest)
+[![Maven Central](https://img.shields.io/maven-central/v/com.emc.ia/infoarchive-sip-sdk-core.svg?maxAge=2592000)](https://repo1.maven.org/maven2/com/emc/ia/)
 [![License: MPL2](https://img.shields.io/badge/license-mpl2-ff69b4.svg)](https://www.mozilla.org/en-US/MPL/2.0/)
 
 # InfoArchive SIP SDK
