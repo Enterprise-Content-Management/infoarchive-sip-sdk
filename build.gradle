@@ -54,10 +54,7 @@ subprojects {
     }
   }
   
-  // TODO: This doesn't work for multiple subprojects
-  if (project.name.contains('core')) {
-    apply from: rootProject.file('publish.gradle')
-  }
+  apply from: rootProject.file('publish.gradle')
   
   // Need all test info on command-line for TravisCI
   test {
