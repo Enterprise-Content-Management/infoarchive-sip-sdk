@@ -5,6 +5,8 @@ task wrapper(type: Wrapper) {
 }
 
 apply plugin: 'eclipse'
+apply plugin: 'idea'
+
 
 subprojects {
   apply plugin: 'java'
@@ -52,7 +54,10 @@ subprojects {
     }
   }
   
-  apply from: rootProject.file('publish.gradle')
+  // TODO: This doesn't work for multiple subprojects
+  if (project.name.contains('core')) {
+    apply from: rootProject.file('publish.gradle')
+  }
   
   // Need all test info on command-line for TravisCI
   test {

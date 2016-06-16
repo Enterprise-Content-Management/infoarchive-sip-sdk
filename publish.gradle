@@ -24,8 +24,8 @@ signing {
 }
 
 ext {
-  ossrhUsername = System.getenv('OSSRH_USERNAME')
-  ossrhPassword = System.getenv('OSSRH_PASSWORD')
+  ossrhUsername = project.hasProperty('nexusUsername') ? nexusUsername : ''
+  ossrhPassword = project.hasProperty('nexusPassword') ? nexusPassword : ''
 }
 
 uploadArchives {

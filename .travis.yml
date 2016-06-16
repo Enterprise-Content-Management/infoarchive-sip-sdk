@@ -10,9 +10,3 @@ cache:
   - $HOME/.gradle/wrapper/
 after_success:
 - bash <(curl -s https://codecov.io/bash)
-- ./deploy.sh
-env:
-  global:
-    - OSSRH_USERNAME=rssinnema@yahoo.com
-    # OSSRH_PASSWORD:
-    - secure: Z3iZLbyfNXF6EPexsvP253T2B+w5bou5e4ASwEofUxQnX42lUTlWHIuS/CwgJi6pJwKBNSJlfpnf3NLJMvZm999209lmQCQ+BOsZnxpHJlphyp7Y/bMRzg313nJ+AaIOJbXzJHvoBaxxdmSBG0tejmnDVdf6hFgopvq1gco45wzelD6xQ1JA2YwdLA/LMa9LJbNtQ37+XKwnevIjqXi/ZqrcOXTcrrrHANGHpn1SYYpd57Y0PF9ovKGRyZt93DmSFnXsUWjzPxXchC4AhOOXedqwko0p/J0Cz3ygQYk+qh6xE99bBOWWF4AUIK/5WCDegvcU0VRSNkigYE7GDFG4NZF42DddCZ06VYMZ140ZlS+5Ly00dDNOwGKVVzWuexhSpiAyIsx4lGPR9c1dM9z9kovjdLurOgr3twBD7wWLZ0ZwqmRfElJ1VLmPJ/bCOCRbNPJ1UsZTGoOyI891TogHE86xKxZn4MsoD37UpOmA7ZLmjA49Gk/kkvD5ZcpPxIkhUi43b90fX8fohXACsUNjaGL3ngD+KbMk6achrVYS+RpEXBXqvOadNBqSYqTIbL2vW6sqvcLN1R7gd07Y6TTz6el60E+XZRHxoB5lOAQc4Jb7rPfQI/Bll45VRKySt98xuzLY7d3jVbsMttS5o4vLR2T7638nikzVamMEoTs1xjE=
