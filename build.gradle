@@ -3,7 +3,6 @@ import org.gradle.logging.internal.OutputEventListener
 
 subprojects {
   apply plugin: 'java'
-  apply plugin: 'eclipse'
   
   repositories {
     mavenCentral()
