@@ -1,7 +1,7 @@
-// See http://central.sonatype.org/pages/gradle.html
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+// OSSRH requires both javadoc and sources jars
 subprojects.each { prj ->
   prj.task('javadocJar', type: Jar) {
     from prj.javadoc
@@ -20,11 +20,13 @@ subprojects.each { prj ->
   }
 }
 
+// OSSRH also requires everything to be signed
 signing {
   required { gradle.taskGraph.hasTask("uploadArchives") }
   sign configurations.archives
 }
 
+// Set nexusUsername/Password in ~/.gradle/gradle.properties or specify on command line using -P
 ext {
   ossrhUsername = project.hasProperty('nexusUsername') ? nexusUsername : ''
   ossrhPassword = project.hasProperty('nexusPassword') ? nexusPassword : ''
@@ -44,50 +46,64 @@ uploadArchives {
       }
       
       subprojects.each { prj ->
+        // Separate out artifacts
         addFilter(prj.name) { artifact, file ->
           artifact.name == prj.name
         }
-
-        pom(prj.name).project {
-          name prj.name
-          description prj.description
-          packaging 'jar'
-          url 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk'
-  
-          scm {
-            connection 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git'
-            developerConnection 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git'
-            url 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git'
-          }
-  
-          licenses {
-            license {
-              name 'Mozilla Public License Version 2.0'
-              url 'https://www.mozilla.org/en-US/MPL/2.0/'
+        
+        pom(prj.name) {
+          // OSSRH also requires certain info in the POM
+          project {
+            name prj.name
+            description prj.description
+            packaging 'jar'
+            url 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk'
+    
+            scm {
+              connection 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git'
+              developerConnection 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git'
+              url 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git'
+            }
+    
+            licenses {
+              license {
+                name 'Mozilla Public License Version 2.0'
+                url 'https://www.mozilla.org/en-US/MPL/2.0/'
+              }
+            }
+    
+            developers {
+              developer {
+                id = 'ray'
+                name = 'Remon Sinnema'
+                organization = 'EMC'
+                email = 'remon.sinnema@emc.com'
+                timezone = 'Europe/Amsterdam'
+              }
+              developer {
+                id = 'tord'
+                name = 'Tord Svensson'
+                organization = 'EMC'
+                email = 'tord.svensson@emc.com'
+                timezone = 'Europe/Stockholm'
+              }
+              developer {
+                id = 'mouli'
+                name = 'Chandramouli Addaguduru'
+                organization = 'EMC'
+                email = 'chandramouli.addaguduru@emc.com'
+                timezone = 'Asia/Kolkata'
+              }
             }
           }
-  
-          developers {
-            developer {
-              id = 'ray'
-              name = 'Remon Sinnema'
-              organization = 'EMC'
-              email = 'remon.sinnema@emc.com'
-              timezone = 'Europe/Amsterdam'
-            }
-            developer {
-              id = 'tord'
-              name = 'Tord Svensson'
-              organization = 'EMC'
-              email = 'tord.svensson@emc.com'
-              timezone = 'Europe/Stockholm'
-            }
-            developer {
-              id = 'mouli'
-              name = 'Chandramouli Addaguduru'
-              organization = 'EMC'
-              email = 'chandramouli.addaguduru@emc.com'
-              timezone = 'Asia/Kolkata'
+          // For some reason the dependencies don't come across, so do it manually
+          withXml { 
+            def dependenciesNode = asNode().appendNode('dependencies')
+            prj.configurations.compile.allDependencies.each {
+              def dependencyNode = dependenciesNode.appendNode('dependency')
+              dependencyNode.appendNode('groupId', it.group)
+              dependencyNode.appendNode('artifactId', it.name)
+              dependencyNode.appendNode('version', it.version)
             }
           }
         }
