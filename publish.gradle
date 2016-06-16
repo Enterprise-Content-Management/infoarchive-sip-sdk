@@ -33,17 +33,17 @@ uploadArchives {
     mavenDeployer {
       beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+      repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
         authentication(userName: ossrhUsername, password: ossrhPassword)
       }
 
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+      snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
         authentication(userName: ossrhUsername, password: ossrhPassword)
       }
 
       pom.project {
-        name 'InfoArchive SIP SDK'
-        description 'A library that makes it quick and easy to create SIPs and ingest them into InfoArchive'
+        name project.name
+        description project.description
         packaging 'jar'
         url 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk'
 
@@ -62,19 +62,25 @@ uploadArchives {
 
         developers {
           developer {
-            id 'ray'
-            name 'Remon Sinnema'
-            email 'remon.sinnema@emc.com'
+            id = 'ray'
+            name = 'Remon Sinnema'
+            organization = 'EMC'
+            email = 'remon.sinnema@emc.com'
+            timezone = 'Europe/Amsterdam'
           }
           developer {
-            id 'tord'
-            name 'Tord Svensson'
-            email 'tord.svensson@emc.com'
+            id = 'tord'
+            name = 'Tord Svensson'
+            organization = 'EMC'
+            email = 'tord.svensson@emc.com'
+            timezone = 'Europe/Stockholm'
           }
           developer {
-            id 'mouli'
-            name 'Chandramouli Addaguduru'
-            email 'chandramouli.addaguduru@emc.com'
+            id = 'mouli'
+            name = 'Chandramouli Addaguduru'
+            organization = 'EMC'
+            email = 'chandramouli.addaguduru@emc.com'
+            timezone = 'Asia/Kolkata'
           }
         }
       }
