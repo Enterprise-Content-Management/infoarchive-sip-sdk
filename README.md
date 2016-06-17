@@ -46,5 +46,6 @@ them is through a dependency management system like [Gradle](http://gradle.org/)
 
 ## Additional Information
 
-For a presentation and lab exercises on how to use the SDK, see the
-[lab](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab) project.
+For a [presentation](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.0/presentation.pdf)
+and [lab exercises](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.0/lab.pdf)
+on how to use the SDK, see the [lab](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab) project.
