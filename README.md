@@ -18,10 +18,20 @@ stream of Plain Old Java Objects regardless of if they represent files, SQL quer
 
 ## Quick Start
 
+The SDK consists of the following jars:
+
+- `infoarchive-sip-sdk-core` is the core of the SDK
+- `infoarchive-sip-sdk-stringtemplate` contains code for working with the [StringTemplate](http://www.stringtemplate.org/) template engine
+- `infoarchive-sip-sdk-velocity` contains code for working with the [Velocity](http://velocity.apache.org/) template engine
+
+All jars can be found in the [Central Repository](https://repo1.maven.org/maven2/com/emc/ia/). The easiest way to get
+them is through a dependency management system like [Gradle](http://gradle.org/) or [Maven](https://maven.apache.org/).
+
 Gradle:
 
-    repositories { mavenCentral() }
-    dependencies { compile 'com.emc.ia:infoarchive-sip-sdk-core:1.0.1' }
+    dependencies { 
+      compile 'com.emc.ia:infoarchive-sip-sdk-core:1.0.1'
+    }
     
 Maven:
 
@@ -36,5 +46,5 @@ Maven:
 
 ## Additional Information
 
-For a presentation and lab exercises on how to use the SDK, see our
-[lab](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab).
+For a presentation and lab exercises on how to use the SDK, see the
+[lab](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab) project.
