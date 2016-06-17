@@ -27,13 +27,13 @@ The SDK consists of the following jars:
 All jars can be found in the [Central Repository](https://repo1.maven.org/maven2/com/emc/ia/). The easiest way to get
 them is through a dependency management system like [Gradle](http://gradle.org/) or [Maven](https://maven.apache.org/).
 
-Gradle:
+**Gradle**
 
     dependencies { 
       compile 'com.emc.ia:infoarchive-sip-sdk-core:1.0.1'
     }
     
-Maven:
+**Maven**
 
     <dependencies>
       <dependency>
