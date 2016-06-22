@@ -17,12 +17,12 @@ public class Application extends LinkContainer {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(255);
 		builder.append("Application [name=");
 		builder.append(name);
 		builder.append(", getLinks()=");
 		builder.append(getLinks());
-		builder.append("]");
+		builder.append(" ]");
 		return builder.toString();
 	}
 

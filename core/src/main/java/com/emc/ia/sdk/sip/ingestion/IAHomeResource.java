@@ -19,12 +19,12 @@ public class IAHomeResource extends LinkContainer {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(255);
 		builder.append("IAHomeResource [name=");
 		builder.append(name);
 		builder.append(", links=");
 		builder.append(getLinks());
-		builder.append("]");
+		builder.append(" ]");
 		return builder.toString();
 	}
 
