@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
- * EMC Confidential: Restricted Internal Distribution
  */
+
 
 /**
  * Library for ingesting <a href="http://public.ccsds.org/publications/archive/650x0m2.pdf">Submission Information

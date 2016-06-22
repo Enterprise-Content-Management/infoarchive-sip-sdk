@@ -80,6 +80,19 @@ subprojects {
     ignoreFailures = false
   }
   
+  // Despite ignoreFailures=false, the build wonby default 't fail on CheckStyle warnings
+  // https://issues.gradle.org/browse/GRADLE-2888
+  tasks.withType(Checkstyle).each { checkstyleTask ->
+    checkstyleTask.doLast {
+      reports.all { report ->
+        def outputFile = report.destination
+        if (outputFile.exists() && outputFile.text.contains("<error ")) {
+          throw new GradleException("Found checkstyle issues in $outputFile")
+        }
+      }
+    }
+  }
+  
   apply plugin: 'pmd'
   pmd {
     ruleSetFiles = rootProject.files('config/pmd.xml')

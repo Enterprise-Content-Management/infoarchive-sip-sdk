@@ -1,9 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
- * EMC Confidential: Restricted Internal Distribution
  */
 package com.emc.ia.sdk.support;
-
 
 import java.security.SecureRandom;
 import java.util.Dictionary;

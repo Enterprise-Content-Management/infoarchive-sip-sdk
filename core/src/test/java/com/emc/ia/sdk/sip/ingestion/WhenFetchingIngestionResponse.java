@@ -1,8 +1,6 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
- * EMC Confidential: Restricted Internal Distribution
  */
-
 package com.emc.ia.sdk.sip.ingestion;
 
 import static org.junit.Assert.assertEquals;
@@ -13,45 +11,46 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+
 public class WhenFetchingIngestionResponse {
-  
-  private final TestIngestionResponse app = new TestIngestionResponse();
-  
+
+  private final TestIngestionResponse ingestionResponse = new TestIngestionResponse();
+
   @Before
   public void init() {
-    app.setName("TestApplication");
-    app.setAipId("TestID");
+    ingestionResponse.setName("TestApplication");
+    ingestionResponse.setAipId("TestID");
   }
-  
+
   @Test
-  public void fetchName() {    
-    assertEquals("Resource Name", app.getName(), "TestApplication");
+  public void fetchName() {
+    assertEquals("Resource Name", ingestionResponse.getName(), "TestApplication");
   }
-  
+
   @Test
-  public void fetchAipID() {    
-    assertEquals("AipId", app.getAipId(), "TestID");
+  public void fetchAipID() {
+    assertEquals("AipId", ingestionResponse.getAipId(), "TestID");
   }
-  
+
   @Test
   public void validateLinkToStringValue() {
-    assertEquals("Resource ToString check", app.toString(), "IngestionResponse [name=" + "TestApplication" + ", aipId=" + "TestID" + ", getLinks()=" + app.getLinks() + "]");
+    assertEquals("Resource ToString check", ingestionResponse.toString(), "IngestionResponse [name=" + "TestApplication" + ", aipId="
+        + "TestID" + ", getLinks()=" + ingestionResponse.getLinks() + "]");
   }
-    
-  public static class TestIngestionResponse extends IngestionResponse {    
-    
-     public Map<String, Link> getLinks() {
-        
-        String linkStr = "https://india.emc.com/content-management/infoarchive/infoarchive.htm";
-        Link link = new Link(); 
-        Map<String, Link> links = new HashMap<String, Link>();
-        
-        link.setHref(linkStr); 
-        links.put("testApp", link);
-        
-        return links;
+
+  public static class TestIngestionResponse extends IngestionResponse {
+
+    @Override
+    public Map<String, Link> getLinks() {
+      Map<String, Link> result = new HashMap<String, Link>();
+
+      Link link = new Link();
+      link.setHref("https://india.emc.com/content-management/infoarchive/infoarchive.htm");
+      result.put("testApp", link);
+
+      return result;
     }
-    
+
   }
-  
+
 }
