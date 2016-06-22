@@ -62,8 +62,6 @@ subprojects {
     }
   }
   
-  apply from: rootProject.file('publish.gradle')
-  
   // Need all test info on command-line for TravisCI
   test {
     testLogging {
@@ -79,18 +77,21 @@ subprojects {
   checkstyle {
     configFile = rootProject.file('config/checkstyle.xml')
     toolVersion = '6.17'
+    ignoreFailures = false
   }
   
   apply plugin: 'pmd'
   pmd {
     ruleSetFiles = rootProject.files('config/pmd.xml')
     toolVersion = '5.4.1'
+    ignoreFailures = false
   }
     
   apply plugin: 'findbugs'
   findbugs {
     toolVersion = '3.0.1'
     excludeFilter = rootProject.file('config/findbugs_filter.xml')
+    ignoreFailures = false
   }
   
   apply from: rootProject.file('coverage.gradle')
@@ -163,3 +164,6 @@ project(':infoarchive-sip-sdk-velocity') {
 
 
 defaultTasks 'build'
+
+apply from: rootProject.file('publish.gradle')
+

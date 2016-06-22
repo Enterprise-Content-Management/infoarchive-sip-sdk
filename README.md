@@ -1,6 +1,6 @@
 [![Travis](https://img.shields.io/travis/Enterprise-Content-Management/infoarchive-sip-sdk.svg)](https://travis-ci.org/Enterprise-Content-Management/infoarchive-sip-sdk)
 [![codecov.io](https://img.shields.io/codecov/c/github/Enterprise-Content-Management/infoarchive-sip-sdk.svg)](https://codecov.io/github/Enterprise-Content-Management/infoarchive-sip-sdk)
-[![GitHub release](https://img.shields.io/github/release/Enterprise-Content-Management/infoarchive-sip-sdk.svg)](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/releases/latest)
+[![Maven Central](https://img.shields.io/maven-central/v/com.emc.ia/infoarchive-sip-sdk-core.svg)](https://repo1.maven.org/maven2/com/emc/ia/)
 [![License: MPL2](https://img.shields.io/badge/license-mpl2-ff69b4.svg)](https://www.mozilla.org/en-US/MPL/2.0/)
 
 # InfoArchive SIP SDK
@@ -14,3 +14,38 @@ It has long been perceived by partners and customers that creating SIPs is diffi
 the process simpler by allowing a developer to easily and dynamically assembly both the XML file containing the
 structured data as well as the entire SIP itself. This makes it possible to quickly create SIPs from any collection or
 stream of Plain Old Java Objects regardless of if they represent files, SQL query result sets, emails, tweets, etc.
+
+
+## Quick Start
+
+The SDK consists of the following jars:
+
+- `infoarchive-sip-sdk-core` is the core of the SDK
+- `infoarchive-sip-sdk-stringtemplate` contains code for working with the [StringTemplate](http://www.stringtemplate.org/) template engine
+- `infoarchive-sip-sdk-velocity` contains code for working with the [Velocity](http://velocity.apache.org/) template engine
+
+All jars can be found in the [Central Repository](https://repo1.maven.org/maven2/com/emc/ia/). The easiest way to get
+them is through a dependency management system like [Gradle](http://gradle.org/) or [Maven](https://maven.apache.org/).
+
+**Gradle**
+
+    dependencies { 
+      compile 'com.emc.ia:infoarchive-sip-sdk-core:1.0.1'
+    }
+    
+**Maven**
+
+    <dependencies>
+      <dependency>
+        <groupId>com.emc.ia</groupId>
+        <artifactId>infoarchive-sip-sdk-core</artifactId>
+        <version>1.0.1</version>
+      </dependency>
+    </dependencies>
+    
+
+## Additional Information
+
+For a [presentation](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.0/presentation.pdf)
+and [lab exercises](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.0/lab.pdf)
+on how to use the SDK, see the [lab](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab) project.
