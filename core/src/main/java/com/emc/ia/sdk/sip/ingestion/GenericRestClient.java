@@ -16,7 +16,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.InputStreamBody;
 
 
-public class SimpleRestClient implements Closeable {
+public class GenericRestClient implements Closeable {
 
   private HttpClientWrapper httpClient;
 

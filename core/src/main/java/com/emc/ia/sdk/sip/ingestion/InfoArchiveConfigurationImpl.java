@@ -29,12 +29,12 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
   private static final String LINK_APPLICATION = "http://identifiers.emc.com/applications";
 
   private List<Header> headersJSON;
-  private final SimpleRestClient restClient;
+  private final GenericRestClient restClient;
   private Tenant tenant;
   private Application application;
   private String aipsHref;
 
-  public <T> InfoArchiveConfigurationImpl(Map<String, String> configuration, SimpleRestClient restClient) {
+  public <T> InfoArchiveConfigurationImpl(Map<String, String> configuration, GenericRestClient restClient) {
     //Map contains 3 keys ; "AuthToken" , "IAServer" , "Application" - Extract this information
     //TODO - Are these keys standardized somewhere ?
     //TODO - safety check, logging OR return ?

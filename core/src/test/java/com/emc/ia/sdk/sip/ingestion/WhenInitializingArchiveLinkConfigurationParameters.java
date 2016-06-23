@@ -56,7 +56,7 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     assertEquals("Headers ApisHref information", config.getAipsHref(), TESTSTRING);
   }
 
-  public static class TestRestClient extends SimpleRestClient {
+  public static class TestRestClient extends GenericRestClient {
 
     @SuppressWarnings("unchecked")
     @Override

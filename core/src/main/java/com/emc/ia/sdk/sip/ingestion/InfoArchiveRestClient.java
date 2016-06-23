@@ -20,7 +20,7 @@ public class InfoArchiveRestClient implements ArchiveClient {
   private static final String LINK_INGEST = "http://identifiers.emc.com/ingest";
 
   private final JsonFormatter formatter = new JsonFormatter();
-  private final SimpleRestClient restClient = new SimpleRestClient();
+  private final GenericRestClient restClient = new GenericRestClient();
   private InfoArchiveConfiguration iaConfig;
 
   /**

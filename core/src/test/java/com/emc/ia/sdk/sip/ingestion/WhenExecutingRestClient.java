@@ -33,7 +33,7 @@ public class WhenExecutingRestClient {
   private static final List<Header> HEADERS = new ArrayList<Header>();
 
   private final HttpClientWrapper wrapper = mock(HttpClientWrapper.class);
-  private final SimpleRestClient client = new SimpleRestClient();
+  private final GenericRestClient client = new GenericRestClient();
 
   @BeforeClass
   public static void initClass() {
