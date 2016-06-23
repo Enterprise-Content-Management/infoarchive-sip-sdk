@@ -7,6 +7,9 @@ import java.util.List;
 
 import org.apache.http.Header;
 
+import com.emc.ia.sdk.sip.ingestion.dto.Application;
+import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+
 
 /**
  * Stores InfoArchive server configuration parameters.

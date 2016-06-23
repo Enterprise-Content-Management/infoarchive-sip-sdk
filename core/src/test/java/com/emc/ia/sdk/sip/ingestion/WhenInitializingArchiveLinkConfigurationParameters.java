@@ -13,6 +13,12 @@ import org.apache.http.Header;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.emc.ia.sdk.sip.ingestion.dto.Application;
+import com.emc.ia.sdk.sip.ingestion.dto.Applications;
+import com.emc.ia.sdk.sip.ingestion.dto.HomeResource;
+import com.emc.ia.sdk.sip.ingestion.dto.Link;
+import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+
 
 public class WhenInitializingArchiveLinkConfigurationParameters {
 

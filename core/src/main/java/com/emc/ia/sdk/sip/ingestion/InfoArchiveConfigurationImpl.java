@@ -11,6 +11,12 @@ import java.util.Map;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 
+import com.emc.ia.sdk.sip.ingestion.dto.Application;
+import com.emc.ia.sdk.sip.ingestion.dto.Applications;
+import com.emc.ia.sdk.sip.ingestion.dto.HomeResource;
+import com.emc.ia.sdk.sip.ingestion.dto.Link;
+import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+
 
 /**
  * Implementation of {@linkplain InfoArchiveConfiguration} that configures a running InfoArchive server.

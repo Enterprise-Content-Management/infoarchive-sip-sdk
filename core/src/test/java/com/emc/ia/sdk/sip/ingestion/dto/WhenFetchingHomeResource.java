@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.sip.ingestion;
+package com.emc.ia.sdk.sip.ingestion.dto;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,28 +12,22 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class WhenFetchingIngestionResponse {
+public class WhenFetchingHomeResource {
 
-  private final TestIngestionResponse ingestionResponse = new TestIngestionResponse();
+  private final TestHomeResource homeResource = new TestHomeResource();
 
   @Before
   public void init() {
-    ingestionResponse.setName("TestApplication");
-    ingestionResponse.setAipId("TestID");
+    homeResource.setName("TestApplication");
   }
 
   @Test
-  public void fetchName() {
-    assertEquals("Resource Name", ingestionResponse.getName(), "TestApplication");
-  }
-
-  @Test
-  public void fetchAipID() {
-    assertEquals("AipId", ingestionResponse.getAipId(), "TestID");
+  public void fetchResourceName() {
+    assertEquals("Resource Name", homeResource.getName(), "TestApplication");
   }
 
 
-  public static class TestIngestionResponse extends IngestionResponse {
+  public static class TestHomeResource extends HomeResource {
 
     @Override
     public Map<String, Link> getLinks() {

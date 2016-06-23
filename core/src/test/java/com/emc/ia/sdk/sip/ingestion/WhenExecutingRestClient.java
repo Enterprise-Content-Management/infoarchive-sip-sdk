@@ -23,6 +23,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.emc.ia.sdk.sip.ingestion.dto.HomeResource;
+import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
+
 
 public class WhenExecutingRestClient {
 

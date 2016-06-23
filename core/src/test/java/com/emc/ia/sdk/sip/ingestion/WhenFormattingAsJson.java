@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 
-public class WhenFormattingStringUisngJSONFormatter {
+public class WhenFormattingAsJson {
 
   private static final String STR = "TestString";
 

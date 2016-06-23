@@ -6,6 +6,11 @@ package com.emc.ia.sdk.sip.ingestion;
 import java.io.InputStream;
 import java.util.Map;
 
+import com.emc.ia.sdk.sip.ingestion.dto.IngestionResponse;
+import com.emc.ia.sdk.sip.ingestion.dto.Link;
+import com.emc.ia.sdk.sip.ingestion.dto.ReceptionRequest;
+import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
+
 
 /**
  * Implementation of {@linkplain ArchiveClient} that uses the REST API of a running InfoArchive server.
@@ -34,7 +39,7 @@ public class InfoArchiveRestClient implements ArchiveClient {
   @Override
   public String ingest(InputStream sip) {
     ReceptionResponse response = restClient.post(iaConfig.getAipsHref(), iaConfig.getHeaders(),
-        formatter.format(new Reception()), sip, ReceptionResponse.class);
+        formatter.format(new ReceptionRequest()), sip, ReceptionResponse.class);
 
     //TODO - report error if response fails
 
