@@ -12,7 +12,7 @@ public class WhenFormattingStringUisngJSONFormatter {
 
   private static final String STR = "TestString";
 
-  private final JSONFormatter formatter = new JSONFormatter();
+  private final JsonFormatter formatter = new JsonFormatter();
 
   @Test
   public void formatString() {

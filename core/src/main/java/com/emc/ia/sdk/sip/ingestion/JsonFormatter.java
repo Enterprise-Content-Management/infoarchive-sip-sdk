@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 
-public class JSONFormatter {
+public class JsonFormatter {
 
   public String format(Object value) {
     try {

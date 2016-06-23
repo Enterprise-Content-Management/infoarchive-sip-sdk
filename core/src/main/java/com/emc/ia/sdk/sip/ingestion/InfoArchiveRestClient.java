@@ -14,9 +14,9 @@ public class InfoArchiveRestClient implements ArchiveClient {
 
   private static final String LINK_INGEST = "http://identifiers.emc.com/ingest";
 
-  private final JSONFormatter formatter = new JSONFormatter();
+  private final JsonFormatter formatter = new JsonFormatter();
   private final SimpleRestClient restClient = new SimpleRestClient();
-  private IAConfiguration iaConfig;
+  private InfoArchiveConfiguration iaConfig;
 
   /**
    * Configure InfoArchive server with given configuration parameters.
@@ -24,7 +24,7 @@ public class InfoArchiveRestClient implements ArchiveClient {
    */
   @Override
   public void configure(Map<String, String> configuration) {
-    iaConfig = new IAConfigurationImpl(configuration, restClient);
+    iaConfig = new InfoArchiveConfigurationImpl(configuration, restClient);
   }
 
   /**

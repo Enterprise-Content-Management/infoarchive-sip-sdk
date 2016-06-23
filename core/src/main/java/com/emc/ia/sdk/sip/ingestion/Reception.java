@@ -18,7 +18,7 @@ public class Reception {
 
   @Override
   public String toString() {
-    return "Reception [format=" + format + "]";
+    return String.format("format=%s", format);
   }
 
 }

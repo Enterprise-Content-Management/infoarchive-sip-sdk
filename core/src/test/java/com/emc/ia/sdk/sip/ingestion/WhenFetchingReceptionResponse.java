@@ -29,10 +29,4 @@ public class WhenFetchingReceptionResponse {
     assertEquals("AipId", receptionResponse.getAipId(), "TestID");
   }
 
-  @Test
-  public void validateLinkToStringValue() {
-    assertEquals("Resource ToString check", receptionResponse.toString(),
-        "ReceptionResponse [name=" + "TestApplication" + ", aipId=" + "TestID" + "]");
-  }
-
 }

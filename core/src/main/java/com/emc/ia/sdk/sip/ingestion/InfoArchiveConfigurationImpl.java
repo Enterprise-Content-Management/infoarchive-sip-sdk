@@ -13,9 +13,9 @@ import org.apache.http.message.BasicHeader;
 
 
 /**
- * Implementation of {@linkplain IAConfiguration} that configures a running InfoArchive server.
+ * Implementation of {@linkplain InfoArchiveConfiguration} that configures a running InfoArchive server.
  */
-public class IAConfigurationImpl implements IAConfiguration {
+public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
 
   //TODO - are these URLs exposed anywhere through properties ?
   private static final String LINK_AIPS = "http://identifiers.emc.com/aips";
@@ -28,7 +28,7 @@ public class IAConfigurationImpl implements IAConfiguration {
   private Application application;
   private String aipsHref;
 
-  public <T> IAConfigurationImpl(Map<String, String> configuration, SimpleRestClient restClient) {
+  public <T> InfoArchiveConfigurationImpl(Map<String, String> configuration, SimpleRestClient restClient) {
     //Map contains 3 keys ; "AuthToken" , "IAServer" , "Application" - Extract this information
     //TODO - Are these keys standardized somewhere ?
     //TODO - safety check, logging OR return ?
@@ -56,7 +56,7 @@ public class IAConfigurationImpl implements IAConfiguration {
   }
 
   private void setTenant(String resourceUrl) {
-    IAHomeResource homeResource = restClient.get(resourceUrl, headersJSON, IAHomeResource.class);
+    HomeResource homeResource = restClient.get(resourceUrl, headersJSON, HomeResource.class);
     Link tenantLink = homeResource.getLinks().get(LINK_TENANT);
     tenant = restClient.get(tenantLink.getHref(), headersJSON, Tenant.class);
   }

@@ -4,18 +4,9 @@
 package com.emc.ia.sdk.sip.ingestion;
 
 
-public class IngestionResponse extends LinkContainer {
+public class IngestionResponse extends NamedLinkContainer {
 
-  private String name;
   private String aipId;
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
 
   public String getAipId() {
     return aipId;
@@ -27,7 +18,7 @@ public class IngestionResponse extends LinkContainer {
 
   @Override
   public String toString() {
-    return "IngestionResponse [name=" + name + ", aipId=" + aipId + ", getLinks()=" + getLinks() + "]";
+    return String.format("aipId=%s; %s", aipId, super.toString());
   }
 
 }

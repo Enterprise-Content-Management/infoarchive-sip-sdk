@@ -26,14 +26,8 @@ public class WhenFetchingIAHomeResource {
     assertEquals("Resource Name", homeResource.getName(), "TestApplication");
   }
 
-  @Test
-  public void validateLinkToStringValue() {
-    assertEquals("Resource ToString check", homeResource.toString(),
-        "IAHomeResource [name=" + "TestApplication" + ", links=" + homeResource.getLinks() + " ]");
-  }
 
-
-  public static class TestHomeResource extends IAHomeResource {
+  public static class TestHomeResource extends HomeResource {
 
     @Override
     public Map<String, Link> getLinks() {

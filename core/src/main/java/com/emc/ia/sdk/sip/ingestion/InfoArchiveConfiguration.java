@@ -11,7 +11,7 @@ import org.apache.http.Header;
 /**
  * Stores InfoArchive server configuration parameters.
  */
-public interface IAConfiguration {
+public interface InfoArchiveConfiguration {
 
   Tenant getTenant();
 

@@ -19,14 +19,14 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
   public static final String TESTSTRING = "http://identifiers.emc.com/tenant";
 
   private final Map<String, String> configuration = new HashMap<String, String>();
-  private IAConfiguration config;
+  private InfoArchiveConfiguration config;
 
   @Before
   public void init() {
     configuration.put("AuthToken", "XYZ123ABC");
     configuration.put("Application", "Test");
     configuration.put("IAServer", "Test");
-    config = new IAConfigurationImpl(configuration, new TestRestClient());
+    config = new InfoArchiveConfigurationImpl(configuration, new TestRestClient());
   }
 
   @Test
@@ -56,18 +56,18 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     @Override
     public <T> T get(String uri, List<Header> headers, Class<T> type) {
       T result = null;
-      if (type.getName().equals("com.emc.ia.sdk.sip.ingestion.Tenant")) {
+      if (type.getName().equals(Tenant.class.getName())) {
         result = (T)new TestTenant();
-      } else if (type.getName().equals("com.emc.ia.sdk.sip.ingestion.IAHomeResource")) {
+      } else if (type.getName().equals(HomeResource.class.getName())) {
         result = (T)new TestResource();
-      } else if (type.getName().equals("com.emc.ia.sdk.sip.ingestion.Applications")) {
+      } else if (type.getName().equals(Applications.class.getName())) {
         result = (T)new TestApplications();
       }
       return result;
     }
 
 
-    public static class TestResource extends IAHomeResource {
+    public static class TestResource extends HomeResource {
 
       private final Map<String, Link> links = new HashMap<String, Link>();
 

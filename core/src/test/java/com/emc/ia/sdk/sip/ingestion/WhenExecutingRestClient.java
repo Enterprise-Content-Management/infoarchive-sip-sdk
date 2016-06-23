@@ -46,15 +46,15 @@ public class WhenExecutingRestClient {
   @Test
   public void shouldExecuteGetSuccessfully() throws IOException {
     HttpGet getRequest = new HttpGet();
-    IAHomeResource resource = new IAHomeResource();
+    HomeResource resource = new HomeResource();
     when(wrapper.httpGetRequest(URI, HEADERS)).thenReturn(getRequest);
-    when(wrapper.execute(getRequest, IAHomeResource.class)).thenReturn(resource);
+    when(wrapper.execute(getRequest, HomeResource.class)).thenReturn(resource);
 
-    IAHomeResource homeResource = client.get(URI, HEADERS, IAHomeResource.class);
+    HomeResource homeResource = client.get(URI, HEADERS, HomeResource.class);
 
     assertNotNull(homeResource);
     verify(wrapper).httpGetRequest(URI, HEADERS);
-    verify(wrapper).execute(any(HttpGet.class), eq(IAHomeResource.class));
+    verify(wrapper).execute(any(HttpGet.class), eq(HomeResource.class));
   }
 
   @SuppressWarnings("unchecked")
@@ -62,8 +62,8 @@ public class WhenExecutingRestClient {
   public void shouldThrowExceptionWhenGetIsCalled() throws IOException {
     HttpGet getRequest = new HttpGet();
     when(wrapper.httpGetRequest(URI, HEADERS)).thenReturn(getRequest);
-    when(wrapper.execute(getRequest, IAHomeResource.class)).thenThrow(ClientProtocolException.class);
-    client.get(URI, HEADERS, IAHomeResource.class);
+    when(wrapper.execute(getRequest, HomeResource.class)).thenThrow(ClientProtocolException.class);
+    client.get(URI, HEADERS, HomeResource.class);
   }
 
   @SuppressWarnings("unchecked")
@@ -71,23 +71,23 @@ public class WhenExecutingRestClient {
   public void shouldThrowExceptionWhenGetIsCalled2() throws IOException {
     HttpGet getRequest = new HttpGet();
     when(wrapper.httpGetRequest(URI, HEADERS)).thenReturn(getRequest);
-    when(wrapper.execute(getRequest, IAHomeResource.class)).thenThrow(RuntimeException.class);
+    when(wrapper.execute(getRequest, HomeResource.class)).thenThrow(RuntimeException.class);
 
-    client.get(URI, HEADERS, IAHomeResource.class);
+    client.get(URI, HEADERS, HomeResource.class);
   }
 
   @Test
   public void shouldExecutePutSuccessfully() throws IOException {
     HttpPut putRequest = new HttpPut();
-    IAHomeResource resource = new IAHomeResource();
+    HomeResource resource = new HomeResource();
     when(wrapper.httpPutRequest(URI, HEADERS)).thenReturn(putRequest);
-    when(wrapper.execute(putRequest, IAHomeResource.class)).thenReturn(resource);
+    when(wrapper.execute(putRequest, HomeResource.class)).thenReturn(resource);
 
-    IAHomeResource homeResource = client.put(URI, HEADERS, IAHomeResource.class);
+    HomeResource homeResource = client.put(URI, HEADERS, HomeResource.class);
 
     assertNotNull(homeResource);
     verify(wrapper).httpPutRequest(URI, HEADERS);
-    verify(wrapper).execute(any(HttpPut.class), eq(IAHomeResource.class));
+    verify(wrapper).execute(any(HttpPut.class), eq(HomeResource.class));
   }
 
   @SuppressWarnings("unchecked")
@@ -95,8 +95,8 @@ public class WhenExecutingRestClient {
   public void shouldThrowExceptionWhenPutIsCalled() throws IOException {
     HttpPut putRequest = new HttpPut();
     when(wrapper.httpPutRequest(URI, HEADERS)).thenReturn(putRequest);
-    when(wrapper.execute(putRequest, IAHomeResource.class)).thenThrow(ClientProtocolException.class);
-    client.put(URI, HEADERS, IAHomeResource.class);
+    when(wrapper.execute(putRequest, HomeResource.class)).thenThrow(ClientProtocolException.class);
+    client.put(URI, HEADERS, HomeResource.class);
   }
 
   @SuppressWarnings("unchecked")
@@ -104,8 +104,8 @@ public class WhenExecutingRestClient {
   public void shouldThrowExceptionWhenPutIsCalled2() throws IOException {
     HttpPut putRequest = new HttpPut();
     when(wrapper.httpPutRequest(URI, HEADERS)).thenReturn(putRequest);
-    when(wrapper.execute(putRequest, IAHomeResource.class)).thenThrow(RuntimeException.class);
-    client.put(URI, HEADERS, IAHomeResource.class);
+    when(wrapper.execute(putRequest, HomeResource.class)).thenThrow(RuntimeException.class);
+    client.put(URI, HEADERS, HomeResource.class);
   }
 
   @Test

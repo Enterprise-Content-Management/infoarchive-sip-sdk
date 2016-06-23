@@ -4,6 +4,6 @@
 package com.emc.ia.sdk.sip.ingestion;
 
 
-public class Application extends NamedLinkContainer {
+public class HomeResource extends NamedLinkContainer {
 
 }

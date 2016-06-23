@@ -31,12 +31,6 @@ public class WhenExtractingApplicationFromApplicationsContainer {
   }
 
   @Test
-  public void validateLinkToStringValue() {
-    assertEquals("Application ToString check", app.toString(),
-        "Application [name=" + "TestApplication" + ", getLinks()=" + app.getLinks() + " ]");
-  }
-
-  @Test
   public void shouldReturnValidApplicationObjectWithDefaultKeyAndPreSetName() {
     prepare("applications");
     assertNotNull(apps.byName("TestApp"));

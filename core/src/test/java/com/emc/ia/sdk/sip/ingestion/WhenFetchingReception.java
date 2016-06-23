@@ -26,10 +26,4 @@ public class WhenFetchingReception {
     assertEquals("Reception Format", reception.getFormat(), FORMAT);
   }
 
-  @Test
-  public void validateReceptionToStringValue() {
-    reception.setFormat(FORMAT);
-    assertEquals("Reception ToString check", reception.toString(), "Reception [format=" + FORMAT + "]");
-  }
-
 }

@@ -32,11 +32,6 @@ public class WhenFetchingIngestionResponse {
     assertEquals("AipId", ingestionResponse.getAipId(), "TestID");
   }
 
-  @Test
-  public void validateLinkToStringValue() {
-    assertEquals("Resource ToString check", ingestionResponse.toString(), "IngestionResponse [name=" + "TestApplication" + ", aipId="
-        + "TestID" + ", getLinks()=" + ingestionResponse.getLinks() + "]");
-  }
 
   public static class TestIngestionResponse extends IngestionResponse {
 
