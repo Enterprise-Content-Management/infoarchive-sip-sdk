@@ -9,6 +9,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.atteo.evo.inflector.English;
 
@@ -23,8 +24,8 @@ import com.emc.ia.sdk.support.xml.XmlUtil;
  */
 public abstract class XmlPdiAssembler<D> extends PdiAssembler<D> {
 
-  private final URI namespace;
-  private final String documentElementName;
+  private final Optional<URI> namespace;
+  private final Optional<String> documentElementName;
   private final String domainObjectName;
   private XmlBuilder builder;
 
@@ -81,8 +82,8 @@ public abstract class XmlPdiAssembler<D> extends PdiAssembler<D> {
    */
   public XmlPdiAssembler(URI namespace, String documentElementName, String domainObjectName, Validator validator) {
     super(validator);
-    this.namespace = namespace;
-    this.documentElementName = documentElementName;
+    this.namespace = Optional.ofNullable(namespace);
+    this.documentElementName = Optional.ofNullable(documentElementName);
     this.domainObjectName = Objects.requireNonNull(domainObjectName);
   }
 
@@ -104,25 +105,18 @@ public abstract class XmlPdiAssembler<D> extends PdiAssembler<D> {
   @Override
   public void start(PrintWriter writer) {
     writer.println(XmlUtil.XML_DECLARATION);
-    if (documentElementName != null) {
-      writer.print('<');
-      writer.print(documentElementName);
-      if (namespace != null) {
-        writer.print(" xmlns=\"");
-        writer.print(namespace);
-        writer.print('"');
-      }
+    documentElementName.ifPresent(tag -> {
+      writer.format("<%s", tag);
+      namespace.ifPresent(uri -> writer.format(" xmlns=\"%s\"", uri));
       writer.println('>');
-    }
+    });
   }
 
   @Override
   public final void add(D domainObject, Map<String, Collection<EncodedHash>> contentHashes, PrintWriter writer) {
     builder = XmlBuilder.newDocument();
     try {
-      if (namespace != null) {
-        builder.namespace(namespace.toString());
-      }
+      namespace.ifPresent(uri -> builder.namespace(uri));
       builder.element(domainObjectName);
       doAdd(domainObject, contentHashes);
       writer.println(XmlUtil.toString(builder.build().getDocumentElement(), "  "));
@@ -133,11 +127,7 @@ public abstract class XmlPdiAssembler<D> extends PdiAssembler<D> {
 
   @Override
   public final void end(PrintWriter writer) {
-    if (documentElementName != null) {
-      writer.print("</");
-      writer.print(documentElementName);
-      writer.println(">");
-    }
+    documentElementName.ifPresent(tag -> writer.format("</%s>%n", tag));
   }
 
 }
