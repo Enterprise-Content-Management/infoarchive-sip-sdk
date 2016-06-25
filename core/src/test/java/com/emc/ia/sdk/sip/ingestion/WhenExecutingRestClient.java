@@ -19,7 +19,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicHeader;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -32,18 +31,13 @@ public class WhenExecutingRestClient {
   private static final String URI = "http://identifiers.emc.com/aips";
   private static final List<Header> HEADERS = new ArrayList<Header>();
 
-  private final HttpClientWrapper wrapper = mock(HttpClientWrapper.class);
-  private final GenericRestClient client = new GenericRestClient();
+  private final HttpClient wrapper = mock(HttpClient.class);
+  private final RestClient client = new RestClient(wrapper);
 
   @BeforeClass
   public static void initClass() {
     HEADERS.add(new BasicHeader("AuthToken", "XYZ123ABC"));
     HEADERS.add(new BasicHeader("Accept", "application/hal+json"));
-  }
-
-  @Before
-  public void init() {
-    client.prepare(wrapper);
   }
 
   @Test

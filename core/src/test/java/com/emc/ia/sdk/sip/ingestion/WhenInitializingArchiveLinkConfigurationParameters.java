@@ -4,6 +4,7 @@
 package com.emc.ia.sdk.sip.ingestion;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,8 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     configuration.put("AuthToken", "XYZ123ABC");
     configuration.put("Application", "Test");
     configuration.put("IAServer", "Test");
-    config = new InfoArchiveConfigurationImpl(configuration, new TestRestClient());
+    HttpClient client = mock(HttpClient.class);
+    config = new InfoArchiveConfigurationImpl(configuration, new TestRestClient(client));
   }
 
   @Test
@@ -56,7 +58,11 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     assertEquals("Headers ApisHref information", config.getAipsHref(), TESTSTRING);
   }
 
-  public static class TestRestClient extends GenericRestClient {
+  public static class TestRestClient extends RestClient {
+
+    public TestRestClient(HttpClient client) {
+      super(client);
+    }
 
     @SuppressWarnings("unchecked")
     @Override

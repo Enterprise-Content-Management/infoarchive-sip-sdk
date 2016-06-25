@@ -22,11 +22,11 @@ public class WhenExecutingHttpClientWrapper {
   private static final String URI = "http://identifiers.emc.com/aips";
   private static final List<Header> HEADERS = new ArrayList<Header>();
 
-  private HttpClientWrapper wrapper;
+  private HttpClient wrapper;
 
   @Before
   public void init() {
-    wrapper = new HttpClientWrapper();
+    wrapper = new HttpClient();
     HEADERS.add(new BasicHeader("AuthToken", "XYZ123ABC"));
     HEADERS.add(new BasicHeader("Accept", "application/hal+json"));
   }
