@@ -5,6 +5,7 @@ package com.emc.ia.sdk.sip.ingestion;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
@@ -67,6 +68,7 @@ public class HttpClient {
   }
 
   public HttpGet httpGetRequest(String uri, List<Header> headers) {
+    Objects.requireNonNull(uri, "Missing URI");
     HttpGet getRequest = new HttpGet(uri);
     if (headers != null) {
       for (Header header : headers) {
@@ -77,6 +79,7 @@ public class HttpClient {
   }
 
   public HttpPost httpPostRequest(String uri, List<Header> headers) {
+    Objects.requireNonNull(uri, "Missing URI");
     HttpPost postRequest = new HttpPost(uri);
     if (headers != null) {
       for (Header header : headers) {
@@ -87,6 +90,7 @@ public class HttpClient {
   }
 
   public HttpPut httpPutRequest(String uri, List<Header> headers) {
+    Objects.requireNonNull(uri, "Missing URI");
     HttpPut putRequest = new HttpPut(uri);
     if (headers != null) {
       for (Header header : headers) {

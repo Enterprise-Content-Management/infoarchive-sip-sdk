@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
@@ -28,7 +29,8 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
   //TODO - are these URLs exposed anywhere through properties ?
   private static final String LINK_AIPS = "http://identifiers.emc.com/aips";
   private static final String LINK_TENANT = "http://identifiers.emc.com/tenant";
-  private static final String LINK_APPLICATION = "http://identifiers.emc.com/applications";
+  private static final String LINK_APPLICATIONS = "http://identifiers.emc.com/applications";
+  private static final String LINK_ADD_APPLICATION = "http://identifiers.emc.com/add";
 
   private List<Header> headersJSON;
   private final RestClient restClient;
@@ -68,8 +70,10 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
   }
 
   private void setTenant(String resourceUrl) throws IOException {
+    Objects.requireNonNull(resourceUrl, "IA server URL");
     HomeResource homeResource = restClient.get(resourceUrl, headersJSON, HomeResource.class);
     Link tenantLink = homeResource.getLinks().get(LINK_TENANT);
+    Objects.requireNonNull(tenantLink, "Missing link to tenant in " + homeResource);
     tenant = restClient.get(tenantLink.getHref(), headersJSON, Tenant.class);
   }
 
@@ -79,9 +83,25 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
   }
 
   private void setApplication(String applicationName) throws IOException {
-    Link applicationsLink = tenant.getLinks().get(LINK_APPLICATION);
+    Link applicationsLink = tenant.getLinks().get(LINK_APPLICATIONS);
+    Objects.requireNonNull(applicationsLink, "Missing link to applications in " + tenant);
     Applications applications = restClient.get(applicationsLink.getHref(), headersJSON, Applications.class);
     application = applications.byName(applicationName);
+    if (application == null) {
+      Link addApplicationLink = applications.getLinks().get(LINK_ADD_APPLICATION);
+      Objects.requireNonNull(applicationsLink, "Missing link to add application in " + applications);
+      restClient.post(addApplicationLink.getHref(), headersJSON, addApplicationBody(applicationName), null,
+          Application.class);
+      applications = restClient.get(applicationsLink.getHref(), headersJSON, Applications.class);
+      application = applications.byName(applicationName);
+    }
+    Objects.requireNonNull(application, "Could not find/create application " + applicationName);
+  }
+
+  private String addApplicationBody(String applicationName) {
+    Application result = new Application();
+    result.setName(applicationName);
+    return new JsonFormatter().format(result);
   }
 
   @Override
@@ -90,8 +110,9 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
   }
 
   private void setAipsHref() {
-    Link aipsLink = application.getLinks().get(LINK_AIPS);
-    aipsHref = aipsLink.getHref();
+    Link link = application.getLinks().get(LINK_AIPS);
+    Objects.requireNonNull(link, "Missing link to AIPs in " + application);
+    aipsHref = link.getHref();
   }
 
 }
