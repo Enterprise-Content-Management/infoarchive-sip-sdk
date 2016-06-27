@@ -3,6 +3,7 @@
  */
 package com.emc.ia.sdk.sip.ingestion;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -35,19 +36,16 @@ public class InfoArchiveRestClient implements ArchiveClient {
   /**
    * Ingests into InfoArchive server.
    * @param sip file to be ingested into InfoArchive server
+   * @throws IOException When an I/O error occurs
    */
   @Override
-  public String ingest(InputStream sip) {
+  public String ingest(InputStream sip) throws IOException {
     ReceptionResponse response = restClient.post(iaConfig.getAipsHref(), iaConfig.getHeaders(),
         formatter.format(new ReceptionRequest()), sip, ReceptionResponse.class);
-
-    //TODO - report error if response fails
 
     Link ingestLink = response.getLinks().get(LINK_INGEST);
     IngestionResponse ingestionResponse = restClient.put(ingestLink.getHref(), iaConfig.getHeaders(),
         IngestionResponse.class);
-
-    //TODO - Log ingestion response
 
     return ingestionResponse.getAipId();
   }

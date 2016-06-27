@@ -96,19 +96,19 @@ public class HttpClient {
     return putRequest;
   }
 
-  public CloseableHttpResponse execute(HttpGet getRequest) throws ClientProtocolException, IOException {
+  public CloseableHttpResponse execute(HttpGet getRequest) throws IOException {
     return client.execute(getRequest);
   }
 
-  public <T> T execute(HttpGet getRequest, final Class<T> type) throws ClientProtocolException, IOException {
+  public <T> T execute(HttpGet getRequest, final Class<T> type) throws IOException {
     return client.execute(getRequest, getResponseHandler(type));
   }
 
-  public <T> T execute(HttpPost postRequest, final Class<T> type) throws ClientProtocolException, IOException {
+  public <T> T execute(HttpPost postRequest, final Class<T> type) throws IOException {
     return client.execute(postRequest, getResponseHandler(type));
   }
 
-  public <T> T execute(HttpPut putRequest, final Class<T> type) throws ClientProtocolException, IOException {
+  public <T> T execute(HttpPut putRequest, final Class<T> type) throws IOException {
     return client.execute(putRequest, getResponseHandler(type));
   }
 

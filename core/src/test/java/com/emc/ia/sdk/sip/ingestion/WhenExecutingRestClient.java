@@ -55,7 +55,7 @@ public class WhenExecutingRestClient {
   }
 
   @SuppressWarnings("unchecked")
-  @Test(expected = RuntimeException.class)
+  @Test(expected = IOException.class)
   public void shouldThrowExceptionWhenGetIsCalled() throws IOException {
     HttpGet getRequest = new HttpGet();
     when(wrapper.httpGetRequest(URI, HEADERS)).thenReturn(getRequest);
@@ -64,11 +64,11 @@ public class WhenExecutingRestClient {
   }
 
   @SuppressWarnings("unchecked")
-  @Test(expected = RuntimeException.class)
+  @Test(expected = IOException.class)
   public void shouldThrowExceptionWhenGetIsCalled2() throws IOException {
     HttpGet getRequest = new HttpGet();
     when(wrapper.httpGetRequest(URI, HEADERS)).thenReturn(getRequest);
-    when(wrapper.execute(getRequest, HomeResource.class)).thenThrow(RuntimeException.class);
+    when(wrapper.execute(getRequest, HomeResource.class)).thenThrow(ClientProtocolException.class);
 
     client.get(URI, HEADERS, HomeResource.class);
   }
@@ -88,7 +88,7 @@ public class WhenExecutingRestClient {
   }
 
   @SuppressWarnings("unchecked")
-  @Test(expected = RuntimeException.class)
+  @Test(expected = IOException.class)
   public void shouldThrowExceptionWhenPutIsCalled() throws IOException {
     HttpPut putRequest = new HttpPut();
     when(wrapper.httpPutRequest(URI, HEADERS)).thenReturn(putRequest);
@@ -97,11 +97,11 @@ public class WhenExecutingRestClient {
   }
 
   @SuppressWarnings("unchecked")
-  @Test(expected = RuntimeException.class)
+  @Test(expected = IOException.class)
   public void shouldThrowExceptionWhenPutIsCalled2() throws IOException {
     HttpPut putRequest = new HttpPut();
     when(wrapper.httpPutRequest(URI, HEADERS)).thenReturn(putRequest);
-    when(wrapper.execute(putRequest, HomeResource.class)).thenThrow(RuntimeException.class);
+    when(wrapper.execute(putRequest, HomeResource.class)).thenThrow(ClientProtocolException.class);
     client.put(URI, HEADERS, HomeResource.class);
   }
 
@@ -123,7 +123,7 @@ public class WhenExecutingRestClient {
   }
 
   @SuppressWarnings("unchecked")
-  @Test(expected = RuntimeException.class)
+  @Test(expected = IOException.class)
   public void shouldThrowExceptionWhenPostIsCalled() throws IOException {
     HttpPost postRequest = new HttpPost();
     String source = "This is the source of my input stream";
@@ -135,14 +135,14 @@ public class WhenExecutingRestClient {
   }
 
   @SuppressWarnings("unchecked")
-  @Test(expected = RuntimeException.class)
+  @Test(expected = IOException.class)
   public void shouldThrowExceptionWhenPostIsCalled2() throws IOException {
     HttpPost postRequest = new HttpPost();
     String source = "This is the source of my input stream";
     InputStream in = IOUtils.toInputStream(source, "UTF-8");
 
     when(wrapper.httpPostRequest(URI, HEADERS)).thenReturn(postRequest);
-    when(wrapper.execute(postRequest, ReceptionResponse.class)).thenThrow(RuntimeException.class);
+    when(wrapper.execute(postRequest, ReceptionResponse.class)).thenThrow(ClientProtocolException.class);
     client.post(URI, HEADERS, "This is a test message", in, ReceptionResponse.class);
   }
 

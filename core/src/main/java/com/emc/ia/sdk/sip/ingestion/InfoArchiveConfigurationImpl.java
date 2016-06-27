@@ -4,6 +4,7 @@
 
 package com.emc.ia.sdk.sip.ingestion;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import com.emc.ia.sdk.sip.ingestion.dto.Applications;
 import com.emc.ia.sdk.sip.ingestion.dto.HomeResource;
 import com.emc.ia.sdk.sip.ingestion.dto.Link;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+import com.emc.ia.sdk.support.io.RuntimeIoException;
 
 
 /**
@@ -40,8 +42,12 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
     //TODO - safety check, logging OR return ?
     this.restClient = restClient;
     setHeaders(configuration.get("AuthToken"));
-    setTenant(configuration.get("IAServer"));
-    setApplication(configuration.get("Application"));
+    try {
+      setTenant(configuration.get("IAServer"));
+      setApplication(configuration.get("Application"));
+    } catch (IOException e) {
+      throw new RuntimeIoException(e);
+    }
     setAipsHref();
   }
 
@@ -61,7 +67,7 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
     return tenant;
   }
 
-  private void setTenant(String resourceUrl) {
+  private void setTenant(String resourceUrl) throws IOException {
     HomeResource homeResource = restClient.get(resourceUrl, headersJSON, HomeResource.class);
     Link tenantLink = homeResource.getLinks().get(LINK_TENANT);
     tenant = restClient.get(tenantLink.getHref(), headersJSON, Tenant.class);
@@ -72,7 +78,7 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
     return application;
   }
 
-  private void setApplication(String applicationName) {
+  private void setApplication(String applicationName) throws IOException {
     Link applicationsLink = tenant.getLinks().get(LINK_APPLICATION);
     Applications applications = restClient.get(applicationsLink.getHref(), headersJSON, Applications.class);
     application = applications.byName(applicationName);
