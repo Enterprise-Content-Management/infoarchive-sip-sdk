@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-
 package com.emc.ia.sdk.sip.ingestion;
 
 import java.io.IOException;
@@ -15,6 +14,8 @@ import org.apache.http.message.BasicHeader;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
+import com.emc.ia.sdk.sip.ingestion.dto.Holding;
+import com.emc.ia.sdk.sip.ingestion.dto.Holdings;
 import com.emc.ia.sdk.sip.ingestion.dto.HomeResource;
 import com.emc.ia.sdk.sip.ingestion.dto.Link;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
@@ -30,7 +31,9 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
   private static final String LINK_AIPS = "http://identifiers.emc.com/aips";
   private static final String LINK_TENANT = "http://identifiers.emc.com/tenant";
   private static final String LINK_APPLICATIONS = "http://identifiers.emc.com/applications";
-  private static final String LINK_ADD_APPLICATION = "http://identifiers.emc.com/add";
+  private static final String LINK_ADD = "http://identifiers.emc.com/add";
+  private static final String LINK_HOLDINGS = "http://identifiers.emc.com/holdings";
+  private static final String LINK_SELF = "self";
 
   private List<Header> headersJSON;
   private final RestClient restClient;
@@ -46,7 +49,7 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
     setHeaders(configuration.get("AuthToken"));
     try {
       setTenant(configuration.get("IAServer"));
-      setApplication(configuration.get("Application"));
+      setApplication(configuration.get("Application"), configuration.get("Holding"));
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
@@ -82,25 +85,44 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
     return application;
   }
 
-  private void setApplication(String applicationName) throws IOException {
+  private void setApplication(String applicationName, String holdingName) throws IOException {
     Link applicationsLink = tenant.getLinks().get(LINK_APPLICATIONS);
     Objects.requireNonNull(applicationsLink, "Missing link to applications in " + tenant);
     Applications applications = restClient.get(applicationsLink.getHref(), headersJSON, Applications.class);
     application = applications.byName(applicationName);
     if (application == null) {
-      Link addApplicationLink = applications.getLinks().get(LINK_ADD_APPLICATION);
-      Objects.requireNonNull(applicationsLink, "Missing link to add application in " + applications);
-      restClient.post(addApplicationLink.getHref(), headersJSON, addApplicationBody(applicationName), null,
-          Application.class);
-      applications = restClient.get(applicationsLink.getHref(), headersJSON, Applications.class);
-      application = applications.byName(applicationName);
+      addApplication(applications, applicationName, holdingName);
     }
+  }
+
+  private void addApplication(Applications applications, String applicationName, String holdingName)
+      throws IOException {
+    Link addLink = applications.getLinks().get(LINK_ADD);
+    Objects.requireNonNull(addLink, "Missing link to add application in " + applications);
+    restClient.post(addLink.getHref(), headersJSON, addApplicationBody(applicationName), null,
+        Application.class);
+    Link refreshLink = applications.getLinks().get(LINK_SELF);
+    application = restClient.get(refreshLink.getHref(), headersJSON, Applications.class)
+        .byName(applicationName);
     Objects.requireNonNull(application, "Could not find/create application " + applicationName);
+
+    Link holdingsLink = application.getLinks().get(LINK_HOLDINGS);
+    Objects.requireNonNull(holdingsLink, "Missing link to holdings");
+    Holdings holdings = restClient.get(holdingsLink.getHref(), headersJSON, Holdings.class);
+    addLink = holdings.getLinks().get(LINK_ADD);
+    restClient.post(addLink.getHref(), headersJSON, addHoldingBody(holdingName), null, Holding.class);
   }
 
   private String addApplicationBody(String applicationName) {
     Application result = new Application();
     result.setName(applicationName);
+    return new JsonFormatter().format(result);
+  }
+
+  private String addHoldingBody(String holdingName) {
+    Holding result = new Holding();
+    result.setName(holdingName);
+    // TODO: Add PDI schema, indexes, etc.
     return new JsonFormatter().format(result);
   }
 
