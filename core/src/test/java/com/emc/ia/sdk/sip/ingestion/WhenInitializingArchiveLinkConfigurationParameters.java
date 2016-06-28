@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -39,6 +40,7 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
   private HomeResource resource;
   private Tenant tenant;
   private Applications applications;
+  private Application application;
 
   @Before
   public void init() throws IOException {
@@ -49,7 +51,7 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     resource = new HomeResource();
     Link link = mock(Link.class);
     tenant = new Tenant();
-    Application application = new Application();
+    application = new Application();
     applications = mock(Applications.class);
     client.setRestClient(restClient);
 
@@ -66,6 +68,7 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Tenant.class))).thenReturn(tenant);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Applications.class))).thenReturn(applications);
     when(applications.byName(APPLICATION_NAME)).thenReturn(application);
+    when(restClient.refresh(applications)).thenReturn(applications);
   }
 
   @Test
@@ -123,6 +126,23 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
   public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull() throws IOException {
     Map<String, String> config = new HashMap<String, String>();
     client.configure(config);
+  }
+
+  @Test
+  public void shouldCreateApplicationWhenNotFound() throws IOException {
+    final AtomicBoolean afterCreate = new AtomicBoolean(false);
+    when(applications.byName(APPLICATION_NAME)).thenAnswer(invocation -> {
+      if (afterCreate.get()) {
+        return application;
+      } else {
+        afterCreate.set(true);
+        return null;
+      }
+    });
+
+    client.configure(configuration);
+
+    verify(restClient).createCollectionItem(eq(applications), any(Application.class));
   }
 
 }

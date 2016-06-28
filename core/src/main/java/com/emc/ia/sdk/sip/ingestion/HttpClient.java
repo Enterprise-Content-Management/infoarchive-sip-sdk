@@ -54,8 +54,14 @@ public class HttpClient {
         throw new HttpResponseException(status,
             String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
       }
+      if (body.isEmpty()) {
+        return null;
+      }
+      if (type.equals(String.class)) {
+        return type.cast(body);
+      }
       try {
-        return body.isEmpty() ? null : mapper.readValue(body, type);
+        return mapper.readValue(body, type);
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
