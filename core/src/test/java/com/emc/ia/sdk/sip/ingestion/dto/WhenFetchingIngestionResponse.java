@@ -4,9 +4,7 @@
 package com.emc.ia.sdk.sip.ingestion.dto;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +12,8 @@ import org.junit.Test;
 
 public class WhenFetchingIngestionResponse {
 
-  private final TestIngestionResponse ingestionResponse = new TestIngestionResponse();
+  //private final TestIngestionResponse ingestionResponse = new TestIngestionResponse();
+  private final IngestionResponse ingestionResponse = new IngestionResponse();
 
   @Before
   public void init() {
@@ -32,20 +31,8 @@ public class WhenFetchingIngestionResponse {
     assertEquals("AipId", ingestionResponse.getAipId(), "TestID");
   }
 
-
-  public static class TestIngestionResponse extends IngestionResponse {
-
-    @Override
-    public Map<String, Link> getLinks() {
-      Map<String, Link> result = new HashMap<String, Link>();
-
-      Link link = new Link();
-      link.setHref("https://india.emc.com/content-management/infoarchive/infoarchive.htm");
-      result.put("testApp", link);
-
-      return result;
-    }
-
+  @Test
+  public void validateIngestionResponseToStringValue() {
+    assertTrue(ingestionResponse.toString().contains("aipId=TestID; name=TestApplication; links=com.emc.ia.sdk.sip.ingestion.dto.IngestionResponse@"));
   }
-
 }

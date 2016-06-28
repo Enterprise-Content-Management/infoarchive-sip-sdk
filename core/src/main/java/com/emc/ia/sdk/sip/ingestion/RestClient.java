@@ -53,10 +53,9 @@ public class RestClient implements Closeable {
     httpClient.close();
   }
 
-  public <T> T post(String uri, String body, InputStream attachment, Class<T> type)
-      throws IOException {
+  public <T> T ingest(String uri, InputStream sip, Class<T> type) throws IOException {
     // TODO - what should be the file name here ? IASIP.zip is Ok ?
-    InputStreamBody file = new InputStreamBody(attachment, ContentType.APPLICATION_OCTET_STREAM, "IASIP.zip");
+    InputStreamBody file = new InputStreamBody(sip, ContentType.APPLICATION_OCTET_STREAM, "IASIP.zip");
     HttpEntity entity = MultipartEntityBuilder.create()
         .addTextBody("format", "sip_zip")
         .addPart("sip", file)
@@ -64,7 +63,7 @@ public class RestClient implements Closeable {
     return post(uri, headers, entity, type);
   }
 
-  private <T> T post(String uri, List<Header> httpHeaders, HttpEntity entity, Class<T> type) throws IOException {
+  public <T> T post(String uri, List<Header> httpHeaders, HttpEntity entity, Class<T> type) throws IOException {
     HttpPost postRequest = httpClient.httpPostRequest(uri, httpHeaders);
     postRequest.setEntity(entity);
     return httpClient.execute(postRequest, type);

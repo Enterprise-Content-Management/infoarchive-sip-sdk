@@ -3,7 +3,6 @@
  */
 package com.emc.ia.sdk.sip.ingestion.dto;
 
-
 public class Application extends NamedLinkContainer {
 
   private String type = "ACTIVE_ARCHIVING";

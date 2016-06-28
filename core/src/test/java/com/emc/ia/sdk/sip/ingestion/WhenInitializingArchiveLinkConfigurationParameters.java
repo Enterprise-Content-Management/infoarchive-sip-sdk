@@ -3,126 +3,130 @@
  */
 package com.emc.ia.sdk.sip.ingestion;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
 import com.emc.ia.sdk.sip.ingestion.dto.HomeResource;
+import com.emc.ia.sdk.sip.ingestion.dto.IngestionResponse;
 import com.emc.ia.sdk.sip.ingestion.dto.Link;
+import com.emc.ia.sdk.sip.ingestion.dto.LinkContainer;
+import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+import com.emc.ia.sdk.support.io.RuntimeIoException;
 
 
 public class WhenInitializingArchiveLinkConfigurationParameters {
 
-  public static final String TESTSTRING = "http://identifiers.emc.com/tenant";
+  private static final String TEST_HREF = "Test";
 
+  private final Map<String, Link> links = new HashMap<String, Link>();
   private final Map<String, String> configuration = new HashMap<String, String>();
-  private InfoArchiveConfiguration config;
+  private final InfoArchiveRestClient client = new InfoArchiveRestClient();
+  private RestClient restClient;
+  private HomeResource resource;
+  private Link tenantLink;
+  private Tenant tenant;
+  private Application application;
+  private Applications applications;
 
+  @SuppressWarnings("unchecked")
   @Before
-  public void init() {
+  public void init() throws IOException {
     configuration.put("AuthToken", "XYZ123ABC");
     configuration.put("Application", "Test");
+    configuration.put("IAServer", TEST_HREF);
+    restClient = mock(RestClient.class);
+    resource = new HomeResource();
+    tenantLink = mock(Link.class);
+    tenant = new Tenant();
+    application = new Application();
+    applications = mock(Applications.class);
+    client.setRestClient(restClient);
+
+    links.put(InfoArchiveRestClient.LINK_TENANT, tenantLink);
+    links.put(InfoArchiveRestClient.LINK_APPLICATIONS, tenantLink);
+    links.put(InfoArchiveRestClient.LINK_AIPS, tenantLink);
+    links.put(InfoArchiveRestClient.LINK_INGEST, tenantLink);
+    resource.setLinks(links);
+    tenant.setLinks(links);
+    application.setLinks(links);
+
+    when(restClient.get(TEST_HREF, HomeResource.class)).thenReturn(resource);
+    when(tenantLink.getHref()).thenReturn("Test");
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Tenant.class))).thenReturn(tenant);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Applications.class))).thenReturn(applications);
+    when(applications.byName("Test")).thenReturn(application);
     configuration.put("IAServer", "Test");
-    HttpClient client = mock(HttpClient.class);
-    config = new InfoArchiveConfigurationImpl(configuration, new TestRestClient(client));
   }
 
   @Test
-  public void shouldInitHeadersDuringObjectCreation() {
-    // TODO: Replace by verify(client).setHeaders()
-    assertEquals("Headers 'AuthToken' information", config.getHeaders().get(0).toString(), "AuthToken: XYZ123ABC");
-    assertEquals("Headers 'Accept' information", config.getHeaders().get(1).toString(), "Accept: application/hal+json");
+  public void shouldInitHeadersDuringObjectCreation() throws IOException {
+    client.configure(configuration);
+
+    verify(restClient).get(TEST_HREF, HomeResource.class);
+    verify(restClient).follow(resource, InfoArchiveRestClient.LINK_TENANT, Tenant.class);
+    verify(restClient).follow(tenant, InfoArchiveRestClient.LINK_APPLICATIONS, Applications.class);
+    verify(applications).byName("Test");
+    verify(tenantLink, times(3)).getHref();
+  }
+
+  @Test (expected = RuntimeException.class)
+  public void shouldThrowExceptionWileConfiguring() {
+    client.configure(null);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test (expected = RuntimeIoException.class)
+  public void shouldWrapExceptionDuringConfiguration() throws IOException {
+    when(restClient.get(TEST_HREF, HomeResource.class)).thenThrow(IOException.class);
+    client.configure(configuration);
   }
 
   @Test
-  public void shouldInitTenantDuringObjectCreation() {
-    assertNotNull(config.getTenant());
+  public void shouldIngestSuccessfully() throws IOException {
+    client.configure(configuration);
+
+    String source = "This is the source of my input stream";
+    InputStream sip = IOUtils.toInputStream(source, "UTF-8");
+
+    ReceptionResponse receptionResponse = new ReceptionResponse();
+    IngestionResponse ingestionResponse = mock(IngestionResponse.class);
+    receptionResponse.setLinks(links);
+    when(restClient.ingest(anyString(), eq(sip), eq(ReceptionResponse.class))).thenReturn(receptionResponse);
+    when(restClient.put(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
+    when(ingestionResponse.getAipId()).thenReturn("sip001");
+
+    assertEquals(client.ingest(sip), "sip001");
   }
 
-  @Test
-  public void shouldInitApplicationDuringObjectCreation() {
-    assertNotNull(config.getApplication());
+  @Test(expected = RuntimeException.class)
+  public void ingestShouldThrowRuntimeExceptionWhenConfigureIsNotInvoked() throws IOException {
+    String source = "This is the source of my input stream";
+    InputStream sip = IOUtils.toInputStream(source, "UTF-8");
+    client.ingest(sip);
   }
 
-  @Test
-  public void shouldInitApisHrefDuringObjectCreation() {
-    assertEquals("Headers ApisHref information", config.getAipsHref(), TESTSTRING);
+  @Test(expected = RuntimeException.class)
+  public void ingestShouldThrowRuntimeExceptionWhenSipIsNull() throws IOException {
+    client.ingest(null);
   }
 
-  public static class TestRestClient extends RestClient {
-
-    public TestRestClient(HttpClient client) {
-      super(client);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T get(String uri, Class<T> type) {
-      T result = null;
-      if (type.getName().equals(Tenant.class.getName())) {
-        result = (T)new TestTenant();
-      } else if (type.getName().equals(HomeResource.class.getName())) {
-        result = (T)new TestResource();
-      } else if (type.getName().equals(Applications.class.getName())) {
-        result = (T)new TestApplications();
-      }
-      return result;
-    }
-
-
-    public static class TestResource extends HomeResource {
-
-      private final Map<String, Link> links = new HashMap<String, Link>();
-
-      @Override
-      public Map<String, Link> getLinks() {
-        Link link = new Link();
-        link.setHref(TESTSTRING);
-        links.put(TESTSTRING, link);
-        return links;
-      }
-
-    }
-  }
-
-
-  public static class TestTenant extends Tenant {
-
-    private final Map<String, Link> links = new HashMap<String, Link>();
-
-    @Override
-    public Map<String, Link> getLinks() {
-      Link link = new Link();
-      link.setHref(TESTSTRING);
-      links.put("http://identifiers.emc.com/applications", link);
-      return links;
-    }
-
-  }
-
-
-  public static class TestApplications extends Applications {
-
-    private final Map<String, Link> links = new HashMap<String, Link>();
-
-    @Override
-    public Application byName(String name) {
-      Application app = new Application();
-      Link link = new Link();
-      link.setHref(TESTSTRING);
-      links.put("http://identifiers.emc.com/aips", link);
-      app.setLinks(links);
-      return app;
-    }
-
+  @Test(expected = NullPointerException.class)
+  public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull() throws IOException {
+    Map<String, String> config = new HashMap<String, String>();
+    client.configure(config);
   }
 
 }
