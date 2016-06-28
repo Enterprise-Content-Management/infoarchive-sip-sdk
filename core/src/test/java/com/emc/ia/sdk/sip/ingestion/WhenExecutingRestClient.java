@@ -150,7 +150,8 @@ public class WhenExecutingRestClient {
     InputStream in = IOUtils.toInputStream(source, "UTF-8");
     when(wrapper.httpPostRequest(URI, headers)).thenReturn(postRequest);
     when(wrapper.execute(postRequest, ReceptionResponse.class)).thenThrow(ClientProtocolException.class);
-  }
+    client.ingest(URI, in, ReceptionResponse.class);
+}
 
   @Test
   public void shouldCloseHttpClientConnection() {

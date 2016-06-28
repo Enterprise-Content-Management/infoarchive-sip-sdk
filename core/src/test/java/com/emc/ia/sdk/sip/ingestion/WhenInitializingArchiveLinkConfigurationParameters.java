@@ -36,12 +36,11 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
   private final InfoArchiveRestClient client = new InfoArchiveRestClient();
   private RestClient restClient;
   private HomeResource resource;
-  private Link tenantLink;
+  private Link link;
   private Tenant tenant;
   private Application application;
   private Applications applications;
 
-  @SuppressWarnings("unchecked")
   @Before
   public void init() throws IOException {
     configuration.put("AuthToken", "XYZ123ABC");
@@ -49,22 +48,22 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     configuration.put("IAServer", TEST_HREF);
     restClient = mock(RestClient.class);
     resource = new HomeResource();
-    tenantLink = mock(Link.class);
+    link = mock(Link.class);
     tenant = new Tenant();
     application = new Application();
     applications = mock(Applications.class);
     client.setRestClient(restClient);
 
-    links.put(InfoArchiveRestClient.LINK_TENANT, tenantLink);
-    links.put(InfoArchiveRestClient.LINK_APPLICATIONS, tenantLink);
-    links.put(InfoArchiveRestClient.LINK_AIPS, tenantLink);
-    links.put(InfoArchiveRestClient.LINK_INGEST, tenantLink);
+    links.put(InfoArchiveRestClient.LINK_TENANT, link);
+    links.put(InfoArchiveRestClient.LINK_APPLICATIONS, link);
+    links.put(InfoArchiveRestClient.LINK_AIPS, link);
+    links.put(InfoArchiveRestClient.LINK_INGEST, link);
     resource.setLinks(links);
     tenant.setLinks(links);
     application.setLinks(links);
 
     when(restClient.get(TEST_HREF, HomeResource.class)).thenReturn(resource);
-    when(tenantLink.getHref()).thenReturn("Test");
+    when(link.getHref()).thenReturn("Test");
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Tenant.class))).thenReturn(tenant);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Applications.class))).thenReturn(applications);
     when(applications.byName("Test")).thenReturn(application);
@@ -79,7 +78,6 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     verify(restClient).follow(resource, InfoArchiveRestClient.LINK_TENANT, Tenant.class);
     verify(restClient).follow(tenant, InfoArchiveRestClient.LINK_APPLICATIONS, Applications.class);
     verify(applications).byName("Test");
-    verify(tenantLink, times(3)).getHref();
   }
 
   @Test (expected = RuntimeException.class)
