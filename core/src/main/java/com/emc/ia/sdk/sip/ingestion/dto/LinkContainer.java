@@ -9,7 +9,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-class LinkContainer {
+public class LinkContainer {
 
   @JsonProperty("_links")
   private Map<String, Link> links = new HashMap<String, Link>();
@@ -20,6 +20,11 @@ class LinkContainer {
 
   public void setLinks(Map<String, Link> links) {
     this.links = links;
+  }
+
+  @Override
+  public String toString() {
+    return links.toString();
   }
 
 }

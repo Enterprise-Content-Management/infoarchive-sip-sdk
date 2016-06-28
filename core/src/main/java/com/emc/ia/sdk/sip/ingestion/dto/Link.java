@@ -18,11 +18,7 @@ public class Link {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder(255);
-    builder.append("Link [href=");
-    builder.append(href);
-    builder.append(" ]");
-    return builder.toString();
+    return href;
   }
 
 }

@@ -40,12 +40,11 @@ public class InfoArchiveRestClient implements ArchiveClient {
    */
   @Override
   public String ingest(InputStream sip) throws IOException {
-    ReceptionResponse response = restClient.post(iaConfig.getAipsHref(), iaConfig.getHeaders(),
-        formatter.format(new ReceptionRequest()), sip, ReceptionResponse.class);
+    ReceptionResponse response = restClient.post(iaConfig.getAipsHref(), formatter.format(new ReceptionRequest()),
+        sip, ReceptionResponse.class);
 
     Link ingestLink = response.getLinks().get(LINK_INGEST);
-    IngestionResponse ingestionResponse = restClient.put(ingestLink.getHref(), iaConfig.getHeaders(),
-        IngestionResponse.class);
+    IngestionResponse ingestionResponse = restClient.put(ingestLink.getHref(), IngestionResponse.class);
 
     return ingestionResponse.getAipId();
   }

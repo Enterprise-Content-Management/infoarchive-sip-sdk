@@ -17,7 +17,8 @@ import com.emc.ia.sdk.sip.ingestion.dto.Applications;
 import com.emc.ia.sdk.sip.ingestion.dto.Holding;
 import com.emc.ia.sdk.sip.ingestion.dto.Holdings;
 import com.emc.ia.sdk.sip.ingestion.dto.HomeResource;
-import com.emc.ia.sdk.sip.ingestion.dto.Link;
+import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNode;
+import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 
@@ -31,11 +32,9 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
   private static final String LINK_AIPS = "http://identifiers.emc.com/aips";
   private static final String LINK_TENANT = "http://identifiers.emc.com/tenant";
   private static final String LINK_APPLICATIONS = "http://identifiers.emc.com/applications";
-  private static final String LINK_ADD = "http://identifiers.emc.com/add";
   private static final String LINK_HOLDINGS = "http://identifiers.emc.com/holdings";
-  private static final String LINK_SELF = "self";
+  private static final String LINK_RECEIVER_NODES = "http://identifiers.emc.com/receiver-nodes";
 
-  private List<Header> headersJSON;
   private final RestClient restClient;
   private Tenant tenant;
   private Application application;
@@ -46,7 +45,7 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
     //TODO - Are these keys standardized somewhere ?
     //TODO - safety check, logging OR return ?
     this.restClient = restClient;
-    setHeaders(configuration.get("AuthToken"));
+    restClient.setHeaders(getHeaders(configuration.get("AuthToken")));
     try {
       setTenant(configuration.get("IAServer"));
       setApplication(configuration.get("Application"), configuration.get("Holding"));
@@ -56,39 +55,21 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
     setAipsHref();
   }
 
-  @Override
-  public List<Header> getHeaders() {
-    return headersJSON;
+  private List<Header> getHeaders(String authToken) {
+    List<Header> result = new ArrayList<Header>();
+    result.add(new BasicHeader("Authorization", "Bearer " + authToken));
+    result.add(new BasicHeader("Accept", "application/hal+json"));
+    return result;
   }
 
-  private void setHeaders(String authToken) {
-    headersJSON = new ArrayList<Header>();
-    headersJSON.add(new BasicHeader("AuthToken", authToken));
-    headersJSON.add(new BasicHeader("Accept", "application/hal+json"));
-  }
-
-  @Override
-  public Tenant getTenant() {
-    return tenant;
-  }
-
-  private void setTenant(String resourceUrl) throws IOException {
-    Objects.requireNonNull(resourceUrl, "IA server URL");
-    HomeResource homeResource = restClient.get(resourceUrl, headersJSON, HomeResource.class);
-    Link tenantLink = homeResource.getLinks().get(LINK_TENANT);
-    Objects.requireNonNull(tenantLink, "Missing link to tenant in " + homeResource);
-    tenant = restClient.get(tenantLink.getHref(), headersJSON, Tenant.class);
-  }
-
-  @Override
-  public Application getApplication() {
-    return application;
+  private void setTenant(String billboardUri) throws IOException {
+    Objects.requireNonNull(billboardUri, "Missing billboard URI");
+    HomeResource homeResource = restClient.get(billboardUri, HomeResource.class);
+    tenant = restClient.follow(homeResource, LINK_TENANT, Tenant.class);
   }
 
   private void setApplication(String applicationName, String holdingName) throws IOException {
-    Link applicationsLink = tenant.getLinks().get(LINK_APPLICATIONS);
-    Objects.requireNonNull(applicationsLink, "Missing link to applications in " + tenant);
-    Applications applications = restClient.get(applicationsLink.getHref(), headersJSON, Applications.class);
+    Applications applications = restClient.follow(tenant, LINK_APPLICATIONS, Applications.class);
     application = applications.byName(applicationName);
     if (application == null) {
       addApplication(applications, applicationName, holdingName);
@@ -97,44 +78,61 @@ public class InfoArchiveConfigurationImpl implements InfoArchiveConfiguration {
 
   private void addApplication(Applications applications, String applicationName, String holdingName)
       throws IOException {
-    Link addLink = applications.getLinks().get(LINK_ADD);
-    Objects.requireNonNull(addLink, "Missing link to add application in " + applications);
-    restClient.post(addLink.getHref(), headersJSON, addApplicationBody(applicationName), null,
-        Application.class);
-    Link refreshLink = applications.getLinks().get(LINK_SELF);
-    application = restClient.get(refreshLink.getHref(), headersJSON, Applications.class)
+    restClient.createCollectionItem(applications, createApplication(applicationName));
+    application = restClient.refresh(applications)
         .byName(applicationName);
-    Objects.requireNonNull(application, "Could not find/create application " + applicationName);
+    Objects.requireNonNull(application, "Could not create application " + applicationName);
 
-    Link holdingsLink = application.getLinks().get(LINK_HOLDINGS);
-    Objects.requireNonNull(holdingsLink, "Missing link to holdings");
-    Holdings holdings = restClient.get(holdingsLink.getHref(), headersJSON, Holdings.class);
-    addLink = holdings.getLinks().get(LINK_ADD);
-    restClient.post(addLink.getHref(), headersJSON, addHoldingBody(holdingName), null, Holding.class);
+    ReceiverNodes receiverNodes = restClient.follow(application, LINK_RECEIVER_NODES, ReceiverNodes.class);
+    restClient.createCollectionItem(receiverNodes, createReceiverNode());
+
+    Holdings holdings = restClient.follow(application, LINK_HOLDINGS, Holdings.class);
+    restClient.createCollectionItem(holdings, createHolding(holdingName));
   }
 
-  private String addApplicationBody(String applicationName) {
+  private Application createApplication(String applicationName) {
     Application result = new Application();
     result.setName(applicationName);
-    return new JsonFormatter().format(result);
+    return result;
   }
 
-  private String addHoldingBody(String holdingName) {
+  private ReceiverNode createReceiverNode() {
+    ReceiverNode result = new ReceiverNode();
+    result.setName("receiver_node_01");
+    result.getWorkingDirectory().setName("reception");
+//    result.getWorkingDirectory().setSubPath("reception");
+    return result;
+  }
+
+  private Holding createHolding(String holdingName) {
     Holding result = new Holding();
     result.setName(holdingName);
     // TODO: Add PDI schema, indexes, etc.
-    return new JsonFormatter().format(result);
+    return result;
+  }
+
+  private void setAipsHref() {
+    aipsHref = application.getLinks().get(LINK_AIPS).getHref();
+  }
+
+  @Override
+  public List<Header> getHeaders() {
+    return restClient.getHeaders();
+  }
+
+  @Override
+  public Tenant getTenant() {
+    return tenant;
+  }
+
+  @Override
+  public Application getApplication() {
+    return application;
   }
 
   @Override
   public String getAipsHref() {
     return aipsHref;
-  }
-
-  private void setAipsHref() {
-    Link link = application.getLinks().get(LINK_AIPS);
-    Objects.requireNonNull(link, "Missing link to AIPs in " + application);
-    aipsHref = link.getHref();
   }
 
 }

@@ -20,6 +20,7 @@ public interface InfoArchiveConfiguration {
 
   Application getApplication();
 
+  // TODO: Remove this when test no longer calls it
   List<Header> getHeaders();
 
   String getAipsHref();

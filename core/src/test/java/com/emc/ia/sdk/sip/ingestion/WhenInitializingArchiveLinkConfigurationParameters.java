@@ -7,10 +7,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.http.Header;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,6 +37,7 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
 
   @Test
   public void shouldInitHeadersDuringObjectCreation() {
+    // TODO: Replace by verify(client).setHeaders()
     assertEquals("Headers 'AuthToken' information", config.getHeaders().get(0).toString(), "AuthToken: XYZ123ABC");
     assertEquals("Headers 'Accept' information", config.getHeaders().get(1).toString(), "Accept: application/hal+json");
   }
@@ -66,7 +65,7 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T get(String uri, List<Header> headers, Class<T> type) {
+    public <T> T get(String uri, Class<T> type) {
       T result = null;
       if (type.getName().equals(Tenant.class.getName())) {
         result = (T)new TestTenant();

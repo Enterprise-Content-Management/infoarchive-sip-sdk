@@ -47,7 +47,7 @@ public class WhenExecutingRestClient {
     when(wrapper.httpGetRequest(URI, HEADERS)).thenReturn(getRequest);
     when(wrapper.execute(getRequest, HomeResource.class)).thenReturn(resource);
 
-    HomeResource homeResource = client.get(URI, HEADERS, HomeResource.class);
+    HomeResource homeResource = client.get(URI, HomeResource.class);
 
     assertNotNull(homeResource);
     verify(wrapper).httpGetRequest(URI, HEADERS);
@@ -60,7 +60,7 @@ public class WhenExecutingRestClient {
     HttpGet getRequest = new HttpGet();
     when(wrapper.httpGetRequest(URI, HEADERS)).thenReturn(getRequest);
     when(wrapper.execute(getRequest, HomeResource.class)).thenThrow(ClientProtocolException.class);
-    client.get(URI, HEADERS, HomeResource.class);
+    client.get(URI, HomeResource.class);
   }
 
   @SuppressWarnings("unchecked")
@@ -70,7 +70,7 @@ public class WhenExecutingRestClient {
     when(wrapper.httpGetRequest(URI, HEADERS)).thenReturn(getRequest);
     when(wrapper.execute(getRequest, HomeResource.class)).thenThrow(ClientProtocolException.class);
 
-    client.get(URI, HEADERS, HomeResource.class);
+    client.get(URI, HomeResource.class);
   }
 
   @Test
@@ -80,7 +80,7 @@ public class WhenExecutingRestClient {
     when(wrapper.httpPutRequest(URI, HEADERS)).thenReturn(putRequest);
     when(wrapper.execute(putRequest, HomeResource.class)).thenReturn(resource);
 
-    HomeResource homeResource = client.put(URI, HEADERS, HomeResource.class);
+    HomeResource homeResource = client.put(URI, HomeResource.class);
 
     assertNotNull(homeResource);
     verify(wrapper).httpPutRequest(URI, HEADERS);
@@ -93,7 +93,7 @@ public class WhenExecutingRestClient {
     HttpPut putRequest = new HttpPut();
     when(wrapper.httpPutRequest(URI, HEADERS)).thenReturn(putRequest);
     when(wrapper.execute(putRequest, HomeResource.class)).thenThrow(ClientProtocolException.class);
-    client.put(URI, HEADERS, HomeResource.class);
+    client.put(URI, HomeResource.class);
   }
 
   @SuppressWarnings("unchecked")
@@ -102,7 +102,7 @@ public class WhenExecutingRestClient {
     HttpPut putRequest = new HttpPut();
     when(wrapper.httpPutRequest(URI, HEADERS)).thenReturn(putRequest);
     when(wrapper.execute(putRequest, HomeResource.class)).thenThrow(ClientProtocolException.class);
-    client.put(URI, HEADERS, HomeResource.class);
+    client.put(URI, HomeResource.class);
   }
 
   @Test
@@ -116,7 +116,7 @@ public class WhenExecutingRestClient {
     String source = "This is the source of my input stream";
     InputStream in = IOUtils.toInputStream(source, "UTF-8");
 
-    assertNotNull(client.post(URI, HEADERS, "This is a test message", in, ReceptionResponse.class));
+    assertNotNull(client.post(URI, "This is a test message", in, ReceptionResponse.class));
 
     verify(wrapper).httpPostRequest(URI, HEADERS);
     verify(wrapper).execute(any(HttpPost.class), eq(ReceptionResponse.class));
@@ -131,7 +131,7 @@ public class WhenExecutingRestClient {
 
     when(wrapper.httpPostRequest(URI, HEADERS)).thenReturn(postRequest);
     when(wrapper.execute(postRequest, ReceptionResponse.class)).thenThrow(ClientProtocolException.class);
-    client.post(URI, HEADERS, "This is a test message", in, ReceptionResponse.class);
+    client.post(URI, "This is a test message", in, ReceptionResponse.class);
   }
 
   @SuppressWarnings("unchecked")
@@ -143,7 +143,7 @@ public class WhenExecutingRestClient {
 
     when(wrapper.httpPostRequest(URI, HEADERS)).thenReturn(postRequest);
     when(wrapper.execute(postRequest, ReceptionResponse.class)).thenThrow(ClientProtocolException.class);
-    client.post(URI, HEADERS, "This is a test message", in, ReceptionResponse.class);
+    client.post(URI, "This is a test message", in, ReceptionResponse.class);
   }
 
   @Test

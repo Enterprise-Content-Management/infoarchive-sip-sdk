@@ -38,9 +38,4 @@ public class WhenExtractingLinksFromLinkContainer {
     assertEquals("Link string information", container.getLinks().get(KEY).getHref(), LINK_HREF);
   }
 
-  @Test
-  public void validateLinkToStringValue() {
-    assertEquals("Link ToString check", container.getLinks().get(KEY).toString(), "Link [href=" + LINK_HREF + " ]");
-  }
-
 }
