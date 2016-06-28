@@ -3,19 +3,14 @@
  */
 package com.emc.ia.sdk.sip.ingestion;
 
-<<<<<<< HEAD
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-=======
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
->>>>>>> branch 'master' of https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,13 +36,12 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
   private static final String LINK_APPLICATION = "http://identifiers.emc.com/applications";
   private static final String LINK_AIPS = "http://identifiers.emc.com/aips";
   private static final String LINK_INGEST = "http://identifiers.emc.com/ingest";
-  private static final String TEST_HREF= "test";
+  private static final String TEST_HREF= "Test";
   
   private final Map<String, Link> links = new HashMap<String, Link>();  
-  private final Map<String, String> configuration = new HashMap<String, String>();  
-  private static final String URI = "http://test.ia.emc.com";
+  private final Map<String, String> configuration = new HashMap<String, String>();
   private InfoArchiveRestClient client = new InfoArchiveRestClient();
-  private GenericRestClient restClient;
+  private RestClient restClient;
   private HomeResource resource;
   private Link tenantLink;
   private Tenant tenant;
@@ -55,16 +49,15 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
   private Applications applications;
   
   @Before
-  public void init() {
+  public void init() throws IOException {
     configuration.put("AuthToken", "XYZ123ABC");
     configuration.put("Application", "Test");
-<<<<<<< HEAD
-    configuration.put("IAServer", URI);    
-    restClient = mock(GenericRestClient.class);
-    resource = mock(HomeResource.class);
+    configuration.put("IAServer", TEST_HREF);
+    restClient = mock(RestClient.class);
+    resource = new HomeResource();
     tenantLink = mock(Link.class);
-    tenant = mock(Tenant.class); 
-    application = mock(Application.class);
+    tenant = new Tenant(); 
+    application = new Application();
     applications = mock(Applications.class);
     client.setRestClient(restClient);
         
@@ -72,34 +65,48 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     links.put(LINK_APPLICATION, tenantLink);
     links.put(LINK_AIPS, tenantLink);
     links.put(LINK_INGEST, tenantLink);
-    
-    when(restClient.get(eq(URI), any(JsonHeaders.class), eq(HomeResource.class))).thenReturn(resource);
-    when(resource.getLinks()).thenReturn(links);
-    when(tenantLink.getHref()).thenReturn("test");
-    when(restClient.get(eq(TEST_HREF), any(JsonHeaders.class), eq(Tenant.class))).thenReturn(tenant);
-    when(tenant.getLinks()).thenReturn(links);
-    when(restClient.get(eq(TEST_HREF), any(JsonHeaders.class), eq(Applications.class))).thenReturn(applications);
+    resource.setLinks(links);
+    tenant.setLinks(links);
+    application.setLinks(links);
+        
+    when(restClient.get(eq(TEST_HREF), anyObject(), eq(HomeResource.class))).thenReturn(resource);
+    when(tenantLink.getHref()).thenReturn("Test");
+    when(restClient.get(eq(TEST_HREF), anyObject(), eq(Tenant.class))).thenReturn(tenant);
+    when(restClient.get(eq(TEST_HREF), anyObject(), eq(Applications.class))).thenReturn(applications);
     when(applications.byName("Test")).thenReturn(application);
-    when(application.getLinks()).thenReturn(links);
-=======
     configuration.put("IAServer", "Test");
-    HttpClient client = mock(HttpClient.class);
-    config = new InfoArchiveConfigurationImpl(configuration, new TestRestClient(client));
->>>>>>> branch 'master' of https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git
   }
   
   @Test
-  public void shouldInitHeadersDuringObjectCreation() {
+  public void shouldInitHeadersDuringObjectCreation() throws IOException {
     
     client.configure(configuration);
     
-    verify(restClient).get(eq(URI), any(JsonHeaders.class), eq(HomeResource.class));
-    verify(restClient).get(eq(TEST_HREF), any(JsonHeaders.class), eq(Tenant.class));
-    verify(restClient).get(eq(TEST_HREF), any(JsonHeaders.class), eq(Applications.class));
+    verify(restClient).get(eq(TEST_HREF), anyObject(), eq(HomeResource.class));
+    verify(restClient).get(eq(TEST_HREF), anyObject(), eq(Tenant.class));
+    verify(restClient).get(eq(TEST_HREF), anyObject(), eq(Applications.class));
     verify(applications).byName("Test");
     verify(tenantLink, times(3)).getHref();    
   }
-
+  
+  @Test (expected = RuntimeException.class)
+  public void shouldThrowExceptionWileConfiguring() {
+    client.configure(null);
+  }
+  
+  @SuppressWarnings("unchecked")
+  @Test (expected = RuntimeException.class)
+  public void shouldThrowExceptionWileSettingTenent() throws IOException {
+    when(restClient.get(eq(TEST_HREF), anyObject(), eq(Tenant.class))).thenThrow(IOException.class);
+    client.configure(configuration);
+  }
+  
+  @SuppressWarnings("unchecked")
+  @Test (expected = RuntimeException.class)
+  public void shouldThrowExceptionWileSettingApplication() throws IOException {
+    when(restClient.get(eq(TEST_HREF), anyObject(), eq(Applications.class))).thenThrow(IOException.class);
+    client.configure(configuration);
+  }
   
   @Test
   public void shouldIngestSuccessfully() throws IOException {    
@@ -108,19 +115,18 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     String source = "This is the source of my input stream";
     InputStream sip = IOUtils.toInputStream(source, "UTF-8");
     
-    ReceptionResponse receptionResponse = mock(ReceptionResponse.class);
+    ReceptionResponse receptionResponse = new ReceptionResponse();
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
-    when(restClient.post(anyString(), any(JsonHeaders.class), anyString(), eq(sip), eq(ReceptionResponse.class))).thenReturn(receptionResponse);
-    when(receptionResponse.getLinks()).thenReturn(links);
-    when(restClient.put(eq(TEST_HREF), any(JsonHeaders.class), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
+    receptionResponse.setLinks(links);    
+    when(restClient.post(anyString(), anyObject(), anyString(), eq(sip), eq(ReceptionResponse.class))).thenReturn(receptionResponse);
+    when(restClient.put(eq(TEST_HREF), anyObject(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip001");
     
     assertEquals(client.ingest(sip), "sip001");
     
-    verify(restClient).post(eq(TEST_HREF), any(JsonHeaders.class), anyString(), eq(sip), eq(ReceptionResponse.class));
-    verify(restClient).put(eq(TEST_HREF), any(JsonHeaders.class), eq(IngestionResponse.class));
+    verify(restClient).post(eq(TEST_HREF), anyObject(), anyString(), eq(sip), eq(ReceptionResponse.class));
+    verify(restClient).put(eq(TEST_HREF), anyObject(), eq(IngestionResponse.class));
     verify(tenantLink, times(4)).getHref();
-    verify(receptionResponse).getLinks();
   }
   
   @Test(expected = RuntimeException.class)
@@ -131,51 +137,13 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
   }
   
   @Test(expected = RuntimeException.class)
-  public void ingestShouldThrowRuntimeExceptionWhenSipIsNull() throws IOException {    
+  public void ingestShouldThrowRuntimeExceptionWhenSipIsNull() throws IOException {
     client.ingest(null);
   }
-<<<<<<< HEAD
   
   @Test(expected = NullPointerException.class)
   public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull() throws IOException {
-    Map<String, String> config = new HashMap<String, String>();    
-    client.configure(config);    
-=======
-
-  public static class TestRestClient extends RestClient {
-
-    public TestRestClient(HttpClient client) {
-      super(client);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T get(String uri, List<Header> headers, Class<T> type) {
-      T result = null;
-      if (type.getName().equals(Tenant.class.getName())) {
-        result = (T)new TestTenant();
-      } else if (type.getName().equals(HomeResource.class.getName())) {
-        result = (T)new TestResource();
-      } else if (type.getName().equals(Applications.class.getName())) {
-        result = (T)new TestApplications();
-      }
-      return result;
-    }
-
-
-    public static class TestResource extends HomeResource {
-
-      private final Map<String, Link> links = new HashMap<String, Link>();
-
-      @Override
-      public Map<String, Link> getLinks() {
-        Link link = new Link();
-        link.setHref(TESTSTRING);
-        links.put(TESTSTRING, link);
-        return links;
-      }
-
-    }
->>>>>>> branch 'master' of https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git
+    Map<String, String> config = new HashMap<String, String>();
+    client.configure(config);
   }
 }

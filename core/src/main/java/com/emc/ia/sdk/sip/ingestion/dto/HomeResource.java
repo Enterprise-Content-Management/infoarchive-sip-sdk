@@ -3,12 +3,7 @@
  */
 package com.emc.ia.sdk.sip.ingestion.dto;
 
-import java.util.Map;
-
 public class HomeResource extends NamedLinkContainer {
-  @Override
-  public Map<String, Link> getLinks() {
-    return super.getLinks();
-  }
 
 }
+

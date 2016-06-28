@@ -23,6 +23,8 @@ public class WhenExtractingApplicationFromApplicationsContainer {
   @Before
   public void init() {
     app.setName("TestApplication");
+    app.setType("Test");
+    app.setArchiveType("TestArchive");
   }
 
   @Test
@@ -30,6 +32,16 @@ public class WhenExtractingApplicationFromApplicationsContainer {
     assertEquals("Application Name", app.getName(), "TestApplication");
   }
 
+  @Test
+  public void fetchType() {
+    assertEquals("Type is", app.getType(), "Test");
+  }
+  
+  @Test
+  public void fetchArchiveType() {
+    assertEquals("Archive Type", app.getArchiveType(), "TestArchive");
+  }
+  
   @Test
   public void shouldReturnValidApplicationObjectWithDefaultKeyAndPreSetName() {
     prepare("applications");

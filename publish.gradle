@@ -1,5 +1,6 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'io.codearte.nexus-staging'
 
 // OSSRH requires both javadoc and sources jars
 subprojects.each { prj ->
@@ -33,6 +34,7 @@ ext {
 }
 
 uploadArchives {
+  finalizedBy closeAndPromoteRepository
   repositories {
     mavenDeployer {
       beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }

@@ -3,6 +3,7 @@
  */
 package com.emc.ia.sdk.sip.ingestion;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class InfoArchiveRestClient implements ArchiveClient {
   private static final String LINK_AIPS = "http://identifiers.emc.com/aips";
   private static final String LINK_TENANT = "http://identifiers.emc.com/tenant";
   private static final String LINK_APPLICATION = "http://identifiers.emc.com/applications";
-  private final List<Header> headers = new ArrayList<Header>();;
+  private final List<Header> headers = new ArrayList<Header>();
   private final JsonFormatter formatter = new JsonFormatter();
   private boolean isConfigInvoked;
   private Tenant tenant;
@@ -61,22 +62,28 @@ public class InfoArchiveRestClient implements ArchiveClient {
   /**
    * Ingests into InfoArchive server.
    * @param sip file to be ingested into InfoArchive server
+   * @throws IOException When an I/O error occurs
    */
   @Override
   public String ingest(InputStream sip) {
     if (!isConfigInvoked) {
       throw new RuntimeException("Confiration is not invoked on ArchiveClient");
     }
-    ReceptionResponse response = restClient.post(aipsHref, headers,
-        formatter.format(new ReceptionRequest()), Objects.requireNonNull(sip), ReceptionResponse.class);
-
-    //TODO - report error if response fails
-
+    ReceptionResponse response = null;
+    try {
+      response = restClient.post(aipsHref, headers,
+          formatter.format(new ReceptionRequest()), Objects.requireNonNull(sip), ReceptionResponse.class);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
     Link ingestLink = response.getLinks().get(LINK_INGEST);
-    IngestionResponse ingestionResponse = restClient.put(ingestLink.getHref(), headers,
-        IngestionResponse.class);
-
-    //TODO - Log ingestion response
+    IngestionResponse ingestionResponse = null;
+    try {
+      ingestionResponse = restClient.put(ingestLink.getHref(), headers,
+          IngestionResponse.class);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
 
     return ingestionResponse.getAipId();
   }
@@ -87,14 +94,24 @@ public class InfoArchiveRestClient implements ArchiveClient {
   }
 
   private void setTenant(String resourceUrl) {
-    HomeResource homeResource = restClient.get(resourceUrl, headers, HomeResource.class);
-    Link tenantLink = homeResource.getLinks().get(LINK_TENANT);
-    tenant = restClient.get(tenantLink.getHref(), headers, Tenant.class);
+    HomeResource homeResource = null;
+    try {
+      homeResource = restClient.get(resourceUrl, headers, HomeResource.class);
+      Link tenantLink = homeResource.getLinks().get(LINK_TENANT);    
+      tenant = restClient.get(tenantLink.getHref(), headers, Tenant.class);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private void setApplication(String applicationName) {
     Link applicationsLink = tenant.getLinks().get(LINK_APPLICATION);
-    Applications applications = restClient.get(applicationsLink.getHref(), headers, Applications.class);
+    Applications applications = null;
+    try {
+      applications = restClient.get(applicationsLink.getHref(), headers, Applications.class);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
     application = applications.byName(applicationName);
   }
 
