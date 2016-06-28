@@ -3,6 +3,7 @@
  */
 package com.emc.ia.sdk.support.xml;
 
+import java.net.URI;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
 
@@ -77,6 +78,16 @@ public class XmlBuilder {
   public XmlBuilder namespace(String uri) {
     namespaceUri = uri;
     return this;
+  }
+
+  /**
+   * Set the <a href="http://www.w3.org/TR/REC-xml-names/">XML namespace</a> to the provided namespace URI for all
+   * elements added afterwards.
+   * @param uri The namespace URI
+   * @return This builder
+   */
+  public XmlBuilder namespace(URI uri) {
+    return namespace(uri.toString());
   }
 
   /**
@@ -187,6 +198,11 @@ public class XmlBuilder {
     }
     end();
     return this;
+  }
+
+  @Override
+  public String toString() {
+    return XmlUtil.toString(build());
   }
 
 }

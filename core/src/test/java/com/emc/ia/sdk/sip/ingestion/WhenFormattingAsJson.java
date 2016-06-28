@@ -7,22 +7,23 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 
-public class WhenFormattingStringUisngJSONFormatter {
+
+public class WhenFormattingAsJson {
 
   private static final String STR = "TestString";
 
-  private final JSONFormatter formatter = new JSONFormatter();
+  private final JsonFormatter formatter = new JsonFormatter();
 
   @Test
-  public void formatString() {
+  public void formatString() throws JsonProcessingException {
     String result = formatter.format(STR);
     assertEquals("Resource Name", result, "\"TestString\"");
   }
 
-  @Test(expected = RuntimeException.class)
-  public void shouldThrowException() {
+  @Test(expected = NullPointerException.class)
+  public void shouldThrowNullPointerException() throws JsonProcessingException {
     formatter.format(null);
   }
-
 }

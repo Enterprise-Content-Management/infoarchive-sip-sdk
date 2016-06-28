@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class HttpClientWrapper {
+public class HttpClient {
 
   private static final int STATUS_CODE_RANGE_MIN = 200;
   private static final int STATUS_CODE_RANGE_MAX = 300;
@@ -33,7 +33,7 @@ public class HttpClientWrapper {
   private final CloseableHttpClient client;
   private final ObjectMapper mapper;
 
-  public HttpClientWrapper() {
+  public HttpClient() {
     final HttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
     client = HttpClients.custom().setConnectionManager(manager).build();
 

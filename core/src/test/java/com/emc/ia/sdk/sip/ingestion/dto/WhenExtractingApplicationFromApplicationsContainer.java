@@ -2,7 +2,7 @@
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
 
-package com.emc.ia.sdk.sip.ingestion;
+package com.emc.ia.sdk.sip.ingestion.dto;
 
 import static org.junit.Assert.*;
 
@@ -28,12 +28,6 @@ public class WhenExtractingApplicationFromApplicationsContainer {
   @Test
   public void fetchApplicationName() {
     assertEquals("Application Name", app.getName(), "TestApplication");
-  }
-
-  @Test
-  public void validateLinkToStringValue() {
-    assertEquals("Application ToString check", app.toString(),
-        "Application [name=" + "TestApplication" + ", getLinks()=" + app.getLinks() + " ]");
   }
 
   @Test

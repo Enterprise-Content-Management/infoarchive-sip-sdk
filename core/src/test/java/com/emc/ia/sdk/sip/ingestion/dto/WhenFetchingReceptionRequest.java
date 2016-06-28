@@ -2,18 +2,18 @@
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
 
-package com.emc.ia.sdk.sip.ingestion;
+package com.emc.ia.sdk.sip.ingestion.dto;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 
-public class WhenFetchingReception {
+public class WhenFetchingReceptionRequest {
 
   private static final String FORMAT = "TestFormat";
 
-  private final Reception reception = new Reception();
+  private final ReceptionRequest reception = new ReceptionRequest();
 
   @Test
   public void fetchDefaultFormat() {
@@ -27,9 +27,8 @@ public class WhenFetchingReception {
   }
 
   @Test
-  public void validateReceptionToStringValue() {
-    reception.setFormat(FORMAT);
-    assertEquals("Reception ToString check", reception.toString(), "Reception [format=" + FORMAT + "]");
+  public void validateIngestionResponseToStringValue() {    
+    assertEquals("Response ToString check", reception.toString(), "format=sip_zip");
   }
-
+  
 }

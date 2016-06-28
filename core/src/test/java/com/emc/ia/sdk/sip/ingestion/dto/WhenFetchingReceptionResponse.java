@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.sip.ingestion;
+package com.emc.ia.sdk.sip.ingestion.dto;
 
 import static org.junit.Assert.assertEquals;
 
@@ -16,23 +16,11 @@ public class WhenFetchingReceptionResponse {
   @Before
   public void init() {
     receptionResponse.setName("TestApplication");
-    receptionResponse.setAipId("TestID");
   }
 
   @Test
   public void fetchName() {
     assertEquals("Resource Name", receptionResponse.getName(), "TestApplication");
-  }
-
-  @Test
-  public void fetchAipID() {
-    assertEquals("AipId", receptionResponse.getAipId(), "TestID");
-  }
-
-  @Test
-  public void validateLinkToStringValue() {
-    assertEquals("Resource ToString check", receptionResponse.toString(),
-        "ReceptionResponse [name=" + "TestApplication" + ", aipId=" + "TestID" + "]");
   }
 
 }

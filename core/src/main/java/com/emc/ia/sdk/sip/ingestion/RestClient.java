@@ -16,11 +16,11 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.InputStreamBody;
 
 
-public class SimpleRestClient implements Closeable {
+public class RestClient implements Closeable {
 
-  private HttpClientWrapper httpClient;
+  private final HttpClient httpClient;
 
-  public void prepare(HttpClientWrapper client) {
+  public RestClient(HttpClient client) {
     this.httpClient = client;
   }
 

@@ -4,8 +4,6 @@
 package com.emc.ia.sdk.support.io;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 
 
 /**
@@ -22,10 +20,14 @@ public final class Delete {
    * @param file The file to delete
    */
   public static void file(File file) {
-    try {
-      Files.deleteIfExists(file.toPath());
-    } catch (IOException e) {
-      throw new RuntimeIoException(e);
+    if (file.isFile()) {
+      deleteFile(file);
+    }
+  }
+
+  private static void deleteFile(File file) {
+    if (!file.delete()) {
+      file.deleteOnExit();
     }
   }
 

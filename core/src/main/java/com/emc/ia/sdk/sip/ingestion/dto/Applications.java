@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.sip.ingestion;
+package com.emc.ia.sdk.sip.ingestion.dto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,19 +17,18 @@ public class Applications extends LinkContainer {
   @JsonProperty("_embedded")
   private Map<String, List<Application>> applicationsByName = new HashMap<String, List<Application>>();
 
-  public Application byName(String name) {
-    if (applicationsByName.containsKey(KEY)) {
-      for (Application app : applicationsByName.get(KEY)) {
-        if (name.equals(app.getName())) {
-          return app;
-        }
-      }
-    }
-    return null;
-  }
-
   protected void setApplications(Map<String, List<Application>> applications) {
     this.applicationsByName = applications;
+  }
+
+  public Application byName(String name) {
+    if (!applicationsByName.containsKey(KEY)) {
+      return null;
+    }
+    return applicationsByName.get(KEY).stream()
+        .filter(app -> name.equals(app.getName()))
+        .findAny()
+        .orElse(null);
   }
 
 }

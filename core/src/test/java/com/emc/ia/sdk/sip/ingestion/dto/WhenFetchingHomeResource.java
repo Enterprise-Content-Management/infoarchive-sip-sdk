@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.sip.ingestion;
+package com.emc.ia.sdk.sip.ingestion.dto;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class WhenFetchingIAHomeResource {
+public class WhenFetchingHomeResource {
 
   private final TestHomeResource homeResource = new TestHomeResource();
 
@@ -26,14 +26,8 @@ public class WhenFetchingIAHomeResource {
     assertEquals("Resource Name", homeResource.getName(), "TestApplication");
   }
 
-  @Test
-  public void validateLinkToStringValue() {
-    assertEquals("Resource ToString check", homeResource.toString(),
-        "IAHomeResource [name=" + "TestApplication" + ", links=" + homeResource.getLinks() + " ]");
-  }
 
-
-  public static class TestHomeResource extends IAHomeResource {
+  public static class TestHomeResource extends HomeResource {
 
     @Override
     public Map<String, Link> getLinks() {
