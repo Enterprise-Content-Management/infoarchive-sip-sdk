@@ -29,28 +29,27 @@ import com.emc.ia.sdk.support.io.RuntimeIoException;
 
 public class WhenInitializingArchiveLinkConfigurationParameters {
 
-  private static final String TEST_HREF = "Test";
+  private static final String BILLBOARD_URI = "http://foo.com/bar";
+  private static final String APPLICATION_NAME = "Test";
 
   private final Map<String, Link> links = new HashMap<String, Link>();
   private final Map<String, String> configuration = new HashMap<String, String>();
   private final InfoArchiveRestClient client = new InfoArchiveRestClient();
   private RestClient restClient;
   private HomeResource resource;
-  private Link link;
   private Tenant tenant;
-  private Application application;
   private Applications applications;
 
   @Before
   public void init() throws IOException {
     configuration.put("AuthToken", "XYZ123ABC");
-    configuration.put("Application", "Test");
-    configuration.put("IAServer", TEST_HREF);
+    configuration.put("Application", APPLICATION_NAME);
+    configuration.put("IAServer", BILLBOARD_URI);
     restClient = mock(RestClient.class);
     resource = new HomeResource();
-    link = mock(Link.class);
+    Link link = mock(Link.class);
     tenant = new Tenant();
-    application = new Application();
+    Application application = new Application();
     applications = mock(Applications.class);
     client.setRestClient(restClient);
 
@@ -62,22 +61,21 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     tenant.setLinks(links);
     application.setLinks(links);
 
-    when(restClient.get(TEST_HREF, HomeResource.class)).thenReturn(resource);
-    when(link.getHref()).thenReturn("Test");
+    when(restClient.get(BILLBOARD_URI, HomeResource.class)).thenReturn(resource);
+    when(link.getHref()).thenReturn(BILLBOARD_URI);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Tenant.class))).thenReturn(tenant);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Applications.class))).thenReturn(applications);
-    when(applications.byName("Test")).thenReturn(application);
-    configuration.put("IAServer", "Test");
+    when(applications.byName(APPLICATION_NAME)).thenReturn(application);
   }
 
   @Test
   public void shouldInitHeadersDuringObjectCreation() throws IOException {
     client.configure(configuration);
 
-    verify(restClient).get(TEST_HREF, HomeResource.class);
+    verify(restClient).get(BILLBOARD_URI, HomeResource.class);
     verify(restClient).follow(resource, InfoArchiveRestClient.LINK_TENANT, Tenant.class);
     verify(restClient).follow(tenant, InfoArchiveRestClient.LINK_APPLICATIONS, Applications.class);
-    verify(applications).byName("Test");
+    verify(applications).byName(APPLICATION_NAME);
   }
 
   @Test (expected = RuntimeException.class)
@@ -88,7 +86,7 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
   @SuppressWarnings("unchecked")
   @Test (expected = RuntimeIoException.class)
   public void shouldWrapExceptionDuringConfiguration() throws IOException {
-    when(restClient.get(TEST_HREF, HomeResource.class)).thenThrow(IOException.class);
+    when(restClient.get(BILLBOARD_URI, HomeResource.class)).thenThrow(IOException.class);
     client.configure(configuration);
   }
 
