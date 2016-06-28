@@ -62,7 +62,6 @@ public class InfoArchiveRestClient implements ArchiveClient {
   /**
    * Ingests into InfoArchive server.
    * @param sip file to be ingested into InfoArchive server
-   * @throws IOException When an I/O error occurs
    */
   @Override
   public String ingest(InputStream sip) {
@@ -88,7 +87,7 @@ public class InfoArchiveRestClient implements ArchiveClient {
     return ingestionResponse.getAipId();
   }
 
-  private void setHeaders(String authToken) {   
+  private void setHeaders(String authToken) {
     headers.add(new BasicHeader("AuthToken", authToken));
     headers.add(new BasicHeader("Accept", "application/hal+json"));
   }
@@ -97,7 +96,7 @@ public class InfoArchiveRestClient implements ArchiveClient {
     HomeResource homeResource = null;
     try {
       homeResource = restClient.get(resourceUrl, headers, HomeResource.class);
-      Link tenantLink = homeResource.getLinks().get(LINK_TENANT);    
+      Link tenantLink = homeResource.getLinks().get(LINK_TENANT);
       tenant = restClient.get(tenantLink.getHref(), headers, Tenant.class);
     } catch (IOException e) {
       throw new RuntimeException(e);

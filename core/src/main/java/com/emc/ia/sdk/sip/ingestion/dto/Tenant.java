@@ -4,5 +4,5 @@
 package com.emc.ia.sdk.sip.ingestion.dto;
 
 public class Tenant extends LinkContainer {
-  
+
 }
