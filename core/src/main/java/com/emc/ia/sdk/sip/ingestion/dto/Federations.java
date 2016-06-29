@@ -4,10 +4,10 @@
 package com.emc.ia.sdk.sip.ingestion.dto;
 
 
-public class Applications extends ItemContainer<Application> {
+public class Federations extends ItemContainer<Federation> {
 
-  protected Applications() {
-    super("applications");
+  protected Federations() {
+    super("federations");
   }
 
 }

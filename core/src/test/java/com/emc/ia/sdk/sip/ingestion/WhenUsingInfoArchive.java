@@ -20,8 +20,9 @@ import org.junit.Test;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
+import com.emc.ia.sdk.sip.ingestion.dto.Federation;
+import com.emc.ia.sdk.sip.ingestion.dto.Federations;
 import com.emc.ia.sdk.sip.ingestion.dto.IngestionResponse;
-import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
 import com.emc.ia.sdk.sip.ingestion.dto.Services;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
@@ -34,6 +35,7 @@ import com.emc.ia.sdk.support.rest.RestClient;
 public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
 
   private static final String BILLBOARD_URI = "http://foo.com/bar";
+  private static final String AUTH_TOKEN = "XYZ123ABC";
   private static final String APPLICATION_NAME = "Test";
 
   private final Map<String, Link> links = new HashMap<String, Link>();
@@ -47,14 +49,17 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
 
   @Before
   public void init() throws IOException {
-    configuration.put("AuthToken", "XYZ123ABC");
-    configuration.put("Application", APPLICATION_NAME);
-    configuration.put("IAServer", BILLBOARD_URI);
+    configuration.put(InfoArchiveConfiguration.SERVER_AUTENTICATON_TOKEN, AUTH_TOKEN);
+    configuration.put(InfoArchiveConfiguration.APPLICATION_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfiguration.SERVER_URI, BILLBOARD_URI);
     resource = new Services();
     Link link = mock(Link.class);
     tenant = new Tenant();
     application = new Application();
     applications = mock(Applications.class);
+    Federations federations = mock(Federations.class);
+    Federation federation = new Federation();
+    when(federations.byName(anyString())).thenReturn(federation);
 
     links.put(InfoArchiveLinkRelations.LINK_TENANT, link);
     links.put(InfoArchiveLinkRelations.LINK_APPLICATIONS, link);
@@ -68,6 +73,7 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
     when(link.getHref()).thenReturn(BILLBOARD_URI);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Tenant.class))).thenReturn(tenant);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Applications.class))).thenReturn(applications);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Federations.class))).thenReturn(federations);
     when(applications.byName(APPLICATION_NAME)).thenReturn(application);
   }
 
@@ -138,7 +144,7 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
     archiveClient.configure(configuration);
 
     verify(restClient)
-        .follow(application, LINK_RECEIVER_NODES, ReceiverNodes.class);
+        .createCollectionItem(eq(applications), eq(LINK_ADD), any(Application.class));
   }
 
 }

@@ -69,12 +69,12 @@ public class WhenExtractingApplicationFromApplicationsContainer {
   }
 
   private void prepare(String key) {
-    Map<String, List<Application>> embedded = new HashMap<String, List<Application>>();
+    Map<String, List<Application>> items = new HashMap<String, List<Application>>();
     List<Application> list = new ArrayList<Application>();
     app.setName("TestApp");
     list.add(app);
-    embedded.put(key, list);
-    apps.setApplications(embedded);
+    items.put(key, list);
+    apps.setItems(items);
   }
 
 

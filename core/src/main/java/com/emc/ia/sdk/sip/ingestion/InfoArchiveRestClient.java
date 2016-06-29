@@ -19,8 +19,8 @@ import org.apache.http.message.BasicHeader;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
-import com.emc.ia.sdk.sip.ingestion.dto.Databases;
 import com.emc.ia.sdk.sip.ingestion.dto.Federation;
+import com.emc.ia.sdk.sip.ingestion.dto.Federations;
 import com.emc.ia.sdk.sip.ingestion.dto.Holding;
 import com.emc.ia.sdk.sip.ingestion.dto.Holdings;
 import com.emc.ia.sdk.sip.ingestion.dto.IngestionResponse;
@@ -40,13 +40,10 @@ import com.emc.ia.sdk.support.rest.RestClient;
 /**
  * Implementation of {@linkplain ArchiveClient} that uses the REST API of a running InfoArchive server.
  */
-public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRelations {
-
-  public static final String AUTH_TOKEN = "AuthToken";
-  public static final String HOME_RESOURCE = "IAServer";
-  public static final String APPLICATION_NAME = "Application";
+public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRelations, InfoArchiveConfiguration {
 
   private final RestClient restClient;
+  private Map<String, String> configuration;
   private Services services;
   private Tenant tenant;
   private Application application;
@@ -60,81 +57,72 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     this.restClient = restClient;
   }
 
-  /**
-   * Configure InfoArchive server with given configuration parameters.
-   * @param configuration The parameters to configure InfoArchive server
-   */
   @Override
-  public void configure(Map<String, String> configuration) {
-    restClient.setHeaders(getHeaders(configuration.get("AuthToken")));
+  public void configure(Map<String, String> config) {
+    configuration = config;
     try {
-      setTenant(configuration.get("IAServer"));
-      setApplication(configuration.get("Application"), configuration.get("Holding"));
+      configureRestClient();
+      ensureTenant();
+      ensureFederation();
+      ensureApplication();
+      ensureSpace();
+      ensureReceiverNode();
+      ensureHolding();
+      cacheIngestUri();
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
-    cacheIngestUri();
   }
 
-  /**
-   * Ingests into InfoArchive server.
-   * @param sip file to be ingested into InfoArchive server
-   */
-  @Override
-  public String ingest(InputStream sip) throws IOException {
-    ReceptionResponse response = ingest(ingestUri, sip, ReceptionResponse.class);
-    Link ingestLink = response.getLinks().get(LINK_INGEST);
-    IngestionResponse ingestionResponse = restClient.put(ingestLink.getHref(), IngestionResponse.class);
-    return ingestionResponse.getAipId();
+  private void configureRestClient() throws IOException {
+    List<Header> headers = new ArrayList<Header>();
+    headers.add(new BasicHeader("Authorization", "Bearer " + configuration.get(SERVER_AUTENTICATON_TOKEN)));
+    headers.add(new BasicHeader("Accept", MediaTypes.HAL));
+    restClient.setHeaders(headers);
+    services = restClient.get(configured(SERVER_URI), Services.class);
   }
 
-  private <T> T ingest(String uri, InputStream sip, Class<T> type) throws IOException {
-    // TODO - what should be the file name here ? IASIP.zip is Ok ?
-    InputStreamBody file = new InputStreamBody(sip, ContentType.APPLICATION_OCTET_STREAM, "IASIP.zip");
-    HttpEntity entity = MultipartEntityBuilder.create()
-        .addTextBody("format", "sip_zip")
-        .addPart("sip", file)
-        .build();
-    return restClient.post(uri, restClient.getHeaders(), entity, type);
-  }
-
-  private List<Header> getHeaders(String authToken) {
-    List<Header> result = new ArrayList<Header>();
-    result.add(new BasicHeader("Authorization", "Bearer " + authToken));
-    result.add(new BasicHeader("Accept", "application/hal+json"));
+  public String configured(String name) {
+    String result = configuration.get(name);
+    Objects.requireNonNull(result, "Missing " + name);
     return result;
   }
 
-  private void setTenant(String billboardUri) throws IOException {
-    Objects.requireNonNull(billboardUri, "Missing billboard URI");
-    services = restClient.get(billboardUri, Services.class);
+  private void ensureTenant() throws IOException {
     tenant = restClient.follow(services, LINK_TENANT, Tenant.class);
   }
 
-  private void setApplication(String applicationName, String holdingName) throws IOException {
-    Applications applications = restClient.follow(tenant, LINK_APPLICATIONS, Applications.class);
-    application = applications.byName(applicationName);
-    if (application == null) {
-      addApplication(applications, applicationName, holdingName);
+  private void ensureFederation() throws IOException {
+    String name = configuration.get(FEDERATION_NAME);
+    Federations federations = restClient.follow(services, LINK_FEDERATIONS, Federations.class);
+    Federation federation = federations.byName(name);
+    if (federation == null) {
+      restClient.createCollectionItem(services, LINK_FEDERATIONS, createFederation(name), MediaTypes.HAL);
     }
   }
 
-  private void addApplication(Applications applications, String applicationName, String holdingName)
-      throws IOException {
-    Federation federation = restClient.createCollectionItem(services, LINK_FEDERATIONS,
-        createFederation(applicationName), MediaTypes.HAL);
-    restClient.follow(federation, LINK_DATABASES, Databases.class);
-    // TODO: Create database
+  private void ensureApplication() throws IOException {
+    String applicationName = configuration.get(APPLICATION_NAME);
+    Applications applications = restClient.follow(tenant, LINK_APPLICATIONS, Applications.class);
+    application = applications.byName(applicationName);
+    if (application == null) {
+      application = restClient.createCollectionItem(applications, LINK_ADD, createApplication(applicationName));
+      Objects.requireNonNull(application, "Could not create application " + applicationName);
+    }
+  }
 
-    application = restClient.createCollectionItem(applications, LINK_ADD, createApplication(applicationName));
-    Objects.requireNonNull(application, "Could not create application " + applicationName);
-
+  private void ensureSpace() throws IOException {
     Spaces spaces = restClient.follow(application, LINK_SPACES, Spaces.class);
-    restClient.createCollectionItem(spaces, LINK_ADD, createSpace(applicationName));
+    restClient.createCollectionItem(spaces, LINK_ADD, createSpace(application.getName()));
+  }
 
+  private void ensureReceiverNode() throws IOException {
     ReceiverNodes receiverNodes = restClient.follow(application, LINK_RECEIVER_NODES, ReceiverNodes.class);
     restClient.createCollectionItem(receiverNodes, LINK_ADD, createReceiverNode());
+  }
 
+  private void ensureHolding() throws IOException {
+    String holdingName = configuration.get(HOLDING_NAME);
     Holdings holdings = restClient.follow(application, LINK_HOLDINGS, Holdings.class);
     restClient.createCollectionItem(holdings, LINK_ADD, createHolding(holdingName));
   }
@@ -142,9 +130,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private Federation createFederation(String name) {
     Federation result = new Federation();
     result.setName(name);
-    // TODO: Get these from configuration
-    result.setSuperUserPassword("test");
-    result.setBootstrap("xhive://127.0.0.1:2910");
+    result.setSuperUserPassword(configuration.get(FEDERATION_SUPERUSER_PASSWORD));
+    result.setBootstrap(configuration.get(FEDERATION_BOOTSTRAP));
     return result;
   }
 
@@ -177,6 +164,25 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private void cacheIngestUri() {
     ingestUri = application.getUri(LINK_AIPS);
+  }
+
+  @Override
+  public String ingest(InputStream sip) throws IOException {
+    Objects.requireNonNull(ingestUri, "Did you forget to call configure()?");
+    ReceptionResponse response = ingest(ingestUri, sip, ReceptionResponse.class);
+    Link ingestLink = response.getLinks().get(LINK_INGEST);
+    IngestionResponse ingestionResponse = restClient.put(ingestLink.getHref(), IngestionResponse.class);
+    return ingestionResponse.getAipId();
+  }
+
+  private <T> T ingest(String uri, InputStream sip, Class<T> type) throws IOException {
+    // TODO - what should be the file name here ? IASIP.zip is Ok ?
+    InputStreamBody file = new InputStreamBody(sip, ContentType.APPLICATION_OCTET_STREAM, "IASIP.zip");
+    HttpEntity entity = MultipartEntityBuilder.create()
+        .addTextBody("format", "sip_zip")
+        .addPart("sip", file)
+        .build();
+    return restClient.post(uri, restClient.getHeaders(), entity, type);
   }
 
 }
