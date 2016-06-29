@@ -4,11 +4,8 @@
 package com.emc.ia.sdk.sip.ingestion;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +19,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicHeader;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -43,6 +41,11 @@ public class WhenExecutingRestClient {
     headers.add(new BasicHeader("Accept", "application/hal+json"));
   }
 
+  @Before
+  public void init() {
+    client.setHeaders(headers);
+  }
+
   @Test
   public void shouldExecuteGetSuccessfully() throws IOException {
     HttpGet getRequest = new HttpGet();
@@ -50,7 +53,7 @@ public class WhenExecutingRestClient {
     when(wrapper.httpGetRequest(URI, headers)).thenReturn(getRequest);
     when(wrapper.execute(getRequest, HomeResource.class)).thenReturn(resource);
 
-    HomeResource homeResource = client.get(URI, headers, HomeResource.class);
+    HomeResource homeResource = client.get(URI, HomeResource.class);
 
     assertNotNull(homeResource);
     verify(wrapper).httpGetRequest(URI, headers);
@@ -63,7 +66,7 @@ public class WhenExecutingRestClient {
     HttpGet getRequest = new HttpGet();
     when(wrapper.httpGetRequest(URI, headers)).thenReturn(getRequest);
     when(wrapper.execute(getRequest, HomeResource.class)).thenThrow(ClientProtocolException.class);
-    client.get(URI, headers, HomeResource.class);
+    client.get(URI, HomeResource.class);
   }
 
   @SuppressWarnings("unchecked")
@@ -72,7 +75,8 @@ public class WhenExecutingRestClient {
     HttpGet getRequest = new HttpGet();
     when(wrapper.httpGetRequest(URI, headers)).thenReturn(getRequest);
     when(wrapper.execute(getRequest, HomeResource.class)).thenThrow(IOException.class);
-    client.get(URI, headers, HomeResource.class);
+
+    client.get(URI, HomeResource.class);
   }
 
   @Test
@@ -82,7 +86,7 @@ public class WhenExecutingRestClient {
     when(wrapper.httpPutRequest(URI, headers)).thenReturn(putRequest);
     when(wrapper.execute(putRequest, HomeResource.class)).thenReturn(resource);
 
-    HomeResource homeResource = client.put(URI, headers, HomeResource.class);
+    HomeResource homeResource = client.put(URI, HomeResource.class);
 
     assertNotNull(homeResource);
     verify(wrapper).httpPutRequest(URI, headers);
@@ -95,7 +99,8 @@ public class WhenExecutingRestClient {
     HttpPut putRequest = new HttpPut();
     when(wrapper.httpPutRequest(URI, headers)).thenReturn(putRequest);
     when(wrapper.execute(putRequest, HomeResource.class)).thenThrow(ClientProtocolException.class);
-    client.put(URI, headers, HomeResource.class);
+
+    client.put(URI, HomeResource.class);
   }
 
   @SuppressWarnings("unchecked")
@@ -104,7 +109,8 @@ public class WhenExecutingRestClient {
     HttpPut putRequest = new HttpPut();
     when(wrapper.httpPutRequest(URI, headers)).thenReturn(putRequest);
     when(wrapper.execute(putRequest, HomeResource.class)).thenThrow(IOException.class);
-    client.put(URI, headers, HomeResource.class);
+
+    client.put(URI, HomeResource.class);
   }
 
   @Test
@@ -118,7 +124,7 @@ public class WhenExecutingRestClient {
     String source = "This is the source of my input stream";
     InputStream in = IOUtils.toInputStream(source, "UTF-8");
 
-    assertNotNull(client.post(URI, headers, "This is a test message", in, ReceptionResponse.class));
+    assertNotNull(client.ingest(URI, in, ReceptionResponse.class));
 
     verify(wrapper).httpPostRequest(URI, headers);
     verify(wrapper).execute(any(HttpPost.class), eq(ReceptionResponse.class));
@@ -133,7 +139,7 @@ public class WhenExecutingRestClient {
 
     when(wrapper.httpPostRequest(URI, headers)).thenReturn(postRequest);
     when(wrapper.execute(postRequest, ReceptionResponse.class)).thenThrow(ClientProtocolException.class);
-    client.post(URI, headers, "This is a test message", in, ReceptionResponse.class);
+    client.ingest(URI, in, ReceptionResponse.class);
   }
 
   @SuppressWarnings("unchecked")
@@ -143,8 +149,8 @@ public class WhenExecutingRestClient {
     String source = "This is the source of my input stream";
     InputStream in = IOUtils.toInputStream(source, "UTF-8");
     when(wrapper.httpPostRequest(URI, headers)).thenReturn(postRequest);
-    when(wrapper.execute(postRequest, ReceptionResponse.class)).thenThrow(IOException.class);
-    client.post(URI, headers, "This is a test message", in, ReceptionResponse.class);
+    when(wrapper.execute(postRequest, ReceptionResponse.class)).thenThrow(ClientProtocolException.class);
+    client.ingest(URI, in, ReceptionResponse.class);
 }
 
   @Test

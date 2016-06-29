@@ -10,12 +10,14 @@ import java.util.Objects;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.ClientProtocolException;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -42,29 +44,32 @@ public class HttpClient {
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
-  public <T> ResponseHandler<T> getResponseHandler(final Class<T> type) {
+  public <T> ResponseHandler<T> getResponseHandler(final String method, final String uri, final Class<T> type) {
     return response -> {
-      int status = response.getStatusLine().getStatusCode();
-
-      // TODO - need to add logging - print status line and status code
-
-      if (status >= STATUS_CODE_RANGE_MIN && status < STATUS_CODE_RANGE_MAX) {
-        try {
-          HttpEntity entity = response.getEntity();
-          if (entity == null) {
-            return null;
-          } else {
-            String body = EntityUtils.toString(entity);
-            return mapper.readValue(body, type);
-          }
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      } else {
-        throw new ClientProtocolException("Unexpected response status: " + status);
+      StatusLine statusLine = response.getStatusLine();
+      int status = statusLine.getStatusCode();
+      HttpEntity entity = response.getEntity();
+      String body = entity == null ? "" : EntityUtils.toString(entity);
+      if (!isOk(status)) {
+        throw new HttpResponseException(status,
+            String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
+      }
+      if (body.isEmpty()) {
+        return null;
+      }
+      if (type.equals(String.class)) {
+        return type.cast(body);
+      }
+      try {
+        return mapper.readValue(body, type);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     };
+  }
 
+  private boolean isOk(int status) {
+    return STATUS_CODE_RANGE_MIN <= status && status < STATUS_CODE_RANGE_MAX;
   }
 
   public HttpGet httpGetRequest(String uri, List<Header> headers) {
@@ -104,16 +109,8 @@ public class HttpClient {
     return client.execute(getRequest);
   }
 
-  public <T> T execute(HttpGet getRequest, final Class<T> type) throws IOException {
-    return client.execute(getRequest, getResponseHandler(type));
-  }
-
-  public <T> T execute(HttpPost postRequest, final Class<T> type) throws IOException {
-    return client.execute(postRequest, getResponseHandler(type));
-  }
-
-  public <T> T execute(HttpPut putRequest, final Class<T> type) throws IOException {
-    return client.execute(putRequest, getResponseHandler(type));
+  public <T> T execute(HttpUriRequest request, Class<T> type) throws IOException {
+    return client.execute(request, getResponseHandler(request.getMethod(), request.getURI().toString(), type));
   }
 
   public void close() {

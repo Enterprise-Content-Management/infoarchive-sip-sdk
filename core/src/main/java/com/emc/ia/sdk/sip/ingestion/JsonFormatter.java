@@ -22,4 +22,5 @@ public class JsonFormatter {
       throw new RuntimeException(e);
     }
   }
+
 }

@@ -4,17 +4,14 @@
 package com.emc.ia.sdk.sip.ingestion;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -25,56 +22,63 @@ import com.emc.ia.sdk.sip.ingestion.dto.Applications;
 import com.emc.ia.sdk.sip.ingestion.dto.HomeResource;
 import com.emc.ia.sdk.sip.ingestion.dto.IngestionResponse;
 import com.emc.ia.sdk.sip.ingestion.dto.Link;
+import com.emc.ia.sdk.sip.ingestion.dto.LinkContainer;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+import com.emc.ia.sdk.support.io.RuntimeIoException;
 
 
 public class WhenInitializingArchiveLinkConfigurationParameters {
-  private static final String LINK_TENANT = "http://identifiers.emc.com/tenant";
-  private static final String LINK_APPLICATION = "http://identifiers.emc.com/applications";
-  private static final String LINK_AIPS = "http://identifiers.emc.com/aips";
-  private static final String LINK_INGEST = "http://identifiers.emc.com/ingest";
-  private static final String TEST_HREF = "Test";
+
+  private static final String BILLBOARD_URI = "http://foo.com/bar";
+  private static final String APPLICATION_NAME = "Test";
+
   private final Map<String, Link> links = new HashMap<String, Link>();
   private final Map<String, String> configuration = new HashMap<String, String>();
   private final InfoArchiveRestClient client = new InfoArchiveRestClient();
   private RestClient restClient;
+  private HomeResource resource;
+  private Tenant tenant;
   private Applications applications;
+  private Application application;
 
   @Before
   public void init() throws IOException {
     configuration.put("AuthToken", "XYZ123ABC");
-    configuration.put("Application", TEST_HREF);
-    configuration.put("IAServer", TEST_HREF);
+    configuration.put("Application", APPLICATION_NAME);
+    configuration.put("IAServer", BILLBOARD_URI);
     restClient = mock(RestClient.class);
-    HomeResource resource = new HomeResource();
-    Link tenantLink = mock(Link.class);
-    Tenant tenant = new Tenant();
-    Application application = new Application();
+    resource = new HomeResource();
+    Link link = mock(Link.class);
+    tenant = new Tenant();
+    application = new Application();
     applications = mock(Applications.class);
     client.setRestClient(restClient);
-    links.put(LINK_TENANT, tenantLink);
-    links.put(LINK_APPLICATION, tenantLink);
-    links.put(LINK_AIPS, tenantLink);
-    links.put(LINK_INGEST, tenantLink);
+
+    links.put(InfoArchiveRestClient.LINK_TENANT, link);
+    links.put(InfoArchiveRestClient.LINK_APPLICATIONS, link);
+    links.put(InfoArchiveRestClient.LINK_AIPS, link);
+    links.put(InfoArchiveRestClient.LINK_INGEST, link);
     resource.setLinks(links);
     tenant.setLinks(links);
     application.setLinks(links);
-    when(restClient.get(eq(TEST_HREF), anyObject(), eq(HomeResource.class))).thenReturn(resource);
-    when(tenantLink.getHref()).thenReturn(TEST_HREF);
-    when(restClient.get(eq(TEST_HREF), anyObject(), eq(Tenant.class))).thenReturn(tenant);
-    when(restClient.get(eq(TEST_HREF), anyObject(), eq(Applications.class))).thenReturn(applications);
-    when(applications.byName(TEST_HREF)).thenReturn(application);
-    configuration.put("IAServer", TEST_HREF);
+
+    when(restClient.get(BILLBOARD_URI, HomeResource.class)).thenReturn(resource);
+    when(link.getHref()).thenReturn(BILLBOARD_URI);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Tenant.class))).thenReturn(tenant);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Applications.class))).thenReturn(applications);
+    when(applications.byName(APPLICATION_NAME)).thenReturn(application);
+    when(restClient.refresh(applications)).thenReturn(applications);
   }
 
   @Test
   public void shouldInitHeadersDuringObjectCreation() throws IOException {
     client.configure(configuration);
-    verify(restClient).get(eq(TEST_HREF), anyObject(), eq(HomeResource.class));
-    verify(restClient).get(eq(TEST_HREF), anyObject(), eq(Tenant.class));
-    verify(restClient).get(eq(TEST_HREF), anyObject(), eq(Applications.class));
-    verify(applications).byName(TEST_HREF);
+
+    verify(restClient).get(BILLBOARD_URI, HomeResource.class);
+    verify(restClient).follow(resource, InfoArchiveRestClient.LINK_TENANT, Tenant.class);
+    verify(restClient).follow(tenant, InfoArchiveRestClient.LINK_APPLICATIONS, Applications.class);
+    verify(applications).byName(APPLICATION_NAME);
   }
 
   @Test (expected = RuntimeException.class)
@@ -83,16 +87,9 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
   }
 
   @SuppressWarnings("unchecked")
-  @Test (expected = RuntimeException.class)
-  public void shouldThrowExceptionWileSettingTenent() throws IOException {
-    when(restClient.get(eq(TEST_HREF), anyObject(), eq(Tenant.class))).thenThrow(IOException.class);
-    client.configure(configuration);
-  }
-
-  @SuppressWarnings("unchecked")
-  @Test (expected = RuntimeException.class)
-  public void shouldThrowExceptionWileSettingApplication() throws IOException {
-    when(restClient.get(eq(TEST_HREF), anyObject(), eq(Applications.class))).thenThrow(IOException.class);
+  @Test (expected = RuntimeIoException.class)
+  public void shouldWrapExceptionDuringConfiguration() throws IOException {
+    when(restClient.get(BILLBOARD_URI, HomeResource.class)).thenThrow(IOException.class);
     client.configure(configuration);
   }
 
@@ -106,15 +103,11 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     ReceptionResponse receptionResponse = new ReceptionResponse();
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
     receptionResponse.setLinks(links);
-    when(restClient.post(anyString(), anyObject(), anyString(), eq(sip), eq(ReceptionResponse.class))).thenReturn(receptionResponse);
-    when(restClient.put(eq(TEST_HREF), anyObject(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
+    when(restClient.ingest(anyString(), eq(sip), eq(ReceptionResponse.class))).thenReturn(receptionResponse);
+    when(restClient.put(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip001");
 
-    String aipid = client.ingest(sip);
-    assertEquals(aipid, "sip001");
-
-    verify(restClient).post(eq(TEST_HREF), anyObject(), anyString(), eq(sip), eq(ReceptionResponse.class));
-    verify(restClient).put(eq(TEST_HREF), anyObject(), eq(IngestionResponse.class));
+    assertEquals(client.ingest(sip), "sip001");
   }
 
   @Test(expected = RuntimeException.class)
@@ -134,4 +127,22 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     Map<String, String> config = new HashMap<String, String>();
     client.configure(config);
   }
+
+  @Test
+  public void shouldCreateApplicationWhenNotFound() throws IOException {
+    final AtomicBoolean afterCreate = new AtomicBoolean(false);
+    when(applications.byName(APPLICATION_NAME)).thenAnswer(invocation -> {
+      if (afterCreate.get()) {
+        return application;
+      } else {
+        afterCreate.set(true);
+        return null;
+      }
+    });
+
+    client.configure(configuration);
+
+    verify(restClient).createCollectionItem(eq(applications), any(Application.class));
+  }
+
 }

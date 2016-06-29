@@ -56,7 +56,7 @@ public class WhenExecutingHttpClientWrapper {
     assertNotNull(postRequest);
     assertEquals(postRequest.toString(), "POST http://identifiers.emc.com/aips HTTP/1.1");
   }
-  
+
   @Test
   public void shouldExecuteHttpCall() throws IOException {
     String html = wrapper.execute(wrapper.httpGetRequest("http://www.google.com", Collections.emptyList()), String.class);
