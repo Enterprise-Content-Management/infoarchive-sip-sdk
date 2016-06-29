@@ -21,7 +21,7 @@ public class ItemContainer<T extends NamedLinkContainer> extends LinkContainer {
     this.key = key;
   }
 
-  protected void setItems(Map<String, List<T>> items) {
+  public void setItems(Map<String, List<T>> items) {
     this.itemsByName = items;
   }
 

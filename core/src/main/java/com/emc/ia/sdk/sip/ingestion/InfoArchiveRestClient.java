@@ -33,6 +33,7 @@ import com.emc.ia.sdk.sip.ingestion.dto.Spaces;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.Link;
+import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.MediaTypes;
 import com.emc.ia.sdk.support.rest.RestClient;
 
@@ -92,12 +93,21 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     tenant = restClient.follow(services, LINK_TENANT, Tenant.class);
   }
 
+  private <T> T createItem(LinkContainer collection, T item) throws IOException {
+    return createItem(collection, LINK_ADD, item, MediaTypes.JSON);
+  }
+
+  public <T> T createItem(LinkContainer collection, String addLinkRelation, T item, String mediaType)
+      throws IOException {
+    return restClient.createCollectionItem(collection, addLinkRelation, item, mediaType);
+  }
+
   private void ensureFederation() throws IOException {
     String name = configuration.get(FEDERATION_NAME);
     Federations federations = restClient.follow(services, LINK_FEDERATIONS, Federations.class);
     Federation federation = federations.byName(name);
     if (federation == null) {
-      restClient.createCollectionItem(services, LINK_FEDERATIONS, createFederation(name), MediaTypes.HAL);
+      createItem(services, LINK_FEDERATIONS, createFederation(name), MediaTypes.HAL);
     }
   }
 
@@ -106,25 +116,29 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     Applications applications = restClient.follow(tenant, LINK_APPLICATIONS, Applications.class);
     application = applications.byName(applicationName);
     if (application == null) {
-      application = restClient.createCollectionItem(applications, LINK_ADD, createApplication(applicationName));
+      application = createItem(applications, createApplication(applicationName));
       Objects.requireNonNull(application, "Could not create application " + applicationName);
     }
   }
 
   private void ensureSpace() throws IOException {
+    String spaceName = application.getName();
     Spaces spaces = restClient.follow(application, LINK_SPACES, Spaces.class);
-    restClient.createCollectionItem(spaces, LINK_ADD, createSpace(application.getName()));
+    Space space = spaces.byName(spaceName);
+    if (space == null) {
+      createItem(spaces, LINK_ADD, createSpace(spaceName), MediaTypes.HAL);
+    }
   }
 
   private void ensureReceiverNode() throws IOException {
     ReceiverNodes receiverNodes = restClient.follow(application, LINK_RECEIVER_NODES, ReceiverNodes.class);
-    restClient.createCollectionItem(receiverNodes, LINK_ADD, createReceiverNode());
+    createItem(receiverNodes, createReceiverNode());
   }
 
   private void ensureHolding() throws IOException {
     String holdingName = configuration.get(HOLDING_NAME);
     Holdings holdings = restClient.follow(application, LINK_HOLDINGS, Holdings.class);
-    restClient.createCollectionItem(holdings, LINK_ADD, createHolding(holdingName));
+    createItem(holdings, createHolding(holdingName));
   }
 
   private Federation createFederation(String name) {

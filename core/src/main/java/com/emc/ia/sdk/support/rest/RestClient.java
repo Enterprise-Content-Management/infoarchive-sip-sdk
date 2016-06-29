@@ -90,4 +90,9 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return new StringEntity(new JsonFormatter().format(object));
   }
 
+  @SuppressWarnings("unchecked")
+  public <T extends LinkContainer> T refresh(T state) throws IOException {
+    return (T)follow(state, LINK_SELF, state.getClass());
+  }
+
 }

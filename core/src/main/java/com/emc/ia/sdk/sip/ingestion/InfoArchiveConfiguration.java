@@ -13,6 +13,8 @@ public interface InfoArchiveConfiguration {
   String SERVER_AUTENTICATON_TOKEN = SERVER_PREFIX + "authentication.token";
   String SERVER_URI = SERVER_PREFIX + "uri";
 
+  String TENANT_NAME = PREFIX + "tenant." + NAME;
+
   String XDB_PREFIX = PREFIX + "xdb.";
   String FEDERATION_PREFIX = XDB_PREFIX + ".federation";
   String FEDERATION_NAME = FEDERATION_PREFIX + NAME;
