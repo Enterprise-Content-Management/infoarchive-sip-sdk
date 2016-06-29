@@ -27,8 +27,8 @@ public class WhenFetchingReceptionRequest {
   }
 
   @Test
-  public void validateIngestionResponseToStringValue() {    
+  public void validateIngestionResponseToStringValue() {
     assertEquals("Response ToString check", reception.toString(), "format=sip_zip");
   }
-  
+
 }

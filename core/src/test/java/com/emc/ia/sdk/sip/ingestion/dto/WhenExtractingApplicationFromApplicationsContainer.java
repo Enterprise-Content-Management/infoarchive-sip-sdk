@@ -36,12 +36,12 @@ public class WhenExtractingApplicationFromApplicationsContainer {
   public void fetchType() {
     assertEquals("Type is", app.getType(), "Test");
   }
-  
+
   @Test
   public void fetchArchiveType() {
     assertEquals("Archive Type", app.getArchiveType(), "TestArchive");
   }
-  
+
   @Test
   public void shouldReturnValidApplicationObjectWithDefaultKeyAndPreSetName() {
     prepare("applications");
