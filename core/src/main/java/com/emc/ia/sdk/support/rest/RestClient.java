@@ -22,6 +22,10 @@ public class RestClient implements Closeable, StandardLinkRelations {
   private final HttpClient httpClient;
   private List<Header> headers;
 
+  public RestClient() {
+    this(new HttpClient());
+  }
+
   public RestClient(HttpClient client) {
     this.httpClient = Objects.requireNonNull(client, "Missing HTTP client");
   }
@@ -54,6 +58,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   public <T> T follow(LinkContainer state, String relation, Class<T> type) throws IOException {
+    Objects.requireNonNull(state, "Missing state");
     return get(linkIn(state, relation).getHref(), type);
   }
 
@@ -63,17 +68,21 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return result;
   }
 
-  @SuppressWarnings("unchecked")
   public <T> T createCollectionItem(LinkContainer collection, String addLinkRelation, T item) throws IOException {
+    return createCollectionItem(collection, addLinkRelation, item, MediaTypes.JSON);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T createCollectionItem(LinkContainer collection, String addLinkRelation, T item, String contentType) throws IOException {
     String uri = linkIn(collection, addLinkRelation).getHref();
-    T result = (T)post(uri, withJsonBody(), toJson(item), item.getClass());
+    T result = (T)post(uri, withContentType(contentType), toJson(item), item.getClass());
     Objects.requireNonNull(result, String.format("Could not create item in %s%n%s", uri, item));
     return result;
   }
 
-  private List<Header> withJsonBody() {
+  private List<Header> withContentType(String contentType) {
     List<Header> result = new ArrayList<>(headers);
-    result.add(new BasicHeader("Content-Type", "application/json"));
+    result.add(new BasicHeader("Content-Type", contentType));
     return result;
   }
 

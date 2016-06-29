@@ -29,7 +29,7 @@ public class WhenFetchingHomeResource {
   }
 
 
-  public static class TestHomeResource extends HomeResource {
+  public static class TestHomeResource extends Services {
 
     @Override
     public Map<String, Link> getLinks() {

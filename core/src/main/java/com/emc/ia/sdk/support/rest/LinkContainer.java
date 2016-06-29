@@ -22,8 +22,12 @@ public class LinkContainer {
     this.links = links;
   }
 
-  public String getUri() {
-    Link selfLink = links.get(StandardLinkRelations.LINK_SELF);
+  public String getSelfUri() {
+    return getUri(StandardLinkRelations.LINK_SELF);
+  }
+
+  public String getUri(String linkRelation) {
+    Link selfLink = links.get(linkRelation);
     return selfLink == null ? null : selfLink.getHref();
   }
 

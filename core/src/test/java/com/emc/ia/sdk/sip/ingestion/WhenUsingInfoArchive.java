@@ -20,10 +20,10 @@ import org.junit.Test;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
-import com.emc.ia.sdk.sip.ingestion.dto.HomeResource;
 import com.emc.ia.sdk.sip.ingestion.dto.IngestionResponse;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
+import com.emc.ia.sdk.sip.ingestion.dto.Services;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.Link;
@@ -38,9 +38,9 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
 
   private final Map<String, Link> links = new HashMap<String, Link>();
   private final Map<String, String> configuration = new HashMap<String, String>();
-  private final InfoArchiveRestClient archiveClient = new InfoArchiveRestClient();
-  private RestClient restClient;
-  private HomeResource resource;
+  private final RestClient restClient = mock(RestClient.class);
+  private final InfoArchiveRestClient archiveClient = new InfoArchiveRestClient(restClient);
+  private Services resource;
   private Tenant tenant;
   private Applications applications;
   private Application application;
@@ -50,23 +50,21 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
     configuration.put("AuthToken", "XYZ123ABC");
     configuration.put("Application", APPLICATION_NAME);
     configuration.put("IAServer", BILLBOARD_URI);
-    restClient = mock(RestClient.class);
-    resource = new HomeResource();
+    resource = new Services();
     Link link = mock(Link.class);
     tenant = new Tenant();
     application = new Application();
     applications = mock(Applications.class);
-    archiveClient.setRestClient(restClient);
 
-    links.put(InfoArchiveRestClient.LINK_TENANT, link);
-    links.put(InfoArchiveRestClient.LINK_APPLICATIONS, link);
-    links.put(InfoArchiveRestClient.LINK_AIPS, link);
-    links.put(InfoArchiveRestClient.LINK_INGEST, link);
+    links.put(InfoArchiveLinkRelations.LINK_TENANT, link);
+    links.put(InfoArchiveLinkRelations.LINK_APPLICATIONS, link);
+    links.put(InfoArchiveLinkRelations.LINK_AIPS, link);
+    links.put(InfoArchiveLinkRelations.LINK_INGEST, link);
     resource.setLinks(links);
     tenant.setLinks(links);
     application.setLinks(links);
 
-    when(restClient.get(BILLBOARD_URI, HomeResource.class)).thenReturn(resource);
+    when(restClient.get(BILLBOARD_URI, Services.class)).thenReturn(resource);
     when(link.getHref()).thenReturn(BILLBOARD_URI);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Tenant.class))).thenReturn(tenant);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Applications.class))).thenReturn(applications);
@@ -77,9 +75,9 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
   public void shouldInitHeadersDuringObjectCreation() throws IOException {
     archiveClient.configure(configuration);
 
-    verify(restClient).get(BILLBOARD_URI, HomeResource.class);
-    verify(restClient).follow(resource, InfoArchiveRestClient.LINK_TENANT, Tenant.class);
-    verify(restClient).follow(tenant, InfoArchiveRestClient.LINK_APPLICATIONS, Applications.class);
+    verify(restClient).get(BILLBOARD_URI, Services.class);
+    verify(restClient).follow(resource, InfoArchiveLinkRelations.LINK_TENANT, Tenant.class);
+    verify(restClient).follow(tenant, InfoArchiveLinkRelations.LINK_APPLICATIONS, Applications.class);
     verify(applications).byName(APPLICATION_NAME);
   }
 
@@ -91,7 +89,7 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
   @SuppressWarnings("unchecked")
   @Test (expected = RuntimeIoException.class)
   public void shouldWrapExceptionDuringConfiguration() throws IOException {
-    when(restClient.get(BILLBOARD_URI, HomeResource.class)).thenThrow(IOException.class);
+    when(restClient.get(BILLBOARD_URI, Services.class)).thenThrow(IOException.class);
     archiveClient.configure(configuration);
   }
 

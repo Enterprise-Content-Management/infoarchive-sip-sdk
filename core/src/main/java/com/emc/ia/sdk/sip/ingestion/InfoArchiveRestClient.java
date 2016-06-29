@@ -19,19 +19,21 @@ import org.apache.http.message.BasicHeader;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
+import com.emc.ia.sdk.sip.ingestion.dto.Databases;
+import com.emc.ia.sdk.sip.ingestion.dto.Federation;
 import com.emc.ia.sdk.sip.ingestion.dto.Holding;
 import com.emc.ia.sdk.sip.ingestion.dto.Holdings;
-import com.emc.ia.sdk.sip.ingestion.dto.HomeResource;
 import com.emc.ia.sdk.sip.ingestion.dto.IngestionResponse;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNode;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
+import com.emc.ia.sdk.sip.ingestion.dto.Services;
 import com.emc.ia.sdk.sip.ingestion.dto.Space;
 import com.emc.ia.sdk.sip.ingestion.dto.Spaces;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
-import com.emc.ia.sdk.support.rest.HttpClient;
 import com.emc.ia.sdk.support.rest.Link;
+import com.emc.ia.sdk.support.rest.MediaTypes;
 import com.emc.ia.sdk.support.rest.RestClient;
 
 
@@ -44,10 +46,19 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   public static final String HOME_RESOURCE = "IAServer";
   public static final String APPLICATION_NAME = "Application";
 
+  private final RestClient restClient;
+  private Services services;
   private Tenant tenant;
   private Application application;
-  private String aipsHref;
-  private RestClient restClient = new RestClient(new HttpClient());
+  private String ingestUri;
+
+  public InfoArchiveRestClient() {
+    this(new RestClient());
+  }
+
+  public InfoArchiveRestClient(RestClient restClient) {
+    this.restClient = restClient;
+  }
 
   /**
    * Configure InfoArchive server with given configuration parameters.
@@ -62,7 +73,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
-    setAipsHref();
+    cacheIngestUri();
   }
 
   /**
@@ -71,7 +82,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
    */
   @Override
   public String ingest(InputStream sip) throws IOException {
-    ReceptionResponse response = ingest(aipsHref, sip, ReceptionResponse.class);
+    ReceptionResponse response = ingest(ingestUri, sip, ReceptionResponse.class);
     Link ingestLink = response.getLinks().get(LINK_INGEST);
     IngestionResponse ingestionResponse = restClient.put(ingestLink.getHref(), IngestionResponse.class);
     return ingestionResponse.getAipId();
@@ -96,8 +107,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private void setTenant(String billboardUri) throws IOException {
     Objects.requireNonNull(billboardUri, "Missing billboard URI");
-    HomeResource homeResource = restClient.get(billboardUri, HomeResource.class);
-    tenant = restClient.follow(homeResource, LINK_TENANT, Tenant.class);
+    services = restClient.get(billboardUri, Services.class);
+    tenant = restClient.follow(services, LINK_TENANT, Tenant.class);
   }
 
   private void setApplication(String applicationName, String holdingName) throws IOException {
@@ -110,6 +121,11 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private void addApplication(Applications applications, String applicationName, String holdingName)
       throws IOException {
+    Federation federation = restClient.createCollectionItem(services, LINK_FEDERATIONS,
+        createFederation(applicationName), MediaTypes.HAL);
+    restClient.follow(federation, LINK_DATABASES, Databases.class);
+    // TODO: Create database
+
     application = restClient.createCollectionItem(applications, LINK_ADD, createApplication(applicationName));
     Objects.requireNonNull(application, "Could not create application " + applicationName);
 
@@ -121,6 +137,15 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
     Holdings holdings = restClient.follow(application, LINK_HOLDINGS, Holdings.class);
     restClient.createCollectionItem(holdings, LINK_ADD, createHolding(holdingName));
+  }
+
+  private Federation createFederation(String name) {
+    Federation result = new Federation();
+    result.setName(name);
+    // TODO: Get these from configuration
+    result.setSuperUserPassword("test");
+    result.setBootstrap("xhive://127.0.0.1:2910");
+    return result;
   }
 
   private Space createSpace(String name) {
@@ -150,12 +175,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return result;
   }
 
-  private void setAipsHref() {
-    aipsHref = application.getLinks().get(LINK_AIPS).getHref();
-  }
-
-  public void setRestClient(RestClient restClient) {
-    this.restClient = restClient;
+  private void cacheIngestUri() {
+    ingestUri = application.getUri(LINK_AIPS);
   }
 
 }
