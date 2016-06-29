@@ -5,6 +5,6 @@ package com.emc.ia.sdk.sip.ingestion.dto;
 
 import com.emc.ia.sdk.support.rest.LinkContainer;
 
-public class Tenant extends LinkContainer {
+public class Spaces extends LinkContainer {
 
 }

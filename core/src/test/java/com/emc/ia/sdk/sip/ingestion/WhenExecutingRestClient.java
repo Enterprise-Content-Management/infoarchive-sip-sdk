@@ -8,15 +8,12 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicHeader;
 import org.junit.Before;
@@ -24,7 +21,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.emc.ia.sdk.sip.ingestion.dto.HomeResource;
-import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
+import com.emc.ia.sdk.support.rest.HttpClient;
+import com.emc.ia.sdk.support.rest.RestClient;
 
 
 public class WhenExecutingRestClient {
@@ -112,46 +110,6 @@ public class WhenExecutingRestClient {
 
     client.put(URI, HomeResource.class);
   }
-
-  @Test
-  public void shouldExecutePostSuccessfully() throws IOException {
-    HttpPost postRequest = new HttpPost();
-    ReceptionResponse resource = new ReceptionResponse();
-
-    when(wrapper.httpPostRequest(URI, headers)).thenReturn(postRequest);
-    when(wrapper.execute(postRequest, ReceptionResponse.class)).thenReturn(resource);
-
-    String source = "This is the source of my input stream";
-    InputStream in = IOUtils.toInputStream(source, "UTF-8");
-
-    assertNotNull(client.ingest(URI, in, ReceptionResponse.class));
-
-    verify(wrapper).httpPostRequest(URI, headers);
-    verify(wrapper).execute(any(HttpPost.class), eq(ReceptionResponse.class));
-  }
-
-  @SuppressWarnings("unchecked")
-  @Test(expected = IOException.class)
-  public void shouldThrowExceptionWhenPostIsCalled() throws IOException {
-    HttpPost postRequest = new HttpPost();
-    String source = "This is the source of my input stream";
-    InputStream in = IOUtils.toInputStream(source, "UTF-8");
-
-    when(wrapper.httpPostRequest(URI, headers)).thenReturn(postRequest);
-    when(wrapper.execute(postRequest, ReceptionResponse.class)).thenThrow(ClientProtocolException.class);
-    client.ingest(URI, in, ReceptionResponse.class);
-  }
-
-  @SuppressWarnings("unchecked")
-  @Test(expected = IOException.class)
-  public void shouldThrowExceptionWhenPostIsCalled2() throws IOException {
-    HttpPost postRequest = new HttpPost();
-    String source = "This is the source of my input stream";
-    InputStream in = IOUtils.toInputStream(source, "UTF-8");
-    when(wrapper.httpPostRequest(URI, headers)).thenReturn(postRequest);
-    when(wrapper.execute(postRequest, ReceptionResponse.class)).thenThrow(ClientProtocolException.class);
-    client.ingest(URI, in, ReceptionResponse.class);
-}
 
   @Test
   public void shouldCloseHttpClientConnection() {

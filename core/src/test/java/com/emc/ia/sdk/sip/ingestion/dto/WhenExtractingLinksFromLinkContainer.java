@@ -11,6 +11,9 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.emc.ia.sdk.support.rest.Link;
+import com.emc.ia.sdk.support.rest.LinkContainer;
+
 
 public class WhenExtractingLinksFromLinkContainer {
 

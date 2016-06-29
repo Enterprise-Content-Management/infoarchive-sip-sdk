@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 

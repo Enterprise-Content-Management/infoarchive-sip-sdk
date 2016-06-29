@@ -10,10 +10,11 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,21 +22,23 @@ import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
 import com.emc.ia.sdk.sip.ingestion.dto.HomeResource;
 import com.emc.ia.sdk.sip.ingestion.dto.IngestionResponse;
-import com.emc.ia.sdk.sip.ingestion.dto.Link;
-import com.emc.ia.sdk.sip.ingestion.dto.LinkContainer;
+import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
+import com.emc.ia.sdk.support.rest.Link;
+import com.emc.ia.sdk.support.rest.LinkContainer;
+import com.emc.ia.sdk.support.rest.RestClient;
 
 
-public class WhenInitializingArchiveLinkConfigurationParameters {
+public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
 
   private static final String BILLBOARD_URI = "http://foo.com/bar";
   private static final String APPLICATION_NAME = "Test";
 
   private final Map<String, Link> links = new HashMap<String, Link>();
   private final Map<String, String> configuration = new HashMap<String, String>();
-  private final InfoArchiveRestClient client = new InfoArchiveRestClient();
+  private final InfoArchiveRestClient archiveClient = new InfoArchiveRestClient();
   private RestClient restClient;
   private HomeResource resource;
   private Tenant tenant;
@@ -53,7 +56,7 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     tenant = new Tenant();
     application = new Application();
     applications = mock(Applications.class);
-    client.setRestClient(restClient);
+    archiveClient.setRestClient(restClient);
 
     links.put(InfoArchiveRestClient.LINK_TENANT, link);
     links.put(InfoArchiveRestClient.LINK_APPLICATIONS, link);
@@ -68,12 +71,11 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Tenant.class))).thenReturn(tenant);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Applications.class))).thenReturn(applications);
     when(applications.byName(APPLICATION_NAME)).thenReturn(application);
-    when(restClient.refresh(applications)).thenReturn(applications);
   }
 
   @Test
   public void shouldInitHeadersDuringObjectCreation() throws IOException {
-    client.configure(configuration);
+    archiveClient.configure(configuration);
 
     verify(restClient).get(BILLBOARD_URI, HomeResource.class);
     verify(restClient).follow(resource, InfoArchiveRestClient.LINK_TENANT, Tenant.class);
@@ -83,19 +85,20 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
 
   @Test (expected = RuntimeException.class)
   public void shouldThrowExceptionWileConfiguring() {
-    client.configure(null);
+    archiveClient.configure(null);
   }
 
   @SuppressWarnings("unchecked")
   @Test (expected = RuntimeIoException.class)
   public void shouldWrapExceptionDuringConfiguration() throws IOException {
     when(restClient.get(BILLBOARD_URI, HomeResource.class)).thenThrow(IOException.class);
-    client.configure(configuration);
+    archiveClient.configure(configuration);
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void shouldIngestSuccessfully() throws IOException {
-    client.configure(configuration);
+    archiveClient.configure(configuration);
 
     String source = "This is the source of my input stream";
     InputStream sip = IOUtils.toInputStream(source, "UTF-8");
@@ -103,46 +106,41 @@ public class WhenInitializingArchiveLinkConfigurationParameters {
     ReceptionResponse receptionResponse = new ReceptionResponse();
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
     receptionResponse.setLinks(links);
-    when(restClient.ingest(anyString(), eq(sip), eq(ReceptionResponse.class))).thenReturn(receptionResponse);
+    when(restClient.post(anyString(), any(List.class), any(HttpEntity.class), eq(ReceptionResponse.class))).thenReturn(receptionResponse);
     when(restClient.put(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip001");
 
-    assertEquals(client.ingest(sip), "sip001");
+    assertEquals(archiveClient.ingest(sip), "sip001");
   }
 
   @Test(expected = RuntimeException.class)
   public void ingestShouldThrowRuntimeExceptionWhenConfigureIsNotInvoked() throws IOException {
     String source = "This is the source of my input stream";
     InputStream sip = IOUtils.toInputStream(source, "UTF-8");
-    client.ingest(sip);
+    archiveClient.ingest(sip);
   }
 
   @Test(expected = RuntimeException.class)
   public void ingestShouldThrowRuntimeExceptionWhenSipIsNull() throws IOException {
-    client.ingest(null);
+    archiveClient.ingest(null);
   }
 
   @Test(expected = NullPointerException.class)
   public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull() throws IOException {
     Map<String, String> config = new HashMap<String, String>();
-    client.configure(config);
+    archiveClient.configure(config);
   }
 
   @Test
   public void shouldCreateApplicationWhenNotFound() throws IOException {
-    final AtomicBoolean afterCreate = new AtomicBoolean(false);
-    when(applications.byName(APPLICATION_NAME)).thenAnswer(invocation -> {
-      if (afterCreate.get()) {
-        return application;
-      } else {
-        afterCreate.set(true);
-        return null;
-      }
-    });
+    when(applications.byName(APPLICATION_NAME)).thenReturn(null);
+    when(restClient.createCollectionItem(eq(applications), eq(LINK_ADD), any(Application.class)))
+        .thenReturn(application);
 
-    client.configure(configuration);
+    archiveClient.configure(configuration);
 
-    verify(restClient).createCollectionItem(eq(applications), any(Application.class));
+    verify(restClient)
+        .follow(application, LINK_RECEIVER_NODES, ReceiverNodes.class);
   }
 
 }

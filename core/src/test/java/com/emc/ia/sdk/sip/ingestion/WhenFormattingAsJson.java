@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.emc.ia.sdk.support.rest.JsonFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 

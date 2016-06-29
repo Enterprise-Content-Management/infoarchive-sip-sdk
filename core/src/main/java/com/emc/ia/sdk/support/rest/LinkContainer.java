@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.sip.ingestion.dto;
+package com.emc.ia.sdk.support.rest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +20,11 @@ public class LinkContainer {
 
   public void setLinks(Map<String, Link> links) {
     this.links = links;
+  }
+
+  public String getUri() {
+    Link selfLink = links.get(StandardLinkRelations.LINK_SELF);
+    return selfLink == null ? null : selfLink.getHref();
   }
 
   @Override

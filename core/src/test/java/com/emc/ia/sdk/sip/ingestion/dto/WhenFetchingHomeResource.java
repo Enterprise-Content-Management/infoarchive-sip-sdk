@@ -11,6 +11,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.emc.ia.sdk.support.rest.Link;
+
 
 public class WhenFetchingHomeResource {
 

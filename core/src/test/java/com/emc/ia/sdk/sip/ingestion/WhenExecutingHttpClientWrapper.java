@@ -18,6 +18,8 @@ import org.apache.http.message.BasicHeader;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.emc.ia.sdk.support.rest.HttpClient;
+
 
 public class WhenExecutingHttpClientWrapper {
 
