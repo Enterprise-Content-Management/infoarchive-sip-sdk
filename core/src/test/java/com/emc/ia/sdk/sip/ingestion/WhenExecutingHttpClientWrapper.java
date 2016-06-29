@@ -3,11 +3,10 @@
  */
 package com.emc.ia.sdk.sip.ingestion;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.Header;
@@ -56,11 +55,4 @@ public class WhenExecutingHttpClientWrapper {
     assertNotNull(postRequest);
     assertEquals(postRequest.toString(), "POST http://identifiers.emc.com/aips HTTP/1.1");
   }
-  
-  @Test
-  public void shouldExecuteHttpCall() throws IOException {
-    String html = wrapper.execute(wrapper.httpGetRequest("http://www.google.com", Collections.emptyList()), String.class);
-    assertTrue(html.contains("Google"));
-  }
-
 }
