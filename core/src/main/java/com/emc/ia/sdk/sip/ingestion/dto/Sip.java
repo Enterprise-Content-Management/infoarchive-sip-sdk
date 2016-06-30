@@ -4,9 +4,9 @@
 package com.emc.ia.sdk.sip.ingestion.dto;
 
 
-public class Sips {
+public class Sip {
 
-  private String format = "zip_zip";
+  private String format = "sip_zip";
   private String extractorImpl = "com.emc.ia.reception.sip.extractor.impl.ZipSipExtractor";
 
   public String getFormat() {

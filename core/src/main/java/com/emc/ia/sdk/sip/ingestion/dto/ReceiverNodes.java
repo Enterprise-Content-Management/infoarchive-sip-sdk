@@ -3,8 +3,11 @@
  */
 package com.emc.ia.sdk.sip.ingestion.dto;
 
-import com.emc.ia.sdk.support.rest.LinkContainer;
 
-public class ReceiverNodes extends LinkContainer {
+public class ReceiverNodes extends ItemContainer<ReceiverNode> {
+
+  protected ReceiverNodes() {
+    super("receiverNodes");
+  }
 
 }

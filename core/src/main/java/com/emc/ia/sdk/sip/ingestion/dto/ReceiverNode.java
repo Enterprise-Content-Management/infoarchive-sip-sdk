@@ -3,25 +3,37 @@
  */
 package com.emc.ia.sdk.sip.ingestion.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ReceiverNode extends NamedLinkContainer {
 
-  private FileSystemFolder workingDirectory = new FileSystemFolder();
-  private Sips sips = new Sips();
+  private String workingDirectory;
+  private String logsStore;
+  private List<Sip> sips = new ArrayList<>();
 
-  public FileSystemFolder getWorkingDirectory() {
+  public String getWorkingDirectory() {
     return workingDirectory;
   }
 
-  public void setWorkingDirectory(FileSystemFolder workingDirectory) {
+  public void setWorkingDirectory(String workingDirectory) {
     this.workingDirectory = workingDirectory;
   }
 
-  public Sips getSips() {
+  public String getLogsStore() {
+    return logsStore;
+  }
+
+  public void setLogsStore(String logsStore) {
+    this.logsStore = logsStore;
+  }
+
+  public List<Sip> getSips() {
     return sips;
   }
 
-  public void setSips(Sips sips) {
+  public void setSips(List<Sip> sips) {
     this.sips = sips;
   }
 

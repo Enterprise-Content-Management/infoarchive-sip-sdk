@@ -44,7 +44,7 @@ public class HttpClient {
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
-  public <T> ResponseHandler<T> getResponseHandler(final String method, final String uri, final Class<T> type) {
+  <T> ResponseHandler<T> getResponseHandler(final String method, final String uri, final Class<T> type) {
     return response -> {
       StatusLine statusLine = response.getStatusLine();
       int status = statusLine.getStatusCode();

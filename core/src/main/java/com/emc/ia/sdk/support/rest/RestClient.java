@@ -5,7 +5,6 @@ package com.emc.ia.sdk.support.rest;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,10 +29,6 @@ public class RestClient implements Closeable, StandardLinkRelations {
     this.httpClient = Objects.requireNonNull(client, "Missing HTTP client");
   }
 
-  public List<Header> getHeaders() {
-    return headers;
-  }
-
   public void setHeaders(List<Header> headers) {
     this.headers = headers;
   }
@@ -45,6 +40,10 @@ public class RestClient implements Closeable, StandardLinkRelations {
   @Override
   public void close() {
     httpClient.close();
+  }
+
+  public <T> T post(String uri, HttpEntity entity, Class<T> type) throws IOException {
+    return post(uri, headers, entity, type);
   }
 
   public <T> T post(String uri, List<Header> httpHeaders, HttpEntity entity, Class<T> type) throws IOException {
@@ -68,14 +67,10 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return result;
   }
 
-  public <T> T createCollectionItem(LinkContainer collection, String addLinkRelation, T item) throws IOException {
-    return createCollectionItem(collection, addLinkRelation, item, MediaTypes.JSON);
-  }
-
   @SuppressWarnings("unchecked")
-  public <T> T createCollectionItem(LinkContainer collection, String addLinkRelation, T item, String contentType) throws IOException {
+  public <T> T createCollectionItem(LinkContainer collection, String addLinkRelation, T item) throws IOException {
     String uri = linkIn(collection, addLinkRelation).getHref();
-    T result = (T)post(uri, withContentType(contentType), toJson(item), item.getClass());
+    T result = (T)post(uri, withContentType(MediaTypes.HAL), toJson(item), item.getClass());
     Objects.requireNonNull(result, String.format("Could not create item in %s%n%s", uri, item));
     return result;
   }
@@ -86,7 +81,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return result;
   }
 
-  private StringEntity toJson(Object object) throws UnsupportedEncodingException {
+  private StringEntity toJson(Object object) throws IOException {
     return new StringEntity(new JsonFormatter().format(object));
   }
 

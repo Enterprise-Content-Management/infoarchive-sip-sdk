@@ -3,9 +3,11 @@
  */
 package com.emc.ia.sdk.sip.ingestion.dto;
 
-import com.emc.ia.sdk.support.rest.LinkContainer;
 
+public class Databases extends ItemContainer<Database> {
 
-public class Databases extends LinkContainer {
+  protected Databases() {
+    super("xdbDatabases");
+  }
 
 }

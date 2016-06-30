@@ -3,10 +3,11 @@
  */
 package com.emc.ia.sdk.sip.ingestion.dto;
 
-public class Holdings extends ItemContainer<Holding> {
 
-  protected Holdings() {
-    super("holdings");
+public class Stores extends ItemContainer<Store> {
+
+  public Stores() {
+    super("stores");
   }
 
 }

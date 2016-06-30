@@ -7,6 +7,5 @@ package com.emc.ia.sdk.support.rest;
 public interface MediaTypes {
 
   String HAL = "application/hal+json";
-  String JSON = "application/json";
 
 }
