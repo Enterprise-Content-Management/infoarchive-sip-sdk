@@ -19,5 +19,8 @@ interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_RECEIVER_NODES = LINK_PREFIX + "receiver-nodes";
   String LINK_SPACES = LINK_PREFIX + "spaces";
   String LINK_TENANT = LINK_PREFIX + "tenant";
+  String LINK_JOB_DEFINITIONS = LINK_PREFIX + "job-definitions";
+  String LINK_JOB_CONFIRMATION = LINK_JOB_DEFINITIONS + "?spel=?[name=='Confirmation']";
+  String LINK_JOB_INSTANCES = LINK_PREFIX + "job-instances";
 
 }
