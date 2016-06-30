@@ -149,7 +149,6 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
   public void shouldIngestSuccessfully() throws IOException {
     archiveClient.configure(configuration);
 

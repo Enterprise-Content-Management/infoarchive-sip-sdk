@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +21,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,13 +35,16 @@ public class WhenMakingHttpCalls extends TestCase {
   private static final String URL = "http://identifiers.emc.com/aips";
   private static final List<Header> HEADERS = new ArrayList<Header>();
 
-  private HttpClient httpClient;
+  private final HttpClient httpClient = new HttpClient();
+  private final HttpResponse response = mock(HttpResponse.class);
+  private final StatusLine statusLine = mock(StatusLine.class);
 
   @Before
   public void init() {
-    httpClient = new HttpClient();
     HEADERS.add(new BasicHeader("AuthToken", "XYZ123ABC"));
     HEADERS.add(new BasicHeader("Accept", "application/hal+json"));
+    when(response.getStatusLine()).thenReturn(statusLine);
+    when(statusLine.getStatusCode()).thenReturn(200);
   }
 
   @Test
@@ -79,12 +84,59 @@ public class WhenMakingHttpCalls extends TestCase {
 
   @Test(expected = HttpResponseException.class)
   public void shouldThrowExceptionOnNonOkStatusCode() throws IOException {
-    HttpResponse response = mock(HttpResponse.class);
-    StatusLine statusLine = mock(StatusLine.class);
     when(statusLine.getStatusCode()).thenReturn(400);
-    when(response.getStatusLine()).thenReturn(statusLine);
 
-    httpClient.getResponseHandler(randomString(), randomString(), null).handleResponse(response);
+    getResponse(null);
+  }
+
+  private <T> T getResponse(Class<T> type) throws IOException {
+    return httpClient.getResponseHandler(randomString(), randomString(), type).handleResponse(response);
+  }
+
+  @Test
+  public void shouldReturnNullWhenNoEntity() throws IOException {
+    Object body = getResponse(null);
+
+    assertNull(body);
+  }
+
+  @Test
+  public void shouldReturnBodyAsString() throws IOException {
+    String expected = randomString();
+    returnBody(expected);
+
+    String actual = getResponse(String.class);
+
+    assertEquals(expected, actual);
+  }
+
+  private void returnBody(String body) throws UnsupportedEncodingException {
+    when(response.getEntity()).thenReturn(new StringEntity(body));
+  }
+
+  @Test
+  public void shouldReturnBodyAsJson() throws IOException {
+    String expected = randomString();
+    returnBody("{ \"bar\": \"" + expected + "\" }");
+
+    Foo actual = getResponse(Foo.class);
+
+    assertEquals(expected, actual.getBar());
+  }
+
+
+  public static class Foo {
+
+    private String bar;
+
+    public String getBar() {
+      return bar;
+    }
+
+    public void setBar(String bar) {
+      this.bar = bar;
+    }
+
   }
 
 }
