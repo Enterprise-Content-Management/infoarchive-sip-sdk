@@ -7,7 +7,7 @@ package com.emc.ia.sdk.sip.ingestion.dto;
 public class SpaceRootLibraries extends ItemContainer<SpaceRootLibrary> {
 
   protected SpaceRootLibraries() {
-    super("spaceRootLibraries");
+    super("spaceRootXdbLibraries");
   }
 
 }

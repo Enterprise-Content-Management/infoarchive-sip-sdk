@@ -54,7 +54,7 @@ public class HttpClient {
         throw new HttpResponseException(status,
             String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
       }
-      if (body.isEmpty()) {
+      if (body.isEmpty() || type == null) {
         return null;
       }
       if (type.equals(String.class)) {

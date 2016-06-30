@@ -31,4 +31,11 @@ public interface InfoArchiveConfiguration {
   String HOLDING_PREFIX = PREFIX + "holding.";
   String HOLDING_NAME = HOLDING_PREFIX + NAME;
 
+  String RETENTION_POLICY_NAME = PREFIX + "retention.policy.name";
+
+  String PDI_PREFIX = PREFIX + "pdi.";
+  String PDI_XML = PDI_PREFIX + "xml";
+  String PDI_SCHEMA = PDI_PREFIX + "schema";
+  String PDI_SCHEMA_NAME = PDI_SCHEMA + ".name";
+
 }

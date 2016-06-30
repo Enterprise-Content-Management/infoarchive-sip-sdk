@@ -75,7 +75,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return result;
   }
 
-  private List<Header> withContentType(String contentType) {
+  public List<Header> withContentType(String contentType) {
     List<Header> result = new ArrayList<>(headers);
     result.add(new BasicHeader("Content-Type", contentType));
     return result;

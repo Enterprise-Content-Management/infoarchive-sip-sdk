@@ -27,9 +27,21 @@ import com.emc.ia.sdk.sip.ingestion.dto.FileSystemFolders;
 import com.emc.ia.sdk.sip.ingestion.dto.FileSystemRoot;
 import com.emc.ia.sdk.sip.ingestion.dto.FileSystemRoots;
 import com.emc.ia.sdk.sip.ingestion.dto.Holdings;
+import com.emc.ia.sdk.sip.ingestion.dto.Ingest;
+import com.emc.ia.sdk.sip.ingestion.dto.IngestNode;
+import com.emc.ia.sdk.sip.ingestion.dto.IngestNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.IngestionResponse;
+import com.emc.ia.sdk.sip.ingestion.dto.Ingests;
+import com.emc.ia.sdk.sip.ingestion.dto.Libraries;
+import com.emc.ia.sdk.sip.ingestion.dto.Library;
+import com.emc.ia.sdk.sip.ingestion.dto.Pdi;
+import com.emc.ia.sdk.sip.ingestion.dto.PdiSchema;
+import com.emc.ia.sdk.sip.ingestion.dto.PdiSchemas;
+import com.emc.ia.sdk.sip.ingestion.dto.Pdis;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
+import com.emc.ia.sdk.sip.ingestion.dto.RetentionPolicies;
+import com.emc.ia.sdk.sip.ingestion.dto.RetentionPolicy;
 import com.emc.ia.sdk.sip.ingestion.dto.Services;
 import com.emc.ia.sdk.sip.ingestion.dto.Space;
 import com.emc.ia.sdk.sip.ingestion.dto.SpaceRootFolder;
@@ -69,6 +81,11 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
     configuration.put(InfoArchiveConfiguration.DATABASE_ADMIN_PASSWORD, APPLICATION_NAME);
     configuration.put(InfoArchiveConfiguration.APPLICATION_NAME, APPLICATION_NAME);
     configuration.put(InfoArchiveConfiguration.HOLDING_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfiguration.RETENTION_POLICY_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfiguration.PDI_XML, "");
+    configuration.put(InfoArchiveConfiguration.PDI_SCHEMA_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfiguration.PDI_SCHEMA, "");
+
     resource = new Services();
     Link link = mock(Link.class);
     Tenant tenant = new Tenant();
@@ -84,13 +101,25 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
     when(fileSystemRoots.first()).thenReturn(fileSystemRoot);
     Holdings holdings = mock(Holdings.class);
     ReceiverNodes receiverNodes = mock(ReceiverNodes.class);
-    SpaceRootLibraries libraries = mock(SpaceRootLibraries.class);
+    SpaceRootLibraries spaceRootLibraries = mock(SpaceRootLibraries.class);
     SpaceRootFolders rootFolders = mock(SpaceRootFolders.class);
     SpaceRootFolder rootFolder = new SpaceRootFolder();
     FileSystemFolders systemFolders = mock(FileSystemFolders.class);
     FileSystemFolder systemFolder = new FileSystemFolder();
     Stores stores = mock(Stores.class);
     Store store = new Store();
+    IngestNodes ingestionNodes = mock(IngestNodes.class);
+    IngestNode ingestionNode = new IngestNode();
+    RetentionPolicies retentionPolicies = mock(RetentionPolicies.class);
+    RetentionPolicy retentionPolicy = new RetentionPolicy();
+    Pdis pdis = mock(Pdis.class);
+    Pdi pdi = new Pdi();
+    PdiSchemas pdiSchemas = mock(PdiSchemas.class);
+    PdiSchema pdiSchema = new PdiSchema();
+    Ingests ingests = mock(Ingests.class);
+    Ingest ingest = new Ingest();
+    Libraries libraries = mock(Libraries.class);
+    Library library = new Library();
 
     links.put(InfoArchiveLinkRelations.LINK_TENANT, link);
     links.put(InfoArchiveLinkRelations.LINK_APPLICATIONS, link);
@@ -110,11 +139,22 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
         .thenReturn(fileSystemRoots);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Holdings.class))).thenReturn(holdings);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(ReceiverNodes.class))).thenReturn(receiverNodes);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(SpaceRootLibraries.class))).thenReturn(libraries);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(SpaceRootLibraries.class))).thenReturn(spaceRootLibraries);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(SpaceRootFolders.class))).thenReturn(rootFolders);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(FileSystemFolders.class)))
         .thenReturn(systemFolders);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Stores.class))).thenReturn(stores);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(IngestNodes.class))).thenReturn(ingestionNodes);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(RetentionPolicies.class)))
+        .thenReturn(retentionPolicies);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Pdis.class)))
+        .thenReturn(pdis);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(PdiSchemas.class)))
+        .thenReturn(pdiSchemas);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Ingests.class)))
+        .thenReturn(ingests);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Libraries.class)))
+        .thenReturn(libraries);
 
     when(applications.byName(APPLICATION_NAME)).thenReturn(application);
 
@@ -122,10 +162,20 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
         .thenReturn(database);
     when(restClient.createCollectionItem(eq(spaces), eq(LINK_ADD), any(Space.class)))
         .thenReturn(space);
-    when(restClient.createCollectionItem(eq(rootFolders), eq(LINK_ADD), any(SpaceRootFolder.class))).thenReturn(rootFolder);
-    when(restClient.createCollectionItem(eq(systemFolders), eq(LINK_ADD), any(FileSystemFolder.class))).thenReturn(systemFolder);
+    when(restClient.createCollectionItem(eq(rootFolders), eq(LINK_ADD), any(SpaceRootFolder.class)))
+        .thenReturn(rootFolder);
+    when(restClient.createCollectionItem(eq(systemFolders), eq(LINK_ADD), any(FileSystemFolder.class)))
+        .thenReturn(systemFolder);
     when(restClient.createCollectionItem(eq(stores), eq(LINK_ADD), any(Store.class)))
         .thenReturn(store);
+    when(restClient.createCollectionItem(eq(ingestionNodes), eq(LINK_ADD), any(IngestNode.class)))
+        .thenReturn(ingestionNode);
+    when(restClient.createCollectionItem(eq(retentionPolicies), eq(LINK_ADD), any(RetentionPolicy.class)))
+        .thenReturn(retentionPolicy);
+    when(restClient.createCollectionItem(eq(pdis), eq(LINK_ADD), any(Pdi.class))).thenReturn(pdi);
+    when(restClient.createCollectionItem(eq(pdiSchemas), eq(LINK_ADD), any(PdiSchema.class))).thenReturn(pdiSchema);
+    when(restClient.createCollectionItem(eq(ingests), eq(LINK_ADD), any(Ingest.class))).thenReturn(ingest);
+    when(restClient.createCollectionItem(eq(libraries), eq(LINK_ADD), any(Library.class))).thenReturn(library);
   }
 
   @Test

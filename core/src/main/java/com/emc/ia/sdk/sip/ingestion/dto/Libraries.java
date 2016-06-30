@@ -4,7 +4,10 @@
 package com.emc.ia.sdk.sip.ingestion.dto;
 
 
-public class ReceptionResponse extends NamedLinkContainer {
+public class Libraries extends ItemContainer<Library> {
+
+  public Libraries() {
+    super("xdbLibraries");
+  }
 
 }
-

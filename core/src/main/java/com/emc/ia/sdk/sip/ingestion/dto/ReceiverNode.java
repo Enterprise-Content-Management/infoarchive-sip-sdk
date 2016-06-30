@@ -11,7 +11,11 @@ public class ReceiverNode extends NamedLinkContainer {
 
   private String workingDirectory;
   private String logsStore;
-  private List<Sip> sips = new ArrayList<>();
+  private List<Sip> sips;
+
+  public ReceiverNode() {
+    setSips(new ArrayList<>());
+  }
 
   public String getWorkingDirectory() {
     return workingDirectory;
@@ -33,7 +37,7 @@ public class ReceiverNode extends NamedLinkContainer {
     return sips;
   }
 
-  public void setSips(List<Sip> sips) {
+  public final void setSips(List<Sip> sips) {
     this.sips = sips;
   }
 

@@ -4,12 +4,12 @@
 package com.emc.ia.sdk.sip.ingestion.dto;
 
 
-public class ReceptionRequest {
+public class PdiSchema extends NamedLinkContainer {
 
   private String format;
 
-  public ReceptionRequest() {
-    setFormat("sip_zip");
+  public PdiSchema() {
+    setFormat("xsd");
   }
 
   public String getFormat() {
@@ -18,11 +18,6 @@ public class ReceptionRequest {
 
   public final void setFormat(String format) {
     this.format = format;
-  }
-
-  @Override
-  public String toString() {
-    return String.format("format=%s", format);
   }
 
 }

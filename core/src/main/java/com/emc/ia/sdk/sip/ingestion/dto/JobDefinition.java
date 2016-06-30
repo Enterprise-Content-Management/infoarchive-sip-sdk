@@ -6,13 +6,17 @@ package com.emc.ia.sdk.sip.ingestion.dto;
 
 public class JobDefinition extends NamedLinkContainer {
 
-  private String handlerName = "ConfirmationJob";
+  private String handlerName;
+
+  public JobDefinition() {
+    setHandlerName("ConfirmationJob");
+  }
 
   public String getHandlerName() {
     return handlerName;
   }
 
-  public void setHandlerName(String handlerName) {
+  public final void setHandlerName(String handlerName) {
     this.handlerName = handlerName;
   }
 }

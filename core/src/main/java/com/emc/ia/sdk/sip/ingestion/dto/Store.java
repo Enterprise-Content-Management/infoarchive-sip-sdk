@@ -7,14 +7,19 @@ package com.emc.ia.sdk.sip.ingestion.dto;
 public class Store extends NamedLinkContainer {
 
   private String fileSystemFolder;
-  private String type = "FILESYSTEM";
-  private String status = "ONLINE";
+  private String type;
+  private String status;
+
+  public Store() {
+    setType("FILESYSTEM");
+    setStatus("ONLINE");
+  }
 
   public String getFileSystemFolder() {
     return fileSystemFolder;
   }
 
-  public void setFileSystemFolder(String fileSystemFolder) {
+  public final void setFileSystemFolder(String fileSystemFolder) {
     this.fileSystemFolder = fileSystemFolder;
   }
 
@@ -22,7 +27,7 @@ public class Store extends NamedLinkContainer {
     return type;
   }
 
-  public void setType(String type) {
+  public final void setType(String type) {
     this.type = type;
   }
 
@@ -30,7 +35,7 @@ public class Store extends NamedLinkContainer {
     return status;
   }
 
-  public void setStatus(String status) {
+  public final void setStatus(String status) {
     this.status = status;
   }
 

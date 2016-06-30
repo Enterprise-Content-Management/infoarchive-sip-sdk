@@ -6,14 +6,19 @@ package com.emc.ia.sdk.sip.ingestion.dto;
 
 public class Sip {
 
-  private String format = "sip_zip";
-  private String extractorImpl = "com.emc.ia.reception.sip.extractor.impl.ZipSipExtractor";
+  private String format;
+  private String extractorImpl;
+
+  public Sip() {
+    setFormat("sip_zip");
+    setExtractorImpl("com.emc.ia.reception.sip.extractor.impl.ZipSipExtractor");
+  }
 
   public String getFormat() {
     return format;
   }
 
-  public void setFormat(String format) {
+  public final void setFormat(String format) {
     this.format = format;
   }
 
@@ -21,7 +26,7 @@ public class Sip {
     return extractorImpl;
   }
 
-  public void setExtractorImpl(String extractorImpl) {
+  public final void setExtractorImpl(String extractorImpl) {
     this.extractorImpl = extractorImpl;
   }
 
