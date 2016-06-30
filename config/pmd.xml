@@ -4,6 +4,8 @@
 	xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd"
 	xsi:noNamespaceSchemaLocation="http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
 
+  <description>PMD rules selected for this project</description>
+  
 	<!-- Not included Java rulesets: android.xml comments.xml javabeans.xml 
 		migrating_to_13.xml migrating_to_14.xml migrating_to_15.xml migrating_to_junit4.xml -->
 
