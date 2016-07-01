@@ -38,6 +38,9 @@ public class DefaultZipAssembler implements ZipAssembler {
   private void copyStream(InputStream stream, HashAssembler hashAssembler) throws IOException {
     byte[] buffer = new byte[BUFFER_SIZE];
     int numRead = stream.read(buffer);
+    if (numRead == 0) {
+      throw new IllegalArgumentException("Missing content");
+    }
     while (numRead > 0) {
       zip.write(buffer, 0, numRead);
       hashAssembler.add(buffer, numRead);
