@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.sip.ingestion;
+package com.emc.ia.sdk.support.rest;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
@@ -25,11 +25,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Services;
-import com.emc.ia.sdk.support.rest.HttpClient;
-import com.emc.ia.sdk.support.rest.Link;
-import com.emc.ia.sdk.support.rest.LinkContainer;
-import com.emc.ia.sdk.support.rest.RestClient;
-import com.emc.ia.sdk.support.rest.StandardLinkRelations;
 import com.emc.ia.sdk.support.test.TestCase;
 
 
