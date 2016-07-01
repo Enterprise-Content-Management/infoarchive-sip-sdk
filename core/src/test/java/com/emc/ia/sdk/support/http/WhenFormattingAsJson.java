@@ -1,15 +1,13 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.sip.ingestion;
+package com.emc.ia.sdk.support.http;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
 import org.junit.Test;
-
-import com.emc.ia.sdk.support.rest.JsonFormatter;
 
 
 public class WhenFormattingAsJson {

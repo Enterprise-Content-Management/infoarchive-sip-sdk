@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,6 +50,7 @@ import com.emc.ia.sdk.sip.ingestion.dto.Spaces;
 import com.emc.ia.sdk.sip.ingestion.dto.Store;
 import com.emc.ia.sdk.sip.ingestion.dto.Stores;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.Link;
 import com.emc.ia.sdk.support.rest.LinkContainer;
@@ -85,6 +85,7 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
     configuration.put(InfoArchiveConfiguration.PDI_XML, "");
     configuration.put(InfoArchiveConfiguration.PDI_SCHEMA_NAME, APPLICATION_NAME);
     configuration.put(InfoArchiveConfiguration.PDI_SCHEMA, "");
+    configuration.put(InfoArchiveConfiguration.INGEST_XML, "");
 
     resource = new Services();
     Link link = mock(Link.class);
@@ -208,7 +209,7 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
     ReceptionResponse receptionResponse = new ReceptionResponse();
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
     receptionResponse.setLinks(links);
-    when(restClient.post(anyString(), any(HttpEntity.class), eq(ReceptionResponse.class)))
+    when(restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
         .thenReturn(receptionResponse);
     when(restClient.put(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip001");

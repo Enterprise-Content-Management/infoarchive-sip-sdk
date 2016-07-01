@@ -40,6 +40,9 @@ public interface InfoArchiveConfiguration {
 
   String JOB_PREFIX = PREFIX + "job.";
   String JOB_DEFINITION_NAME = JOB_PREFIX + "definition";
-
   String JOB_CONFIRMATION = "Confirmation";
+
+  String INGEST_XML = PREFIX + "ingest.xml";
+
+  String HTTP_CLIENT_CLASSNAME = PREFIX + "http.client";
 }

@@ -3,9 +3,9 @@
  */
 package com.emc.ia.sdk.support.rest;
 
+import com.emc.ia.sdk.support.test.TestCase;
 
-public interface MediaTypes {
 
-  String HAL = "application/hal+json";
+public class WhenMakingRestCalls extends TestCase {
 
 }
