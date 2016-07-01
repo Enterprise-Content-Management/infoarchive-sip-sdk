@@ -68,11 +68,13 @@ import com.emc.ia.sdk.support.rest.RestClient;
  */
 public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRelations, InfoArchiveConfiguration {
 
+  private static final String FORMAT_XML = "xml";
+  private static final String FORMAT_XSD = "xsd";
   private static final String WORKING_FOLDER_NAME = "working/";
   private static final String RECEIVER_NODE_NAME = "receiver_node_01";
+  private static final String INGEST_NAME = "ingest";
   private static final String INGEST_NODE_NAME = "ingest_node_01";
   private static final String STORE_NAME = "filestore_01";
-  private static final String INGEST_NAME = "ingest";
 
   private final RestCache configurationState = new RestCache();
   private Map<String, String> configuration;
@@ -388,15 +390,15 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (pdi == null) {
       pdi = createItem(pdis, createPdi(name));
     }
-    uploadContents(pdi, PDI_XML);
+    uploadContents(pdi, PDI_XML, FORMAT_XML);
     configurationState.setPdiUri(pdi.getSelfUri());
   }
 
-  private void uploadContents(LinkContainer state, String configurationName) throws IOException {
+  private void uploadContents(LinkContainer state, String configurationName, String format) throws IOException {
     String contents = configured(configurationName);
     try (InputStream stream = new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8))) {
       restClient.post(state.getUri(LINK_CONTENTS), null,
-          new TextPart("content", MediaTypes.HAL, "{ \"format\": \"application/xml\" }"),
+          new TextPart("content", MediaTypes.HAL, "{ \"format\": \"" + format + "\" }"),
           new BinaryPart("file", stream, configurationName));
     }
   }
@@ -414,7 +416,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (pdiSchema == null) {
       pdiSchema = createItem(pdiSchemas, createPdiSchema(name));
     }
-    uploadContents(pdiSchema, PDI_SCHEMA);
+    uploadContents(pdiSchema, PDI_SCHEMA, FORMAT_XSD);
   }
 
   private PdiSchema createPdiSchema(String name) {
@@ -431,7 +433,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       ingest = createItem(ingests, createIngest(name));
     }
     configurationState.setIngestUri(ingest.getSelfUri());
-    uploadContents(ingest, INGEST_XML);
+    uploadContents(ingest, INGEST_XML, FORMAT_XML);
   }
 
   private Ingest createIngest(String name) {
