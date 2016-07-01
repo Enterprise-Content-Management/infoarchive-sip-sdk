@@ -38,4 +38,6 @@ public interface InfoArchiveConfiguration {
   String PDI_SCHEMA = PDI_PREFIX + "schema";
   String PDI_SCHEMA_NAME = PDI_SCHEMA + ".name";
 
+  String INGEST_XML = PREFIX + "ingest.xml";
+
 }

@@ -6,80 +6,70 @@ package com.emc.ia.sdk.support.rest;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.List;
+import java.util.Locale;
 
-import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
+import org.apache.http.util.EntityUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.ArrayComparisonFailure;
 
 import com.emc.ia.sdk.support.test.TestCase;
 
 
 public class WhenMakingHttpCalls extends TestCase {
 
-  private static final String URL = "http://identifiers.emc.com/aips";
-  private static final List<Header> HEADERS = new ArrayList<Header>();
-
-  private final HttpClient httpClient = new HttpClient();
+  private final TestApacheHttpClient httpClient = new TestApacheHttpClient();
   private final HttpResponse response = mock(HttpResponse.class);
   private final StatusLine statusLine = mock(StatusLine.class);
 
   @Before
-  public void init() {
-    HEADERS.add(new BasicHeader("AuthToken", "XYZ123ABC"));
-    HEADERS.add(new BasicHeader("Accept", "application/hal+json"));
+  public void init() throws IOException {
     when(response.getStatusLine()).thenReturn(statusLine);
     when(statusLine.getStatusCode()).thenReturn(200);
   }
 
-  @Test
-  public void shouldReturnValidHttpGetRequest() {
-    HttpGet request = httpClient.httpGetRequest(URL, HEADERS);
-
-    assertRequest(request);
-  }
-
-  private void assertRequest(HttpRequestBase actual) throws ArrayComparisonFailure {
-    assertNotNull(actual);
-    assertEquals("URI", URI.create(URL), actual.getURI());
-    assertArrayEquals("Headers", HEADERS.toArray(), actual.getAllHeaders());
+  @After
+  public void done() {
+    httpClient.close();
   }
 
   @Test
-  public void shouldReturnValidHttpPutRequest() {
-    HttpPut request = httpClient.httpPutRequest(URL, HEADERS);
+  public void shouldGet() throws IOException {
+    String uri = randomString();
+    httpClient.setResponse(uri);
+    String header = randomString();
+    String value = randomString();
 
-    assertRequest(request);
+    String actual = httpClient.get(uri, Collections.singleton(new Header(header, value)), String.class);
+
+    assertEquals("Response", uri, actual);
+    HttpUriRequest request = assertRequest(uri, HttpGet.class);
+    org.apache.http.Header[] headers = request.getAllHeaders();
+    assertEquals("# headers", 1, headers.length);
+    assertEquals("Header name", header, headers[0].getName());
+    assertEquals("Header value", value, headers[0].getValue());
   }
 
-  @Test
-  public void shouldReturnValidHttpPostRequest() {
-    HttpPost request = httpClient.httpPostRequest(URL, HEADERS);
-
-    assertRequest(request);
-  }
-
-  @Test
-  public void shouldExecuteHttpCall() throws IOException {
-    String html = httpClient.execute(httpClient.httpGetRequest("http://www.google.com", Collections.emptyList()),
-        String.class);
-
-    assertTrue(html.contains("Google"));
+  private <T extends HttpUriRequest> T assertRequest(String expectedUri, Class<T> expectedClass) {
+    HttpUriRequest request = httpClient.getExecutedRequest();
+    assertEquals("Request", expectedClass, request.getClass());
+    assertEquals("Request URI", expectedUri, request.getURI().toString());
+    return expectedClass.cast(request);
   }
 
   @Test(expected = HttpResponseException.class)
@@ -124,6 +114,40 @@ public class WhenMakingHttpCalls extends TestCase {
     assertEquals(expected, actual.getBar());
   }
 
+  @Test
+  public void shouldPut() throws IOException {
+    String uri = randomString();
+
+    httpClient.put(uri, Collections.emptyList(), null);
+
+    assertRequest(uri, HttpPut.class);
+  }
+
+  @Test
+  public void shouldPost() throws IOException {
+    String uri = randomString();
+    String payload = randomString();
+
+    httpClient.post(uri, Collections.emptyList(), payload, null);
+
+    HttpPost request = assertRequest(uri, HttpPost.class);
+    assertEquals("Payload", payload, EntityUtils.toString(request.getEntity()));
+  }
+
+  @Test
+  public void shouldPostMultiPart() throws IOException {
+    String uri = randomString();
+    String data = randomString();
+    try (InputStream stream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8))) {
+      httpClient.post(uri, Collections.emptyList(), null,
+          new TextPart(randomString(), randomString()),
+          new BinaryPart(randomString(), stream, randomString()));
+    }
+
+    HttpEntity entity = assertRequest(uri, HttpPost.class).getEntity();
+    assertTrue("Is multi part", entity.getClass().getSimpleName().toLowerCase(Locale.ENGLISH).contains("multipart"));
+  }
+
 
   public static class Foo {
 
@@ -135,6 +159,28 @@ public class WhenMakingHttpCalls extends TestCase {
 
     public void setBar(String bar) {
       this.bar = bar;
+    }
+
+  }
+
+
+  private static class TestApacheHttpClient extends ApacheHttpClient {
+
+    private Object preparedResponse;
+    private HttpUriRequest executedRequest;
+
+    public HttpUriRequest getExecutedRequest() {
+      return executedRequest;
+    }
+
+    public void setResponse(Object response) {
+      preparedResponse = response;
+    }
+
+    @Override
+    protected <T> T execute(HttpUriRequest request, Class<T> type) throws IOException {
+      executedRequest = request;
+      return type == null ? null : type.cast(preparedResponse);
     }
 
   }

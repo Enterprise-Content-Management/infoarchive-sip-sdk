@@ -7,18 +7,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.InputStreamBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.message.BasicHeader;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
@@ -63,10 +53,11 @@ import com.emc.ia.sdk.sip.ingestion.dto.Stores;
 import com.emc.ia.sdk.sip.ingestion.dto.SubPriority;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
-import com.emc.ia.sdk.support.rest.Link;
+import com.emc.ia.sdk.support.rest.BinaryPart;
 import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.MediaTypes;
 import com.emc.ia.sdk.support.rest.RestClient;
+import com.emc.ia.sdk.support.rest.TextPart;
 
 
 /**
@@ -125,10 +116,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   private void configureRestClient() throws IOException {
-    List<Header> headers = new ArrayList<Header>();
-    headers.add(new BasicHeader("Authorization", "Bearer " + configuration.get(SERVER_AUTENTICATON_TOKEN)));
-    headers.add(new BasicHeader("Accept", MediaTypes.HAL));
-    restClient.setHeaders(headers);
+    restClient.init(configuration.get(SERVER_AUTENTICATON_TOKEN));
     configurationState.setServices(restClient.get(configured(SERVER_URI), Services.class));
   }
 
@@ -399,11 +387,9 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private void uploadContents(LinkContainer state, String configurationName) throws IOException {
     String contents = configured(configurationName);
     try (InputStream stream = new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8))) {
-      HttpEntity entity = MultipartEntityBuilder.create()
-          .addPart("content", new StringBody("{ \"format\": \"application/xml\" }", ContentType.create(MediaTypes.HAL)))
-          .addPart("file", new InputStreamBody(stream, ContentType.APPLICATION_OCTET_STREAM, configurationName))
-          .build();
-      restClient.post(state.getUri(LINK_CONTENTS), entity, null);
+      restClient.post(state.getUri(LINK_CONTENTS), null,
+          new TextPart("content", MediaTypes.HAL, "{ \"format\": \"application/xml\" }"),
+          new BinaryPart("file", stream, configurationName));
     }
   }
 
@@ -437,6 +423,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       ingest = createItem(ingests, createIngest(name));
     }
     configurationState.setIngestUri(ingest.getSelfUri());
+    uploadContents(ingest, INGEST_XML);
   }
 
   private Ingest createIngest(String name) {
@@ -505,20 +492,10 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   @Override
   public String ingest(InputStream sip) throws IOException {
     Objects.requireNonNull(aipsUri, "Did you forget to call configure()?");
-    ReceptionResponse response = upload(aipsUri, sip, ReceptionResponse.class);
-    Link ingestLink = response.getLinks().get(LINK_INGEST);
-    IngestionResponse ingestionResponse = restClient.put(ingestLink.getHref(), IngestionResponse.class);
+    ReceptionResponse response = restClient.post(aipsUri, ReceptionResponse.class,
+        new TextPart("format", "sip_zip"), new BinaryPart("sip", sip, "IASIP.zip"));
+    IngestionResponse ingestionResponse = restClient.put(response.getUri(LINK_INGEST), IngestionResponse.class);
     return ingestionResponse.getAipId();
-  }
-
-  private <T> T upload(String uri, InputStream sip, Class<T> type) throws IOException {
-    // TODO - what should be the file name here ? IASIP.zip is Ok ?
-    InputStreamBody file = new InputStreamBody(sip, ContentType.APPLICATION_OCTET_STREAM, "IASIP.zip");
-    HttpEntity entity = MultipartEntityBuilder.create()
-        .addTextBody("format", "sip_zip")
-        .addPart("sip", file)
-        .build();
-    return restClient.post(uri, entity, type);
   }
 
 }
