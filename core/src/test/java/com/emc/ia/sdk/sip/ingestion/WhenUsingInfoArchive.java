@@ -50,10 +50,10 @@ import com.emc.ia.sdk.sip.ingestion.dto.Spaces;
 import com.emc.ia.sdk.sip.ingestion.dto.Store;
 import com.emc.ia.sdk.sip.ingestion.dto.Stores;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.Link;
 import com.emc.ia.sdk.support.rest.LinkContainer;
-import com.emc.ia.sdk.support.rest.Part;
 import com.emc.ia.sdk.support.rest.RestClient;
 
 

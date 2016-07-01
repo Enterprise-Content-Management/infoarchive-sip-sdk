@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.support.rest;
+package com.emc.ia.sdk.support.http;
 
 import java.io.IOException;
 import java.util.Collection;

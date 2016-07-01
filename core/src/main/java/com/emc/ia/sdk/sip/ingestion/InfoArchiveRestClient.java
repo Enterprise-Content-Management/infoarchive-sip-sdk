@@ -53,14 +53,14 @@ import com.emc.ia.sdk.sip.ingestion.dto.Stores;
 import com.emc.ia.sdk.sip.ingestion.dto.SubPriority;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
 import com.emc.ia.sdk.support.NewInstance;
+import com.emc.ia.sdk.support.http.BinaryPart;
+import com.emc.ia.sdk.support.http.HttpClient;
+import com.emc.ia.sdk.support.http.MediaTypes;
+import com.emc.ia.sdk.support.http.TextPart;
+import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
-import com.emc.ia.sdk.support.rest.ApacheHttpClient;
-import com.emc.ia.sdk.support.rest.BinaryPart;
-import com.emc.ia.sdk.support.rest.HttpClient;
 import com.emc.ia.sdk.support.rest.LinkContainer;
-import com.emc.ia.sdk.support.rest.MediaTypes;
 import com.emc.ia.sdk.support.rest.RestClient;
-import com.emc.ia.sdk.support.rest.TextPart;
 
 
 /**

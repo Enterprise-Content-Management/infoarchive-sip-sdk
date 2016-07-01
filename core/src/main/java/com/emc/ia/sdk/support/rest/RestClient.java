@@ -9,6 +9,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
+import com.emc.ia.sdk.support.http.Header;
+import com.emc.ia.sdk.support.http.HttpClient;
+import com.emc.ia.sdk.support.http.JsonFormatter;
+import com.emc.ia.sdk.support.http.MediaTypes;
+import com.emc.ia.sdk.support.http.Part;
+
 
 public class RestClient implements Closeable, StandardLinkRelations {
 

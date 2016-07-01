@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.support.rest;
+package com.emc.ia.sdk.support.http.apache;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -28,10 +28,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.emc.ia.sdk.support.http.BinaryPart;
+import com.emc.ia.sdk.support.http.Header;
+import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.test.TestCase;
 
 
-public class WhenMakingHttpCalls extends TestCase {
+public class WhenMakingHttpCallsUsingApache extends TestCase {
 
   private final TestApacheHttpClient httpClient = new TestApacheHttpClient();
   private final HttpResponse response = mock(HttpResponse.class);

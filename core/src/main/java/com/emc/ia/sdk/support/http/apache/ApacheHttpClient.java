@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.support.rest;
+package com.emc.ia.sdk.support.http.apache;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -31,6 +31,11 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 
+import com.emc.ia.sdk.support.http.BinaryPart;
+import com.emc.ia.sdk.support.http.Header;
+import com.emc.ia.sdk.support.http.HttpClient;
+import com.emc.ia.sdk.support.http.Part;
+import com.emc.ia.sdk.support.http.TextPart;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
