@@ -76,7 +76,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private static final String WORKING_FOLDER_NAME = "working/";
   private static final String RECEIVER_NODE_NAME = "receiver_node_01";
-  private static final String INGEST_NODE_NAME = "ingestion_node_01";
+  private static final String INGEST_NODE_NAME = "ingest_node_01";
   private static final String STORE_NAME = "filestore_01";
   private static final String INGEST_NAME = "ingest";
 
