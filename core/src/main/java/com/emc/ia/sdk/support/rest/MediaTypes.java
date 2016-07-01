@@ -6,8 +6,8 @@ package com.emc.ia.sdk.support.rest;
 
 public interface MediaTypes {
 
-  String HAL = "application/hal+json";
   String BINARY = "application/octect-stream";
+  String HAL = "application/hal+json";
   String TEXT = "text/plain";
 
 }

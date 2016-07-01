@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class ApacheHttpClient {
+public class ApacheHttpClient implements HttpClient {
 
   private static final int STATUS_CODE_RANGE_MIN = 200;
   private static final int STATUS_CODE_RANGE_MAX = 300;
@@ -50,6 +50,10 @@ public class ApacheHttpClient {
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
+  /* (non-Javadoc)
+   * @see com.emc.ia.sdk.support.rest.HttpClient#get(java.lang.String, java.util.Collection, java.lang.Class)
+   */
+  @Override
   public <T> T get(String uri, Collection<Header> headers, Class<T> type) throws IOException {
     return execute(newGet(uri, headers), type);
   }
@@ -100,6 +104,10 @@ public class ApacheHttpClient {
     return STATUS_CODE_RANGE_MIN <= status && status < STATUS_CODE_RANGE_MAX;
   }
 
+  /* (non-Javadoc)
+   * @see com.emc.ia.sdk.support.rest.HttpClient#put(java.lang.String, java.util.Collection, java.lang.Class)
+   */
+  @Override
   public <T> T put(String uri, Collection<Header> headers, Class<T> type) throws IOException {
     return execute(newPut(uri, headers), type);
   }
@@ -111,6 +119,10 @@ public class ApacheHttpClient {
     return result;
   }
 
+  /* (non-Javadoc)
+   * @see com.emc.ia.sdk.support.rest.HttpClient#post(java.lang.String, java.util.Collection, java.lang.String, java.lang.Class)
+   */
+  @Override
   public <T> T post(String uri, Collection<Header> headers, String payload, Class<T> type) throws IOException {
     HttpPost request = newPost(uri, headers);
     request.setEntity(new StringEntity(payload));
@@ -124,6 +136,10 @@ public class ApacheHttpClient {
     return result;
   }
 
+  /* (non-Javadoc)
+   * @see com.emc.ia.sdk.support.rest.HttpClient#post(java.lang.String, java.util.Collection, java.lang.Class, com.emc.ia.sdk.support.rest.Part)
+   */
+  @Override
   public <T> T post(String uri, Collection<Header> headers, Class<T> type, Part... parts) throws IOException {
     HttpPost request = newPost(uri, headers);
     MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
@@ -147,6 +163,10 @@ public class ApacheHttpClient {
     throw new IllegalArgumentException("Unhandled part type: " + part.getClass().getName());
   }
 
+  /* (non-Javadoc)
+   * @see com.emc.ia.sdk.support.rest.HttpClient#close()
+   */
+  @Override
   public void close() {
     IOUtils.closeQuietly(client);
   }

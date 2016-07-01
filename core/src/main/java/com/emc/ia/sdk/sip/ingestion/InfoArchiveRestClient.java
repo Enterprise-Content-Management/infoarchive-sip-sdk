@@ -52,8 +52,11 @@ import com.emc.ia.sdk.sip.ingestion.dto.Store;
 import com.emc.ia.sdk.sip.ingestion.dto.Stores;
 import com.emc.ia.sdk.sip.ingestion.dto.SubPriority;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+import com.emc.ia.sdk.support.NewInstance;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
+import com.emc.ia.sdk.support.rest.ApacheHttpClient;
 import com.emc.ia.sdk.support.rest.BinaryPart;
+import com.emc.ia.sdk.support.rest.HttpClient;
 import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.MediaTypes;
 import com.emc.ia.sdk.support.rest.RestClient;
@@ -71,13 +74,12 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private static final String STORE_NAME = "filestore_01";
   private static final String INGEST_NAME = "ingest";
 
-  private final RestClient restClient;
   private final RestCache configurationState = new RestCache();
   private Map<String, String> configuration;
+  private RestClient restClient;
   private String aipsUri;
 
   public InfoArchiveRestClient() {
-    this(new RestClient());
   }
 
   public InfoArchiveRestClient(RestClient restClient) {
@@ -88,7 +90,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   public void configure(Map<String, String> config) {
     configuration = config;
     try {
-      configureRestClient();
+      initRestClient();
       ensureTenant();
       ensureFederation();
       ensureDatabase();
@@ -115,7 +117,13 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     }
   }
 
-  private void configureRestClient() throws IOException {
+  private void initRestClient() throws IOException {
+    if (restClient == null) {
+      HttpClient httpClient = NewInstance
+          .fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
+          .as(HttpClient.class);
+      restClient = new RestClient(httpClient);
+    }
     restClient.init(configuration.get(SERVER_AUTENTICATON_TOKEN));
     configurationState.setServices(restClient.get(configured(SERVER_URI), Services.class));
   }

@@ -40,4 +40,5 @@ public interface InfoArchiveConfiguration {
 
   String INGEST_XML = PREFIX + "ingest.xml";
 
+  String HTTP_CLIENT_CLASSNAME = PREFIX + "http.client";
 }

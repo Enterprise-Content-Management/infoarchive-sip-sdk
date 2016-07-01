@@ -12,15 +12,11 @@ import java.util.Objects;
 
 public class RestClient implements Closeable, StandardLinkRelations {
 
-  private final ApacheHttpClient httpClient;
+  private final HttpClient httpClient;
   private final JsonFormatter formatter = new JsonFormatter();
   private final Collection<Header> headers = new ArrayList<Header>();
 
-  public RestClient() {
-    this(new ApacheHttpClient());
-  }
-
-  public RestClient(ApacheHttpClient client) {
+  public RestClient(HttpClient client) {
     this.httpClient = Objects.requireNonNull(client, "Missing HTTP client");
   }
 
