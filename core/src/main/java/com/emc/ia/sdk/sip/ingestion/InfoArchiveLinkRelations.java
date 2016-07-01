@@ -22,7 +22,7 @@ interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_HOLDINGS = LINK_PREFIX + "holdings";
   String LINK_INGEST_NODES = LINK_PREFIX + "ingest-nodes";
   String LINK_JOB_DEFINITIONS = LINK_PREFIX + "job-definitions";
-  String LINK_JOB_CONFIRMATION = LINK_JOB_DEFINITIONS + "?spel=?[name=='Confirmation']";
+  String LINK_JOB_CONFIRMATION = "?spel=?[name=='Confirmation']";
   String LINK_JOB_INSTANCES = LINK_PREFIX + "job-instances";
   String LINK_LIBRARIES = LINK_PREFIX + "xdb-libraries";
   String LINK_PDIS = LINK_PREFIX + "pdis";
@@ -34,5 +34,4 @@ interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_SPACE_ROOT_LIBRARIES = LINK_PREFIX + "space-root-xdb-libraries";
   String LINK_STORES = LINK_PREFIX + "stores";
   String LINK_TENANT = LINK_PREFIX + "tenant";
-
 }

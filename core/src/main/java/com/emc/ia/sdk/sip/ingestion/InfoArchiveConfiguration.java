@@ -38,4 +38,8 @@ public interface InfoArchiveConfiguration {
   String PDI_SCHEMA = PDI_PREFIX + "schema";
   String PDI_SCHEMA_NAME = PDI_SCHEMA + ".name";
 
+  String JOB_PREFIX = PREFIX + "job.";
+  String JOB_DEFINITION_NAME = JOB_PREFIX + "definition";
+
+  String JOB_CONFIRMATION = "Confirmation";
 }

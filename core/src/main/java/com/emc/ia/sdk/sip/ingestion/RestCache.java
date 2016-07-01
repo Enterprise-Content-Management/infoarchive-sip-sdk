@@ -5,6 +5,7 @@ package com.emc.ia.sdk.sip.ingestion;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Federation;
+import com.emc.ia.sdk.sip.ingestion.dto.JobDefinition;
 import com.emc.ia.sdk.sip.ingestion.dto.Services;
 import com.emc.ia.sdk.sip.ingestion.dto.Space;
 import com.emc.ia.sdk.sip.ingestion.dto.SpaceRootFolder;
@@ -30,6 +31,7 @@ class RestCache { // NOPMD TooManyFields
   private String libraryUri;
   private String pdiUri;
   private String ingestNodeUri;
+  private JobDefinition jobDefinition;
 
   public Services getServices() {
     return services;
@@ -159,4 +161,11 @@ class RestCache { // NOPMD TooManyFields
     this.libraryUri = libraryUri;
   }
 
+  public JobDefinition getJobDefinition() {
+    return jobDefinition;
+  }
+
+  public void setJobDefinition(JobDefinition jobDefinition) {
+    this.jobDefinition = jobDefinition;
+  }
 }
