@@ -9,6 +9,7 @@ import com.emc.ia.sdk.support.rest.StandardLinkRelations;
 interface InfoArchiveLinkRelations extends StandardLinkRelations {
 
   String LINK_PREFIX = "http://identifiers.emc.com/";
+
   String LINK_ADD = LINK_PREFIX + "add";
   String LINK_AIPS = LINK_PREFIX + "aips";
   String LINK_INGEST = LINK_PREFIX + "ingest";
@@ -16,6 +17,7 @@ interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_APPLICATIONS = LINK_PREFIX + "applications";
   String LINK_CONTENTS = LINK_PREFIX + "contents";
   String LINK_DATABASES = LINK_PREFIX + "xdb-databases";
+  String LINK_DOWNLOAD = LINK_PREFIX + "content-download";
   String LINK_FEDERATIONS = LINK_PREFIX + "federations";
   String LINK_FILE_SYSTEM_FOLDERS = LINK_PREFIX + "file-system-folders";
   String LINK_FILE_SYSTEM_ROOTS = LINK_PREFIX + "file-system-roots";
