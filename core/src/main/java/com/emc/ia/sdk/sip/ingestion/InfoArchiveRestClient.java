@@ -157,7 +157,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     Federations federations = restClient.follow(configurationState.getServices(), LINK_FEDERATIONS, Federations.class);
     configurationState.setFederation(federations.byName(name));
     if (configurationState.getFederation() == null) {
-      createItem(configurationState.getServices(), LINK_FEDERATIONS, createFederation(name));
+      createItem(federations, createFederation(name));
       configurationState.setFederation(restClient.refresh(federations).byName(name));
       Objects.requireNonNull(configurationState.getFederation(), "Could not create federation");
     }
