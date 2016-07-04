@@ -92,9 +92,13 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     this.restClient = restClient;
   }
 
+  protected RestCache getConfigurationState() {
+    return configurationState;
+  }
+
   @Override
   public void configure(Map<String, String> config) {
-    configuration = config;
+    setConfiguration(config);
     try {
       initRestClient();
       ensureTenant();
@@ -121,6 +125,10 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
+  }
+
+  protected Map<String, String> setConfiguration(Map<String, String> config) {
+    return configuration = config;
   }
 
   private void initRestClient() throws IOException {
@@ -204,7 +212,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     configurationState.setFileSystemRootUri(fileSystemRoots.first().getSelfUri());
   }
 
-  private void ensureApplication() throws IOException {
+  protected void ensureApplication() throws IOException {
     String applicationName = configuration.get(APPLICATION_NAME);
     Applications applications = restClient.follow(configurationState.getTenant(), LINK_APPLICATIONS,
         Applications.class);
@@ -544,7 +552,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return result;
   }
 
-  private void cacheAipsUri() {
+  protected void cacheAipsUri() {
     aipsUri = configurationState.getApplication().getUri(LINK_AIPS);
   }
 

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -18,25 +20,31 @@ import org.junit.Test;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
+import com.emc.ia.sdk.sip.ingestion.dto.Contents;
 import com.emc.ia.sdk.sip.ingestion.dto.Database;
 import com.emc.ia.sdk.sip.ingestion.dto.Databases;
+import com.emc.ia.sdk.sip.ingestion.dto.Federation;
 import com.emc.ia.sdk.sip.ingestion.dto.Federations;
 import com.emc.ia.sdk.sip.ingestion.dto.FileSystemFolder;
 import com.emc.ia.sdk.sip.ingestion.dto.FileSystemFolders;
 import com.emc.ia.sdk.sip.ingestion.dto.FileSystemRoot;
 import com.emc.ia.sdk.sip.ingestion.dto.FileSystemRoots;
+import com.emc.ia.sdk.sip.ingestion.dto.Holding;
 import com.emc.ia.sdk.sip.ingestion.dto.Holdings;
 import com.emc.ia.sdk.sip.ingestion.dto.Ingest;
 import com.emc.ia.sdk.sip.ingestion.dto.IngestNode;
 import com.emc.ia.sdk.sip.ingestion.dto.IngestNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.IngestionResponse;
 import com.emc.ia.sdk.sip.ingestion.dto.Ingests;
+import com.emc.ia.sdk.sip.ingestion.dto.ItemContainer;
 import com.emc.ia.sdk.sip.ingestion.dto.Libraries;
 import com.emc.ia.sdk.sip.ingestion.dto.Library;
+import com.emc.ia.sdk.sip.ingestion.dto.NamedLinkContainer;
 import com.emc.ia.sdk.sip.ingestion.dto.Pdi;
 import com.emc.ia.sdk.sip.ingestion.dto.PdiSchema;
 import com.emc.ia.sdk.sip.ingestion.dto.PdiSchemas;
 import com.emc.ia.sdk.sip.ingestion.dto.Pdis;
+import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNode;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
 import com.emc.ia.sdk.sip.ingestion.dto.RetentionPolicies;
@@ -46,6 +54,7 @@ import com.emc.ia.sdk.sip.ingestion.dto.Space;
 import com.emc.ia.sdk.sip.ingestion.dto.SpaceRootFolder;
 import com.emc.ia.sdk.sip.ingestion.dto.SpaceRootFolders;
 import com.emc.ia.sdk.sip.ingestion.dto.SpaceRootLibraries;
+import com.emc.ia.sdk.sip.ingestion.dto.SpaceRootLibrary;
 import com.emc.ia.sdk.sip.ingestion.dto.Spaces;
 import com.emc.ia.sdk.sip.ingestion.dto.Store;
 import com.emc.ia.sdk.sip.ingestion.dto.Stores;
@@ -55,9 +64,10 @@ import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.Link;
 import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.RestClient;
+import com.emc.ia.sdk.support.test.TestCase;
 
 
-public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
+public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations {
 
   private static final String BILLBOARD_URI = "http://foo.com/bar";
   private static final String AUTH_TOKEN = "XYZ123ABC";
@@ -68,7 +78,6 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
   private final Map<String, String> configuration = new HashMap<String, String>();
   private final RestClient restClient = mock(RestClient.class);
   private final InfoArchiveRestClient archiveClient = new InfoArchiveRestClient(restClient);
-  private Services resource;
   private Applications applications;
   private Application application;
 
@@ -86,17 +95,16 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
     configuration.put(InfoArchiveConfiguration.PDI_SCHEMA_NAME, APPLICATION_NAME);
     configuration.put(InfoArchiveConfiguration.PDI_SCHEMA, "");
     configuration.put(InfoArchiveConfiguration.INGEST_XML, "");
+    archiveClient.setConfiguration(configuration);
 
-    resource = new Services();
+    Services resource = new Services();
     Link link = mock(Link.class);
     Tenant tenant = new Tenant();
     application = new Application();
     applications = mock(Applications.class);
     Federations federations = mock(Federations.class);
     Spaces spaces = mock(Spaces.class);
-    Space space = new Space();
     Databases databases = mock(Databases.class);
-    Database database = new Database();
     FileSystemRoots fileSystemRoots = mock(FileSystemRoots.class);
     FileSystemRoot fileSystemRoot = new FileSystemRoot();
     when(fileSystemRoots.first()).thenReturn(fileSystemRoot);
@@ -104,23 +112,15 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
     ReceiverNodes receiverNodes = mock(ReceiverNodes.class);
     SpaceRootLibraries spaceRootLibraries = mock(SpaceRootLibraries.class);
     SpaceRootFolders rootFolders = mock(SpaceRootFolders.class);
-    SpaceRootFolder rootFolder = new SpaceRootFolder();
     FileSystemFolders systemFolders = mock(FileSystemFolders.class);
-    FileSystemFolder systemFolder = new FileSystemFolder();
     Stores stores = mock(Stores.class);
-    Store store = new Store();
     IngestNodes ingestionNodes = mock(IngestNodes.class);
-    IngestNode ingestionNode = new IngestNode();
     RetentionPolicies retentionPolicies = mock(RetentionPolicies.class);
-    RetentionPolicy retentionPolicy = new RetentionPolicy();
     Pdis pdis = mock(Pdis.class);
-    Pdi pdi = new Pdi();
     PdiSchemas pdiSchemas = mock(PdiSchemas.class);
-    PdiSchema pdiSchema = new PdiSchema();
     Ingests ingests = mock(Ingests.class);
-    Ingest ingest = new Ingest();
     Libraries libraries = mock(Libraries.class);
-    Library library = new Library();
+    Contents contents = new Contents();
 
     links.put(InfoArchiveLinkRelations.LINK_TENANT, link);
     links.put(InfoArchiveLinkRelations.LINK_APPLICATIONS, link);
@@ -129,6 +129,9 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
     resource.setLinks(links);
     tenant.setLinks(links);
     application.setLinks(links);
+
+    contents.getLinks().put(LINK_DOWNLOAD, new Link());
+    when(restClient.follow(any(LinkContainer.class), eq(LINK_CONTENTS), eq(Contents.class))).thenReturn(contents);
 
     when(restClient.get(BILLBOARD_URI, Services.class)).thenReturn(resource);
     when(link.getHref()).thenReturn(BILLBOARD_URI);
@@ -157,34 +160,35 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Libraries.class)))
         .thenReturn(libraries);
 
-    when(applications.byName(APPLICATION_NAME)).thenReturn(application);
-
-    when(restClient.createCollectionItem(eq(databases), eq(LINK_ADD), any(Database.class)))
-        .thenReturn(database);
-    when(restClient.createCollectionItem(eq(spaces), eq(LINK_ADD), any(Space.class)))
-        .thenReturn(space);
-    when(restClient.createCollectionItem(eq(rootFolders), eq(LINK_ADD), any(SpaceRootFolder.class)))
-        .thenReturn(rootFolder);
-    when(restClient.createCollectionItem(eq(systemFolders), eq(LINK_ADD), any(FileSystemFolder.class)))
-        .thenReturn(systemFolder);
-    when(restClient.createCollectionItem(eq(stores), eq(LINK_ADD), any(Store.class)))
-        .thenReturn(store);
-    when(restClient.createCollectionItem(eq(ingestionNodes), eq(LINK_ADD), any(IngestNode.class)))
-        .thenReturn(ingestionNode);
-    when(restClient.createCollectionItem(eq(retentionPolicies), eq(LINK_ADD), any(RetentionPolicy.class)))
-        .thenReturn(retentionPolicy);
-    when(restClient.createCollectionItem(eq(pdis), eq(LINK_ADD), any(Pdi.class))).thenReturn(pdi);
-    when(restClient.createCollectionItem(eq(pdiSchemas), eq(LINK_ADD), any(PdiSchema.class))).thenReturn(pdiSchema);
-    when(restClient.createCollectionItem(eq(ingests), eq(LINK_ADD), any(Ingest.class))).thenReturn(ingest);
-    when(restClient.createCollectionItem(eq(libraries), eq(LINK_ADD), any(Library.class))).thenReturn(library);
+    mockByName(federations, new Federation());
+    mockByName(databases, new Database());
+    mockByName(applications, application);
+    mockByName(spaces, new Space());
+    mockByName(spaceRootLibraries, new SpaceRootLibrary());
+    mockByName(rootFolders, new SpaceRootFolder());
+    mockByName(fileSystemRoots, new FileSystemRoot());
+    mockByName(systemFolders, new FileSystemFolder());
+    mockByName(stores, new Store());
+    mockByName(receiverNodes, new ReceiverNode());
+    mockByName(ingestionNodes, new IngestNode());
+    mockByName(retentionPolicies, new RetentionPolicy());
+    mockByName(pdis, new Pdi());
+    mockByName(pdiSchemas, new PdiSchema());
+    mockByName(ingests, new Ingest());
+    mockByName(libraries, new Library());
+    mockByName(holdings, new Holding());
   }
 
-  @Test
-  public void shouldInitHeadersDuringObjectCreation() throws IOException {
-    archiveClient.configure(configuration);
-
-    verify(restClient).get(BILLBOARD_URI, Services.class);
-    verify(restClient).follow(resource, InfoArchiveLinkRelations.LINK_TENANT, Tenant.class);
+  protected <T extends NamedLinkContainer> void mockByName(ItemContainer<T> collection, T item) throws IOException {
+    final AtomicBoolean first = new AtomicBoolean(true);
+    when(collection.byName(anyString())).thenAnswer(invocation -> {
+      if (first.get()) {
+        first.set(false);
+        return null;
+      }
+      return item;
+    });
+    when(restClient.refresh(collection)).thenReturn(collection);
   }
 
   @Test (expected = RuntimeException.class)
@@ -201,7 +205,11 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
 
   @Test
   public void shouldIngestSuccessfully() throws IOException {
-    archiveClient.configure(configuration);
+    archiveClient.setConfiguration(configuration);
+    String aipsUri = randomString();
+    when(application.getUri(LINK_AIPS)).thenReturn(aipsUri);
+    archiveClient.getConfigurationState().setApplication(application);
+    archiveClient.cacheAipsUri();
 
     String source = "This is the source of my input stream";
     InputStream sip = IOUtils.toInputStream(source, "UTF-8");
@@ -237,14 +245,29 @@ public class WhenUsingInfoArchive implements InfoArchiveLinkRelations {
 
   @Test
   public void shouldCreateApplicationWhenNotFound() throws IOException {
-    when(applications.byName(APPLICATION_NAME)).thenReturn(null);
+    final AtomicReference<Application> app = new AtomicReference<Application>(null);
+    when(applications.byName(APPLICATION_NAME)).thenAnswer(invocation -> {
+      return app.get();
+    });
+    final AtomicBoolean created = new AtomicBoolean(false);
     when(restClient.createCollectionItem(eq(applications), eq(LINK_ADD), any(Application.class)))
-        .thenReturn(application);
+        .thenAnswer(invocation -> {
+      created.set(true);
+      return null;
+    });
+    when(restClient.refresh(applications)).thenAnswer(invocation -> {
+      if (created.get()) {
+        app.set(application);
+      }
+      return applications;
+    });
 
+    archiveClient.ensureApplication();
+  }
+
+  @Test
+  public void configure() {
     archiveClient.configure(configuration);
-
-    verify(restClient)
-        .createCollectionItem(eq(applications), eq(LINK_ADD), any(Application.class));
   }
 
 }
