@@ -45,4 +45,10 @@ public interface InfoArchiveConfiguration {
   String INGEST_XML = PREFIX + "ingest.xml";
 
   String HTTP_CLIENT_CLASSNAME = PREFIX + "http.client";
+
+  String AIC = PREFIX + "aic";
+  String AIC_NAME = AIC + "." + NAME;
+
+  String QUERY = PREFIX + "query";
+  String QUERY_NAME = QUERY + "." + NAME;
 }

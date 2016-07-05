@@ -10,6 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 
+import com.emc.ia.sdk.sip.ingestion.dto.Aic;
+import com.emc.ia.sdk.sip.ingestion.dto.Aics;
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
 import com.emc.ia.sdk.sip.ingestion.dto.Contents;
@@ -38,6 +40,8 @@ import com.emc.ia.sdk.sip.ingestion.dto.PdiConfig;
 import com.emc.ia.sdk.sip.ingestion.dto.PdiSchema;
 import com.emc.ia.sdk.sip.ingestion.dto.PdiSchemas;
 import com.emc.ia.sdk.sip.ingestion.dto.Pdis;
+import com.emc.ia.sdk.sip.ingestion.dto.Queries;
+import com.emc.ia.sdk.sip.ingestion.dto.Query;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNode;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
@@ -118,6 +122,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       ensureRetentionPolicy();
       ensurePdi();
       ensurePdiSchema();
+      ensureAic();
+      ensureQuery();
       ensureIngest();
       ensureLibrary();
       ensureHolding();
@@ -472,6 +478,40 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private PdiSchema createPdiSchema(String name) {
     PdiSchema result = new PdiSchema();
+    result.setName(name);
+    return result;
+  }
+
+  private void ensureAic() throws IOException {
+    String name = configured(AIC_NAME);
+    Aics aics = restClient.follow(configurationState.getApplication(), LINK_AICS, Aics.class);
+    Aic aic = aics.byName(name);
+    if (aic == null) {
+      createItem(aics, createAic(name));
+      aic = restClient.refresh(aics).byName(name);
+      Objects.requireNonNull(aic, "Could not create AIC");
+    }
+  }
+
+  private Aic createAic(String name) {
+    Aic result = new Aic();
+    result.setName(name);
+    return result;
+  }
+
+  private void ensureQuery() throws IOException {
+    String name = configured(QUERY_NAME);
+    Queries queries = restClient.follow(configurationState.getApplication(), LINK_QUERIES, Queries.class);
+    Query query = queries.byName(name);
+    if (query == null) {
+      createItem(queries, createQuery(name));
+      query = restClient.refresh(queries).byName(name);
+      Objects.requireNonNull(query, "Could not create Query");
+    }
+  }
+
+  private Aic createQuery(String name) {
+    Aic result = new Aic();
     result.setName(name);
     return result;
   }

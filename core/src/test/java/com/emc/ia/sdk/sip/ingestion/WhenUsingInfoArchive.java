@@ -4,8 +4,11 @@
 package com.emc.ia.sdk.sip.ingestion;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +21,8 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.emc.ia.sdk.sip.ingestion.dto.Aic;
+import com.emc.ia.sdk.sip.ingestion.dto.Aics;
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
 import com.emc.ia.sdk.sip.ingestion.dto.Contents;
@@ -44,6 +49,8 @@ import com.emc.ia.sdk.sip.ingestion.dto.Pdi;
 import com.emc.ia.sdk.sip.ingestion.dto.PdiSchema;
 import com.emc.ia.sdk.sip.ingestion.dto.PdiSchemas;
 import com.emc.ia.sdk.sip.ingestion.dto.Pdis;
+import com.emc.ia.sdk.sip.ingestion.dto.Queries;
+import com.emc.ia.sdk.sip.ingestion.dto.Query;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNode;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
@@ -95,6 +102,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put(InfoArchiveConfiguration.PDI_SCHEMA_NAME, APPLICATION_NAME);
     configuration.put(InfoArchiveConfiguration.PDI_SCHEMA, "");
     configuration.put(InfoArchiveConfiguration.INGEST_XML, "");
+    configuration.put(InfoArchiveConfiguration.AIC_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfiguration.QUERY_NAME, APPLICATION_NAME);
     archiveClient.setConfiguration(configuration);
 
     Services resource = new Services();
@@ -120,6 +129,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     PdiSchemas pdiSchemas = mock(PdiSchemas.class);
     Ingests ingests = mock(Ingests.class);
     Libraries libraries = mock(Libraries.class);
+    Aics aics = mock(Aics.class);
+    Queries queries = mock(Queries.class);
     Contents contents = new Contents();
 
     links.put(InfoArchiveLinkRelations.LINK_TENANT, link);
@@ -159,6 +170,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
         .thenReturn(ingests);
     when(restClient.follow(any(LinkContainer.class), anyString(), eq(Libraries.class)))
         .thenReturn(libraries);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Aics.class)))
+    .thenReturn(aics);
+    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Queries.class)))
+    .thenReturn(queries);
 
     mockByName(federations, new Federation());
     mockByName(databases, new Database());
@@ -177,6 +192,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(ingests, new Ingest());
     mockByName(libraries, new Library());
     mockByName(holdings, new Holding());
+    mockByName(aics, new Aic());
+    mockByName(queries, new Query());
   }
 
   protected <T extends NamedLinkContainer> void mockByName(ItemContainer<T> collection, T item) throws IOException {

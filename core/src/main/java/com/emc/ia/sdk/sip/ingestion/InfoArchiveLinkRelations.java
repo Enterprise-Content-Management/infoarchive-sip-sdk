@@ -36,4 +36,6 @@ interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_SPACE_ROOT_LIBRARIES = LINK_PREFIX + "space-root-xdb-libraries";
   String LINK_STORES = LINK_PREFIX + "stores";
   String LINK_TENANT = LINK_PREFIX + "tenant";
+  String LINK_AICS = LINK_PREFIX + "aics";
+  String LINK_QUERIES = LINK_PREFIX + "queries";
 }
