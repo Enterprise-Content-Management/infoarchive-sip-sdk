@@ -5,6 +5,7 @@ package com.emc.ia.sdk.support.xml;
 
 import java.net.URI;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 import org.w3c.dom.Document;
@@ -53,12 +54,8 @@ public class XmlBuilder {
       this.document = node.getOwnerDocument();
       this.current = node;
     } else {
-      throw new IllegalArgumentException("Unhandled node type: " + getNodeType(node));
+      throw new IllegalArgumentException("Unhandled node type: " + Objects.requireNonNull(node).getNodeType());
     }
-  }
-
-  private Object getNodeType(Node node) {
-    return node == null ? null : node.getNodeType();
   }
 
   /**

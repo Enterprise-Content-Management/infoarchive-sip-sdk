@@ -31,6 +31,10 @@ public class WhenWorkingWithXml extends TestCase {
     String expected = XmlUtil.XML_DECLARATION
         + "<root>\n  <child attr=\"value\"/>\n  <!-- Another child -->\n  <child>\n    <grandChild/>\n  </child>\n"
         + "  <?PI target=\"value\"?>\n  <![CDATA[<>]]>\n</root>\n";
+    assertPrettyPrinted(expected);
+  }
+
+  private void assertPrettyPrinted(String expected) {
     Document document = XmlUtil.parse(toStream(expected));
 
     String actual = XmlUtil.toString(document);

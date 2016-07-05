@@ -12,15 +12,15 @@ public class NameSpace {
   }
 
   public NameSpace(String uri, String prefix) {
-    this.uri = uri;
-    this.prefix = prefix;
+    setUri(uri);
+    setPrefix(prefix);
   }
 
   public String getUri() {
     return uri;
   }
 
-  public void setUri(String uri) {
+  public final void setUri(String uri) {
     this.uri = uri;
   }
 
@@ -28,7 +28,7 @@ public class NameSpace {
     return prefix;
   }
 
-  public void setPrefix(String prefix) {
+  public final void setPrefix(String prefix) {
     this.prefix = prefix;
   }
 }

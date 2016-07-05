@@ -18,21 +18,20 @@ public class Criteria {
   }
 
   public Criteria(String name, String label, String type, String pKeyMinAttr, String pKeyMaxAttr, String pKeyValuesAttr, boolean indexed) {
-
-    this.name = name;
-    this.label = label;
-    this.type = type;
-    this.pKeyMinAttr = pKeyMinAttr;
-    this.pKeyMaxAttr = pKeyMaxAttr;
-    this.pKeyValuesAttr = pKeyValuesAttr;
-    this.indexed = indexed;
+    setName(name);
+    setLabel(label);
+    setType(type);
+    setpKeyMinAttr(pKeyMinAttr);
+    setpKeyMaxAttr(pKeyMaxAttr);
+    setpKeyValuesAttr(pKeyValuesAttr);
+    setIndexed(indexed);
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
+  public final void setName(String name) {
     this.name = name;
   }
 
@@ -40,7 +39,7 @@ public class Criteria {
     return label;
   }
 
-  public void setLabel(String label) {
+  public final void setLabel(String label) {
     this.label = label;
   }
 
@@ -48,7 +47,7 @@ public class Criteria {
     return type;
   }
 
-  public void setType(String type) {
+  public final void setType(String type) {
     this.type = type;
   }
 
@@ -56,7 +55,7 @@ public class Criteria {
     return pKeyMinAttr;
   }
 
-  public void setpKeyMinAttr(String pKeyMinAttr) {
+  public final void setpKeyMinAttr(String pKeyMinAttr) {
     this.pKeyMinAttr = pKeyMinAttr;
   }
 
@@ -64,7 +63,7 @@ public class Criteria {
     return pKeyMaxAttr;
   }
 
-  public void setpKeyMaxAttr(String pKeyMaxAttr) {
+  public final void setpKeyMaxAttr(String pKeyMaxAttr) {
     this.pKeyMaxAttr = pKeyMaxAttr;
   }
 
@@ -72,7 +71,7 @@ public class Criteria {
     return pKeyValuesAttr;
   }
 
-  public void setpKeyValuesAttr(String pKeyValuesAttr) {
+  public final void setpKeyValuesAttr(String pKeyValuesAttr) {
     this.pKeyValuesAttr = pKeyValuesAttr;
   }
 
@@ -80,7 +79,7 @@ public class Criteria {
     return indexed;
   }
 
-  public void setIndexed(boolean indexed) {
+  public final void setIndexed(boolean indexed) {
     this.indexed = indexed;
   }
 

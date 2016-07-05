@@ -25,7 +25,6 @@ import javax.xml.validation.Validator;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
-import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -135,9 +134,6 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
       case Node.CDATA_SECTION_NODE:
         appendCdataSection(node, indentation, builder);
         break;
-      case Node.ENTITY_REFERENCE_NODE:
-        appendEntityReferenceNode(node, builder);
-        break;
       case Node.ENTITY_NODE:
         throw new IllegalStateException("Unhandled node of type Entity");
       case Node.PROCESSING_INSTRUCTION_NODE:
@@ -149,40 +145,9 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
       case Node.DOCUMENT_NODE:
         appendDocument(node, indentation, namespaces, builder);
         break;
-      case Node.DOCUMENT_TYPE_NODE:
-        appendDocumentType(node, indentation, builder);
-        break;
-      case Node.DOCUMENT_FRAGMENT_NODE:
-        throw new IllegalStateException("Unhandled node of type DocumentFragment");
-      case Node.NOTATION_NODE:
-        throw new IllegalStateException("Unhandled node of type Notation");
       default:
         throw new UnsupportedOperationException("Unhandled node type: " + node.getNodeType());
     }
-  }
-
-  private static void appendDocumentType(Node node, String indentation, StringBuilder builder) {
-    DocumentType dtd = (DocumentType)node;
-    builder.append("<!DOCTYPE ").append(dtd.getName());
-    if (dtd.getPublicId() != null) {
-      builder.append(" PUBLIC \"").append(dtd.getPublicId()).append("\" ");
-    }
-    if (dtd.getSystemId() != null) {
-      builder.append(" \"").append(dtd.getSystemId()).append("\" ");
-    }
-    builder.append('[');
-    if (dtd.getInternalSubset() != null) {
-      builder.append('\n');
-      for (String line : dtd.getInternalSubset().split("\\n")) {
-        builder.append(indentation).append(INDENT).append(line).append('\n');
-      }
-      builder.append(indentation);
-    }
-    builder.append("]>\n");
-  }
-
-  private static void appendEntityReferenceNode(Node node, StringBuilder builder) {
-    builder.append('&').append(node.getNodeName()).append(';');
   }
 
   private static void appendDocument(Node node, String indentation, Map<String, String> namespaces,
