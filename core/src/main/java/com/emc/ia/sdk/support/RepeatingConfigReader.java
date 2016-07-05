@@ -74,22 +74,21 @@ public class RepeatingConfigReader {
   }
 
   private String formatErrorMessage(List<String[]> values, List<Integer> sizes) {
-    StringBuilder b = new StringBuilder();
-    b.append("All configuration items in the ");
-    b.append(name);
-    b.append(" configuration group must have the same number of values. ");
-    b.append("Number of values found for each item: ");
+    StringBuilder result = new StringBuilder(256);
+    result.append("All configuration items in the ");
+    result.append(name);
+    result.append(" configuration group must have the same number of values. Number of values found for each item: ");
     for (int i = 0; i < fields.size(); ++i) {
       if (i > 0) {
-        b.append(", ");
+        result.append(", ");
       }
-      b.append(fields.get(i));
-      b.append(": ");
-      b.append(sizes.get(i));
-      b.append(' ');
-      b.append(Arrays.toString(values.get(i)));
+      result.append(fields.get(i));
+      result.append(": ");
+      result.append(sizes.get(i));
+      result.append(' ');
+      result.append(Arrays.toString(values.get(i)));
     }
-    b.append(".");
-    return b.toString();
+    result.append('.');
+    return result.toString();
   }
 }

@@ -3,9 +3,7 @@
  */
 package com.emc.ia.sdk.support;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,16 +14,21 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-public class WhenReadingRepeatingConfigurationGroups {
+import com.emc.ia.sdk.support.test.TestCase;
+
+public class WhenReadingRepeatingConfigurationGroups extends TestCase {
+
+  private static final String FIELD3 = "field3";
+  private static final String FIELD2 = "field2";
+  private static final String FIELD1 = "field1";
 
   private String name;
-  private RandomData random = new RandomData();
   private Map<String, String> configuration;
-  private List<String> fields = Arrays.asList("field1", "field2", "field3");
+  private final List<String> fields = Arrays.asList(FIELD1, FIELD2, FIELD3);
 
   @Before
   public void before() {
-    name = random.string();
+    name = randomString();
     configuration = new HashMap<>();
   }
 
@@ -40,18 +43,18 @@ public class WhenReadingRepeatingConfigurationGroups {
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldThrowExceptionIfMismatchedGroup() {
-    configuration.put("field1", "one,two");
-    configuration.put("field2", "onlyone");
-    configuration.put("field3", "1,2");
+    configuration.put(FIELD1, "one,two");
+    configuration.put(FIELD2, "onlyone");
+    configuration.put(FIELD3, "1,2");
     RepeatingConfigReader reader = new RepeatingConfigReader(name, fields);
     reader.read(configuration);
   }
 
   @Test
   public void shouldReturnRepeatingGroupAsListOfMap() {
-    configuration.put("field1", "one,two");
-    configuration.put("field2", "a,b");
-    configuration.put("field3", "1,2");
+    configuration.put(FIELD1, "one,two");
+    configuration.put(FIELD2, "a,b");
+    configuration.put(FIELD3, "1,2");
     RepeatingConfigReader reader = new RepeatingConfigReader(name, fields);
     List<Map<String, String>> result = reader.read(configuration);
 
@@ -60,12 +63,12 @@ public class WhenReadingRepeatingConfigurationGroups {
 
     Map<String, String> group1 = result.get(0);
     Map<String, String> group2 = result.get(1);
-    assertEquals("one", group1.get("field1"));
-    assertEquals("a", group1.get("field2"));
-    assertEquals("1", group1.get("field3"));
-    assertEquals("two", group2.get("field1"));
-    assertEquals("b", group2.get("field2"));
-    assertEquals("2", group2.get("field3"));
+    assertEquals("one", group1.get(FIELD1));
+    assertEquals("a", group1.get(FIELD2));
+    assertEquals("1", group1.get(FIELD3));
+    assertEquals("two", group2.get(FIELD1));
+    assertEquals("b", group2.get(FIELD2));
+    assertEquals("2", group2.get(FIELD3));
   }
 
 }

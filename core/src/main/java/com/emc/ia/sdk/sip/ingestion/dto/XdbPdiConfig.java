@@ -22,7 +22,7 @@ public class XdbPdiConfig {
     return operands;
   }
 
-  public void setOperands(List<Operand> operands) {
+  public final void setOperands(List<Operand> operands) {
     this.operands = operands;
   }
 
@@ -30,7 +30,7 @@ public class XdbPdiConfig {
     return schema;
   }
 
-  public void setSchema(String schema) {
+  public final void setSchema(String schema) {
     this.schema = schema;
   }
 
@@ -38,7 +38,7 @@ public class XdbPdiConfig {
     return entityPath;
   }
 
-  public void setEntityPath(String entityPath) {
+  public final void setEntityPath(String entityPath) {
     this.entityPath = entityPath;
   }
 
@@ -46,7 +46,7 @@ public class XdbPdiConfig {
     return template;
   }
 
-  public void setTemplate(String template) {
+  public final void setTemplate(String template) {
     this.template = template;
   }
 
