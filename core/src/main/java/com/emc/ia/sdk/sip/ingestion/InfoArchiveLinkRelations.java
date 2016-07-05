@@ -12,6 +12,7 @@ interface InfoArchiveLinkRelations extends StandardLinkRelations {
 
   String LINK_ADD = LINK_PREFIX + "add";
   String LINK_AIPS = LINK_PREFIX + "aips";
+  String LINK_AICS = LINK_PREFIX + "aics";
   String LINK_INGEST = LINK_PREFIX + "ingest";
   String LINK_INGESTS = LINK_INGEST + "s";
   String LINK_APPLICATIONS = LINK_PREFIX + "applications";
@@ -29,6 +30,8 @@ interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_LIBRARIES = LINK_PREFIX + "xdb-libraries";
   String LINK_PDIS = LINK_PREFIX + "pdis";
   String LINK_PDI_SCHEMAS = LINK_PREFIX + "pdi-schemas";
+  String LINK_QUERIES = LINK_PREFIX + "queries";
+  String LINK_QUERY_QUOTAS = LINK_PREFIX + "query-quotas";
   String LINK_RECEIVER_NODES = LINK_PREFIX + "receiver-nodes";
   String LINK_RETENTION_POLICIES = LINK_PREFIX + "retention-policies";
   String LINK_SPACES = LINK_PREFIX + "spaces";
@@ -36,6 +39,4 @@ interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_SPACE_ROOT_LIBRARIES = LINK_PREFIX + "space-root-xdb-libraries";
   String LINK_STORES = LINK_PREFIX + "stores";
   String LINK_TENANT = LINK_PREFIX + "tenant";
-  String LINK_AICS = LINK_PREFIX + "aics";
-  String LINK_QUERIES = LINK_PREFIX + "queries";
 }

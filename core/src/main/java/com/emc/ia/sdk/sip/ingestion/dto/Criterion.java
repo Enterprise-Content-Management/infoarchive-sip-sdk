@@ -69,4 +69,25 @@ public class Criterion {
     this.indexed = indexed;
   }
 
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder(128);
+    builder.append("Criterion [name=");
+    builder.append(name);
+    builder.append(", label=");
+    builder.append(label);
+    builder.append(", type=");
+    builder.append(type);
+    builder.append(", pKeyMinAttr=");
+    builder.append(pKeyMinAttr);
+    builder.append(", pKeyMaxAttr=");
+    builder.append(pKeyMaxAttr);
+    builder.append(", pKeyValuesAttr=");
+    builder.append(pKeyValuesAttr);
+    builder.append(", indexed=");
+    builder.append(indexed);
+    builder.append(']');
+    return builder.toString();
+  }
+
 }

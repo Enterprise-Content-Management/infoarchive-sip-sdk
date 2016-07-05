@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.stubbing.OngoingStubbing;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Aic;
 import com.emc.ia.sdk.sip.ingestion.dto.Aics;
@@ -51,6 +52,8 @@ import com.emc.ia.sdk.sip.ingestion.dto.PdiSchemas;
 import com.emc.ia.sdk.sip.ingestion.dto.Pdis;
 import com.emc.ia.sdk.sip.ingestion.dto.Queries;
 import com.emc.ia.sdk.sip.ingestion.dto.Query;
+import com.emc.ia.sdk.sip.ingestion.dto.Quota;
+import com.emc.ia.sdk.sip.ingestion.dto.Quotas;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNode;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
@@ -73,13 +76,13 @@ import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.RestClient;
 import com.emc.ia.sdk.support.test.TestCase;
 
-
 public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations {
 
   private static final String BILLBOARD_URI = "http://foo.com/bar";
   private static final String AUTH_TOKEN = "XYZ123ABC";
   private static final String APPLICATION_NAME = "ApPlIcAtIoN";
   private static final String TENANT_NAME = "TeNaNt";
+  private static final String NAMESPACE = "urn:SoMeNaMeSpAcE";
 
   private final Map<String, Link> links = new HashMap<String, Link>();
   private final Map<String, String> configuration = new HashMap<String, String>();
@@ -90,20 +93,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   @Before
   public void init() throws IOException {
-    configuration.put(InfoArchiveConfiguration.SERVER_URI, BILLBOARD_URI);
-    configuration.put(InfoArchiveConfiguration.SERVER_AUTENTICATON_TOKEN, AUTH_TOKEN);
-    configuration.put(InfoArchiveConfiguration.TENANT_NAME, TENANT_NAME);
-    configuration.put(InfoArchiveConfiguration.DATABASE_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.DATABASE_ADMIN_PASSWORD, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.APPLICATION_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.HOLDING_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.RETENTION_POLICY_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.PDI_XML, "");
-    configuration.put(InfoArchiveConfiguration.PDI_SCHEMA_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.PDI_SCHEMA, "");
-    configuration.put(InfoArchiveConfiguration.INGEST_XML, "");
-    configuration.put(InfoArchiveConfiguration.AIC_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.QUERY_NAME, APPLICATION_NAME);
+    prepareConfiguration();
+
     archiveClient.setConfiguration(configuration);
 
     Services resource = new Services();
@@ -129,9 +120,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     PdiSchemas pdiSchemas = mock(PdiSchemas.class);
     Ingests ingests = mock(Ingests.class);
     Libraries libraries = mock(Libraries.class);
+    Contents contents = new Contents();
     Aics aics = mock(Aics.class);
     Queries queries = mock(Queries.class);
-    Contents contents = new Contents();
+    Quotas quotas = mock(Quotas.class);
 
     links.put(InfoArchiveLinkRelations.LINK_TENANT, link);
     links.put(InfoArchiveLinkRelations.LINK_APPLICATIONS, link);
@@ -141,39 +133,32 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     tenant.setLinks(links);
     application.setLinks(links);
 
-    contents.getLinks().put(LINK_DOWNLOAD, new Link());
+    contents.getLinks()
+      .put(LINK_DOWNLOAD, new Link());
     when(restClient.follow(any(LinkContainer.class), eq(LINK_CONTENTS), eq(Contents.class))).thenReturn(contents);
 
     when(restClient.get(BILLBOARD_URI, Services.class)).thenReturn(resource);
     when(link.getHref()).thenReturn(BILLBOARD_URI);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Applications.class))).thenReturn(applications);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Federations.class))).thenReturn(federations);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Spaces.class))).thenReturn(spaces);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Databases.class))).thenReturn(databases);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(FileSystemRoots.class)))
-        .thenReturn(fileSystemRoots);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Holdings.class))).thenReturn(holdings);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(ReceiverNodes.class))).thenReturn(receiverNodes);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(SpaceRootLibraries.class))).thenReturn(spaceRootLibraries);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(SpaceRootFolders.class))).thenReturn(rootFolders);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(FileSystemFolders.class)))
-        .thenReturn(systemFolders);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Stores.class))).thenReturn(stores);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(IngestNodes.class))).thenReturn(ingestionNodes);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(RetentionPolicies.class)))
-        .thenReturn(retentionPolicies);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Pdis.class)))
-        .thenReturn(pdis);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(PdiSchemas.class)))
-        .thenReturn(pdiSchemas);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Ingests.class)))
-        .thenReturn(ingests);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Libraries.class)))
-        .thenReturn(libraries);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Aics.class)))
-    .thenReturn(aics);
-    when(restClient.follow(any(LinkContainer.class), anyString(), eq(Queries.class)))
-    .thenReturn(queries);
+    mockCollection(Applications.class, applications);
+    mockCollection(Federations.class, federations);
+    mockCollection(Spaces.class, spaces);
+    mockCollection(Databases.class, databases);
+    mockCollection(FileSystemRoots.class, fileSystemRoots);
+    mockCollection(Holdings.class, holdings);
+    mockCollection(ReceiverNodes.class, receiverNodes);
+    mockCollection(SpaceRootLibraries.class, spaceRootLibraries);
+    mockCollection(SpaceRootFolders.class, rootFolders);
+    mockCollection(FileSystemFolders.class, systemFolders);
+    mockCollection(Stores.class, stores);
+    mockCollection(IngestNodes.class, ingestionNodes);
+    mockCollection(RetentionPolicies.class, retentionPolicies);
+    mockCollection(Pdis.class, pdis);
+    mockCollection(PdiSchemas.class, pdiSchemas);
+    mockCollection(Ingests.class, ingests);
+    mockCollection(Libraries.class, libraries);
+    mockCollection(Aics.class, aics);
+    mockCollection(Quotas.class, quotas);
+    mockCollection(Queries.class, queries);
 
     mockByName(federations, new Federation());
     mockByName(databases, new Database());
@@ -193,7 +178,58 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(libraries, new Library());
     mockByName(holdings, new Holding());
     mockByName(aics, new Aic());
+    mockByName(quotas, new Quota());
     mockByName(queries, new Query());
+  }
+
+  private void prepareConfiguration() {
+    configuration.put(InfoArchiveConfiguration.SERVER_URI, BILLBOARD_URI);
+    configuration.put(InfoArchiveConfiguration.SERVER_AUTENTICATON_TOKEN, AUTH_TOKEN);
+    configuration.put(InfoArchiveConfiguration.TENANT_NAME, TENANT_NAME);
+    configuration.put(InfoArchiveConfiguration.DATABASE_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfiguration.DATABASE_ADMIN_PASSWORD, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfiguration.APPLICATION_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfiguration.HOLDING_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfiguration.RETENTION_POLICY_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfiguration.PDI_XML, "");
+    configuration.put(InfoArchiveConfiguration.PDI_SCHEMA_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfiguration.PDI_SCHEMA, "");
+    configuration.put(InfoArchiveConfiguration.INGEST_XML, "");
+
+    configuration.put("ia.aic.name", "MyAic");
+    configuration.put("ia.aic.criteria.name", "name");
+    configuration.put("ia.aic.criteria.label", "name");
+    configuration.put("ia.aic.criteria.type", "STRING");
+    configuration.put("ia.aic.criteria.pkeyminattr", "");
+    configuration.put("ia.aic.criteria.pkeymaxattr", "");
+    configuration.put("ia.aic.criteria.pkeyvaluesattr", "");
+    configuration.put("ia.aic.criteria.indexed", "true");
+
+    configuration.put("ia.query.name", "Query");
+    configuration.put("ia.query.Query.namespace.prefix", "n");
+    configuration.put("ia.query.Query.namespace.uri", NAMESPACE);
+    configuration.put("ia.query.Query.result.root.element", "messages");
+    configuration.put("ia.query.Query.result.root.ns.enabled", "true");
+    configuration.put("ia.query.Query.result.schema", NAMESPACE);
+
+    configuration.put("ia.query.Query.xdbpdi.entity.path", "/n:object/n:objects");
+    configuration.put("ia.query.Query.xdbpdi.schema", NAMESPACE);
+    configuration.put("ia.query.Query.xdbpdi.template", "return $aiu");
+
+    String queryPrefix = "ia.query.Query.xdbpdi[";
+    configuration.put(queryPrefix + NAMESPACE + "].operand.name", "name");
+    configuration.put(queryPrefix + NAMESPACE + "].operand.path", "n:name");
+    configuration.put(queryPrefix + NAMESPACE + "].operand.type", "STRING");
+    configuration.put(queryPrefix + NAMESPACE + "].operand.index", "true");
+
+    configuration.put("ia.quota.name", "Quota");
+    configuration.put("ia.quota.aiu", "0");
+    configuration.put("ia.quota.aip", "0");
+    configuration.put("ia.quota.dip", "0");
+  }
+
+  private <T> OngoingStubbing<T> mockCollection(Class<T> type, T object) throws IOException {
+    return when(restClient.follow(any(LinkContainer.class), anyString(), eq(type))).thenReturn(object);
   }
 
   protected <T extends NamedLinkContainer> void mockByName(ItemContainer<T> collection, T item) throws IOException {
@@ -208,13 +244,13 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.refresh(collection)).thenReturn(collection);
   }
 
-  @Test (expected = RuntimeException.class)
+  @Test(expected = RuntimeException.class)
   public void shouldThrowExceptionWileConfiguring() {
     archiveClient.configure(null);
   }
 
   @SuppressWarnings("unchecked")
-  @Test (expected = RuntimeIoException.class)
+  @Test(expected = RuntimeIoException.class)
   public void shouldWrapExceptionDuringConfiguration() throws IOException {
     when(restClient.get(BILLBOARD_URI, Services.class)).thenThrow(IOException.class);
     archiveClient.configure(configuration);
@@ -225,7 +261,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     archiveClient.setConfiguration(configuration);
     String aipsUri = randomString();
     when(application.getUri(LINK_AIPS)).thenReturn(aipsUri);
-    archiveClient.getConfigurationState().setApplication(application);
+    archiveClient.getConfigurationState()
+      .setApplication(application);
     archiveClient.cacheAipsUri();
 
     String source = "This is the source of my input stream";
@@ -235,7 +272,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
     receptionResponse.setLinks(links);
     when(restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
-        .thenReturn(receptionResponse);
+      .thenReturn(receptionResponse);
     when(restClient.put(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip001");
 
@@ -268,10 +305,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     });
     final AtomicBoolean created = new AtomicBoolean(false);
     when(restClient.createCollectionItem(eq(applications), eq(LINK_ADD), any(Application.class)))
-        .thenAnswer(invocation -> {
-      created.set(true);
-      return null;
-    });
+      .thenAnswer(invocation -> {
+        created.set(true);
+        return null;
+      });
     when(restClient.refresh(applications)).thenAnswer(invocation -> {
       if (created.get()) {
         app.set(application);

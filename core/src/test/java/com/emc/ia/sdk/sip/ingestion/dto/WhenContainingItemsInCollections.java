@@ -6,6 +6,7 @@ package com.emc.ia.sdk.sip.ingestion.dto;
 import static org.junit.Assert.assertSame;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,6 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.emc.ia.sdk.support.test.TestCase;
-
 
 public class WhenContainingItemsInCollections extends TestCase {
 
@@ -33,6 +33,14 @@ public class WhenContainingItemsInCollections extends TestCase {
     collection.setEmbedded(embedded);
 
     assertSame("Item by name", item1, collection.byName(name1));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldThrowIllegalArgumentExceptionIfEmbeddedListIsMissing() {
+    String key = randomString(8);
+
+    ItemContainer<NamedLinkContainer> collection = new ItemContainer<>(key);
+    collection.setEmbedded(Collections.emptyMap());
   }
 
 }

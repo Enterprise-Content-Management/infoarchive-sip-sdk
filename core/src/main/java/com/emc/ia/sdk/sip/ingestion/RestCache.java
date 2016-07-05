@@ -12,7 +12,6 @@ import com.emc.ia.sdk.sip.ingestion.dto.SpaceRootFolder;
 import com.emc.ia.sdk.sip.ingestion.dto.SpaceRootLibrary;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
 
-
 class RestCache { // NOPMD TooManyFields
 
   private Services services;
@@ -32,6 +31,24 @@ class RestCache { // NOPMD TooManyFields
   private String pdiUri;
   private String ingestNodeUri;
   private JobDefinition jobDefinition;
+  private String aicUri;
+  private String quotaUri;
+
+  public String getAicUri() {
+    return aicUri;
+  }
+
+  public void setAicUri(String aicUri) {
+    this.aicUri = aicUri;
+  }
+
+  public String getQuotaUri() {
+    return quotaUri;
+  }
+
+  public void setQuotaUri(String quotaUri) {
+    this.quotaUri = quotaUri;
+  }
 
   public Services getServices() {
     return services;

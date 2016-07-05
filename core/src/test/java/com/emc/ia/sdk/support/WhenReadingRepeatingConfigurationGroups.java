@@ -42,6 +42,26 @@ public class WhenReadingRepeatingConfigurationGroups extends TestCase {
   }
 
   @Test(expected = IllegalArgumentException.class)
+  public void shouldThrowIllegalArgumentExceptionIfNullName() {
+    new RepeatingConfigReader(null, fields);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldThrowIllegalArgumentExceptionIfBlankName() {
+    new RepeatingConfigReader("", fields);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldThrowIllegalArgumentExceptionIfNullFields() {
+    new RepeatingConfigReader(name, null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldThrowIllegalArgumentExceptionIfEmptyFields() {
+    new RepeatingConfigReader(name, Collections.emptyList());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
   public void shouldThrowExceptionIfMismatchedGroup() {
     configuration.put(FIELD1, "one,two");
     configuration.put(FIELD2, "onlyone");

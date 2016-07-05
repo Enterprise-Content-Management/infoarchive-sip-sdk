@@ -3,7 +3,6 @@
  */
 package com.emc.ia.sdk.sip.ingestion;
 
-
 public interface InfoArchiveConfiguration {
 
   String PREFIX = "ia.";
@@ -31,6 +30,43 @@ public interface InfoArchiveConfiguration {
   String HOLDING_PREFIX = PREFIX + "holding.";
   String HOLDING_NAME = HOLDING_PREFIX + NAME;
 
+  String AIC_PREFIX = PREFIX + "aic.";
+  String AIC_NAME = AIC_PREFIX + NAME;
+
+  String CRITERIA_PREFIX = AIC_PREFIX + "criteria.";
+  String CRITERIA_NAME = CRITERIA_PREFIX + NAME;
+  String CRITERIA_LABEL = CRITERIA_PREFIX + "label";
+  String CRITERIA_TYPE = CRITERIA_PREFIX + "type";
+  String CRITERIA_PKEYMINATTR = CRITERIA_PREFIX + "pkeyminattr";
+  String CRITERIA_PKEYMAXATTR = CRITERIA_PREFIX + "pkeymaxattr";
+  String CRITERIA_PKEYVALUESATTR = CRITERIA_PREFIX + "pkeyvaluesattr";
+  String CRITERIA_INDEXED = CRITERIA_PREFIX + "indexed";
+
+  String QUERY_PREFIX = PREFIX + "query.";
+  String QUERY_NAME = QUERY_PREFIX + NAME;
+  String QUERY_NAMESPACE_PREFIX_TEMPLATE = QUERY_PREFIX + "%s.namespace.prefix";
+  String QUERY_NAMESPACE_URI_TEMPLATE = QUERY_PREFIX + "%s.namespace.uri";
+
+  String QUERY_RESULT_ROOT_ELEMENT_TEMPLATE = QUERY_PREFIX + "%s.result.root.element";
+  String QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE = QUERY_PREFIX + "%s.result.root.ns.enabled";
+  String QUERY_RESULT_SCHEMA_TEMPLATE = QUERY_PREFIX + "%s.result.schema";
+
+  String QUERY_XDBPDI_ENTITY_PATH_TEMPLATE = QUERY_PREFIX + "%s.xdbpdi.entity.path";
+  String QUERY_XDBPDI_SCHEMA_TEMPLATE = QUERY_PREFIX + "%s.xdbpdi.schema";
+  String QUERY_XDBPDI_TEMPLATE_TEMPLATE = QUERY_PREFIX + "%s.xdbpdi.template";
+
+  String QUERY_XDBPDI_OPERAND_PREFIX = QUERY_PREFIX + "%s.xdbpdi[%s].operand.";
+  String QUERY_XDBPDI_OPERAND_NAME = QUERY_XDBPDI_OPERAND_PREFIX + NAME;
+  String QUERY_XDBPDI_OPERAND_PATH = QUERY_XDBPDI_OPERAND_PREFIX + "path";
+  String QUERY_XDBPDI_OPERAND_TYPE = QUERY_XDBPDI_OPERAND_PREFIX + "type";
+  String QUERY_XDBPDI_OPERAND_INDEX = QUERY_XDBPDI_OPERAND_PREFIX + "index";
+
+  String QUOTA_PREFIX = PREFIX + "quota.";
+  String QUOTA_NAME = QUOTA_PREFIX + NAME;
+  String QUOTA_AIU = QUOTA_PREFIX + "aiu";
+  String QUOTA_AIP = QUOTA_PREFIX + "aip";
+  String QUOTA_DIP = QUOTA_PREFIX + "dip";
+
   String RETENTION_POLICY_NAME = PREFIX + "retention.policy.name";
 
   String PDI_PREFIX = PREFIX + "pdi.";
@@ -45,10 +81,4 @@ public interface InfoArchiveConfiguration {
   String INGEST_XML = PREFIX + "ingest.xml";
 
   String HTTP_CLIENT_CLASSNAME = PREFIX + "http.client";
-
-  String AIC = PREFIX + "aic";
-  String AIC_NAME = AIC + "." + NAME;
-
-  String QUERY = PREFIX + "query";
-  String QUERY_NAME = QUERY + "." + NAME;
 }

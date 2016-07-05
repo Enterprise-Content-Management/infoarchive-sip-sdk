@@ -3,18 +3,10 @@
  */
 package com.emc.ia.sdk.sip.ingestion.dto;
 
+public class Namespace {
 
-public class NameSpace {
   private String uri;
   private String prefix;
-
-  public NameSpace() {
-  }
-
-  public NameSpace(String uri, String prefix) {
-    setUri(uri);
-    setPrefix(prefix);
-  }
 
   public String getUri() {
     return uri;
