@@ -30,6 +30,7 @@ public interface ArchiveClient {
   /**
    * Trigger a confirmation event for the ingested Submission Information Package (SIP).
    * @param aipId The ID of the Archival Information Package (AIP) that was generated from the SIP
+   * @return The status of confirmation job
    * @throws IOException When an I/O error occurs
    */
   String confirm(String aipId) throws IOException;
