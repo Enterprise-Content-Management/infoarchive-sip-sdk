@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.support.rest;
+package com.emc.ia.sdk.sip.ingestion;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +13,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 
 import com.emc.ia.sdk.sip.ingestion.dto.query.QueryResult;
+import com.emc.ia.sdk.support.http.ResponseFactory;
 
 
 public class QueryResultFactory implements ResponseFactory<QueryResult> {

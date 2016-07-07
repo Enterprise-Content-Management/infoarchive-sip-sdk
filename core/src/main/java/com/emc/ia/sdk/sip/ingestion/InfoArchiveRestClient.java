@@ -80,12 +80,11 @@ import com.emc.ia.sdk.support.RepeatingConfigReader;
 import com.emc.ia.sdk.support.http.BinaryPart;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.http.MediaTypes;
+import com.emc.ia.sdk.support.http.ResponseFactory;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.LinkContainer;
-import com.emc.ia.sdk.support.rest.QueryResultFactory;
-import com.emc.ia.sdk.support.rest.ResponseFactory;
 import com.emc.ia.sdk.support.rest.RestClient;
 
 /**

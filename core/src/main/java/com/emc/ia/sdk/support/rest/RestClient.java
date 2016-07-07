@@ -14,6 +14,7 @@ import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.http.JsonFormatter;
 import com.emc.ia.sdk.support.http.MediaTypes;
 import com.emc.ia.sdk.support.http.Part;
+import com.emc.ia.sdk.support.http.ResponseFactory;
 
 public class RestClient implements Closeable, StandardLinkRelations {
 

@@ -6,8 +6,6 @@ package com.emc.ia.sdk.support.http;
 import java.io.IOException;
 import java.util.Collection;
 
-import com.emc.ia.sdk.support.rest.ResponseFactory;
-
 
 public interface HttpClient {
 
