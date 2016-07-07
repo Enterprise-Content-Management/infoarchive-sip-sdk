@@ -108,6 +108,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private Map<String, String> configuration;
   private RestClient restClient;
   private String aipsUri;
+  private Map<String, String> dipUrisByAicName;
 
   public InfoArchiveRestClient() {
   }
@@ -794,51 +795,45 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   protected void cacheAipsUri() {
-    aipsUri = configurationState.getApplication()
-      .getUri(LINK_AIPS);
+    aipsUri = configurationState.getApplication().getUri(LINK_AIPS);
   }
 
   protected void cacheDipUris() throws IOException {
     Aics aics = restClient.follow(configurationState.getApplication(), LINK_AICS, Aics.class);
-    final Map<String, String> aicNameToDipResource = new HashMap<String, String>();
+    dipUrisByAicName = new HashMap<String, String>();
     if (aics != null) {
       aics.getItems()
-        .forEach(aic -> aicNameToDipResource.put(aic.getName(), aic.getUri(LINK_DIP)));
+        .forEach(aic -> dipUrisByAicName.put(aic.getName(), aic.getUri(LINK_DIP)));
     }
-    configurationState.setAicToDipUri(aicNameToDipResource);
   }
 
   @Override
   public String ingest(InputStream sip) throws IOException {
     Objects.requireNonNull(aipsUri, "Did you forget to call configure()?");
+
     ReceptionResponse response = restClient.post(aipsUri, ReceptionResponse.class, new TextPart("format", "sip_zip"),
         new BinaryPart("sip", sip, "IASIP.zip"));
-    IngestionResponse ingestionResponse = restClient.put(response.getUri(LINK_INGEST), IngestionResponse.class);
-    return ingestionResponse.getAipId();
+    return restClient.put(response.getUri(LINK_INGEST), IngestionResponse.class)
+        .getAipId();
   }
 
-  public QueryResult query(SearchQuery query, String aic, String schema, int pageSize)
-      throws IOException, URISyntaxException {
-    final String formattedQuery = queryFormatter.format(query);
-    Map<String, String> aicToDipUri = configurationState.getAicToDipUri();
-    String baseUri = aicToDipUri.get(aic);
+  @Override
+  public QueryResult query(SearchQuery query, String aic, String schema, int pageSize) throws IOException {
+    Objects.requireNonNull(dipUrisByAicName, "Did you forget to call configure()?");
+
+    String formattedQuery = queryFormatter.format(query);
+    String baseUri = dipUrisByAicName.get(aic);
     Objects.requireNonNull(baseUri, String.format("No DIP resource found for AIC %s", aic));
-    URIBuilder builder = new URIBuilder(baseUri);
-    builder.addParameter("query", formattedQuery);
-    builder.addParameter("schema", schema);
-    builder.addParameter("size", String.valueOf(pageSize));
-    final URI uri = builder.build();
-    return restClient.get(uri.toString(), queryResultFactory);
+    try {
+      URI queryUri = new URIBuilder(baseUri)
+          .addParameter("query", formattedQuery)
+          .addParameter("schema", schema)
+          .addParameter("size", String.valueOf(pageSize))
+          .build();
+      return restClient.get(queryUri.toString(), queryResultFactory);
+    } catch (URISyntaxException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
-  /*
-   * Doesn't work.
-   * 
-   * @Override public String confirm(String aipId) throws IOException { Objects.requireNonNull(aipId, "Invalid aipId");
-   * JobDefinitions jobDefinitions = restClient.follow(configurationState.getServices(), LINK_JOB_DEFINITIONS,
-   * JobDefinitions.class); JobDefinition jobDefinition = restClient.get(jobDefinitions.getSelfUri() +
-   * LINK_JOB_CONFIRMATION, JobDefinition.class); JobInstance jobInstance =
-   * restClient.post(jobDefinition.getUri(LINK_JOB_INSTANCES), JobInstance.class, new TextPart("isNow", "true")); return
-   * restClient.get(jobInstance.getSelfUri(), JobInstance.class) .getStatus(); }
-   */
 }

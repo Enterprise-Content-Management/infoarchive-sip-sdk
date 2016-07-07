@@ -61,7 +61,7 @@ public class ApacheHttpClient implements HttpClient {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.emc.ia.sdk.support.rest.HttpClient#get(java.lang.String, java.util.Collection, java.lang.Class)
    */
   @Override
@@ -94,8 +94,8 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   protected <T> T execute(HttpUriRequest request, ResponseFactory<T> factory) throws IOException {
-    final CloseableHttpResponse httpResponse = client.execute(request);
-    final StatusLine statusLine = httpResponse.getStatusLine();
+    CloseableHttpResponse httpResponse = client.execute(request);
+    StatusLine statusLine = httpResponse.getStatusLine();
     int status = statusLine.getStatusCode();
     if (!isOk(status)) {
       HttpEntity entity = httpResponse.getEntity();
@@ -149,7 +149,7 @@ public class ApacheHttpClient implements HttpClient {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.emc.ia.sdk.support.rest.HttpClient#put(java.lang.String, java.util.Collection, java.lang.Class)
    */
   @Override
@@ -166,7 +166,7 @@ public class ApacheHttpClient implements HttpClient {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.emc.ia.sdk.support.rest.HttpClient#post(java.lang.String, java.util.Collection, java.lang.String,
    * java.lang.Class)
    */
@@ -186,7 +186,7 @@ public class ApacheHttpClient implements HttpClient {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.emc.ia.sdk.support.rest.HttpClient#post(java.lang.String, java.util.Collection, java.lang.Class,
    * com.emc.ia.sdk.support.rest.Part)
    */
@@ -217,7 +217,7 @@ public class ApacheHttpClient implements HttpClient {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.emc.ia.sdk.support.rest.HttpClient#close()
    */
   @Override

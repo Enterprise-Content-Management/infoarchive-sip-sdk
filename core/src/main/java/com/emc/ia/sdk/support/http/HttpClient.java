@@ -8,6 +8,7 @@ import java.util.Collection;
 
 import com.emc.ia.sdk.support.rest.ResponseFactory;
 
+
 public interface HttpClient {
 
   <T> T get(String uri, Collection<Header> headers, Class<T> type) throws IOException;

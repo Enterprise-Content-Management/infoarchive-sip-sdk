@@ -3,8 +3,6 @@
  */
 package com.emc.ia.sdk.sip.ingestion;
 
-import java.util.Map;
-
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Federation;
 import com.emc.ia.sdk.sip.ingestion.dto.JobDefinition;
@@ -35,7 +33,6 @@ class RestCache { // NOPMD TooManyFields
   private JobDefinition jobDefinition;
   private String aicUri;
   private String quotaUri;
-  private Map<String, String> aicToDipUri;
 
   public String getAicUri() {
     return aicUri;
@@ -189,11 +186,4 @@ class RestCache { // NOPMD TooManyFields
     this.jobDefinition = jobDefinition;
   }
 
-  public Map<String, String> getAicToDipUri() {
-    return aicToDipUri;
-  }
-
-  public void setAicToDipUri(Map<String, String> aicToDipUri) {
-    this.aicToDipUri = aicToDipUri;
-  }
 }

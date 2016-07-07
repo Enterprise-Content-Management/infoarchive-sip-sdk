@@ -61,23 +61,22 @@ public class QueryResult implements Closeable {
 
   @Override
   public String toString() {
-    final StringBuilder builder = new StringBuilder(256);
-    builder.append("IAQueryResult [resultSetQuota=");
-    builder.append(resultSetQuota);
-    builder.append(", aiuQuota=");
-    builder.append(aiuQuota);
-    builder.append(", resultSetCount=");
-    builder.append(resultSetCount);
-    builder.append(", aipQuota=");
-    builder.append(aipQuota);
-    builder.append(", cacheOutAipIgnored=");
-    builder.append(cacheOutAipIgnored);
-    builder.append(", resultStream=");
-    builder.append(resultStream);
-    builder.append(", dependentResource=");
-    builder.append(dependentResource);
-    builder.append(']');
-    return builder.toString();
+    return new StringBuilder(256)
+        .append("IAQueryResult [resultSetQuota=")
+        .append(resultSetQuota)
+        .append(", aiuQuota=")
+        .append(aiuQuota)
+        .append(", resultSetCount=")
+        .append(resultSetCount)
+        .append(", aipQuota=")
+        .append(aipQuota)
+        .append(", cacheOutAipIgnored=")
+        .append(cacheOutAipIgnored)
+        .append(", resultStream=")
+        .append(resultStream)
+        .append(", dependentResource=")
+        .append(dependentResource).append(']')
+        .toString();
   }
 
 }
