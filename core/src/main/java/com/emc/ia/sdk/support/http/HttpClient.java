@@ -6,10 +6,13 @@ package com.emc.ia.sdk.support.http;
 import java.io.IOException;
 import java.util.Collection;
 
+import com.emc.ia.sdk.support.rest.ResponseFactory;
 
 public interface HttpClient {
 
   <T> T get(String uri, Collection<Header> headers, Class<T> type) throws IOException;
+
+  <T> T get(String uri, Collection<Header> headers, ResponseFactory<T> factory) throws IOException;
 
   <T> T put(String uri, Collection<Header> headers, Class<T> type) throws IOException;
 

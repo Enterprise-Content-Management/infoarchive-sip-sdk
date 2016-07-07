@@ -6,13 +6,18 @@ package com.emc.ia.sdk.sip.ingestion;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.apache.http.client.utils.URIBuilder;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Aic;
 import com.emc.ia.sdk.sip.ingestion.dto.Aics;
@@ -70,6 +75,9 @@ import com.emc.ia.sdk.sip.ingestion.dto.Stores;
 import com.emc.ia.sdk.sip.ingestion.dto.SubPriority;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
 import com.emc.ia.sdk.sip.ingestion.dto.XdbPdiConfig;
+import com.emc.ia.sdk.sip.ingestion.dto.query.QueryFormatter;
+import com.emc.ia.sdk.sip.ingestion.dto.query.QueryResult;
+import com.emc.ia.sdk.sip.ingestion.dto.query.SearchQuery;
 import com.emc.ia.sdk.support.NewInstance;
 import com.emc.ia.sdk.support.RepeatingConfigReader;
 import com.emc.ia.sdk.support.http.BinaryPart;
@@ -79,6 +87,8 @@ import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.LinkContainer;
+import com.emc.ia.sdk.support.rest.QueryResultFactory;
+import com.emc.ia.sdk.support.rest.ResponseFactory;
 import com.emc.ia.sdk.support.rest.RestClient;
 
 /**
@@ -95,6 +105,9 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private static final String STORE_NAME = "filestore_01";
 
   private final RestCache configurationState = new RestCache();
+  private final ResponseFactory<QueryResult> queryResultFactory = new QueryResultFactory();
+  private final QueryFormatter queryFormatter = new QueryFormatter();
+
   private Map<String, String> configuration;
   private RestClient restClient;
   private String aipsUri;
@@ -139,6 +152,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       ensureQuota();
       ensureQuery();
       cacheAipsUri();
+      cacheDipUris();
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
@@ -787,6 +801,16 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       .getUri(LINK_AIPS);
   }
 
+  protected void cacheDipUris() throws IOException {
+    Aics aics = restClient.follow(configurationState.getApplication(), LINK_AICS, Aics.class);
+    final Map<String, String> aicNameToDipResource = new HashMap<String, String>();
+    if (aics != null) {
+      aics.getItems()
+        .forEach(aic -> aicNameToDipResource.put(aic.getName(), aic.getUri(LINK_DIP)));
+    }
+    configurationState.setAicToDipUri(aicNameToDipResource);
+  }
+
   @Override
   public String ingest(InputStream sip) throws IOException {
     Objects.requireNonNull(aipsUri, "Did you forget to call configure()?");
@@ -796,6 +820,21 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return ingestionResponse.getAipId();
   }
 
+  public QueryResult query(SearchQuery query, String aic, String schema, int pageSize)
+      throws IOException, URISyntaxException {
+    final String formattedQuery = queryFormatter.format(query);
+    Map<String, String> aicToDipUri = configurationState.getAicToDipUri();
+    String baseUri = aicToDipUri.get(aic);
+    Objects.requireNonNull(baseUri, String.format("No DIP resource found for AIC %s", aic));
+    URIBuilder builder = new URIBuilder(baseUri);
+    builder.addParameter("query", formattedQuery);
+    builder.addParameter("schema", schema);
+    builder.addParameter("size", String.valueOf(pageSize));
+    final URI uri = builder.build();
+    return restClient.get(uri.toString(), queryResultFactory);
+  }
+
+  /* Doesn't work. 
   @Override
   public String confirm(String aipId) throws IOException {
     Objects.requireNonNull(aipId, "Invalid aipId");
@@ -808,4 +847,5 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return restClient.get(jobInstance.getSelfUri(), JobInstance.class)
       .getStatus();
   }
+  */
 }

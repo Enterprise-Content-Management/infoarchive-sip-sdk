@@ -5,6 +5,7 @@ package com.emc.ia.sdk.support.http.apache;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -13,6 +14,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -36,9 +38,9 @@ import com.emc.ia.sdk.support.http.Header;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.TextPart;
+import com.emc.ia.sdk.support.rest.ResponseFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 public class ApacheHttpClient implements HttpClient {
 
@@ -50,17 +52,26 @@ public class ApacheHttpClient implements HttpClient {
 
   public ApacheHttpClient() {
     HttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
-    client = HttpClients.custom().setConnectionManager(manager).build();
+    client = HttpClients.custom()
+      .setConnectionManager(manager)
+      .build();
     mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see com.emc.ia.sdk.support.rest.HttpClient#get(java.lang.String, java.util.Collection, java.lang.Class)
    */
   @Override
   public <T> T get(String uri, Collection<Header> headers, Class<T> type) throws IOException {
     return execute(newGet(uri, headers), type);
+  }
+
+  @Override
+  public <T> T get(String uri, Collection<Header> headers, ResponseFactory<T> factory) throws IOException {
+    return execute(newGet(uri, headers), factory);
   }
 
   private HttpGet newGet(String uri, Collection<Header> headers) {
@@ -78,7 +89,34 @@ public class ApacheHttpClient implements HttpClient {
 
   protected <T> T execute(HttpUriRequest request, Class<T> type) throws IOException {
     Objects.requireNonNull(request, "Missing request");
-    return client.execute(request, getResponseHandler(request.getMethod(), request.getURI().toString(), type));
+    return client.execute(request, getResponseHandler(request.getMethod(), request.getURI()
+      .toString(), type));
+  }
+
+  protected <T> T execute(HttpUriRequest request, ResponseFactory<T> factory) throws IOException {
+    boolean cleanUp = true;
+    final CloseableHttpResponse httpResponse = client.execute(request);
+    final StatusLine statusLine = httpResponse.getStatusLine();
+    int status = statusLine.getStatusCode();
+    if (!isOk(status)) {
+      HttpEntity entity = httpResponse.getEntity();
+      String body = entity == null ? "" : EntityUtils.toString(entity);
+      String method = request.getMethod();
+      URI uri = request.getURI();
+      throw new HttpResponseException(status,
+          String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
+    }
+    try {
+      T result = factory.create(httpResponse);
+      cleanUp = false;
+      return result;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    } finally {
+      if (cleanUp) {
+        IOUtils.closeQuietly(httpResponse);
+      }
+    }
   }
 
   <T> ResponseHandler<T> getResponseHandler(String method, String uri, Class<T> type) {
@@ -109,7 +147,9 @@ public class ApacheHttpClient implements HttpClient {
     return STATUS_CODE_RANGE_MIN <= status && status < STATUS_CODE_RANGE_MAX;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see com.emc.ia.sdk.support.rest.HttpClient#put(java.lang.String, java.util.Collection, java.lang.Class)
    */
   @Override
@@ -124,8 +164,11 @@ public class ApacheHttpClient implements HttpClient {
     return result;
   }
 
-  /* (non-Javadoc)
-   * @see com.emc.ia.sdk.support.rest.HttpClient#post(java.lang.String, java.util.Collection, java.lang.String, java.lang.Class)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.emc.ia.sdk.support.rest.HttpClient#post(java.lang.String, java.util.Collection, java.lang.String,
+   * java.lang.Class)
    */
   @Override
   public <T> T post(String uri, Collection<Header> headers, String payload, Class<T> type) throws IOException {
@@ -141,8 +184,11 @@ public class ApacheHttpClient implements HttpClient {
     return result;
   }
 
-  /* (non-Javadoc)
-   * @see com.emc.ia.sdk.support.rest.HttpClient#post(java.lang.String, java.util.Collection, java.lang.Class, com.emc.ia.sdk.support.rest.Part)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.emc.ia.sdk.support.rest.HttpClient#post(java.lang.String, java.util.Collection, java.lang.Class,
+   * com.emc.ia.sdk.support.rest.Part)
    */
   @Override
   public <T> T post(String uri, Collection<Header> headers, Class<T> type, Part... parts) throws IOException {
@@ -165,10 +211,13 @@ public class ApacheHttpClient implements HttpClient {
       BinaryPart binaryPart = (BinaryPart)part;
       return new InputStreamBody(binaryPart.getData(), contentType, binaryPart.getDownloadName());
     }
-    throw new IllegalArgumentException("Unhandled part type: " + part.getClass().getName());
+    throw new IllegalArgumentException("Unhandled part type: " + part.getClass()
+      .getName());
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see com.emc.ia.sdk.support.rest.HttpClient#close()
    */
   @Override

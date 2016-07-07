@@ -40,7 +40,7 @@ public class ItemContainer<T extends NamedLinkContainer> extends LinkContainer {
         .orElse(null);
   }
 
-  protected Stream<T> getItems() {
+  public Stream<T> getItems() {
     return items.stream();
   }
 

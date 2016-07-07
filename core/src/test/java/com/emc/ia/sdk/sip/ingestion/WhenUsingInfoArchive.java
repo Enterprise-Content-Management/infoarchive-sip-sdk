@@ -12,14 +12,18 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockito.stubbing.OngoingStubbing;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Aic;
@@ -27,6 +31,7 @@ import com.emc.ia.sdk.sip.ingestion.dto.Aics;
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
 import com.emc.ia.sdk.sip.ingestion.dto.Contents;
+import com.emc.ia.sdk.sip.ingestion.dto.Criterion;
 import com.emc.ia.sdk.sip.ingestion.dto.Database;
 import com.emc.ia.sdk.sip.ingestion.dto.Databases;
 import com.emc.ia.sdk.sip.ingestion.dto.Federation;
@@ -69,6 +74,9 @@ import com.emc.ia.sdk.sip.ingestion.dto.Spaces;
 import com.emc.ia.sdk.sip.ingestion.dto.Store;
 import com.emc.ia.sdk.sip.ingestion.dto.Stores;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+import com.emc.ia.sdk.sip.ingestion.dto.query.Comparision;
+import com.emc.ia.sdk.sip.ingestion.dto.query.Operator;
+import com.emc.ia.sdk.sip.ingestion.dto.query.SearchQuery;
 import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.Link;
@@ -90,6 +98,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private final InfoArchiveRestClient archiveClient = new InfoArchiveRestClient(restClient);
   private Applications applications;
   private Application application;
+  private Aics aics;
+  private Aic aic;
 
   @Before
   public void init() throws IOException {
@@ -121,9 +131,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Ingests ingests = mock(Ingests.class);
     Libraries libraries = mock(Libraries.class);
     Contents contents = new Contents();
-    Aics aics = mock(Aics.class);
+    aics = mock(Aics.class);
     Queries queries = mock(Queries.class);
     Quotas quotas = mock(Quotas.class);
+    aic = new Aic();
 
     links.put(InfoArchiveLinkRelations.LINK_TENANT, link);
     links.put(InfoArchiveLinkRelations.LINK_APPLICATIONS, link);
@@ -177,9 +188,11 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(ingests, new Ingest());
     mockByName(libraries, new Library());
     mockByName(holdings, new Holding());
-    mockByName(aics, new Aic());
+    mockByName(aics, aic);
     mockByName(quotas, new Quota());
     mockByName(queries, new Query());
+
+    when(aics.getItems()).thenReturn(Stream.of(aic));
   }
 
   private void prepareConfiguration() {
@@ -317,6 +330,25 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     });
 
     archiveClient.ensureApplication();
+  }
+
+  @Test
+  public void shouldQuerySuccessfully() throws IOException, URISyntaxException {
+    when(aics.getItems()).thenReturn(Arrays.asList(aic)
+      .stream());
+    Link dipLink = new Link();
+    dipLink.setHref(randomString());
+    aic.getLinks()
+      .put(LINK_DIP, dipLink);
+    aic.setName("MyAic");
+    archiveClient.cacheDipUris();
+
+    SearchQuery query = new SearchQuery();
+    query.getItems()
+      .add(new Comparision("variable", Operator.EQUAL, "value"));
+    String aicName = "MyAic";
+    String schema = NAMESPACE;
+    archiveClient.query(query, aicName, schema, 10);
   }
 
   @Test

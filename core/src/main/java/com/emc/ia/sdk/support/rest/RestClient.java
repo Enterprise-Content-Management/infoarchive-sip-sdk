@@ -15,7 +15,6 @@ import com.emc.ia.sdk.support.http.JsonFormatter;
 import com.emc.ia.sdk.support.http.MediaTypes;
 import com.emc.ia.sdk.support.http.Part;
 
-
 public class RestClient implements Closeable, StandardLinkRelations {
 
   private final HttpClient httpClient;
@@ -35,6 +34,10 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return httpClient.get(uri, headers, type);
   }
 
+  public <T> T get(String uri, ResponseFactory<T> factory) throws IOException {
+    return httpClient.get(uri, headers, factory);
+  }
+
   public <T> T put(String uri, Class<T> type) throws IOException {
     return httpClient.put(uri, headers, type);
   }
@@ -49,7 +52,8 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   private Link linkIn(LinkContainer state, String relation) {
-    Link result = state.getLinks().get(relation);
+    Link result = state.getLinks()
+      .get(relation);
     Objects.requireNonNull(result, String.format("Missing link %s in %s", relation, state));
     return result;
   }
