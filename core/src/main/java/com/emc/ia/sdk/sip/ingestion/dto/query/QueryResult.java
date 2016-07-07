@@ -61,7 +61,7 @@ public class QueryResult implements Closeable {
 
   @Override
   public String toString() {
-    final StringBuilder builder = new StringBuilder();
+    final StringBuilder builder = new StringBuilder(256);
     builder.append("IAQueryResult [resultSetQuota=");
     builder.append(resultSetQuota);
     builder.append(", aiuQuota=");
@@ -76,7 +76,7 @@ public class QueryResult implements Closeable {
     builder.append(resultStream);
     builder.append(", dependentResource=");
     builder.append(dependentResource);
-    builder.append("]");
+    builder.append(']');
     return builder.toString();
   }
 

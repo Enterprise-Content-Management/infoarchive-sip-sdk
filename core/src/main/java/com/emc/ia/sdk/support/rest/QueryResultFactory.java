@@ -68,14 +68,12 @@ public class QueryResultFactory implements ResponseFactory<QueryResult> {
     final Header header = response.getFirstHeader(name);
     if (header != null) {
       final String value = header.getValue();
-      if (value != null) {
-        if ("true".equalsIgnoreCase(value)) {
-          return true;
-        } else if ("false".equalsIgnoreCase(value)) {
-          return false;
-        }
-      } else {
+      if (value == null) {
         return defaultValue;
+      } else if ("true".equalsIgnoreCase(value)) {
+        return true;
+      } else if ("false".equalsIgnoreCase(value)) {
+        return false;
       }
     }
     return defaultValue;

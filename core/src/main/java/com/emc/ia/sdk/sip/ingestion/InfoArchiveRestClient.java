@@ -40,9 +40,6 @@ import com.emc.ia.sdk.sip.ingestion.dto.IngestNode;
 import com.emc.ia.sdk.sip.ingestion.dto.IngestNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.IngestionResponse;
 import com.emc.ia.sdk.sip.ingestion.dto.Ingests;
-import com.emc.ia.sdk.sip.ingestion.dto.JobDefinition;
-import com.emc.ia.sdk.sip.ingestion.dto.JobDefinitions;
-import com.emc.ia.sdk.sip.ingestion.dto.JobInstance;
 import com.emc.ia.sdk.sip.ingestion.dto.Libraries;
 import com.emc.ia.sdk.sip.ingestion.dto.Library;
 import com.emc.ia.sdk.sip.ingestion.dto.Namespace;
@@ -834,18 +831,14 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return restClient.get(uri.toString(), queryResultFactory);
   }
 
-  /* Doesn't work. 
-  @Override
-  public String confirm(String aipId) throws IOException {
-    Objects.requireNonNull(aipId, "Invalid aipId");
-    JobDefinitions jobDefinitions =
-        restClient.follow(configurationState.getServices(), LINK_JOB_DEFINITIONS, JobDefinitions.class);
-    JobDefinition jobDefinition =
-        restClient.get(jobDefinitions.getSelfUri() + LINK_JOB_CONFIRMATION, JobDefinition.class);
-    JobInstance jobInstance =
-        restClient.post(jobDefinition.getUri(LINK_JOB_INSTANCES), JobInstance.class, new TextPart("isNow", "true"));
-    return restClient.get(jobInstance.getSelfUri(), JobInstance.class)
-      .getStatus();
-  }
-  */
+  /*
+   * Doesn't work.
+   * 
+   * @Override public String confirm(String aipId) throws IOException { Objects.requireNonNull(aipId, "Invalid aipId");
+   * JobDefinitions jobDefinitions = restClient.follow(configurationState.getServices(), LINK_JOB_DEFINITIONS,
+   * JobDefinitions.class); JobDefinition jobDefinition = restClient.get(jobDefinitions.getSelfUri() +
+   * LINK_JOB_CONFIRMATION, JobDefinition.class); JobInstance jobInstance =
+   * restClient.post(jobDefinition.getUri(LINK_JOB_INSTANCES), JobInstance.class, new TextPart("isNow", "true")); return
+   * restClient.get(jobInstance.getSelfUri(), JobInstance.class) .getStatus(); }
+   */
 }

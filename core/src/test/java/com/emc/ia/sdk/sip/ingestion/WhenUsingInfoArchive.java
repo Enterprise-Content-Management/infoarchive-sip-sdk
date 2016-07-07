@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.mockito.stubbing.OngoingStubbing;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Aic;
@@ -31,7 +30,6 @@ import com.emc.ia.sdk.sip.ingestion.dto.Aics;
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Applications;
 import com.emc.ia.sdk.sip.ingestion.dto.Contents;
-import com.emc.ia.sdk.sip.ingestion.dto.Criterion;
 import com.emc.ia.sdk.sip.ingestion.dto.Database;
 import com.emc.ia.sdk.sip.ingestion.dto.Databases;
 import com.emc.ia.sdk.sip.ingestion.dto.Federation;

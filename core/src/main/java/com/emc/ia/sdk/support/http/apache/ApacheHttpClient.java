@@ -94,7 +94,6 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   protected <T> T execute(HttpUriRequest request, ResponseFactory<T> factory) throws IOException {
-    boolean cleanUp = true;
     final CloseableHttpResponse httpResponse = client.execute(request);
     final StatusLine statusLine = httpResponse.getStatusLine();
     int status = statusLine.getStatusCode();
@@ -106,6 +105,7 @@ public class ApacheHttpClient implements HttpClient {
       throw new HttpResponseException(status,
           String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
     }
+    boolean cleanUp = true;
     try {
       T result = factory.create(httpResponse);
       cleanUp = false;
