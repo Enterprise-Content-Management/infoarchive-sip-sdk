@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
     @JsonSubTypes.Type(value = And.class, name = "and"),
     @JsonSubTypes.Type(value = Or.class, name = "or"),
-    @JsonSubTypes.Type(value = Comparision.class, name = "criterion") })
+    @JsonSubTypes.Type(value = Comparison.class, name = "criterion") })
 public abstract class Item {
 
   Item() {

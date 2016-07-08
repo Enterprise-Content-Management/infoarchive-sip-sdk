@@ -11,22 +11,22 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({ "name", "operator", "value" })
-public class Comparision extends Item {
+public class Comparison extends Item {
 
   private final List<String> value;
   private String name;
   private Operator operator;
 
-  public Comparision() {
+  public Comparison() {
     operator = Operator.EQUAL;
     value = new ArrayList<>();
   }
 
-  public Comparision(String name, Operator operator, String value) {
+  public Comparison(String name, Operator operator, String value) {
     this(name, operator, Arrays.asList(value));
   }
 
-  public Comparision(String name, Operator operator, List<String> value) {
+  public Comparison(String name, Operator operator, List<String> value) {
     this.name = name;
     this.operator = operator;
     this.value = value;

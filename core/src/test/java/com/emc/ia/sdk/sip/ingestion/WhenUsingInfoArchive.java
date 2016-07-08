@@ -4,8 +4,11 @@
 package com.emc.ia.sdk.sip.ingestion;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,10 +72,12 @@ import com.emc.ia.sdk.sip.ingestion.dto.Spaces;
 import com.emc.ia.sdk.sip.ingestion.dto.Store;
 import com.emc.ia.sdk.sip.ingestion.dto.Stores;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
-import com.emc.ia.sdk.sip.ingestion.dto.query.Comparision;
+import com.emc.ia.sdk.sip.ingestion.dto.query.Comparison;
 import com.emc.ia.sdk.sip.ingestion.dto.query.Operator;
+import com.emc.ia.sdk.sip.ingestion.dto.query.QueryResult;
 import com.emc.ia.sdk.sip.ingestion.dto.query.SearchQuery;
 import com.emc.ia.sdk.support.http.Part;
+import com.emc.ia.sdk.support.http.Response;
 import com.emc.ia.sdk.support.http.UriBuilder;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.Link;
@@ -339,7 +344,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(aics.getItems()).thenReturn(Stream.of(aic));
     Link dipLink = new Link();
     dipLink.setHref(randomString());
-    aic.getLinks().put(LINK_DIP, dipLink);
+    aic.getLinks()
+      .put(LINK_DIP, dipLink);
     aic.setName("MyAic");
     archiveClient.cacheDipUris();
     UriBuilder uriBuilder = mock(UriBuilder.class);
@@ -347,13 +353,19 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(uriBuilder.build()).thenReturn(uri);
     when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
     when(restClient.uri(anyString())).thenReturn(uriBuilder);
+    QueryResultFactory queryResultFactory = mock(QueryResultFactory.class);
+    QueryResult queryResult = mock(QueryResult.class);
+    when(queryResultFactory.create(any(Response.class))).thenReturn(queryResult);
+    when(restClient.get(eq(uri), any(QueryResultFactory.class))).thenReturn(queryResult);
 
     SearchQuery query = new SearchQuery();
     query.getItems()
-      .add(new Comparision("variable", Operator.EQUAL, "value"));
+      .add(new Comparison("variable", Operator.EQUAL, "value"));
     String aicName = "MyAic";
     String schema = NAMESPACE;
-    archiveClient.query(query, aicName, schema, 10);
+    QueryResult result = archiveClient.query(query, aicName, schema, 10);
+
+    assertEquals(queryResult, result);
   }
 
   @Test
