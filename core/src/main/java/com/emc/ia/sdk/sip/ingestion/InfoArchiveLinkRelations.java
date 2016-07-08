@@ -35,6 +35,7 @@ interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_QUERY_QUOTAS = LINK_PREFIX + "query-quotas";
   String LINK_RECEIVER_NODES = LINK_PREFIX + "receiver-nodes";
   String LINK_RETENTION_POLICIES = LINK_PREFIX + "retention-policies";
+  String LINK_RESULT_CONFIGURATION_HELPERS = LINK_PREFIX + "result-configuration-helpers";
   String LINK_SPACES = LINK_PREFIX + "spaces";
   String LINK_SPACE_ROOT_FOLDERS = LINK_PREFIX + "space-root-folders";
   String LINK_SPACE_ROOT_LIBRARIES = LINK_PREFIX + "space-root-xdb-libraries";

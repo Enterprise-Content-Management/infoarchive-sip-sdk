@@ -33,6 +33,7 @@ class RestCache { // NOPMD TooManyFields
   private JobDefinition jobDefinition;
   private String aicUri;
   private String quotaUri;
+  private String resultConfigHelperUri;
 
   public String getAicUri() {
     return aicUri;
@@ -184,6 +185,14 @@ class RestCache { // NOPMD TooManyFields
 
   public void setJobDefinition(JobDefinition jobDefinition) {
     this.jobDefinition = jobDefinition;
+  }
+
+  public String getResultConfigHelperUri() {
+    return resultConfigHelperUri;
+  }
+
+  public void setResultConfigHelperUri(String resultConfigHelperUri) {
+    this.resultConfigHelperUri = resultConfigHelperUri;
   }
 
 }

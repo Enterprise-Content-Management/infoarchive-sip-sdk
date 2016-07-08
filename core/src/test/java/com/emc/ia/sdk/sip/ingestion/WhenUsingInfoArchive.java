@@ -60,6 +60,8 @@ import com.emc.ia.sdk.sip.ingestion.dto.Quotas;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNode;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
+import com.emc.ia.sdk.sip.ingestion.dto.ResultConfigurationHelper;
+import com.emc.ia.sdk.sip.ingestion.dto.ResultConfigurationHelpers;
 import com.emc.ia.sdk.sip.ingestion.dto.RetentionPolicies;
 import com.emc.ia.sdk.sip.ingestion.dto.RetentionPolicy;
 import com.emc.ia.sdk.sip.ingestion.dto.Services;
@@ -97,6 +99,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private Applications applications;
   private Application application;
   private Aics aics;
+  private ResultConfigurationHelpers helpers;
   private Aic aic;
 
   @Before
@@ -132,6 +135,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     aics = mock(Aics.class);
     Queries queries = mock(Queries.class);
     Quotas quotas = mock(Quotas.class);
+    helpers = mock(ResultConfigurationHelpers.class);
     aic = new Aic();
 
     links.put(InfoArchiveLinkRelations.LINK_TENANT, link);
@@ -168,6 +172,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(Aics.class, aics);
     mockCollection(Quotas.class, quotas);
     mockCollection(Queries.class, queries);
+    mockCollection(ResultConfigurationHelpers.class, helpers);
 
     mockByName(federations, new Federation());
     mockByName(databases, new Database());
@@ -189,6 +194,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(aics, aic);
     mockByName(quotas, new Quota());
     mockByName(queries, new Query());
+    mockByName(helpers, new ResultConfigurationHelper());
 
     when(aics.getItems()).thenReturn(Stream.of(aic));
   }

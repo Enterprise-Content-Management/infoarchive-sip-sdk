@@ -56,6 +56,8 @@ import com.emc.ia.sdk.sip.ingestion.dto.Quotas;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNode;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceiverNodes;
 import com.emc.ia.sdk.sip.ingestion.dto.ReceptionResponse;
+import com.emc.ia.sdk.sip.ingestion.dto.ResultConfigurationHelper;
+import com.emc.ia.sdk.sip.ingestion.dto.ResultConfigurationHelpers;
 import com.emc.ia.sdk.sip.ingestion.dto.RetentionClass;
 import com.emc.ia.sdk.sip.ingestion.dto.RetentionPolicies;
 import com.emc.ia.sdk.sip.ingestion.dto.RetentionPolicy;
@@ -148,6 +150,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       ensureAic();
       ensureQuota();
       ensureQuery();
+      ensureResultConfigurationHelper();
       cacheAipsUri();
       cacheDipUris();
     } catch (IOException e) {
@@ -791,6 +794,33 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     result.getPdiConfigs()
       .add(pdiConfig);
     return result;
+  }
+
+  private void ensureResultConfigurationHelper() throws IOException {
+    String name = configuration.get(RESULT_HELPER_NAME);
+    ResultConfigurationHelpers helpers = restClient.follow(configurationState.getApplication(), LINK_RESULT_CONFIGURATION_HELPERS, ResultConfigurationHelpers.class);
+    ResultConfigurationHelper helper = helpers.byName(name);
+    if (helper == null) {
+      createItem(helpers, createResultConfigurationHelper(name));
+      helper = restClient.refresh(helpers)
+        .byName(name);
+      Objects.requireNonNull(helper, "Could not create Result configuration helper");
+    }
+    configurationState.setResultConfigHelperUri(helper.getSelfUri());
+  }
+
+  private ResultConfigurationHelper createResultConfigurationHelper(String name) {
+    ResultConfigurationHelper helper = new ResultConfigurationHelper();
+    helper.setName(name);
+    helper.setResultSchema(createResutlSchema(name));
+    return helper;
+  }
+
+  private List<String> createResutlSchema(String name) {
+    String schema = configuration.get(resolveTemplatedKey(RESULT_HELPER_SCHEMA_TEMPLATE, name));
+    List<String> schemas = new ArrayList<>();
+    schemas.add(schema);
+    return schemas;
   }
 
   protected void cacheAipsUri() {

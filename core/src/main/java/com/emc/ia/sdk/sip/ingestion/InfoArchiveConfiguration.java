@@ -67,6 +67,10 @@ public interface InfoArchiveConfiguration {
   String QUOTA_AIP = QUOTA_PREFIX + "aip";
   String QUOTA_DIP = QUOTA_PREFIX + "dip";
 
+  String RESULT_HELPER_PREFIX = PREFIX + "result.helper.";
+  String RESULT_HELPER_SCHEMA_TEMPLATE = RESULT_HELPER_PREFIX + "%s.result.schema";
+  String RESULT_HELPER_NAME = RESULT_HELPER_PREFIX + NAME;
+
   String RETENTION_POLICY_NAME = PREFIX + "retention.policy.name";
 
   String PDI_PREFIX = PREFIX + "pdi.";
