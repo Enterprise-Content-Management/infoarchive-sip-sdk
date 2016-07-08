@@ -4,11 +4,8 @@
 package com.emc.ia.sdk.sip.ingestion;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -100,7 +97,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private Applications applications;
   private Application application;
   private Aics aics;
-  private ResultConfigurationHelpers helpers;
   private Aic aic;
 
   @Before
@@ -136,7 +132,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     aics = mock(Aics.class);
     Queries queries = mock(Queries.class);
     Quotas quotas = mock(Quotas.class);
-    helpers = mock(ResultConfigurationHelpers.class);
+    ResultConfigurationHelpers helpers = mock(ResultConfigurationHelpers.class);
     aic = new Aic();
 
     links.put(InfoArchiveLinkRelations.LINK_TENANT, link);
