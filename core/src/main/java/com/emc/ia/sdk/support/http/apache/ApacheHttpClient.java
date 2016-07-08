@@ -39,6 +39,7 @@ import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.ResponseFactory;
 import com.emc.ia.sdk.support.http.TextPart;
+import com.emc.ia.sdk.support.http.UriBuilder;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -59,11 +60,6 @@ public class ApacheHttpClient implements HttpClient {
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see com.emc.ia.sdk.support.rest.HttpClient#get(java.lang.String, java.util.Collection, java.lang.Class)
-   */
   @Override
   public <T> T get(String uri, Collection<Header> headers, Class<T> type) throws IOException {
     return execute(newGet(uri, headers), type);
@@ -107,7 +103,7 @@ public class ApacheHttpClient implements HttpClient {
     }
     boolean cleanUp = true;
     try {
-      T result = factory.create(httpResponse);
+      T result = factory.create(new ApacheResponse(httpResponse));
       cleanUp = false;
       return result;
     } catch (Exception e) {
@@ -147,11 +143,6 @@ public class ApacheHttpClient implements HttpClient {
     return STATUS_CODE_RANGE_MIN <= status && status < STATUS_CODE_RANGE_MAX;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see com.emc.ia.sdk.support.rest.HttpClient#put(java.lang.String, java.util.Collection, java.lang.Class)
-   */
   @Override
   public <T> T put(String uri, Collection<Header> headers, Class<T> type) throws IOException {
     return execute(newPut(uri, headers), type);
@@ -164,12 +155,6 @@ public class ApacheHttpClient implements HttpClient {
     return result;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see com.emc.ia.sdk.support.rest.HttpClient#post(java.lang.String, java.util.Collection, java.lang.String,
-   * java.lang.Class)
-   */
   @Override
   public <T> T post(String uri, Collection<Header> headers, String payload, Class<T> type) throws IOException {
     HttpPost request = newPost(uri, headers);
@@ -184,12 +169,6 @@ public class ApacheHttpClient implements HttpClient {
     return result;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see com.emc.ia.sdk.support.rest.HttpClient#post(java.lang.String, java.util.Collection, java.lang.Class,
-   * com.emc.ia.sdk.support.rest.Part)
-   */
   @Override
   public <T> T post(String uri, Collection<Header> headers, Class<T> type, Part... parts) throws IOException {
     HttpPost request = newPost(uri, headers);
@@ -215,14 +194,14 @@ public class ApacheHttpClient implements HttpClient {
       .getName());
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see com.emc.ia.sdk.support.rest.HttpClient#close()
-   */
   @Override
   public void close() {
     IOUtils.closeQuietly(client);
+  }
+
+  @Override
+  public UriBuilder uri(String baseUri) {
+    return new ApacheUriBuilder(baseUri);
   }
 
 }

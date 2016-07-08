@@ -10,8 +10,6 @@ import java.io.OutputStream;
 
 import org.junit.rules.TemporaryFolder;
 
-import com.emc.ia.sdk.support.RandomData;
-
 
 public class TestCase {
 

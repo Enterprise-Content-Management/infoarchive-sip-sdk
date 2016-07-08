@@ -31,7 +31,6 @@ import com.emc.ia.sdk.support.io.HashAssembler;
 import com.emc.ia.sdk.support.io.HashFunction;
 import com.emc.ia.sdk.support.io.MemoryBuffer;
 import com.emc.ia.sdk.support.io.NoHashAssembler;
-import com.emc.ia.sdk.support.test.XmlTestCase;
 import com.emc.ia.sdk.support.xml.XmlUtil;
 
 

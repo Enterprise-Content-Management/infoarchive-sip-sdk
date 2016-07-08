@@ -17,6 +17,7 @@ import org.junit.Test;
 import com.emc.ia.sdk.support.http.Header;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.http.MediaTypes;
+import com.emc.ia.sdk.support.http.UriBuilder;
 import com.emc.ia.sdk.support.http.apache.WhenMakingHttpCallsUsingApache.Foo;
 import com.emc.ia.sdk.support.test.TestCase;
 
@@ -103,6 +104,16 @@ public class WhenMakingRestCalls extends TestCase {
     restClient.close();
 
     verify(httpClient).close();
+  }
+
+  @Test
+  public void shouldForwardUri() {
+    UriBuilder expected = mock(UriBuilder.class);
+    when(httpClient.uri(anyString())).thenReturn(expected);
+
+    UriBuilder actual = restClient.uri(randomString());
+
+    assertSame("URI Builder", expected, actual);
   }
 
 }

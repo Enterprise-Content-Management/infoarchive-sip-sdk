@@ -13,6 +13,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.emc.ia.sdk.support.test.RandomData;
+
 
 public class WhenCreatingNewTypesFromConfiguration {
 

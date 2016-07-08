@@ -4,8 +4,10 @@
 package com.emc.ia.sdk.support.http;
 
 
-public interface ResponseFactory<T> {
+public interface UriBuilder {
 
-  T create(Response response);
+  UriBuilder addParameter(String name, String value);
+
+  String build();
 
 }

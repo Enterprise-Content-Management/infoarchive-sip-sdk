@@ -4,16 +4,11 @@
 package com.emc.ia.sdk.sip.ingestion;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -78,6 +73,7 @@ import com.emc.ia.sdk.sip.ingestion.dto.query.Comparision;
 import com.emc.ia.sdk.sip.ingestion.dto.query.Operator;
 import com.emc.ia.sdk.sip.ingestion.dto.query.SearchQuery;
 import com.emc.ia.sdk.support.http.Part;
+import com.emc.ia.sdk.support.http.UriBuilder;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.Link;
 import com.emc.ia.sdk.support.rest.LinkContainer;
@@ -334,18 +330,23 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     });
 
     archiveClient.ensureApplication();
+
+    // No error about being unable to create application
   }
 
   @Test
-  public void shouldQuerySuccessfully() throws IOException, URISyntaxException {
-    when(aics.getItems()).thenReturn(Arrays.asList(aic)
-      .stream());
+  public void shouldQuerySuccessfully() throws IOException {
+    when(aics.getItems()).thenReturn(Stream.of(aic));
     Link dipLink = new Link();
     dipLink.setHref(randomString());
-    aic.getLinks()
-      .put(LINK_DIP, dipLink);
+    aic.getLinks().put(LINK_DIP, dipLink);
     aic.setName("MyAic");
     archiveClient.cacheDipUris();
+    UriBuilder uriBuilder = mock(UriBuilder.class);
+    String uri = randomString();
+    when(uriBuilder.build()).thenReturn(uri);
+    when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
+    when(restClient.uri(anyString())).thenReturn(uriBuilder);
 
     SearchQuery query = new SearchQuery();
     query.getItems()
@@ -358,6 +359,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   @Test
   public void configure() {
     archiveClient.configure(configuration);
+
+    // Verify no exceptions are thrown
   }
 
 }

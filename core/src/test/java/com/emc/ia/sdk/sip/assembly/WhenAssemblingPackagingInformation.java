@@ -16,7 +16,6 @@ import org.w3c.dom.Node;
 
 import com.emc.ia.sdk.support.io.DataBuffer;
 import com.emc.ia.sdk.support.io.MemoryBuffer;
-import com.emc.ia.sdk.support.test.XmlTestCase;
 import com.emc.ia.sdk.support.xml.XmlUtil;
 
 
