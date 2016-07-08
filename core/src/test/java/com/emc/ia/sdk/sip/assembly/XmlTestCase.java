@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.support.test;
+package com.emc.ia.sdk.sip.assembly;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +11,7 @@ import java.io.InputStream;
 import org.w3c.dom.Document;
 
 import com.emc.ia.sdk.support.io.RepeatableInputStream;
+import com.emc.ia.sdk.support.test.TestCase;
 import com.emc.ia.sdk.support.xml.XmlUtil;
 
 

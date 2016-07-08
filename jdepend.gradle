@@ -1,8 +1,12 @@
 apply plugin: 'jdepend'
 
 jdependMain << {
-  def jdepend = new XmlSlurper().parse(reports.xml.destination)
+  failOnCycles(reports)
+}
+
+def failOnCycles(reports) {
   def error = '';
+  def jdepend = new XmlSlurper().parse(reports.xml.destination)
   jdepend.Cycles.Package.each { p ->
     error += '\nCycle from ' + p.@Name
     p.Package.each { error += "\n-> $it" }
@@ -12,4 +16,6 @@ jdependMain << {
   }
 }
 
-jdependTest.enabled = false
+jdependTest << {
+  failOnCycles(reports)
+}

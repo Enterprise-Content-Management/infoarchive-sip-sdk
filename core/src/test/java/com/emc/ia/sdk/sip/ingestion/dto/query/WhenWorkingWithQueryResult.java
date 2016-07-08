@@ -15,7 +15,7 @@ import java.io.InputStream;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.emc.ia.sdk.support.RandomData;
+import com.emc.ia.sdk.support.test.RandomData;
 import com.emc.ia.sdk.support.test.TestCase;
 
 public class WhenWorkingWithQueryResult extends TestCase {

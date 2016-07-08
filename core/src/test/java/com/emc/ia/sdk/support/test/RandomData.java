@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.support;
+package com.emc.ia.sdk.support.test;
 
 import java.security.SecureRandom;
 import java.util.Dictionary;
