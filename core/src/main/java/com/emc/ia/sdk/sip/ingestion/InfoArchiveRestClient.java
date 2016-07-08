@@ -6,8 +6,6 @@ package com.emc.ia.sdk.sip.ingestion;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import org.apache.http.client.utils.URIBuilder;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Aic;
 import com.emc.ia.sdk.sip.ingestion.dto.Aics;
@@ -823,16 +819,12 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     String formattedQuery = queryFormatter.format(query);
     String baseUri = dipUrisByAicName.get(aic);
     Objects.requireNonNull(baseUri, String.format("No DIP resource found for AIC %s", aic));
-    try {
-      URI queryUri = new URIBuilder(baseUri)
-          .addParameter("query", formattedQuery)
-          .addParameter("schema", schema)
-          .addParameter("size", String.valueOf(pageSize))
-          .build();
-      return restClient.get(queryUri.toString(), queryResultFactory);
-    } catch (URISyntaxException e) {
-      throw new IllegalStateException(e);
-    }
+    String queryUri = restClient.uri(baseUri)
+        .addParameter("query", formattedQuery)
+        .addParameter("schema", schema)
+        .addParameter("size", String.valueOf(pageSize))
+        .build();
+    return restClient.get(queryUri, queryResultFactory);
   }
 
 }

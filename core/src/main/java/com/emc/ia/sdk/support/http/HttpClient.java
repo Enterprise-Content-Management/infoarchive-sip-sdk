@@ -21,4 +21,6 @@ public interface HttpClient {
 
   void close();
 
+  UriBuilder uri(String baseUri);
+
 }

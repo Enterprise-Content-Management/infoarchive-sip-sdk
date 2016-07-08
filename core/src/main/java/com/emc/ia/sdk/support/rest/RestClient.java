@@ -15,6 +15,7 @@ import com.emc.ia.sdk.support.http.JsonFormatter;
 import com.emc.ia.sdk.support.http.MediaTypes;
 import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.ResponseFactory;
+import com.emc.ia.sdk.support.http.UriBuilder;
 
 public class RestClient implements Closeable, StandardLinkRelations {
 
@@ -29,6 +30,10 @@ public class RestClient implements Closeable, StandardLinkRelations {
   public void init(String bearerToken) {
     headers.add(new Header("Authorization", "Bearer " + bearerToken));
     headers.add(new Header("Accept", MediaTypes.HAL));
+  }
+
+  public UriBuilder uri(String baseUri) {
+    return httpClient.uri(baseUri);
   }
 
   public <T> T get(String uri, Class<T> type) throws IOException {

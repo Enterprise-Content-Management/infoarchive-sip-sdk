@@ -151,6 +151,11 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
     assertTrue("Is multi part", entity.getClass().getSimpleName().toLowerCase(Locale.ENGLISH).contains("multipart"));
   }
 
+  @Test
+  public void shouldBuildUris() {
+    assertEquals("URI", "http://google.com?q=foo+bar", httpClient.uri("http://google.com").addParameter("q", "foo bar").build());
+  }
+
 
   public static class Foo {
 
