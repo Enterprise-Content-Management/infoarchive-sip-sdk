@@ -57,6 +57,10 @@ import com.emc.ia.sdk.sip.ingestion.dto.ResultConfigurationHelpers;
 import com.emc.ia.sdk.sip.ingestion.dto.RetentionClass;
 import com.emc.ia.sdk.sip.ingestion.dto.RetentionPolicies;
 import com.emc.ia.sdk.sip.ingestion.dto.RetentionPolicy;
+import com.emc.ia.sdk.sip.ingestion.dto.Search;
+import com.emc.ia.sdk.sip.ingestion.dto.SearchComposition;
+import com.emc.ia.sdk.sip.ingestion.dto.SearchCompositions;
+import com.emc.ia.sdk.sip.ingestion.dto.Searches;
 import com.emc.ia.sdk.sip.ingestion.dto.Services;
 import com.emc.ia.sdk.sip.ingestion.dto.Sip;
 import com.emc.ia.sdk.sip.ingestion.dto.Space;
@@ -147,6 +151,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       ensureQuota();
       ensureQuery();
       ensureResultConfigurationHelper();
+      ensureSearch();
+      ensureSearchComposition();
       cacheAipsUri();
       cacheDipUris();
     } catch (IOException e) {
@@ -817,6 +823,46 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     List<String> schemas = new ArrayList<>();
     schemas.add(schema);
     return schemas;
+  }
+
+  private void ensureSearch() throws IOException {
+    String name = configuration.get(SEARCH_NAME);
+    Searches searches = restClient.follow(configurationState.getApplication(), LINK_SEARCHES, Searches.class);
+    configurationState.setSearch(searches.byName(name));
+    if (configurationState.getSearch() == null) {
+      createItem(searches, createSearch(name));
+      configurationState.setSearch(restClient.refresh(searches)
+        .byName(name));
+      Objects.requireNonNull(configurationState.getSearch(), "Could not create Search");
+    }
+  }
+
+  private Search createSearch(String name) {
+    Search search = new Search();
+    search.setName(name);
+    search.setDescription(configuration.get(SEARCH_DESCRIPTION));
+    search.setNestedSearch(configuration.get(SEARCH_NESTED).equals("false") ? false : true);
+    search.setState(configuration.get(SEARCH_STATE));
+    search.setInUse(configuration.get(SEARCH_INUSE).equals("false") ? false : true);
+    return search;
+  }
+
+  private void ensureSearchComposition() throws IOException {
+    String name = configuration.get(SEARCH_COMPOSITION_NAME);
+    SearchCompositions searchCompositions = restClient.follow(configurationState.getSearch(), LINK_SEARCH_COMPOSITIONS, SearchCompositions.class);
+    SearchComposition searchComposition = searchCompositions.byName(name);
+    if (searchComposition == null) {
+      createItem(searchCompositions, createSearchComposition(name));
+      searchComposition = restClient.refresh(searchCompositions)
+        .byName(name);
+      Objects.requireNonNull(searchComposition, "Could not create Search compostion");
+    }
+  }
+
+  private SearchComposition createSearchComposition(String name) {
+    SearchComposition search = new SearchComposition();
+    search.setName(name);
+    return search;
   }
 
   protected void cacheAipsUri() {

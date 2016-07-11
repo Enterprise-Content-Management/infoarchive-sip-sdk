@@ -59,6 +59,10 @@ import com.emc.ia.sdk.sip.ingestion.dto.ResultConfigurationHelper;
 import com.emc.ia.sdk.sip.ingestion.dto.ResultConfigurationHelpers;
 import com.emc.ia.sdk.sip.ingestion.dto.RetentionPolicies;
 import com.emc.ia.sdk.sip.ingestion.dto.RetentionPolicy;
+import com.emc.ia.sdk.sip.ingestion.dto.Search;
+import com.emc.ia.sdk.sip.ingestion.dto.SearchComposition;
+import com.emc.ia.sdk.sip.ingestion.dto.SearchCompositions;
+import com.emc.ia.sdk.sip.ingestion.dto.Searches;
 import com.emc.ia.sdk.sip.ingestion.dto.Services;
 import com.emc.ia.sdk.sip.ingestion.dto.Space;
 import com.emc.ia.sdk.sip.ingestion.dto.SpaceRootFolder;
@@ -133,6 +137,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Queries queries = mock(Queries.class);
     Quotas quotas = mock(Quotas.class);
     ResultConfigurationHelpers helpers = mock(ResultConfigurationHelpers.class);
+    Searches searches = mock(Searches.class);
+    SearchCompositions compostions = mock(SearchCompositions.class);
     aic = new Aic();
 
     links.put(InfoArchiveLinkRelations.LINK_TENANT, link);
@@ -170,6 +176,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(Quotas.class, quotas);
     mockCollection(Queries.class, queries);
     mockCollection(ResultConfigurationHelpers.class, helpers);
+    mockCollection(Searches.class, searches);
+    mockCollection(SearchCompositions.class, compostions);
 
     mockByName(federations, new Federation());
     mockByName(databases, new Database());
@@ -192,6 +200,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(quotas, new Quota());
     mockByName(queries, new Query());
     mockByName(helpers, new ResultConfigurationHelper());
+    mockByName(searches, new Search());
+    mockByName(compostions, new SearchComposition());
 
     when(aics.getItems()).thenReturn(Stream.of(aic));
   }
@@ -209,6 +219,16 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put(InfoArchiveConfiguration.PDI_SCHEMA_NAME, APPLICATION_NAME);
     configuration.put(InfoArchiveConfiguration.PDI_SCHEMA, "");
     configuration.put(InfoArchiveConfiguration.INGEST_XML, "");
+    configuration.put(InfoArchiveConfiguration.SEARCH_DESCRIPTION, "Default emails search");
+    configuration.put(InfoArchiveConfiguration.SEARCH_NESTED, "false");
+    configuration.put(InfoArchiveConfiguration.SEARCH_NAME, "emailsSearch");
+    configuration.put(InfoArchiveConfiguration.SEARCH_STATE, "DRAFT");
+    configuration.put(InfoArchiveConfiguration.SEARCH_INUSE, "false");
+    configuration.put(InfoArchiveConfiguration.SEARCH_COMPOSITION_NAME, "DefaultSearchComposition");
+    configuration.put(InfoArchiveConfiguration.PAGE_NUMBER, "0");
+    configuration.put(InfoArchiveConfiguration.PAGE_SIZE, "20");
+    configuration.put(InfoArchiveConfiguration.PAGE_TOTAL_ELEMENTS, "1");
+    configuration.put(InfoArchiveConfiguration.PAGE_TOTAL_PAGES, "1");
 
     configuration.put("ia.aic.name", "MyAic");
     configuration.put("ia.aic.criteria.name", "name");

@@ -6,6 +6,7 @@ package com.emc.ia.sdk.sip.ingestion;
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Federation;
 import com.emc.ia.sdk.sip.ingestion.dto.JobDefinition;
+import com.emc.ia.sdk.sip.ingestion.dto.Search;
 import com.emc.ia.sdk.sip.ingestion.dto.Services;
 import com.emc.ia.sdk.sip.ingestion.dto.Space;
 import com.emc.ia.sdk.sip.ingestion.dto.SpaceRootFolder;
@@ -34,6 +35,7 @@ class RestCache { // NOPMD TooManyFields
   private String aicUri;
   private String quotaUri;
   private String resultConfigHelperUri;
+  private Search search;
 
   public String getAicUri() {
     return aicUri;
@@ -195,4 +197,11 @@ class RestCache { // NOPMD TooManyFields
     this.resultConfigHelperUri = resultConfigHelperUri;
   }
 
+  public Search getSearch() {
+    return search;
+  }
+
+  public void setSearch(Search search) {
+    this.search = search;
+  }
 }

@@ -71,6 +71,14 @@ public interface InfoArchiveConfiguration {
   String RESULT_HELPER_SCHEMA_TEMPLATE = RESULT_HELPER_PREFIX + "%s.result.schema";
   String RESULT_HELPER_NAME = RESULT_HELPER_PREFIX + NAME;
 
+  String SEARCH_PREFIX = PREFIX + "search.";
+  String SEARCH_NAME = SEARCH_PREFIX + NAME;
+  String SEARCH_DESCRIPTION = SEARCH_PREFIX + "description";
+  String SEARCH_NESTED = SEARCH_PREFIX + "nestedsearch";
+  String SEARCH_STATE = SEARCH_PREFIX + "state";
+  String SEARCH_INUSE = SEARCH_PREFIX + "inuse";
+  String SEARCH_COMPOSITION_NAME = SEARCH_PREFIX + "composition";
+
   String RETENTION_POLICY_NAME = PREFIX + "retention.policy.name";
 
   String PDI_PREFIX = PREFIX + "pdi.";
