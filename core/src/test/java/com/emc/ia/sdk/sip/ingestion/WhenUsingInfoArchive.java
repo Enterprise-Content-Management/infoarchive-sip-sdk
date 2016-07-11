@@ -225,11 +225,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put(InfoArchiveConfiguration.SEARCH_STATE, "DRAFT");
     configuration.put(InfoArchiveConfiguration.SEARCH_INUSE, "false");
     configuration.put(InfoArchiveConfiguration.SEARCH_COMPOSITION_NAME, "DefaultSearchComposition");
-    configuration.put(InfoArchiveConfiguration.PAGE_NUMBER, "0");
-    configuration.put(InfoArchiveConfiguration.PAGE_SIZE, "20");
-    configuration.put(InfoArchiveConfiguration.PAGE_TOTAL_ELEMENTS, "1");
-    configuration.put(InfoArchiveConfiguration.PAGE_TOTAL_PAGES, "1");
-
+    
     configuration.put("ia.aic.name", "MyAic");
     configuration.put("ia.aic.criteria.name", "name");
     configuration.put("ia.aic.criteria.label", "name");
