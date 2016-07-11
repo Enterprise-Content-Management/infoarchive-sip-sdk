@@ -19,11 +19,11 @@ apply plugin: 'idea'
 
 subprojects {
   apply plugin: 'java'
-  
+
   repositories {
     mavenCentral()
   }
-  
+
   configurations {
     commonsBeanutils {
       exclude module: 'commons-collections'
@@ -32,31 +32,31 @@ subprojects {
     commonsCollections
     commonsIo
     evoInflector
-    validation
     httpclient
     httpmime
     jacksonCore
     jacksonDatabind
-    
+    validation
+
     testCompile.extendsFrom junit, mockito
   }
-  
+
   dependencies {
     commonsBeanutils "commons-beanutils:commons-beanutils:$commonsBeanutilsVersion"
     commonsCodec "commons-codec:commons-codec:$commonsCodecVersion"
     commonsCollections "commons-collections:commons-collections:$commonsCollectionsVersion"
     commonsIo "commons-io:commons-io:$commonsIoVersion"
     evoInflector "org.atteo:evo-inflector:$evoInflectorVersion"
+    httpclient "org.apache.httpcomponents:httpclient:$httpclientVersion"
+    httpmime "org.apache.httpcomponents:httpmime:$httpmimeVersion"
+    jacksonCore "com.fasterxml.jackson.core:jackson-core:$jacksonCoreVersion"
+    jacksonDatabind "com.fasterxml.jackson.core:jackson-databind:$jacksonCoreVersion"
     junit "junit:junit:$junitVersion"
     mockito "org.mockito:mockito-core:$mockitoVersion"
     validation "javax.validation:validation-api:$validationVersion"
-	httpclient "org.apache.httpcomponents:httpclient:$httpclientVersion"
-	httpmime "org.apache.httpcomponents:httpmime:$httpmimeVersion"	
-	jacksonCore "com.fasterxml.jackson.core:jackson-core:$jacksonCoreVersion"
-	jacksonDatabind "com.fasterxml.jackson.core:jackson-databind:$jacksonCoreVersion"	
   }
-  
-  
+
+
   javadoc {
     def events = []
     StandardOutputListener listener = { event -> events << event }
@@ -70,7 +70,7 @@ subprojects {
       }
     }
   }
-  
+
   // Need all test info on command-line for TravisCI
   test {
     testLogging {
@@ -88,7 +88,7 @@ subprojects {
     toolVersion = '6.17'
     ignoreFailures = false
   }
-  
+
   // Despite ignoreFailures=false, the build wonby default 't fail on CheckStyle warnings
   // https://issues.gradle.org/browse/GRADLE-2888
   tasks.withType(Checkstyle).each { checkstyleTask ->
@@ -101,24 +101,24 @@ subprojects {
       }
     }
   }
-  
+
   apply plugin: 'pmd'
   pmd {
     ruleSetFiles = rootProject.files('config/pmd.xml')
     toolVersion = '5.4.1'
     ignoreFailures = false
   }
-    
+
   apply plugin: 'findbugs'
   findbugs {
     toolVersion = '3.0.1'
     excludeFilter = rootProject.file('config/findbugs_filter.xml')
     ignoreFailures = false
   }
-  
+
   apply from: rootProject.file('jdepend.gradle')
   apply from: rootProject.file('coverage.gradle')
-  
+
   apply plugin: 'eclipse'
   eclipse.classpath {
     defaultOutputDir = file('classes')
@@ -133,10 +133,11 @@ subprojects {
 
 project(':infoarchive-sip-sdk-core') {
   configurations {
-    compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, evoInflector, validation, httpclient, httpmime, jacksonCore, jacksonDatabind
-    
+    compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, evoInflector, httpclient,
+        httpmime, jacksonCore, jacksonDatabind, validation
+
   }
-  
+
   javadoc {
     def overview = file('src/javadoc/overview.html')
     title = "InfoArchive SIP SDK $version"
@@ -151,7 +152,7 @@ project(':infoarchive-sip-sdk-stringtemplate') {
     stringtemplate
     compile.extendsFrom stringtemplate
   }
-  
+
   dependencies {
     stringtemplate "org.antlr:ST4:$stringTemplateVersion"
     compile project(':infoarchive-sip-sdk-core')
@@ -176,7 +177,7 @@ project(':infoarchive-sip-sdk-velocity') {
     }
     compile.extendsFrom commonsCollections, velocity, velocityTools
   }
-  
+
   dependencies {
     velocity "org.apache.velocity:velocity:$velocityVersion"
     velocityTools "org.apache.velocity:velocity-tools:$velocityToolsVersion"

@@ -85,11 +85,13 @@ import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.RestClient;
 
+
 /**
  * Implementation of {@linkplain ArchiveClient} that uses the REST API of a running InfoArchive server.
  */
 public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRelations, InfoArchiveConfiguration {
 
+  private static final int WAIT_RACE_CONDITION_MS = 2000;
   private static final String FORMAT_XML = "xml";
   private static final String FORMAT_XSD = "xsd";
   private static final String WORKING_FOLDER_NAME = "working/";
@@ -97,6 +99,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private static final String INGEST_NAME = "ingest";
   private static final String INGEST_NODE_NAME = "ingest_node_01";
   private static final String STORE_NAME = "filestore_01";
+  private static final String DEFAULT_RESULT_HELPER_NAME = "result_helper";
 
   private final RestCache configurationState = new RestCache();
   private final ResponseFactory<QueryResult> queryResultFactory = new QueryResultFactory();
@@ -108,6 +111,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private Map<String, String> dipUrisByAicName;
 
   public InfoArchiveRestClient() {
+    this(null);
   }
 
   public InfoArchiveRestClient(RestClient restClient) {
@@ -207,12 +211,28 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     try {
       return restClient.createCollectionItem(collection, addLinkRelation, item);
     } catch (IOException e) {
-      if (e.getMessage()
-        .contains("DUPLICATE_KEY")) {
-        // This can happen when multiple processes/threads attempt to create resources simultaneously
-        return null;
-      }
-      throw e;
+      handleDuplicateObjects(e);
+      return null;
+    }
+  }
+
+  private void handleDuplicateObjects(IOException exception) throws IOException {
+    if (!isDuplicateObjectException(exception.getMessage())) {
+      throw exception;
+    }
+    // This can happen when multiple processes/threads attempt to create resources simultaneously
+    waitForOtherInstanceToCreateObjects();
+  }
+
+  private boolean isDuplicateObjectException(String error) {
+    return error.contains("DUPLICATE_KEY") || error.contains("NAME_ALREADY_EXISTS");
+  }
+
+  private void waitForOtherInstanceToCreateObjects() {
+    try {
+      Thread.sleep(WAIT_RACE_CONDITION_MS);
+    } catch (InterruptedException e1) {
+      // Ignore
     }
   }
 
@@ -494,9 +514,13 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     }
     String content = configured(configurationName);
     try (InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
-      restClient.post(state.getUri(LINK_CONTENTS), null,
-          new TextPart("content", MediaTypes.HAL, "{ \"format\": \"" + format + "\" }"),
-          new BinaryPart("file", stream, configurationName));
+      try {
+        restClient.post(state.getUri(LINK_CONTENTS), null,
+            new TextPart("content", MediaTypes.HAL, "{ \"format\": \"" + format + "\" }"),
+            new BinaryPart("file", stream, configurationName));
+      } catch (IOException e) {
+        handleDuplicateObjects(e);
+      }
     }
   }
 
@@ -692,7 +716,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     query.setQuota(configurationState.getQuotaUri());
     query.setQuotaAsync(configurationState.getQuotaUri());
     query.getAics()
-      .add(configurationState.getAicUri());
+        .add(configurationState.getAicUri());
 
     return query;
 
@@ -735,7 +759,6 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
         new RepeatingConfigReader("operands", resolveTemplatedKeys(Arrays.asList(QUERY_XDBPDI_OPERAND_NAME,
             QUERY_XDBPDI_OPERAND_PATH, QUERY_XDBPDI_OPERAND_TYPE, QUERY_XDBPDI_OPERAND_INDEX), name, schema));
     List<Map<String, String>> operandCfgs = reader.read(configuration);
-
     List<Operand> operands = new ArrayList<>();
     for (Map<String, String> cfg : operandCfgs) {
       Operand operand = new Operand();
@@ -750,8 +773,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private List<String> resolveTemplatedKeys(List<String> templatedKeys, Object... vars) {
     return templatedKeys.stream()
-      .map(key -> resolveTemplatedKey(key, vars))
-      .collect(Collectors.toList());
+        .map(key -> resolveTemplatedKey(key, vars))
+        .collect(Collectors.toList());
   }
 
   private String resolveTemplatedKey(String key, Object... vars) {
@@ -765,41 +788,42 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     IngestConfig ingestConfig = new IngestConfig();
     ingestConfig.setIngest(configurationState.getIngestUri());
     result.getIngestConfigs()
-      .add(ingestConfig);
+        .add(ingestConfig);
     result.getIngestNodes()
       .add(configurationState.getIngestNodeUri());
     SubPriority priority = new SubPriority();
     priority.setPriority(0);
     priority.setDeadline(100);
     result.getSubPriorities()
-      .add(priority);
+        .add(priority);
     priority = new SubPriority();
     priority.setPriority(1);
     priority.setDeadline(200);
     result.getSubPriorities()
-      .add(priority);
+        .add(priority);
     result.setXdbLibraryParent(configurationState.getLibraryUri());
     RetentionClass retentionClass = new RetentionClass();
     retentionClass.getPolicies()
-      .add(configured(RETENTION_POLICY_NAME));
+        .add(configured(RETENTION_POLICY_NAME));
     result.getRetentionClasses()
-      .add(retentionClass);
+        .add(retentionClass);
     PdiConfig pdiConfig = new PdiConfig();
     pdiConfig.setPdi(configurationState.getPdiUri());
     pdiConfig.setSchema(configured(PDI_SCHEMA_NAME));
     result.getPdiConfigs()
-      .add(pdiConfig);
+        .add(pdiConfig);
     return result;
   }
 
   private void ensureResultConfigurationHelper() throws IOException {
-    String name = configuration.get(RESULT_HELPER_NAME);
-    ResultConfigurationHelpers helpers = restClient.follow(configurationState.getApplication(), LINK_RESULT_CONFIGURATION_HELPERS, ResultConfigurationHelpers.class);
+    String name = configuration.getOrDefault(RESULT_HELPER_NAME, DEFAULT_RESULT_HELPER_NAME);
+    ResultConfigurationHelpers helpers = restClient.follow(configurationState.getApplication(),
+        LINK_RESULT_CONFIGURATION_HELPERS, ResultConfigurationHelpers.class);
     ResultConfigurationHelper helper = helpers.byName(name);
     if (helper == null) {
       createItem(helpers, createResultConfigurationHelper(name));
       helper = restClient.refresh(helpers)
-        .byName(name);
+          .byName(name);
       Objects.requireNonNull(helper, "Could not create Result configuration helper");
     }
     configurationState.setResultConfigHelperUri(helper.getSelfUri());
@@ -808,11 +832,11 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private ResultConfigurationHelper createResultConfigurationHelper(String name) {
     ResultConfigurationHelper helper = new ResultConfigurationHelper();
     helper.setName(name);
-    helper.setResultSchema(createResutlSchema(name));
+    helper.setResultSchema(createResultSchema(name));
     return helper;
   }
 
-  private List<String> createResutlSchema(String name) {
+  private List<String> createResultSchema(String name) {
     String schema = configuration.get(resolveTemplatedKey(RESULT_HELPER_SCHEMA_TEMPLATE, name));
     List<String> schemas = new ArrayList<>();
     schemas.add(schema);
