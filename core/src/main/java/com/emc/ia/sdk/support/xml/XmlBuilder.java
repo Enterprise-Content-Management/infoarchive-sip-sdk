@@ -140,7 +140,7 @@ public class XmlBuilder {
    */
   public XmlBuilder text(String text) {
     if (text != null) {
-      current.appendChild(document.createTextNode(text));
+      current.appendChild(document.createTextNode(XmlUtil.escape(text)));
     }
     return this;
   }

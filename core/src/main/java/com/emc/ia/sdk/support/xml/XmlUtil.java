@@ -455,4 +455,14 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     }
   }
 
+
+  public static String escape(String text) {
+    return text
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("'", "&apos;")
+        .replace("\"", "&quot;");
+  }
+
 }
