@@ -3,15 +3,19 @@
  */
 package com.emc.ia.sdk.sip.ingestion;
 
+import java.util.List;
+
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Federation;
 import com.emc.ia.sdk.sip.ingestion.dto.JobDefinition;
 import com.emc.ia.sdk.sip.ingestion.dto.Search;
+import com.emc.ia.sdk.sip.ingestion.dto.SearchComposition;
 import com.emc.ia.sdk.sip.ingestion.dto.Services;
 import com.emc.ia.sdk.sip.ingestion.dto.Space;
 import com.emc.ia.sdk.sip.ingestion.dto.SpaceRootFolder;
 import com.emc.ia.sdk.sip.ingestion.dto.SpaceRootLibrary;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+import com.emc.ia.sdk.sip.ingestion.dto.XForm;
 
 class RestCache { // NOPMD TooManyFields
 
@@ -33,9 +37,12 @@ class RestCache { // NOPMD TooManyFields
   private String ingestNodeUri;
   private JobDefinition jobDefinition;
   private String aicUri;
+  private List<String> queryUris;
   private String quotaUri;
   private String resultConfigHelperUri;
   private Search search;
+  private SearchComposition searchComposition;
+  private XForm xForm;
 
   public String getAicUri() {
     return aicUri;
@@ -203,5 +210,29 @@ class RestCache { // NOPMD TooManyFields
 
   public void setSearch(Search search) {
     this.search = search;
+  }
+
+  public XForm getxForm() {
+    return xForm;
+  }
+
+  public void setxForm(XForm xForm) {
+    this.xForm = xForm;
+  }
+
+  public List<String> getQueryUris() {
+    return queryUris;
+  }
+
+  public void setQueryUris(List<String> queryUris) {
+    this.queryUris = queryUris;
+  }
+
+  public SearchComposition getSearchComposition() {
+    return searchComposition;
+  }
+
+  public void setSearchComposition(SearchComposition searchComposition) {
+    this.searchComposition = searchComposition;
   }
 }

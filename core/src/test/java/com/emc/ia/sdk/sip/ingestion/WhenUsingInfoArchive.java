@@ -4,8 +4,11 @@
 package com.emc.ia.sdk.sip.ingestion;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,6 +76,8 @@ import com.emc.ia.sdk.sip.ingestion.dto.Spaces;
 import com.emc.ia.sdk.sip.ingestion.dto.Store;
 import com.emc.ia.sdk.sip.ingestion.dto.Stores;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+import com.emc.ia.sdk.sip.ingestion.dto.XForm;
+import com.emc.ia.sdk.sip.ingestion.dto.XForms;
 import com.emc.ia.sdk.sip.ingestion.dto.query.Comparison;
 import com.emc.ia.sdk.sip.ingestion.dto.query.Operator;
 import com.emc.ia.sdk.sip.ingestion.dto.query.QueryResult;
@@ -138,7 +143,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Quotas quotas = mock(Quotas.class);
     ResultConfigurationHelpers helpers = mock(ResultConfigurationHelpers.class);
     Searches searches = mock(Searches.class);
-    SearchCompositions compostions = mock(SearchCompositions.class);
+    SearchCompositions compositions = mock(SearchCompositions.class);
+    XForms xForms = mock(XForms.class);
+    XForm xForm = mock(XForm.class);
+
     aic = new Aic();
 
     links.put(InfoArchiveLinkRelations.LINK_TENANT, link);
@@ -177,7 +185,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(Queries.class, queries);
     mockCollection(ResultConfigurationHelpers.class, helpers);
     mockCollection(Searches.class, searches);
-    mockCollection(SearchCompositions.class, compostions);
+    mockCollection(SearchCompositions.class, compositions);
+    mockCollection(XForms.class, xForms);
+    when(restClient.createCollectionItem(any(LinkContainer.class), eq(LINK_SELF), any(XForm.class))).thenReturn(xForm);
 
     mockByName(federations, new Federation());
     mockByName(databases, new Database());
@@ -201,7 +211,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(queries, new Query());
     mockByName(helpers, new ResultConfigurationHelper());
     mockByName(searches, new Search());
-    mockByName(compostions, new SearchComposition());
+    mockByName(compositions, new SearchComposition());
 
     when(aics.getItems()).thenReturn(Stream.of(aic));
   }
@@ -225,6 +235,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put(InfoArchiveConfiguration.SEARCH_STATE, "DRAFT");
     configuration.put(InfoArchiveConfiguration.SEARCH_INUSE, "false");
     configuration.put(InfoArchiveConfiguration.SEARCH_COMPOSITION_NAME, "DefaultSearchComposition");
+    configuration.put(InfoArchiveConfiguration.SEARCH_DEFAULT_RESULT_MASTER, "");
+    configuration.put(InfoArchiveConfiguration.SEARCH_DEFAULT_SEARCH, "");
 
     configuration.put("ia.aic.name", "MyAic");
     configuration.put("ia.aic.criteria.name", "name");

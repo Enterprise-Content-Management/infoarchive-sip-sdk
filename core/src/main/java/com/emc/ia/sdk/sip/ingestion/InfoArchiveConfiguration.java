@@ -78,6 +78,8 @@ public interface InfoArchiveConfiguration {
   String SEARCH_STATE = SEARCH_PREFIX + "state";
   String SEARCH_INUSE = SEARCH_PREFIX + "inuse";
   String SEARCH_COMPOSITION_NAME = SEARCH_PREFIX + "composition";
+  String SEARCH_DEFAULT_RESULT_MASTER = SEARCH_PREFIX + "default.result.master";
+  String SEARCH_DEFAULT_SEARCH = SEARCH_PREFIX + "default";
 
   String RETENTION_POLICY_NAME = PREFIX + "retention.policy.name";
 

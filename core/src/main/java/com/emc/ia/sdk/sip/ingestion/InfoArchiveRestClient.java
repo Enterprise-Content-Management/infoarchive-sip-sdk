@@ -73,6 +73,8 @@ import com.emc.ia.sdk.sip.ingestion.dto.Store;
 import com.emc.ia.sdk.sip.ingestion.dto.Stores;
 import com.emc.ia.sdk.sip.ingestion.dto.SubPriority;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
+import com.emc.ia.sdk.sip.ingestion.dto.XForm;
+import com.emc.ia.sdk.sip.ingestion.dto.XForms;
 import com.emc.ia.sdk.sip.ingestion.dto.XdbPdiConfig;
 import com.emc.ia.sdk.sip.ingestion.dto.query.QueryFormatter;
 import com.emc.ia.sdk.sip.ingestion.dto.query.QueryResult;
@@ -213,9 +215,9 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return createItem(collection, LINK_ADD, item);
   }
 
-  public <T> T createItem(LinkContainer collection, String addLinkRelation, T item) throws IOException {
+  public <T> T createItem(LinkContainer collection, String linkRelation, T item) throws IOException {
     try {
-      return restClient.createCollectionItem(collection, addLinkRelation, item);
+      return restClient.createCollectionItem(collection, linkRelation, item);
     } catch (IOException e) {
       handleDuplicateObjects(e);
       return null;
@@ -652,6 +654,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private void ensureQuery() throws IOException {
     String rawQueryNames = configuration.get(QUERY_NAME);
+    List<String> queryUris =  new ArrayList<String>();
     if (rawQueryNames != null && !rawQueryNames.isEmpty()) {
       String[] queryNames = rawQueryNames.split(",");
       for (String queryName : queryNames) {
@@ -663,7 +666,9 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
             .byName(queryName);
           Objects.requireNonNull(query, "Could not create query");
         }
+        queryUris.add(query.getSelfUri());
       }
+      configurationState.setQueryUris(queryUris);
     }
   }
 
@@ -868,25 +873,36 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     search.setNestedSearch(configuration.get(SEARCH_NESTED).equals("false") ? false : true);
     search.setState(configuration.get(SEARCH_STATE));
     search.setInUse(configuration.get(SEARCH_INUSE).equals("false") ? false : true);
+    search.setAic(configurationState.getAicUri());
+    search.setQuery(configurationState.getQueryUris().get(0));
     return search;
   }
 
   private void ensureSearchComposition() throws IOException {
     String name = configuration.get(SEARCH_COMPOSITION_NAME);
-    SearchCompositions searchCompositions = restClient.follow(configurationState.getSearch(), LINK_SEARCH_COMPOSITIONS, SearchCompositions.class);
-    SearchComposition searchComposition = searchCompositions.byName(name);
-    if (searchComposition == null) {
-      createItem(searchCompositions, createSearchComposition(name));
-      searchComposition = restClient.refresh(searchCompositions)
-        .byName(name);
-      Objects.requireNonNull(searchComposition, "Could not create Search compostion");
+    SearchCompositions compositions = restClient.follow(configurationState.getSearch(), LINK_SEARCH_COMPOSITIONS, SearchCompositions.class);
+    configurationState.setSearchComposition(compositions.byName(name));
+    if (configurationState.getSearchComposition() == null) {
+      createItem(compositions, LINK_SELF, createSearchComposition(name));
+      configurationState.setSearchComposition(restClient.refresh(compositions)
+          .byName(name));
+      Objects.requireNonNull(configurationState.getSearchComposition(), "Could not create Search compostion");
     }
+    createXForm();
   }
 
   private SearchComposition createSearchComposition(String name) {
-    SearchComposition search = new SearchComposition();
-    search.setName(name);
-    return search;
+    SearchComposition composition = new SearchComposition();
+    composition.setName(name);
+    composition.setSearchName(SEARCH_NAME);
+    return composition;
+  }
+
+  private void createXForm() throws IOException {
+    XForms xFroms = restClient.follow(configurationState.getSearchComposition(), LINK_XFORMS, XForms.class);
+    XForm xForm = new XForm();
+    configurationState.setxForm(createItem(xFroms, LINK_SELF, xForm));
+      Objects.requireNonNull(configurationState.getxForm(), "Could not create XForm");
   }
 
   protected void cacheAipsUri() {

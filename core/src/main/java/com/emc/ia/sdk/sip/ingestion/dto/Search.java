@@ -9,12 +9,16 @@ public class Search extends NamedLinkContainer {
   private boolean nestedSearch;
   private String state;
   private boolean inUse;
+  private String aic;
+  private String query;
 
   public Search() {
     setDescription("Default emails search");  //TODO - need to change default description ?
     setNestedSearch(false);
     setState("DRAFT");
     setInUse(false);
+    setAic("http://testaic");
+    setQuery("http://testquery");
   }
 
   public String getDescription() {
@@ -47,6 +51,22 @@ public class Search extends NamedLinkContainer {
 
   public final void setInUse(boolean inUse) {
     this.inUse = inUse;
+  }
+
+  public String getAic() {
+    return aic;
+  }
+
+  public final void setAic(String aic) {
+    this.aic = aic;
+  }
+
+  public String getQuery() {
+    return query;
+  }
+
+  public final void setQuery(String query) {
+    this.query = query;
   }
 
 }

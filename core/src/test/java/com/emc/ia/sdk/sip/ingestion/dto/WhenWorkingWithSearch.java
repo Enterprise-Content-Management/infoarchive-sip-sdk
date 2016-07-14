@@ -55,6 +55,18 @@ public class WhenWorkingWithSearch {
     assertTrue(search.isInUse());
   }
 
+  @Test
+  public void setAic() {
+    search.setAic("http://emailAic");
+    assertEquals(search.getAic(), "http://emailAic");
+  }
+
+  @Test
+  public void setQuery() {
+    search.setQuery("http://emailQuery");
+    assertEquals(search.getQuery(), "http://emailQuery");
+  }
+
 @Test
   public void searchesObjectCreationShouldBeSuccessful() {
     assertNotNull(new Searches());
