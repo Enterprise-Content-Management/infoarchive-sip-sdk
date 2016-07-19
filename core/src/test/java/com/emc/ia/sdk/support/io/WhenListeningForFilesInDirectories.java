@@ -22,7 +22,7 @@ public class WhenListeningForFilesInDirectories {
 
   @Rule
   public final TemporaryFolder temporaryFolder = new TemporaryFolder();
-  private final DirectoryListener listener = new DefaultDirectoryListener();
+  private final DirectoryListener listener = new DefaultDirectoryListener(0);
 
   @Test
   public void shouldReportAddedFilesExactlyOnce() throws IOException {

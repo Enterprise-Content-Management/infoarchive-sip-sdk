@@ -13,12 +13,19 @@ import java.util.Iterator;
 import java.util.Map;
 
 
-class DefaultDirectoryListener implements DirectoryListener {
+public class DefaultDirectoryListener implements DirectoryListener {
 
-  private static final int DELTA = 100;
-
+  private final int delta;
   private final Collection<File> directories = new ArrayList<>();
   private final Map<File, Long> reportedFiles = new HashMap<>();
+
+  public DefaultDirectoryListener() {
+    this(100);
+  }
+
+  public DefaultDirectoryListener(int delta) {
+    this.delta = delta;
+  }
 
   @Override
   public void listenIn(File dir) {
@@ -33,7 +40,7 @@ class DefaultDirectoryListener implements DirectoryListener {
       if (files != null) {
         Arrays.stream(files)
             // Give producer time to finish writing file
-            .filter(file -> new Date().getTime() - file.lastModified() > DELTA)
+            .filter(file -> new Date().getTime() - file.lastModified() > delta)
             // Skip files that we've seen before, unless they were changed
             .filter(file -> !reportedFiles.containsKey(file) || reportedFiles.get(file) < file.lastModified())
             .forEach(file -> result.put(file, file.lastModified()));
