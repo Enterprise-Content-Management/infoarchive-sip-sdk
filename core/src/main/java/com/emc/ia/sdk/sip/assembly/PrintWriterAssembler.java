@@ -12,6 +12,8 @@ import java.util.Objects;
 
 import javax.validation.ValidationException;
 
+import org.apache.commons.io.IOUtils;
+
 import com.emc.ia.sdk.support.io.DataBuffer;
 
 
@@ -92,7 +94,9 @@ public abstract class PrintWriterAssembler<D> implements Assembler<D> {
       try {
         validator.validate(output);
       } catch (ValidationException e) {
-        throw new IOException(e);
+        try (InputStream actual = buffer.openForReading()) {
+          throw new IOException("Invalid content:\n" + IOUtils.toString(actual), e);
+        }
       }
     }
   }

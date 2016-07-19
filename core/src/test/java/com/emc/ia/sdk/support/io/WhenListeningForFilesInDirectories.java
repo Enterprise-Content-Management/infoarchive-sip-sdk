@@ -18,19 +18,11 @@ import org.junit.rules.TemporaryFolder;
 import com.emc.ia.sdk.support.test.TestUtil;
 
 
-public abstract class WhenListeningForFilesInDirectories {
+public class WhenListeningForFilesInDirectories {
 
   @Rule
   public final TemporaryFolder temporaryFolder = new TemporaryFolder();
-  private final DirectoryListener listener;
-
-  public WhenListeningForFilesInDirectories(DirectoryListener listener) {
-    this.listener = listener;
-  }
-
-  protected DirectoryListener getListener() {
-    return listener;
-  }
+  private final DirectoryListener listener = new DefaultDirectoryListener();
 
   @Test
   public void shouldReportAddedFilesExactlyOnce() throws IOException {

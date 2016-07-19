@@ -4,38 +4,48 @@
 package com.emc.ia.sdk.support.io;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Locale;
+import java.util.Map;
 
 
-/**
- * Default implementation of {@linkplain DirectoryListener}.
- */
-public class DefaultDirectoryListener implements DirectoryListener {
+class DefaultDirectoryListener implements DirectoryListener {
 
-  private final DirectoryListener listener;
+  private static final int DELTA = 100;
 
-  public DefaultDirectoryListener() {
-    this.listener = isMacOsx() ? new ListingDirectoryListener() : new WatchingDirectoryListener();
-  }
-
-  private boolean isMacOsx() {
-    return System.getProperty("os.name").toLowerCase(Locale.ENGLISH).startsWith("mac os x");
-  }
+  private final Collection<File> directories = new ArrayList<>();
+  private final Map<File, Long> reportedFiles = new HashMap<>();
 
   @Override
   public void listenIn(File dir) {
-    listener.listenIn(dir);
+    directories.add(dir);
   }
 
   @Override
   public Iterator<File> addedFiles() {
-    return listener.addedFiles();
+    Map<File, Long> result = new HashMap<>();
+    for (File dir : directories) {
+      File[] files = dir.listFiles();
+      if (files != null) {
+        Arrays.stream(files)
+            // Give producer time to finish writing file
+            .filter(file -> new Date().getTime() - file.lastModified() > DELTA)
+            // Skip files that we've seen before, unless they were changed
+            .filter(file -> !reportedFiles.containsKey(file) || reportedFiles.get(file) < file.lastModified())
+            .forEach(file -> result.put(file, file.lastModified()));
+      }
+    }
+    reportedFiles.putAll(result);
+    return result.keySet().iterator();
   }
 
   @Override
   public void stopListening() {
-    listener.stopListening();
+    // Nothing to do
   }
 
 }
