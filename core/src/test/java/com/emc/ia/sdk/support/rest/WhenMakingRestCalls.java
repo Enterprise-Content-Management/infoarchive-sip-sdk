@@ -94,7 +94,7 @@ public class WhenMakingRestCalls extends TestCase {
     expected.setBar(randomString());
     when(httpClient.post(eq(uri), any(List.class), anyString(), eq(Foo.class))).thenReturn(expected);
 
-    Foo actual = restClient.createCollectionItem(collection, relation, new Foo());
+    Foo actual = restClient.createCollectionItem(collection, new Foo(), relation);
 
     assertSame("Result", expected, actual);
   }

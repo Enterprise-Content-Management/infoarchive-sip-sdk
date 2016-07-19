@@ -4,11 +4,8 @@
 package com.emc.ia.sdk.sip.ingestion;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +18,7 @@ import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.stubbing.OngoingStubbing;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Aic;
@@ -187,7 +185,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(Searches.class, searches);
     mockCollection(SearchCompositions.class, compositions);
     mockCollection(XForms.class, xForms);
-    when(restClient.createCollectionItem(any(LinkContainer.class), eq(LINK_SELF), any(XForm.class))).thenReturn(xForm);
+    when(restClient.createCollectionItem(any(LinkContainer.class), any(XForm.class), eq(LINK_SELF))).thenReturn(xForm);
 
     mockByName(federations, new Federation());
     mockByName(databases, new Database());
@@ -346,11 +344,11 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
       return app.get();
     });
     final AtomicBoolean created = new AtomicBoolean(false);
-    when(restClient.createCollectionItem(eq(applications), eq(LINK_ADD), any(Application.class)))
-      .thenAnswer(invocation -> {
-        created.set(true);
-        return null;
-      });
+    when(restClient.createCollectionItem(eq(applications), any(Application.class),
+        Matchers.<String>anyVararg())).thenAnswer(invocation -> {
+      created.set(true);
+      return null;
+    });
     when(restClient.refresh(applications)).thenAnswer(invocation -> {
       if (created.get()) {
         app.set(application);

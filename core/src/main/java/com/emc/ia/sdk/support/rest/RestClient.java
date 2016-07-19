@@ -57,10 +57,15 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return get(linkIn(state, relation).getHref(), type);
   }
 
-  private Link linkIn(LinkContainer state, String relation) {
-    Link result = state.getLinks()
-      .get(relation);
-    Objects.requireNonNull(result, String.format("Missing link %s in %s", relation, state));
+  private Link linkIn(LinkContainer state, String... relations) {
+    Link result = null;
+    for (String relation : relations) {
+      result = state.getLinks().get(relation);
+      if (result != null) {
+        break;
+      }
+    }
+    Objects.requireNonNull(result, String.format("Missing link %s in %s", relations[relations.length - 1], state));
     return result;
   }
 
@@ -70,8 +75,8 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T createCollectionItem(LinkContainer collection, String addLinkRelation, T item) throws IOException {
-    String uri = linkIn(collection, addLinkRelation).getHref();
+  public <T> T createCollectionItem(LinkContainer collection, T item, String... addLinkRelations) throws IOException {
+    String uri = linkIn(collection, addLinkRelations).getHref();
     T result = (T)httpClient.post(uri, withContentType(MediaTypes.HAL), toJson(item), item.getClass());
     Objects.requireNonNull(result, String.format("Could not create item in %s%n%s", uri, item));
     return result;
