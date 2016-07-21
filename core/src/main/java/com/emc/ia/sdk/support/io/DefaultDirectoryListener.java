@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 
 
 public class DefaultDirectoryListener implements DirectoryListener {
@@ -34,7 +35,7 @@ public class DefaultDirectoryListener implements DirectoryListener {
 
   @Override
   public Iterator<File> addedFiles() {
-    Map<File, Long> result = new HashMap<>();
+    Map<File, Long> result = new TreeMap<>();
     for (File dir : directories) {
       File[] files = dir.listFiles();
       if (files != null) {
