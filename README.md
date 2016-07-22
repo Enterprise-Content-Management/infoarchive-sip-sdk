@@ -30,7 +30,7 @@ them is through a dependency management system like [Gradle](http://gradle.org/)
 **Gradle**
 
     dependencies { 
-      compile 'com.emc.ia:infoarchive-sip-sdk-core:1.0.1'
+      compile 'com.emc.ia:infoarchive-sip-sdk-core:1.1.18'
     }
     
 **Maven**
@@ -39,13 +39,13 @@ them is through a dependency management system like [Gradle](http://gradle.org/)
       <dependency>
         <groupId>com.emc.ia</groupId>
         <artifactId>infoarchive-sip-sdk-core</artifactId>
-        <version>1.0.1</version>
+        <version>1.1.18</version>
       </dependency>
     </dependencies>
     
 
 ## Additional Information
 
-For a [presentation](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.0/presentation.pdf)
-and [lab exercises](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.0/lab.pdf)
+For a [presentation](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.1/presentation.pdf)
+and [lab exercises](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.1/lab.pdf)
 on how to use the SDK, see the [lab](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab) project.
