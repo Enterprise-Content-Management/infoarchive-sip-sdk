@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
+import org.apache.commons.io.IOUtils;
+
 import com.emc.ia.sdk.support.io.DataBuffer;
 import com.emc.ia.sdk.support.io.DataBufferSupplier;
 import com.emc.ia.sdk.support.io.DefaultZipAssembler;
@@ -310,16 +312,22 @@ public class SipAssembler<D> implements Assembler<D> {
 
   @Override
   public void end() throws IOException {
-    endPdi();
-    addPackagingInformation();
-    zip.close();
-    metrics.set(SipMetrics.ASSEMBLY_TIME, System.currentTimeMillis() - metrics.get(SipMetrics.ASSEMBLY_TIME));
+    try {
+      endPdi();
+      addPackagingInformation();
+    } finally {
+      IOUtils.closeQuietly(zip);
+      metrics.set(SipMetrics.ASSEMBLY_TIME, System.currentTimeMillis() - metrics.get(SipMetrics.ASSEMBLY_TIME));
+    }
   }
 
   private void endPdi() throws IOException {
-    pdiAssembler.end();
-    addPdiToZip();
-    pdiBuffer = null;
+    try {
+      pdiAssembler.end();
+      addPdiToZip();
+    } finally {
+      pdiBuffer = null;
+    }
   }
 
   void addPdiToZip() throws IOException {
