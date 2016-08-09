@@ -40,7 +40,7 @@ public class StringTemplate<D> extends FixedHeaderAndFooterTemplate<D> {
   private static final String MODEL_VARIABLE = "model";
   private static final String HASHES_VARIABLE = "hashes";
 
-  private final ST template;
+  private final ST templatePrototype;
 
   /**
    * Create an instance.
@@ -73,7 +73,7 @@ public class StringTemplate<D> extends FixedHeaderAndFooterTemplate<D> {
    */
   public StringTemplate(String header, String footer, String row, char delimeterStart, char delimeterEnd) {
     super(header, footer);
-    this.template = compileTemplate(row, delimeterStart, delimeterEnd);
+    this.templatePrototype = compileTemplate(row, delimeterStart, delimeterEnd);
   }
 
   private ST compileTemplate(String row, char delimeterStartChar, char delimeterEndChar) {
@@ -123,14 +123,23 @@ public class StringTemplate<D> extends FixedHeaderAndFooterTemplate<D> {
   @Override
   public void writeRow(D domainObject, Map<String, Collection<EncodedHash>> hashes, PrintWriter writer)
       throws IOException {
-    setTemplateVariable(MODEL_VARIABLE, domainObject);
-    setTemplateVariable(HASHES_VARIABLE, hashes);
+    ST template = prepareTemplate(templatePrototype, domainObject, hashes);
     template.write(new NoIndentWriter(writer));
   }
 
-  private void setTemplateVariable(String name, Object value) {
-    template.remove(name);
-    template.add(name, value);
+  /**
+   * Prepares the template by adding the variables. 
+   * @param prototype The template prototype
+   * @param domainObject The domain object 
+   * @param hashes The content hashes
+   * @return The prepared template instance
+   */
+  protected ST prepareTemplate(ST prototype, D domainObject, Map<String, Collection<EncodedHash>> hashes) {
+    ST template = new ST(prototype);
+    template.add(MODEL_VARIABLE, domainObject);
+    template.add(HASHES_VARIABLE, hashes);
+    return template;
   }
+
 
 }
