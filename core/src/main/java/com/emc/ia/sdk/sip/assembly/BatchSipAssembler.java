@@ -67,11 +67,6 @@ public class BatchSipAssembler<D> {
     this.fileSupplier = fileSupplier;
   }
 
-  private void startNewSip() throws IOException {
-    current = fileSupplier.get();
-    assembler.start(new FileBuffer(current));
-  }
-
   /**
    * Add a domain object to the batch of SIPs.
    * @param domainObject The domain object to add
@@ -98,6 +93,11 @@ public class BatchSipAssembler<D> {
       assembler.end();
       sipsMetrics.add(new FileGenerationMetrics(current, assembler.getMetrics()));
     }
+  }
+
+  private void startNewSip() throws IOException {
+    current = fileSupplier.get();
+    assembler.start(new FileBuffer(current));
   }
 
   /**

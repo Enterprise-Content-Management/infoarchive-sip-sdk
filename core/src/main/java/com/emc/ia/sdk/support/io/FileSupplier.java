@@ -45,7 +45,14 @@ public final class FileSupplier {
   }
 
   private static File createFileIn(File dir) {
-    return new File(dir, UUID.randomUUID().toString());
+    return new File(ensureDir(dir), UUID.randomUUID().toString());
+  }
+
+  private static File ensureDir(File dir) {
+    if (!dir.isDirectory() && !dir.mkdirs()) {
+      throw new IllegalArgumentException("Can't create directory: " + dir);
+    }
+    return dir;
   }
 
   /**
@@ -61,7 +68,7 @@ public final class FileSupplier {
 
       @Override
       public File get() {
-        return new File(dir, prefix + ++count + suffix);
+        return new File(ensureDir(dir), String.format("%s%d%s", prefix, ++count, suffix));
       }
     };
   }
