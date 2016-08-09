@@ -9,9 +9,11 @@ import java.util.List;
 public class Aic extends NamedLinkContainer {
 
   private List<Criterion> criterias;
+  private List<String> holdings;
 
   public Aic() {
     setCriterias(new ArrayList<>());
+    setHoldings(new ArrayList<>());
   }
 
   public List<Criterion> getCriterias() {
@@ -20,6 +22,14 @@ public class Aic extends NamedLinkContainer {
 
   public void setCriterias(List<Criterion> criterias) {
     this.criterias = criterias;
+  }
+
+  public List<String> getHoldings() {
+    return holdings;
+  }
+
+  public void setHoldings(List<String> holdings) {
+    this.holdings = holdings;
   }
 
 }

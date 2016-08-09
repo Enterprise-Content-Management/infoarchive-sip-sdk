@@ -43,6 +43,7 @@ class RestCache { // NOPMD TooManyFields
   private Search search;
   private SearchComposition searchComposition;
   private XForm xForm;
+  private String holdingUri;
 
   public String getAicUri() {
     return aicUri;
@@ -234,5 +235,13 @@ class RestCache { // NOPMD TooManyFields
 
   public void setSearchComposition(SearchComposition searchComposition) {
     this.searchComposition = searchComposition;
+  }
+
+  public String getHoldingUri() {
+    return holdingUri;
+  }
+
+  public void setHoldingUri(String holdingUri) {
+    this.holdingUri = holdingUri;
   }
 }

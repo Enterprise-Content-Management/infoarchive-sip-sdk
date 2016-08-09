@@ -600,6 +600,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
           .byName(name);
       Objects.requireNonNull(holding, "Could not create holding");
     }
+    configurationState.setHoldingUri(holding.getSelfUri());
   }
 
   private void ensureAic() throws IOException {
@@ -620,6 +621,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     Aic aic = new Aic();
     aic.setName(name);
     aic.setCriterias(createCriteria());
+    aic.getHoldings().add(configurationState.getHoldingUri());
     return aic;
   }
 
