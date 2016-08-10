@@ -14,6 +14,7 @@ public class SipMetrics implements Metrics {
   static final String SIZE_DIGITAL_OBJECTS = "size of digital objects";
   static final String SIZE_PDI = "size of PDI";
   static final String SIZE_SIP = "size of SIP";
+  static final String SIZE_SIP_FILE = "size of SIP file";
   static final String ASSEMBLY_TIME = "time to assemble (ms)";
 
   private final Counters counters;
@@ -40,6 +41,10 @@ public class SipMetrics implements Metrics {
 
   public long sipSize() {
     return counters.get(SIZE_SIP);
+  }
+
+  public long sipFileSize() {
+    return counters.get(SIZE_SIP_FILE);
   }
 
   public long assemblyTime() {

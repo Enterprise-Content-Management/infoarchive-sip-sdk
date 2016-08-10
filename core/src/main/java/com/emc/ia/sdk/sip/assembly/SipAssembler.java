@@ -81,6 +81,7 @@ public class SipAssembler<D> implements Assembler<D> {
   private final PackagingInformationFactory packagingInformationFactory;
   private final Counters metrics = new Counters();
   private DataBuffer pdiBuffer;
+  private DataBuffer sipFileBuffer;
   private Optional<EncodedHash> pdiHash;
 
   /**
@@ -265,10 +266,11 @@ public class SipAssembler<D> implements Assembler<D> {
 
   @Override
   public void start(DataBuffer buffer) throws IOException {
+    this.sipFileBuffer = buffer;
     pdiHash = Optional.empty();
     metrics.reset();
     metrics.set(SipMetrics.ASSEMBLY_TIME, System.currentTimeMillis());
-    zip.begin(buffer.openForWriting());
+    zip.begin(sipFileBuffer.openForWriting());
     startPdi();
   }
 
@@ -318,6 +320,7 @@ public class SipAssembler<D> implements Assembler<D> {
     } finally {
       IOUtils.closeQuietly(zip);
       metrics.set(SipMetrics.ASSEMBLY_TIME, System.currentTimeMillis() - metrics.get(SipMetrics.ASSEMBLY_TIME));
+      metrics.set(SipMetrics.SIZE_SIP_FILE, sipFileBuffer.length());
     }
   }
 
@@ -344,9 +347,11 @@ public class SipAssembler<D> implements Assembler<D> {
     packagingInformationAssembler.start(buffer);
     packagingInformationAssembler.add(packagingInformation());
     packagingInformationAssembler.end();
+    long packagingInformationSize = buffer.length();
     try (InputStream stream = buffer.openForReading()) {
       zip.addEntry(PACKAGING_INFORMATION_ENTRY, stream, new NoHashAssembler());
     }
+    metrics.set(SipMetrics.SIZE_SIP, metrics.get(SipMetrics.SIZE_DIGITAL_OBJECTS) + metrics.get(SipMetrics.SIZE_PDI) + packagingInformationSize);
   }
 
   private PackagingInformation packagingInformation() {

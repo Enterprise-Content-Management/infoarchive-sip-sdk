@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -71,8 +72,9 @@ public class WhenAssemblingSips extends XmlTestCase {
     hashesById1.put(id1a, hashes1a);
     hashesById1.put(id1b, hashes1b);
     Map<String, Collection<EncodedHash>> hashesById2 = Collections.singletonMap(id2, hashes2);
+    PackagingInformation packagingInformationPrototype = somePackagingInformation();
     SipAssembler<Object> sipAssembler = SipAssembler.forPdiAndContentWithHashing(
-        somePackagingInformation(), pdiAssembler, pdiHashAssembler, contentsExtraction, contentHashAssembler);
+        packagingInformationPrototype, pdiAssembler, pdiHashAssembler, contentsExtraction, contentHashAssembler);
     DataBuffer buffer = new MemoryBuffer();
 
     long time = System.currentTimeMillis();
@@ -103,7 +105,18 @@ public class WhenAssemblingSips extends XmlTestCase {
     assertEquals(SipMetrics.SIZE_DIGITAL_OBJECTS.toString(), 3 * digitalObjectSize,
         metrics.digitalObjectsSize());
     assertEquals(SipMetrics.SIZE_PDI.toString(), pdiSize, metrics.pdiSize());
-    assertEquals(SipMetrics.SIZE_SIP.toString(), pdiSize + 3 * digitalObjectSize, metrics.sipSize());
+    long packagingInformationSize = getPackagingInformationSize(packagingInformationPrototype, 2, Optional.of(hash));
+    assertEquals(SipMetrics.SIZE_SIP.toString(), pdiSize + 3 * digitalObjectSize + packagingInformationSize, metrics.sipSize());
+    assertEquals(SipMetrics.SIZE_SIP_FILE.toString(), buffer.length(), metrics.sipFileSize());
+  }
+
+  private long getPackagingInformationSize(PackagingInformation packagingInformationPrototype, long numAius, Optional<EncodedHash> pdiHash) throws IOException {
+    InfoArchivePackagingInformationAssembler packagingInformationAssembler = new InfoArchivePackagingInformationAssembler();
+    DataBuffer buffer = new MemoryBuffer();
+    packagingInformationAssembler.start(buffer);
+    packagingInformationAssembler.add(new DefaultPackagingInformationFactory(packagingInformationPrototype).newInstance(numAius, pdiHash));
+    packagingInformationAssembler.end();
+    return buffer.length();
   }
 
   private PackagingInformation somePackagingInformation() {
