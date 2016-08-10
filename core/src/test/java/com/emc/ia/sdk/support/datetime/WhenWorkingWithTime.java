@@ -65,13 +65,12 @@ public class WhenWorkingWithTime {
     assertFalse("Canceled task is run", executed.get());
   }
 
+  /**
+   * The task may have just run and be removed automatically.
+   */
   @Test
-  public void shouldThrowExceptionWhenCancellingAnUnknowTask() {
-    String name = random.string();
-
-    thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("Unknown scheduled task: " + name);
-    clock.cancel(name);
+  public void shouldSilentlyIgnoreCancellingAnUnknowTask() {
+    clock.cancel(random.string());
   }
 
 }

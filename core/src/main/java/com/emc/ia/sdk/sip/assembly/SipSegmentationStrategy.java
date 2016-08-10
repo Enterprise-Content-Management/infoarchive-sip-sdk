@@ -5,9 +5,6 @@ package com.emc.ia.sdk.sip.assembly;
 
 import java.util.Arrays;
 
-import com.emc.ia.sdk.support.datetime.Clock;
-import com.emc.ia.sdk.support.datetime.DefaultClock;
-
 /**
  * Strategy for segmenting domain objects into different SIPs.
  * @param <D> The type of domain objects to segment into different SIPs
@@ -23,28 +20,6 @@ public interface SipSegmentationStrategy<D> {
    * the domain object should be stored in the current SIP
    */
   boolean shouldStartNewSip(D domainObject, SipMetrics metrics);
-
-
-  /**
-   * Return a {@linkplain SipSegmentationStrategy} that allows a maximum time per SIP.
-   * @param <D> The type of domain objects to segment into different SIPs
-   * @param maxTime The maximum number of milliseconds to assemble the SIP
-   * @return A {@linkplain SipSegmentationStrategy} that allows a maximum time per SIP
-   */
-  static <D> SipSegmentationStrategy<D> byMaxTime(final long maxTime) {
-    return byMaxTime(maxTime, new DefaultClock());
-  }
-
-  /**
-   * Return a {@linkplain SipSegmentationStrategy} that allows a maximum time per SIP.
-   * @param <D> The type of domain objects to segment into different SIPs
-   * @param maxTime The maximum number of milliseconds to assemble the SIP
-   * @param clock The clock that keeps track of time
-   * @return A {@linkplain SipSegmentationStrategy} that allows a maximum time per SIP
-   */
-  static <D> SipSegmentationStrategy<D> byMaxTime(final long maxTime, final Clock clock) {
-    return new MaxTimePerSipSegmentationStrategy<D>(maxTime, clock);
-  }
 
 
   /**

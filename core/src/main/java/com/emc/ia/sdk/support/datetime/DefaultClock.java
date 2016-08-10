@@ -39,8 +39,11 @@ public class DefaultClock implements Clock {
     timer.schedule(new TimerTask() {
       @Override
       public void run() {
-        task.run();
-        timers.remove(name);
+        try {
+          task.run();
+        } finally {
+          timers.remove(name);
+        }
       }
     }, unit.toMillis(time));
   }
@@ -48,10 +51,9 @@ public class DefaultClock implements Clock {
   @Override
   public void cancel(String name) {
     Timer timer = timers.remove(name);
-    if (timer == null) {
-      throw new IllegalArgumentException("Unknown scheduled task: " + name);
+    if (timer != null) {
+      timer.cancel();
     }
-    timer.cancel();
   }
 
 }

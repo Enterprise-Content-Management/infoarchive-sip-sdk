@@ -4,7 +4,6 @@
 package com.emc.ia.sdk.sip.assembly;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -12,7 +11,6 @@ import java.util.function.Function;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.emc.ia.sdk.support.datetime.Clock;
 import com.emc.ia.sdk.support.test.TestCase;
 
 
@@ -99,25 +97,6 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
 
   private SipSegmentationStrategy<String> segmentOn(String segmentObject) {
     return (domainObject, metrics) -> domainObject == segmentObject;
-  }
-
-  @Test
-  public void shouldSegmentByTime() {
-    long maxTime = randomInt(13, 37);
-    Clock clock = mock(Clock.class);
-    strategy = SipSegmentationStrategy.byMaxTime(maxTime, clock);
-
-    when(clock.time()).thenReturn(maxTime - 1);
-    assertFalse("Just before limit", strategy.shouldStartNewSip(null, null));
-
-    when(clock.time()).thenReturn(maxTime);
-    assertTrue("Just after limit", strategy.shouldStartNewSip(null, null));
-
-    when(clock.time()).thenReturn(maxTime + 1);
-    assertFalse("After reset", strategy.shouldStartNewSip(null, null));
-
-    when(clock.time()).thenReturn(2 * maxTime);
-    assertTrue("After 2nd limit", strategy.shouldStartNewSip(null, null));
   }
 
 }

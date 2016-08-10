@@ -88,11 +88,17 @@ public class BatchSipAssembler<D> {
     startNewSip();
   }
 
-  private void closeCurrentSip() throws IOException {
+  protected final void closeCurrentSip() throws IOException {
     if (current != null) {
       assembler.end();
-      sipsMetrics.add(new FileGenerationMetrics(current, assembler.getMetrics()));
+      FileGenerationMetrics metrics = new FileGenerationMetrics(current, assembler.getMetrics());
+      current = null;
+      sipEnded(metrics);
     }
+  }
+
+  protected void sipEnded(FileGenerationMetrics metrics) {
+    sipsMetrics.add(metrics);
   }
 
   private void startNewSip() throws IOException {
