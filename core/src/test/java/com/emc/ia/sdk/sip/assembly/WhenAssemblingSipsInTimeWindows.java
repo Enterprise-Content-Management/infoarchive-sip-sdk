@@ -32,7 +32,6 @@ public class WhenAssemblingSipsInTimeWindows extends TestCase {
   private final Clock clock = mock(Clock.class);
   private final Consumer<FileGenerationMetrics> callback = mock(Consumer.class);
   private long maxTime;
-  private SipAssemblyTimer timer;
   private File sipDir;
   private TimeBasedBatchSipAssembler<String> batchAssembler;
   private String taskName;
@@ -44,8 +43,8 @@ public class WhenAssemblingSipsInTimeWindows extends TestCase {
     when(assembler.getPackagingInformationFactory()).thenReturn(factory);
     sipDir = temporaryFolder.newFolder();
     maxTime = randomInt(37, 313);
-    timer = new SipAssemblyTimer(maxTime, clock, callback);
-    batchAssembler = new TimeBasedBatchSipAssembler<>(assembler, segmentationStrategy, sipDir, timer);
+    batchAssembler = new TimeBasedBatchSipAssembler<>(assembler, segmentationStrategy, sipDir,
+        new SipAssemblyTimer(maxTime, clock, callback));
     ArgumentCaptor<String> taskNameCaptor = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<Runnable> taskCaptor = ArgumentCaptor.forClass(Runnable.class);
     verify(clock).schedule(taskNameCaptor.capture(), eq(maxTime), eq(TimeUnit.MILLISECONDS), taskCaptor.capture());
