@@ -8,9 +8,7 @@ import static org.junit.Assert.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import com.emc.ia.sdk.support.test.RandomData;
 
@@ -19,8 +17,6 @@ public class WhenWorkingWithTime {
 
   private static final int TASK_WAIT_DELTA = 100;
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
   private final RandomData random = new RandomData();
   private final Clock clock = new DefaultClock();
 
