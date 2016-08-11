@@ -62,9 +62,13 @@ public class BatchSipAssembler<D> {
   public BatchSipAssembler(SipAssembler<D> assembler, SipSegmentationStrategy<D> segmentationStrategy,
       Supplier<File> fileSupplier) {
     this.assembler = assembler;
-    this.assembler.getPackagingInformationFactory().setFinalSipInDss(false);
     this.segmentationStrategy = segmentationStrategy;
     this.fileSupplier = fileSupplier;
+    setFinalSipInDss(false);
+  }
+
+  protected void setFinalSipInDss(boolean finalSipInDss) {
+    assembler.getPackagingInformationFactory().setFinalSipInDss(finalSipInDss);
   }
 
   /**
@@ -111,7 +115,7 @@ public class BatchSipAssembler<D> {
    * @throws IOException When an I/O error occurs
    */
   public void end() throws IOException {
-    assembler.getPackagingInformationFactory().setFinalSipInDss(true);
+    setFinalSipInDss(true);
     closeCurrentSip();
   }
 

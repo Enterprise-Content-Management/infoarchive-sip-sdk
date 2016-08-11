@@ -33,6 +33,7 @@ public class TimeBasedBatchSipAssembler<D> extends BatchSipAssembler<D> {
     super(assembler, segmentationStrategy, fileSupplier);
     this.callback = sipAssemblyTimer.getCallback();
     this.timer = new Timer(sipAssemblyTimer.getMillis(), this::closeSip, sipAssemblyTimer.getClock());
+    setFinalSipInDss(true);
   }
 
   private void closeSip() {
