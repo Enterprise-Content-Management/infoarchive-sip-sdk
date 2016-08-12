@@ -210,6 +210,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(helpers, new ResultConfigurationHelper());
     mockByName(searches, new Search());
     mockByName(compositions, new SearchComposition());
+    mockByName(xForms, new XForm());
 
     when(aics.getItems()).thenReturn(Stream.of(aic));
   }
@@ -233,6 +234,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put(InfoArchiveConfiguration.SEARCH_STATE, "DRAFT");
     configuration.put(InfoArchiveConfiguration.SEARCH_INUSE, "false");
     configuration.put(InfoArchiveConfiguration.SEARCH_COMPOSITION_NAME, "DefaultSearchComposition");
+    configuration.put(InfoArchiveConfiguration.SEARCH_COMPOSITION_XFORM_NAME, "Test Search Form");
     configuration.put(InfoArchiveConfiguration.SEARCH_DEFAULT_RESULT_MASTER, "");
     configuration.put(InfoArchiveConfiguration.SEARCH_DEFAULT_SEARCH, "");
 

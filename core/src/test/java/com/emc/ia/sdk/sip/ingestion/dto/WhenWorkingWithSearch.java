@@ -7,9 +7,15 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.emc.ia.sdk.sip.ingestion.SearchOptions;
+
 public class WhenWorkingWithSearch {
   private final Search search = new Search();
   private final SearchComposition composition = new SearchComposition();
+  private final SearchDataBuilder builder = SearchDataBuilder.builder();
+
+  private static final String TEST_SUBJECT = "subject";
+  private static final String TEST_VALUE = "Test";
 
   @Test
   public void defaultDecriptionShouldNotBeNull() {
@@ -88,4 +94,73 @@ public class WhenWorkingWithSearch {
     assertNotNull(new SearchCompositions());
   }
 
+  @Test
+  public void searchDataBuilderObjectCreationSuccessful() {
+    assertNotNull(builder);
+  }
+
+  @Test
+  public void searchDataBuilderCriteriaEqualSuccessful() {
+    assertNotNull(builder.equal(TEST_SUBJECT, TEST_VALUE));
+  }
+
+  @Test
+  public void searchDataBuilderCriteriaNotEqualSuccessful() {
+    assertNotNull(builder.notEqual(TEST_SUBJECT, TEST_VALUE));
+  }
+
+  @Test
+  public void searchDataBuilderCriteriaStartsWithSuccessful() {
+    assertNotNull(builder.startsWith(TEST_SUBJECT, TEST_VALUE));
+  }
+
+  @Test
+  public void searchDataBuilderCriteriaEndsWithSuccessful() {
+    assertNotNull(builder.endsWith(TEST_SUBJECT, TEST_VALUE));
+  }
+
+  @Test
+  public void searchDataBuilderCriteriaContainsWithSuccessful() {
+    assertNotNull(builder.contains(TEST_SUBJECT, TEST_VALUE));
+  }
+
+  @Test
+  public void searchDataBuilderCriteriaBuildSuccessful() {
+    assertNotNull(builder.build());
+  }
+
+  @Test
+  public void searchResultsCreationIsSuccessful() {
+    assertNotNull(new SearchResults());
+  }
+
+  @Test
+  public void searchResultsDefaultRowsNotNull() {
+    assertNotNull(new SearchResults().getRows());
+  }
+
+  @Test
+  public void searchOptionsObjectCreationSuccessful() {
+    assertNotNull(new SearchOptions());
+  }
+
+  @Test
+  public void searchOptionsDefaultPageSizeIsValid() {
+    assertEquals(new SearchOptions().getPagesize(), 20);
+  }
+
+  @Test
+  public void searchOptionsDefaultNameIsValid() {
+    assertEquals(new SearchOptions().getSearchSetName(), "Email");
+  }
+
+  @Test
+  public void searchOptionsDefaultTimeOutIsValid() {
+    assertEquals(new SearchOptions().getTimeoutInSec(), 120);
+  }
+
+  @Test
+  public void searchOptionsDefaultIsNotNull() {
+    assertNotNull(new SearchOptions().getDefault());
+  }
 }

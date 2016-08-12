@@ -52,6 +52,10 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return httpClient.post(uri, headers, type, parts);
   }
 
+  public <T> T post(String uri, String data, Class<T> type) throws IOException {
+    return (T)httpClient.post(uri, withContentType(MediaTypes.HAL), toJson(data), type);
+  }
+
   public <T> T follow(LinkContainer state, String relation, Class<T> type) throws IOException {
     Objects.requireNonNull(state, "Missing state");
     return get(linkIn(state, relation).getHref(), type);

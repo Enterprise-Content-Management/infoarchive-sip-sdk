@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import com.emc.ia.sdk.sip.ingestion.dto.SearchResults;
 import com.emc.ia.sdk.sip.ingestion.dto.query.QueryResult;
 import com.emc.ia.sdk.sip.ingestion.dto.query.SearchQuery;
 
@@ -39,4 +40,13 @@ public interface ArchiveClient {
    * @throws IOException When an I/O error occurs
    */
   QueryResult query(SearchQuery query, String aic, String schema, int pageSize) throws IOException;
+
+  /**
+   * Execute a search against the Archive.
+   * @param searchName The name of the search.
+   * @param searchData The search data xml.
+   * @return A SearchResult
+   * @throws IOException When an I/O error occurs
+   */
+  SearchResults search(String searchName, String searchData, SearchOptions options) throws IOException;
 }

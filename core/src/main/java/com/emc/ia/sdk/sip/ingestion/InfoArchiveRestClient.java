@@ -60,6 +60,7 @@ import com.emc.ia.sdk.sip.ingestion.dto.RetentionPolicy;
 import com.emc.ia.sdk.sip.ingestion.dto.Search;
 import com.emc.ia.sdk.sip.ingestion.dto.SearchComposition;
 import com.emc.ia.sdk.sip.ingestion.dto.SearchCompositions;
+import com.emc.ia.sdk.sip.ingestion.dto.SearchResults;
 import com.emc.ia.sdk.sip.ingestion.dto.Searches;
 import com.emc.ia.sdk.sip.ingestion.dto.Services;
 import com.emc.ia.sdk.sip.ingestion.dto.Sip;
@@ -159,6 +160,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       ensureResultConfigurationHelper();
       ensureSearch();
       ensureSearchComposition();
+      ensureXForm();
       cacheAipsUri();
       cacheDipUris();
     } catch (IOException e) {
@@ -883,7 +885,6 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
           .byName(name));
       Objects.requireNonNull(configurationState.getSearchComposition(), "Could not create Search compostion");
     }
-    createXForm();
   }
 
   private SearchComposition createSearchComposition(String name) {
@@ -893,11 +894,30 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return composition;
   }
 
-  private void createXForm() throws IOException {
-    XForms xFroms = restClient.follow(configurationState.getSearchComposition(), LINK_XFORMS, XForms.class);
+  private void ensureXForm() throws IOException {
+    String name = configuration.get(SEARCH_COMPOSITION_XFORM_NAME);
+    XForms xForms = restClient.follow(configurationState.getSearchComposition(), LINK_XFORMS, XForms.class);
+    configurationState.setxForm(xForms.byName(name));
+    if (configurationState.getxForm() == null) {
+      createItem(xForms, createXForm(name), LINK_SELF);
+      configurationState.setxForm(restClient.refresh(xForms)
+          .byName(name));
+      Objects.requireNonNull(configurationState.getxForm(), "Could not create XForm");
+    }
+  }
+
+  private XForm createXForm(String name) throws IOException {
     XForm xForm = new XForm();
-    configurationState.setxForm(createItem(xFroms, xForm, LINK_SELF));
-    Objects.requireNonNull(configurationState.getxForm(), "Could not create XForm");
+    xForm.setName(name);
+    xForm.setCompositionName(SEARCH_COMPOSITION_NAME);
+    xForm.setSearchName(SEARCH_NAME);
+    //we have a default 'out of the box' form set already, if in case user does not set the form through config
+    //we'll go with the default
+    String form = configuration.get(SEARCH_COMPOSITION_XFORM);
+    if (form != null) {
+      xForm.setForm(form);
+    }
+    return xForm;
   }
 
   protected void cacheAipsUri() {
@@ -936,6 +956,13 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
         .addParameter("size", String.valueOf(pageSize))
         .build();
     return restClient.get(queryUri, queryResultFactory);
+  }
+
+  @Override
+  public SearchResults search(String searchName, String searchData, SearchOptions options) throws IOException {
+    String compositionUri = configurationState.getSearchComposition().getSelfUri();
+    Objects.requireNonNull(compositionUri, "Did you forget to call configure()?");
+    return restClient.post(compositionUri, searchData, SearchResults.class);
   }
 
 }
