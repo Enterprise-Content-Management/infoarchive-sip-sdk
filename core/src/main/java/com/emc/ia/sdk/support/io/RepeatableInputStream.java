@@ -5,6 +5,7 @@ package com.emc.ia.sdk.support.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.apache.commons.io.IOUtils;
@@ -19,11 +20,11 @@ public class RepeatableInputStream implements Supplier<InputStream> {
 
   /**
    * Provide repeatable access to the given input stream.
-   * @param source The input stream to make available for repeated access
+   * @param source The input stream to make available for repeated access. Must not be <code>null</code>
    * @throws IOException When an I/O error occurs
    */
   public RepeatableInputStream(InputStream source) throws IOException {
-    IOUtils.copy(source, provider);
+    IOUtils.copy(Objects.requireNonNull(source), provider);
   }
 
   @Override
