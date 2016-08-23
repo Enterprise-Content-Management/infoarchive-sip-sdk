@@ -6,9 +6,10 @@ package com.emc.ia.sdk.sip.ingestion.dto;
 
 public class SearchComposition extends NamedLinkContainer {
   private String searchName;
+  private Long version;
 
   public SearchComposition() {
-    setSearchName("Deafult emails Search Compoistion"); //TODO - need to change default value
+    setName("Set 1");
   }
 
   public String getSearchName() {
@@ -17,6 +18,14 @@ public class SearchComposition extends NamedLinkContainer {
 
   public void setSearchName(String searchName) {
     this.searchName = searchName;
+  }
+
+  public Long getVersion() {
+    return version;
+  }
+
+  public void setVersion(Long version) {
+    this.version = version;
   }
 
 }

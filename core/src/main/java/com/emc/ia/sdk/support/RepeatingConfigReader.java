@@ -4,7 +4,6 @@
 package com.emc.ia.sdk.support;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +27,7 @@ public class RepeatingConfigReader {
   }
 
   public List<Map<String, String>> read(Map<String, String> configuration) {
-    List<String[]> values = new ArrayList<>();
+    List<List<String>> values = new ArrayList<>();
     List<Integer> sizes = new ArrayList<>(values.size());
     int nullCount = 0;
     for (String field : fields) {
@@ -37,9 +36,9 @@ public class RepeatingConfigReader {
         rawFieldValue = "";
         nullCount += 1;
       }
-      String[] fieldValues = rawFieldValue.split(",");
+      List<String> fieldValues = getComponents(rawFieldValue);
       values.add(fieldValues);
-      sizes.add(fieldValues.length);
+      sizes.add(fieldValues.size());
     }
 
     if (nullCount == fields.size()) {
@@ -58,22 +57,23 @@ public class RepeatingConfigReader {
     return list;
   }
 
-  private List<Map<String, String>> convertToListOfMaps(List<String[]> values) {
-    int numValues = values.get(0).length;
+  private List<Map<String, String>> convertToListOfMaps(List<List<String>> values) {
+    int numValues = values.get(0)
+      .size();
     List<Map<String, String>> list = new ArrayList<>();
 
     for (int valueIndex = 0; valueIndex < numValues; ++valueIndex) {
       Map<String, String> map = new HashMap<>();
       for (int i = 0; i < fields.size(); ++i) {
-        String[] fieldValue = values.get(i);
-        map.put(fields.get(i), fieldValue[valueIndex]);
+        List<String> fieldValue = values.get(i);
+        map.put(fields.get(i), fieldValue.get(valueIndex));
       }
       list.add(map);
     }
     return list;
   }
 
-  private String formatErrorMessage(List<String[]> values, List<Integer> sizes) {
+  private String formatErrorMessage(List<List<String>> values, List<Integer> sizes) {
     StringBuilder result = new StringBuilder(256);
     result.append("All configuration items in the ");
     result.append(name);
@@ -86,9 +86,21 @@ public class RepeatingConfigReader {
       result.append(": ");
       result.append(sizes.get(i));
       result.append(' ');
-      result.append(Arrays.toString(values.get(i)));
+      result.append(values.get(i));
     }
     result.append('.');
     return result.toString();
+  }
+
+  private static List<String> getComponents(String value) {
+    List<String> result = new ArrayList<String>();
+    int offset = 0;
+    int index = 0;
+    while ((index = value.indexOf(',', offset)) != -1) {
+      result.add(value.substring(offset, index));
+      offset = index + 1;
+    }
+    result.add(value.substring(offset, value.length()));
+    return result;
   }
 }

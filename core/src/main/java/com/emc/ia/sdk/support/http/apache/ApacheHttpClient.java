@@ -148,6 +148,13 @@ public class ApacheHttpClient implements HttpClient {
     return execute(newPut(uri, headers), type);
   }
 
+  @Override
+  public <T> T put(String uri, Collection<Header> headers, Class<T> type, String payload) throws IOException {
+    HttpPut request = newPut(uri, headers);
+    request.setEntity(new StringEntity(payload));
+    return execute(request, type);
+  }
+
   private HttpPut newPut(String uri, Collection<Header> headers) {
     Objects.requireNonNull(uri, "Missing URI");
     HttpPut result = new HttpPut(uri);

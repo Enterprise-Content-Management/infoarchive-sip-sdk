@@ -45,6 +45,7 @@ public interface ArchiveClient {
    * Execute a search against the Archive.
    * @param searchName The name of the search.
    * @param searchData The search data xml.
+   * @param options The search options.
    * @return A SearchResult
    * @throws IOException When an I/O error occurs
    */

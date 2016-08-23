@@ -80,6 +80,7 @@ import com.emc.ia.sdk.sip.ingestion.dto.query.Comparison;
 import com.emc.ia.sdk.sip.ingestion.dto.query.Operator;
 import com.emc.ia.sdk.sip.ingestion.dto.query.QueryResult;
 import com.emc.ia.sdk.sip.ingestion.dto.query.SearchQuery;
+import com.emc.ia.sdk.sip.ingestion.dto.result.searchconfig.AllSearchComponents;
 import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.Response;
 import com.emc.ia.sdk.support.http.UriBuilder;
@@ -212,7 +213,11 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(compositions, new SearchComposition());
     mockByName(xForms, new XForm());
 
+    when(restClient.put(anyString(), eq(SearchComposition.class), any(AllSearchComponents.class)))
+      .thenReturn(new SearchComposition());
+
     when(aics.getItems()).thenReturn(Stream.of(aic));
+
   }
 
   private void prepareConfiguration() {
@@ -268,6 +273,13 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.quota.aiu", "0");
     configuration.put("ia.quota.aip", "0");
     configuration.put("ia.quota.dip", "0");
+
+    configuration.put("ia.result.helper.result_helper.xml", "<somexml></somexml>");
+    configuration.put("ia.search.emailsSearch.composition.xform", "<form></form>");
+    configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.name", "sender");
+    configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.label", "Sender");
+    configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.path", "n:sender/n:email");
+    configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.type", "STRING");
   }
 
   private <T> OngoingStubbing<T> mockCollection(Class<T> type, T object) throws IOException {
@@ -346,11 +358,11 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
       return app.get();
     });
     final AtomicBoolean created = new AtomicBoolean(false);
-    when(restClient.createCollectionItem(eq(applications), any(Application.class),
-        Matchers.<String>anyVararg())).thenAnswer(invocation -> {
-      created.set(true);
-      return null;
-    });
+    when(restClient.createCollectionItem(eq(applications), any(Application.class), Matchers.<String>anyVararg()))
+      .thenAnswer(invocation -> {
+        created.set(true);
+        return null;
+      });
     when(restClient.refresh(applications)).thenAnswer(invocation -> {
       if (created.get()) {
         app.set(application);
