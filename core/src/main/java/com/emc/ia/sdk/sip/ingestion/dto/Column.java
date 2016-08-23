@@ -3,16 +3,10 @@
  */
 package com.emc.ia.sdk.sip.ingestion.dto;
 
-
 public class Column {
 
   private String name;
   private String value;
-
-  public Column() {
-    setName("lastName");
-    setValue("InfoArchive");
-  }
 
   public String getName() {
     return name;
