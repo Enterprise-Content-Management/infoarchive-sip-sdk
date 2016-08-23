@@ -15,6 +15,7 @@ import com.emc.ia.sdk.support.io.RuntimeIoException;
 
 public class TimeBasedBatchSipAssembler<D> extends BatchSipAssembler<D> {
 
+  private final Object lock = new Object();
   private final Timer timer;
   private final Consumer<FileGenerationMetrics> callback;
 
@@ -32,13 +33,15 @@ public class TimeBasedBatchSipAssembler<D> extends BatchSipAssembler<D> {
       Supplier<File> fileSupplier, SipAssemblyTimer sipAssemblyTimer) {
     super(assembler, segmentationStrategy, fileSupplier);
     this.callback = sipAssemblyTimer.getCallback();
-    this.timer = new Timer(sipAssemblyTimer.getMillis(), this::closeSip, sipAssemblyTimer.getClock());
     setFinalSipInDss(true);
+    this.timer = new Timer(sipAssemblyTimer.getMillis(), this::closeSip, sipAssemblyTimer.getClock());
   }
 
   private void closeSip() {
     try {
-      closeCurrentSip();
+      synchronized (lock) {
+        closeCurrentSip();
+      }
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
@@ -46,20 +49,26 @@ public class TimeBasedBatchSipAssembler<D> extends BatchSipAssembler<D> {
 
   @Override
   public void add(D domainObject) throws IOException {
-    super.add(domainObject);
+    synchronized (lock) {
+      super.add(domainObject);
+    }
     timer.reset();
   }
 
   @Override
   protected void sipEnded(FileGenerationMetrics metrics) {
-    super.sipEnded(metrics);
+    synchronized (lock) {
+      super.sipEnded(metrics);
+    }
     callback.accept(metrics);
   }
 
   @Override
   public void end() throws IOException {
     timer.stop();
-    super.end();
+    synchronized (lock) {
+      super.end();
+    }
   }
 
 }
