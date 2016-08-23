@@ -838,18 +838,20 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private void ensureResultConfigurationHelper() throws IOException {
     String name = configuration.getOrDefault(RESULT_HELPER_NAME, DEFAULT_RESULT_HELPER_NAME);
-    ResultConfigurationHelpers helpers = restClient.follow(configurationState.getApplication(),
-        LINK_RESULT_CONFIGURATION_HELPERS, ResultConfigurationHelpers.class);
-    ResultConfigurationHelper helper = helpers.byName(name);
-    if (helper == null) {
-      createItem(helpers, createResultConfigurationHelper(name));
-      helper = restClient.refresh(helpers)
-        .byName(name);
-      Objects.requireNonNull(helper, "Could not create Result configuration helper");
-    }
-    ensureContents(helper, resolveTemplatedKey(RESULT_HELPER_XML, name), FORMAT_XML);
+    if (configuration.containsKey(resolveTemplatedKey(RESULT_HELPER_XML, name))) {
+      ResultConfigurationHelpers helpers = restClient.follow(configurationState.getApplication(),
+          LINK_RESULT_CONFIGURATION_HELPERS, ResultConfigurationHelpers.class);
+      ResultConfigurationHelper helper = helpers.byName(name);
+      if (helper == null) {
+        createItem(helpers, createResultConfigurationHelper(name));
+        helper = restClient.refresh(helpers)
+          .byName(name);
+        Objects.requireNonNull(helper, "Could not create Result configuration helper");
+      }
+      ensureContents(helper, resolveTemplatedKey(RESULT_HELPER_XML, name), FORMAT_XML);
 
-    configurationState.setResultConfigHelperUri(helper.getSelfUri());
+      configurationState.setResultConfigHelperUri(helper.getSelfUri());
+    }
   }
 
   private ResultConfigurationHelper createResultConfigurationHelper(String name) {
