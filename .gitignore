@@ -5,6 +5,7 @@
 .project
 .gradle/
 .settings/
+*~
 bin/
 build/
 classes/
