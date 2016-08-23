@@ -48,6 +48,10 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return httpClient.put(uri, headers, type);
   }
 
+  public <S, T> T put(String uri, Class<T> type, S payload) throws IOException {
+    return httpClient.put(uri, withContentType(MediaTypes.HAL), type, toJson(payload));
+  }
+
   public <T> T post(String uri, Class<T> type, Part... parts) throws IOException {
     return httpClient.post(uri, headers, type, parts);
   }
@@ -64,7 +68,8 @@ public class RestClient implements Closeable, StandardLinkRelations {
   private Link linkIn(LinkContainer state, String... relations) {
     Link result = null;
     for (String relation : relations) {
-      result = state.getLinks().get(relation);
+      result = state.getLinks()
+        .get(relation);
       if (result != null) {
         break;
       }

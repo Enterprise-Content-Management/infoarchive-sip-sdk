@@ -12,6 +12,7 @@ interface InfoArchiveLinkRelations extends StandardLinkRelations {
 
   String LINK_ADD = LINK_PREFIX + "add";
   String LINK_AIPS = LINK_PREFIX + "aips";
+  String LINK_ALLCOMPONENTS = LINK_PREFIX + "all-components";
   String LINK_AICS = LINK_PREFIX + "aics";
   String LINK_DIP = LINK_PREFIX + "dip";
   String LINK_INGEST = LINK_PREFIX + "ingest";

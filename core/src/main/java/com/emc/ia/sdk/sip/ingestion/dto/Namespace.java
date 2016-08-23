@@ -8,6 +8,15 @@ public class Namespace {
   private String uri;
   private String prefix;
 
+  public Namespace() {
+  }
+
+  public Namespace(String prefix, String uri) {
+    super();
+    this.prefix = prefix;
+    this.uri = uri;
+  }
+
   public String getUri() {
     return uri;
   }

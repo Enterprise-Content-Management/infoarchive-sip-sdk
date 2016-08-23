@@ -3,7 +3,9 @@
  */
 package com.emc.ia.sdk.sip.ingestion;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Application;
 import com.emc.ia.sdk.sip.ingestion.dto.Federation;
@@ -44,6 +46,9 @@ class RestCache { // NOPMD TooManyFields
   private SearchComposition searchComposition;
   private XForm xForm;
   private String holdingUri;
+
+  private final Map<String, String> aicUriByName = new HashMap<>();
+  private final Map<String, String> queryUriByName = new HashMap<>();
 
   public String getAicUri() {
     return aicUri;
@@ -244,4 +249,21 @@ class RestCache { // NOPMD TooManyFields
   public void setHoldingUri(String holdingUri) {
     this.holdingUri = holdingUri;
   }
+
+  public String getAicUriByName(String name) {
+    return aicUriByName.get(name);
+  }
+
+  public String getQueryUriByName(String name) {
+    return queryUriByName.get(name);
+  }
+
+  public void setQueryUriByName(String name, String uri) {
+    queryUriByName.put(name, uri);
+  }
+
+  public void setAicUriByName(String name, String uri) {
+    aicUriByName.put(name, uri);
+  }
+
 }

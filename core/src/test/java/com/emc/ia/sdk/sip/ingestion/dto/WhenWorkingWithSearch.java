@@ -18,8 +18,8 @@ public class WhenWorkingWithSearch {
   private static final String TEST_VALUE = "Test";
 
   @Test
-  public void defaultDecriptionShouldNotBeNull() {
-    assertTrue(search.getDescription().equals("Default emails search"));
+  public void defaultDecriptionShouldBeNull() {
+    assertNull(search.getDescription());
   }
 
   @Test
@@ -79,8 +79,8 @@ public class WhenWorkingWithSearch {
   }
 
   @Test
-  public void defaultSearchCompoistionNameShouldNotBeNull() {
-    assertTrue(composition.getSearchName().equals("Deafult emails Search Compoistion"));
+  public void defaultSearchCompositionNameShouldBeSet1() {
+    assertEquals("Set 1", composition.getName());
   }
 
   @Test

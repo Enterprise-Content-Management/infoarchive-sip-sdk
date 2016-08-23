@@ -75,11 +75,14 @@ import com.emc.ia.sdk.sip.ingestion.dto.Stores;
 import com.emc.ia.sdk.sip.ingestion.dto.SubPriority;
 import com.emc.ia.sdk.sip.ingestion.dto.Tenant;
 import com.emc.ia.sdk.sip.ingestion.dto.XForm;
-import com.emc.ia.sdk.sip.ingestion.dto.XForms;
 import com.emc.ia.sdk.sip.ingestion.dto.XdbPdiConfig;
 import com.emc.ia.sdk.sip.ingestion.dto.query.QueryFormatter;
 import com.emc.ia.sdk.sip.ingestion.dto.query.QueryResult;
 import com.emc.ia.sdk.sip.ingestion.dto.query.SearchQuery;
+import com.emc.ia.sdk.sip.ingestion.dto.result.Column;
+import com.emc.ia.sdk.sip.ingestion.dto.result.Column.DataType;
+import com.emc.ia.sdk.sip.ingestion.dto.result.ResultMaster;
+import com.emc.ia.sdk.sip.ingestion.dto.result.searchconfig.AllSearchComponents;
 import com.emc.ia.sdk.support.NewInstance;
 import com.emc.ia.sdk.support.RepeatingConfigReader;
 import com.emc.ia.sdk.support.http.BinaryPart;
@@ -91,7 +94,6 @@ import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.RestClient;
-
 
 /**
  * Implementation of {@linkplain ArchiveClient} that uses the REST API of a running InfoArchive server.
@@ -159,8 +161,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       ensureQuery();
       ensureResultConfigurationHelper();
       ensureSearch();
-      ensureSearchComposition();
-      ensureXForm();
+      // ensureSearchComposition();
+      // ensureXForm();
       cacheAipsUri();
       cacheDipUris();
     } catch (IOException e) {
@@ -174,9 +176,9 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private void initRestClient() throws IOException {
     if (restClient == null) {
-      HttpClient httpClient = NewInstance
-          .fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
-          .as(HttpClient.class);
+      HttpClient httpClient =
+          NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
+            .as(HttpClient.class);
       restClient = new RestClient(httpClient);
     }
     restClient.init(configuration.get(SERVER_AUTENTICATON_TOKEN));
@@ -200,7 +202,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (configurationState.getFederation() == null) {
       createItem(federations, createFederation(name));
       configurationState.setFederation(restClient.refresh(federations)
-          .byName(name));
+        .byName(name));
       Objects.requireNonNull(configurationState.getFederation(), "Could not create federation");
     }
   }
@@ -253,7 +255,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (database == null) {
       createItem(databases, createDatabase(name));
       database = restClient.refresh(databases)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(database, "Could not create database");
     }
     configurationState.setDatabaseUri(database.getSelfUri());
@@ -267,9 +269,10 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   private void ensureFileSystemRoot() throws IOException {
-    FileSystemRoots fileSystemRoots = restClient.follow(configurationState.getServices(), LINK_FILE_SYSTEM_ROOTS,
-        FileSystemRoots.class);
-    configurationState.setFileSystemRootUri(fileSystemRoots.first().getSelfUri());
+    FileSystemRoots fileSystemRoots =
+        restClient.follow(configurationState.getServices(), LINK_FILE_SYSTEM_ROOTS, FileSystemRoots.class);
+    configurationState.setFileSystemRootUri(fileSystemRoots.first()
+      .getSelfUri());
   }
 
   protected void ensureApplication() throws IOException {
@@ -280,7 +283,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (configurationState.getApplication() == null) {
       createItem(applications, createApplication(applicationName));
       configurationState.setApplication(restClient.refresh(applications)
-          .byName(applicationName));
+        .byName(applicationName));
       Objects.requireNonNull(configurationState.getApplication(), "Could not create application");
     }
   }
@@ -292,13 +295,14 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   private void ensureSpace() throws IOException {
-    String spaceName = configurationState.getApplication().getName();
+    String spaceName = configurationState.getApplication()
+      .getName();
     Spaces spaces = restClient.follow(configurationState.getApplication(), LINK_SPACES, Spaces.class);
     configurationState.setSpace(spaces.byName(spaceName));
     if (configurationState.getSpace() == null) {
       createItem(spaces, createSpace(spaceName));
       configurationState.setSpace(restClient.refresh(spaces)
-          .byName(spaceName));
+        .byName(spaceName));
       Objects.requireNonNull(configurationState.getSpace(), "Could not create space");
     }
   }
@@ -317,7 +321,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (configurationState.getSpaceRootLibrary() == null) {
       createItem(spaceRootLibraries, createSpaceRootLibrary(name));
       configurationState.setSpaceRootLibrary(restClient.refresh(spaceRootLibraries)
-          .byName(name));
+        .byName(name));
       Objects.requireNonNull(configurationState.getSpaceRootLibrary(), "Could not create space root library");
     }
   }
@@ -330,14 +334,15 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   private void ensureSpaceRootFolder() throws IOException {
-    String name = configurationState.getSpace().getName();
+    String name = configurationState.getSpace()
+      .getName();
     SpaceRootFolders spaceRootFolders =
         restClient.follow(configurationState.getSpace(), LINK_SPACE_ROOT_FOLDERS, SpaceRootFolders.class);
     configurationState.setSpaceRootFolder(spaceRootFolders.byName(name));
     if (configurationState.getSpaceRootFolder() == null) {
       createItem(spaceRootFolders, createSpaceRootFolder(name));
       configurationState.setSpaceRootFolder(restClient.refresh(spaceRootFolders)
-          .byName(name));
+        .byName(name));
       Objects.requireNonNull(configurationState.getSpaceRootFolder(), "Could not create space root folder");
     }
   }
@@ -357,7 +362,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (fileSystemFolder == null) {
       createItem(fileSystemFolders, createFileSystemFolder(name));
       fileSystemFolder = restClient.refresh(fileSystemFolders)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(fileSystemFolder, "Could not create file system folder");
     }
     configurationState.setFileSystemFolderUri(fileSystemFolder.getSelfUri());
@@ -366,7 +371,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private FileSystemFolder createFileSystemFolder(String name) {
     FileSystemFolder result = new FileSystemFolder();
     result.setName(name);
-    result.setParentSpaceRootFolder(configurationState.getSpaceRootFolder().getSelfUri());
+    result.setParentSpaceRootFolder(configurationState.getSpaceRootFolder()
+      .getSelfUri());
     result.setSubPath("stores/" + STORE_NAME);
     return result;
   }
@@ -378,7 +384,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (store == null) {
       createItem(stores, createStore(name));
       store = restClient.refresh(stores)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(store, "Could not create store");
     }
     configurationState.setStoreUri(store.getSelfUri());
@@ -399,7 +405,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (receptionFolder == null) {
       createItem(receptionFolders, createReceptionFolder(name));
       receptionFolder = restClient.refresh(receptionFolders)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(receptionFolder, "Could not create reception folder");
     }
     configurationState.setReceptionFolderUri(receptionFolder.getSelfUri());
@@ -408,7 +414,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private FileSystemFolder createReceptionFolder(String name) {
     FileSystemFolder result = new FileSystemFolder();
     result.setName(name);
-    result.setParentSpaceRootFolder(configurationState.getSpaceRootFolder().getSelfUri());
+    result.setParentSpaceRootFolder(configurationState.getSpaceRootFolder()
+      .getSelfUri());
     result.setSubPath(WORKING_FOLDER_NAME + RECEIVER_NODE_NAME);
     return result;
   }
@@ -421,7 +428,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (fileSystemFolder == null) {
       createItem(fileSystemFolders, createIngestionFolder(name));
       fileSystemFolder = restClient.refresh(fileSystemFolders)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(fileSystemFolder, "Could not create ingestion folder");
     }
   }
@@ -429,7 +436,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private FileSystemFolder createIngestionFolder(String name) {
     FileSystemFolder result = new FileSystemFolder();
     result.setName(name);
-    result.setParentSpaceRootFolder(configurationState.getSpaceRootFolder().getSelfUri());
+    result.setParentSpaceRootFolder(configurationState.getSpaceRootFolder()
+      .getSelfUri());
     result.setSubPath(WORKING_FOLDER_NAME + INGEST_NODE_NAME);
     return result;
   }
@@ -442,7 +450,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (receiverNode == null) {
       createItem(receiverNodes, createReceiverNode(name));
       receiverNode = restClient.refresh(receiverNodes)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(receiverNode, "Could not create receiver node");
     }
   }
@@ -452,7 +460,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     result.setName(name);
     result.setWorkingDirectory(configurationState.getReceptionFolderUri());
     result.setLogsStore(configurationState.getStoreUri());
-    result.getSips().add(new Sip());
+    result.getSips()
+      .add(new Sip());
     return result;
   }
 
@@ -464,7 +473,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (ingestNode == null) {
       createItem(ingestNodes, createIngestionNode(name));
       ingestNode = restClient.refresh(ingestNodes)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(ingestNode, "Could not create ingest node");
     }
     configurationState.setIngestNodeUri(ingestNode.getSelfUri());
@@ -485,7 +494,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (retentionPolicy == null) {
       createItem(retentionPolicies, createRetentionPolicy(name));
       retentionPolicy = restClient.refresh(retentionPolicies)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(retentionPolicy, "Could not create retention policy");
     }
   }
@@ -503,7 +512,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (pdi == null) {
       createItem(pdis, createPdi(name));
       pdi = restClient.refresh(pdis)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(pdi, "Could not create PDI");
     }
     ensureContents(pdi, PDI_XML, FORMAT_XML);
@@ -540,7 +549,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (pdiSchema == null) {
       createItem(pdiSchemas, createPdiSchema(name));
       pdiSchema = restClient.refresh(pdiSchemas)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(pdiSchema, "Could not create PDI schema");
     }
     ensureContents(pdiSchema, PDI_SCHEMA, FORMAT_XSD);
@@ -559,7 +568,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (ingest == null) {
       createItem(ingests, createIngest(name));
       ingest = restClient.refresh(ingests)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(ingest, "Could not create ingest");
     }
     configurationState.setIngestUri(ingest.getSelfUri());
@@ -579,7 +588,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (library == null) {
       createItem(libraries, createLibrary(name));
       library = restClient.refresh(libraries)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(library, "Could not create library");
     }
     configurationState.setLibraryUri(library.getSelfUri());
@@ -599,7 +608,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (holding == null) {
       createItem(holdings, createHolding(name));
       holding = restClient.refresh(holdings)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(holding, "Could not create holding");
     }
     configurationState.setHoldingUri(holding.getSelfUri());
@@ -612,10 +621,11 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (aic == null) {
       createItem(aics, createAic(name));
       aic = restClient.refresh(aics)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(aic, "Could not create aic");
     }
     configurationState.setAicUri(aic.getSelfUri());
+    configurationState.setAicUriByName(name, aic.getSelfUri());
 
   }
 
@@ -623,7 +633,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     Aic aic = new Aic();
     aic.setName(name);
     aic.setCriterias(createCriteria());
-    aic.getHoldings().add(configurationState.getHoldingUri());
+    aic.getHoldings()
+      .add(configurationState.getHoldingUri());
     return aic;
   }
 
@@ -651,7 +662,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private void ensureQuery() throws IOException {
     String rawQueryNames = configuration.get(QUERY_NAME);
-    List<String> queryUris =  new ArrayList<String>();
+    List<String> queryUris = new ArrayList<String>();
     if (rawQueryNames != null && !rawQueryNames.isEmpty()) {
       String[] queryNames = rawQueryNames.split(",");
       for (String queryName : queryNames) {
@@ -660,12 +671,14 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
         if (query == null) {
           createItem(queries, createQuery(queryName));
           query = restClient.refresh(queries)
-              .byName(queryName);
+            .byName(queryName);
           Objects.requireNonNull(query, "Could not create query");
         }
         queryUris.add(query.getSelfUri());
+        configurationState.setQueryUriByName(queryName, query.getSelfUri());
       }
       configurationState.setQueryUris(queryUris);
+
     }
   }
 
@@ -677,7 +690,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (quota == null) {
       createItem(quotas, createQuota(name));
       quota = restClient.refresh(quotas)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(quota, "Could not create query");
     }
     configurationState.setQuotaUri(quota.getSelfUri());
@@ -724,7 +737,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     query.setQuota(configurationState.getQuotaUri());
     query.setQuotaAsync(configurationState.getQuotaUri());
     query.getAics()
-        .add(configurationState.getAicUri());
+      .add(configurationState.getAicUri());
 
     return query;
 
@@ -781,8 +794,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private List<String> resolveTemplatedKeys(List<String> templatedKeys, Object... vars) {
     return templatedKeys.stream()
-        .map(key -> resolveTemplatedKey(key, vars))
-        .collect(Collectors.toList());
+      .map(key -> resolveTemplatedKey(key, vars))
+      .collect(Collectors.toList());
   }
 
   private String resolveTemplatedKey(String key, Object... vars) {
@@ -796,30 +809,30 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     IngestConfig ingestConfig = new IngestConfig();
     ingestConfig.setIngest(configurationState.getIngestUri());
     result.getIngestConfigs()
-        .add(ingestConfig);
+      .add(ingestConfig);
     result.getIngestNodes()
-        .add(configurationState.getIngestNodeUri());
+      .add(configurationState.getIngestNodeUri());
     SubPriority priority = new SubPriority();
     priority.setPriority(0);
     priority.setDeadline(100);
     result.getSubPriorities()
-        .add(priority);
+      .add(priority);
     priority = new SubPriority();
     priority.setPriority(1);
     priority.setDeadline(200);
     result.getSubPriorities()
-        .add(priority);
+      .add(priority);
     result.setXdbLibraryParent(configurationState.getLibraryUri());
     RetentionClass retentionClass = new RetentionClass();
     retentionClass.getPolicies()
-        .add(configured(RETENTION_POLICY_NAME));
+      .add(configured(RETENTION_POLICY_NAME));
     result.getRetentionClasses()
-        .add(retentionClass);
+      .add(retentionClass);
     PdiConfig pdiConfig = new PdiConfig();
     pdiConfig.setPdi(configurationState.getPdiUri());
     pdiConfig.setSchema(configured(PDI_SCHEMA_NAME));
     result.getPdiConfigs()
-        .add(pdiConfig);
+      .add(pdiConfig);
     return result;
   }
 
@@ -831,9 +844,11 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (helper == null) {
       createItem(helpers, createResultConfigurationHelper(name));
       helper = restClient.refresh(helpers)
-          .byName(name);
+        .byName(name);
       Objects.requireNonNull(helper, "Could not create Result configuration helper");
     }
+    ensureContents(helper, resolveTemplatedKey(RESULT_HELPER_XML, name), FORMAT_XML);
+
     configurationState.setResultConfigHelperUri(helper.getSelfUri());
   }
 
@@ -852,38 +867,49 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   private void ensureSearch() throws IOException {
-    String name = configuration.get(SEARCH_NAME);
-    Searches searches = restClient.follow(configurationState.getApplication(), LINK_SEARCHES, Searches.class);
-    configurationState.setSearch(searches.byName(name));
-    if (configurationState.getSearch() == null) {
-      createItem(searches, createSearch(name));
-      configurationState.setSearch(restClient.refresh(searches)
+    String[] searchNames = configuration.get(SEARCH_NAME)
+      .split(",");
+    for (String name : searchNames) {
+      Searches searches = restClient.follow(configurationState.getApplication(), LINK_SEARCHES, Searches.class);
+      configurationState.setSearch(searches.byName(name));
+      if (configurationState.getSearch() == null) {
+        createItem(searches, createSearch(name));
+        configurationState.setSearch(restClient.refresh(searches)
           .byName(name));
-      Objects.requireNonNull(configurationState.getSearch(), "Could not create Search");
+        Objects.requireNonNull(configurationState.getSearch(), "Could not create Search");
+
+        ensureSearchComposition(name);
+      }
     }
   }
 
   private Search createSearch(String name) {
     Search search = new Search();
     search.setName(name);
-    search.setDescription(configuration.get(SEARCH_DESCRIPTION));
-    search.setNestedSearch(configuration.get(SEARCH_NESTED).equals("false") ? false : true);
-    search.setState(configuration.get(SEARCH_STATE));
-    search.setInUse(configuration.get(SEARCH_INUSE).equals("false") ? false : true);
-    search.setAic(configurationState.getAicUri());
-    search.setQuery(configurationState.getQueryUris().get(0));
+    search.setDescription(configuration.get(resolveTemplatedKey(SEARCH_DESCRIPTION, name)));
+    search.setNestedSearch(Boolean.parseBoolean(configuration.get(resolveTemplatedKey(SEARCH_NESTED, name))));
+    search.setState(configuration.get(resolveTemplatedKey(SEARCH_STATE, name)));
+    search.setInUse(Boolean.parseBoolean(configuration.get(resolveTemplatedKey(SEARCH_INUSE, name))));
+    search.setAic(configurationState.getAicUriByName(configuration.get(resolveTemplatedKey(SEARCH_AIC, name))));
+    search.setQuery(configurationState.getQueryUriByName(configuration.get(resolveTemplatedKey(SEARCH_QUERY, name))));
     return search;
   }
 
-  private void ensureSearchComposition() throws IOException {
-    String name = configuration.get(SEARCH_COMPOSITION_NAME);
-    SearchCompositions compositions = restClient.follow(configurationState.getSearch(), LINK_SEARCH_COMPOSITIONS, SearchCompositions.class);
+  private void ensureSearchComposition(String searchName) throws IOException {
+    String name = configuration.get(resolveTemplatedKey(SEARCH_COMPOSITION_NAME, searchName));
+    if (name == null || name.isEmpty()) {
+      name = "Set 1";
+    }
+    SearchCompositions compositions =
+        restClient.follow(configurationState.getSearch(), LINK_SEARCH_COMPOSITIONS, SearchCompositions.class);
     configurationState.setSearchComposition(compositions.byName(name));
     if (configurationState.getSearchComposition() == null) {
       createItem(compositions, createSearchComposition(name), LINK_SELF);
-      configurationState.setSearchComposition(restClient.refresh(compositions)
-          .byName(name));
-      Objects.requireNonNull(configurationState.getSearchComposition(), "Could not create Search compostion");
+      SearchComposition composition = restClient.refresh(compositions)
+        .byName(name);
+      Objects.requireNonNull(composition, "Could not create Search compostion");
+
+      ensureAllSearchComponents(searchName, composition);
     }
   }
 
@@ -894,34 +920,60 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return composition;
   }
 
-  private void ensureXForm() throws IOException {
-    String name = configuration.get(SEARCH_COMPOSITION_XFORM_NAME);
-    XForms xForms = restClient.follow(configurationState.getSearchComposition(), LINK_XFORMS, XForms.class);
-    configurationState.setxForm(xForms.byName(name));
-    if (configurationState.getxForm() == null) {
-      createItem(xForms, createXForm(name), LINK_SELF);
-      configurationState.setxForm(restClient.refresh(xForms)
-          .byName(name));
-      Objects.requireNonNull(configurationState.getxForm(), "Could not create XForm");
-    }
+  private void ensureAllSearchComponents(String searchName, SearchComposition composition) throws IOException {
+
+    AllSearchComponents components = new AllSearchComponents();
+    components.setSearchComposition(composition);
+    components.setXform(createXForm(searchName, composition.getName()));
+    components.setResultMaster(createResultMaster(searchName, composition.getName()));
+    SearchComposition updatedComposition =
+        restClient.put(composition.getUri(LINK_ALLCOMPONENTS), SearchComposition.class, components);
+
+    Objects.requireNonNull(updatedComposition, "Failed to update search composition");
+
   }
 
-  private XForm createXForm(String name) throws IOException {
+  private XForm createXForm(String searchName, String compositionName) throws IOException {
     XForm xForm = new XForm();
-    xForm.setName(name);
-    xForm.setCompositionName(SEARCH_COMPOSITION_NAME);
-    xForm.setSearchName(SEARCH_NAME);
-    //we have a default 'out of the box' form set already, if in case user does not set the form through config
-    //we'll go with the default
-    String form = configuration.get(SEARCH_COMPOSITION_XFORM);
-    if (form != null) {
-      xForm.setForm(form);
-    }
+    String form = configuration.get(resolveTemplatedKey(SEARCH_COMPOSITION_XFORM, searchName, compositionName));
+    Objects.requireNonNull(form, "XForm XML is missing.");
+    xForm.setForm(form);
     return xForm;
   }
 
+  private ResultMaster createResultMaster(String searchName, String compositionName) throws IOException {
+    ResultMaster resultMaster = new ResultMaster();
+
+    resultMaster.setNamespaces(createNamespaces(configuration.get(resolveTemplatedKey(SEARCH_QUERY, searchName))));
+
+    List<Column> columns = resultMaster.getDefaultTab()
+      .getColumns();
+
+    RepeatingConfigReader reader = new RepeatingConfigReader("maincolumns",
+        resolveTemplatedKeys(
+            Arrays.asList(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL,
+                SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE),
+            searchName, compositionName));
+    List<Map<String, String>> columnCfgs = reader.read(configuration);
+
+    for (Map<String, String> columnCfg : columnCfgs) {
+      String name =
+          columnCfg.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, searchName, compositionName));
+      String label =
+          columnCfg.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, searchName, compositionName));
+      String path =
+          columnCfg.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName, compositionName));
+      DataType dataType = DataType.valueOf(
+          columnCfg.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName, compositionName)));
+      Column column = Column.fromSchema(name, label, path, dataType);
+      columns.add(column);
+    }
+    return resultMaster;
+  }
+
   protected void cacheAipsUri() {
-    aipsUri = configurationState.getApplication().getUri(LINK_AIPS);
+    aipsUri = configurationState.getApplication()
+      .getUri(LINK_AIPS);
   }
 
   protected void cacheDipUris() throws IOException {
@@ -929,7 +981,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     dipUrisByAicName = new HashMap<String, String>();
     if (aics != null) {
       aics.getItems()
-          .forEach(aic -> dipUrisByAicName.put(aic.getName(), aic.getUri(LINK_DIP)));
+        .forEach(aic -> dipUrisByAicName.put(aic.getName(), aic.getUri(LINK_DIP)));
     }
   }
 
@@ -940,7 +992,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     ReceptionResponse response = restClient.post(aipsUri, ReceptionResponse.class, new TextPart("format", "sip_zip"),
         new BinaryPart("sip", sip, "IASIP.zip"));
     return restClient.put(response.getUri(LINK_INGEST), IngestionResponse.class)
-        .getAipId();
+      .getAipId();
   }
 
   @Override
@@ -951,16 +1003,17 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     String baseUri = dipUrisByAicName.get(aic);
     Objects.requireNonNull(baseUri, String.format("No DIP resource found for AIC %s", aic));
     String queryUri = restClient.uri(baseUri)
-        .addParameter("query", formattedQuery)
-        .addParameter("schema", schema)
-        .addParameter("size", String.valueOf(pageSize))
-        .build();
+      .addParameter("query", formattedQuery)
+      .addParameter("schema", schema)
+      .addParameter("size", String.valueOf(pageSize))
+      .build();
     return restClient.get(queryUri, queryResultFactory);
   }
 
   @Override
   public SearchResults search(String searchName, String searchData, SearchOptions options) throws IOException {
-    String compositionUri = configurationState.getSearchComposition().getSelfUri();
+    String compositionUri = configurationState.getSearchComposition()
+      .getSelfUri();
     Objects.requireNonNull(compositionUri, "Did you forget to call configure()?");
     return restClient.post(compositionUri, searchData, SearchResults.class);
   }

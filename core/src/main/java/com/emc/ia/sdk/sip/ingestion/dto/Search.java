@@ -13,12 +13,9 @@ public class Search extends NamedLinkContainer {
   private String query;
 
   public Search() {
-    setDescription("Default emails search");  //TODO - need to change default description ?
     setNestedSearch(false);
     setState("DRAFT");
     setInUse(false);
-    setAic("http://testaic");
-    setQuery("http://testquery");
   }
 
   public String getDescription() {
