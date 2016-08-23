@@ -40,9 +40,9 @@ public class DefaultClock implements Clock {
       @Override
       public void run() {
         try {
-          task.run();
+          timers.remove(name).cancel();
         } finally {
-          timers.remove(name);
+          task.run();
         }
       }
     }, unit.toMillis(time));
