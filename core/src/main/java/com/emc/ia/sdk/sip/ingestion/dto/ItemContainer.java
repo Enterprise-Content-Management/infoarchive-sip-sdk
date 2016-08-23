@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.emc.ia.sdk.support.rest.LinkContainer;
@@ -34,6 +35,7 @@ public class ItemContainer<T extends NamedLinkContainer> extends LinkContainer {
   }
 
   public T byName(String name) {
+    Objects.requireNonNull(name, "Missing name");
     return getItems()
         .filter(item -> name.equals(item.getName()))
         .findAny()
