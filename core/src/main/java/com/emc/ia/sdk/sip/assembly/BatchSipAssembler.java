@@ -106,8 +106,11 @@ public class BatchSipAssembler<D> {
   }
 
   private void startNewSip() throws IOException {
-    current = fileSupplier.get();
-    assembler.start(new FileBuffer(current));
+    File file = fileSupplier.get();
+    assembler.start(new FileBuffer(file));
+    // NOTE: Set *after* [assembler] has started, since we check [current] to determine whether
+    // [assembler] has started.
+    current = file;
   }
 
   /**
