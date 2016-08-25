@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.emc.ia.sdk.sip.ingestion.dto.result.Column.DataType;
+import com.emc.ia.sdk.sip.ingestion.dto.result.Column.DefaultSort;
 import com.emc.ia.sdk.sip.ingestion.dto.result.Column.Type;
 import com.emc.ia.sdk.support.test.RandomData;
 
@@ -51,11 +52,13 @@ public class WhenWorkingWithColumn {
     String label = data.string();
     String path = data.string();
     DataType dataType = DataType.STRING;
-    Column column = Column.fromSchema(name, label, path, dataType);
+    DefaultSort sort = DefaultSort.ASCENDING;
+    Column column = Column.fromSchema(name, label, path, dataType, sort);
     assertEquals(name, column.getName());
     assertEquals(label, column.getLabel());
     assertEquals(path, column.getPath());
     assertEquals(dataType, column.getDataType());
     assertEquals(Type.SCHEMA_COLUMN_NAME, column.getType());
+    assertEquals(sort, column.getDefaultSort());
   }
 }

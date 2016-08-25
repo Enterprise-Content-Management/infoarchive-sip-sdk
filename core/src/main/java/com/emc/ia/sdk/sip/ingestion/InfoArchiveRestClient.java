@@ -81,6 +81,7 @@ import com.emc.ia.sdk.sip.ingestion.dto.query.QueryResult;
 import com.emc.ia.sdk.sip.ingestion.dto.query.SearchQuery;
 import com.emc.ia.sdk.sip.ingestion.dto.result.Column;
 import com.emc.ia.sdk.sip.ingestion.dto.result.Column.DataType;
+import com.emc.ia.sdk.sip.ingestion.dto.result.Column.DefaultSort;
 import com.emc.ia.sdk.sip.ingestion.dto.result.ResultMaster;
 import com.emc.ia.sdk.sip.ingestion.dto.result.searchconfig.AllSearchComponents;
 import com.emc.ia.sdk.support.NewInstance;
@@ -954,7 +955,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     RepeatingConfigReader reader = new RepeatingConfigReader("maincolumns",
         resolveTemplatedKeys(
             Arrays.asList(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL,
-                SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE),
+                SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT),
             searchName, compositionName));
     List<Map<String, String>> columnCfgs = reader.read(configuration);
 
@@ -967,7 +968,10 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
           columnCfg.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName, compositionName));
       DataType dataType = DataType.valueOf(
           columnCfg.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName, compositionName)));
-      Column column = Column.fromSchema(name, label, path, dataType);
+      DefaultSort sortOrder = DefaultSort.valueOf(
+          columnCfg.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT, searchName, compositionName)));
+
+      Column column = Column.fromSchema(name, label, path, dataType, sortOrder);
       columns.add(column);
     }
     return resultMaster;

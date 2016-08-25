@@ -193,13 +193,13 @@ public class Column {
     this.path = path;
   }
 
-  public static Column fromSchema(String name, String label, String path, DataType dataType) {
+  public static Column fromSchema(String name, String label, String path, DataType dataType, DefaultSort sort) {
     Column column = new Column();
     column.setName(name);
     column.setLabel(label);
     column.setPath(path);
     column.setDataType(dataType);
-    column.setDefaultSort(DefaultSort.NONE);
+    column.setDefaultSort(sort);
     column.setSortable(false);
     column.setType(Type.SCHEMA_COLUMN_NAME);
     return column;

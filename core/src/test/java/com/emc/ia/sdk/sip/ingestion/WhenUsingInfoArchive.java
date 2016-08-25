@@ -280,6 +280,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.label", "Sender");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.path", "n:sender/n:email");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.type", "STRING");
+    configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.sort", "NONE");
   }
 
   private <T> OngoingStubbing<T> mockCollection(Class<T> type, T object) throws IOException {
