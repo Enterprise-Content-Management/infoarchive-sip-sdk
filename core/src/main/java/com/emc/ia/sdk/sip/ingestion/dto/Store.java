@@ -9,6 +9,7 @@ public class Store extends NamedLinkContainer {
   private String fileSystemFolder;
   private String type;
   private String status;
+  private String storeType;
 
   public Store() {
     setType("FILESYSTEM");
@@ -37,6 +38,14 @@ public class Store extends NamedLinkContainer {
 
   public final void setStatus(String status) {
     this.status = status;
+  }
+
+  public String getStoreType() {
+    return storeType;
+  }
+
+  public void setStoreType(String storeType) {
+    this.storeType = storeType;
   }
 
 }

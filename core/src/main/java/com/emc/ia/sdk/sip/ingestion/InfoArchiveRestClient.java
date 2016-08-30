@@ -108,7 +108,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private static final String RECEIVER_NODE_NAME = "receiver_node_01";
   private static final String INGEST_NAME = "ingest";
   private static final String INGEST_NODE_NAME = "ingest_node_01";
-  private static final String STORE_NAME = "filestore_01";
+  private static final String DEFAULT_STORE_NAME = "filestore_01";
   private static final String DEFAULT_RESULT_HELPER_NAME = "result_helper";
 
   private final RestCache configurationState = new RestCache();
@@ -356,7 +356,21 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   private void ensureFileSystemFolder() throws IOException {
-    String name = configured(HOLDING_NAME);
+    // Create the default file system folder.
+    FileSystemFolder defaultFolder = ensureFileSystemFolder(configured(HOLDING_NAME));
+    configurationState.setFileSystemFolderUri(defaultFolder.getSelfUri());
+
+    // Any extra folders
+    String rawFolderNames = configuration.get(FILE_SYSTEM_FOLDER);
+    if (rawFolderNames != null && !rawFolderNames.isEmpty()) {
+      String[] folderNames = rawFolderNames.split(",");
+      for (String folderName : folderNames) {
+        ensureFileSystemFolder(folderName.trim());
+      }
+    }
+  }
+
+  private FileSystemFolder ensureFileSystemFolder(String name) throws IOException {
     FileSystemFolders fileSystemFolders =
         restClient.follow(configurationState.getSpaceRootFolder(), LINK_FILE_SYSTEM_FOLDERS, FileSystemFolders.class);
     FileSystemFolder fileSystemFolder = fileSystemFolders.byName(name);
@@ -364,9 +378,10 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       createItem(fileSystemFolders, createFileSystemFolder(name));
       fileSystemFolder = restClient.refresh(fileSystemFolders)
         .byName(name);
-      Objects.requireNonNull(fileSystemFolder, "Could not create file system folder");
+      Objects.requireNonNull(fileSystemFolder, "Could not create file system folder " + name);
     }
-    configurationState.setFileSystemFolderUri(fileSystemFolder.getSelfUri());
+    configurationState.setObjectUri("filesystemfolder", name, fileSystemFolder.getSelfUri());
+    return fileSystemFolder;
   }
 
   private FileSystemFolder createFileSystemFolder(String name) {
@@ -374,28 +389,45 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     result.setName(name);
     result.setParentSpaceRootFolder(configurationState.getSpaceRootFolder()
       .getSelfUri());
-    result.setSubPath("stores/" + STORE_NAME);
+    result.setSubPath("stores/" + DEFAULT_STORE_NAME);
     return result;
   }
 
   private void ensureStore() throws IOException {
-    String name = STORE_NAME;
+    Store defaultStore = ensureStore(DEFAULT_STORE_NAME, null, configurationState.getFileSystemFolderUri());
+    configurationState.setStoreUri(defaultStore.getSelfUri());
+
+    RepeatingConfigReader reader =
+        new RepeatingConfigReader("stores", Arrays.asList(STORE_NAME, STORE_FOLDER, STORE_STORETYPE));
+
+    List<Map<String, String>> storeConfigurations = reader.read(configuration);
+    for (Map<String, String> cfg : storeConfigurations) {
+      ensureStore(cfg.get(STORE_NAME), cfg.get(STORE_STORETYPE),
+          configurationState.getObjectUri("filesystemfolder", cfg.get(STORE_FOLDER)));
+    }
+  }
+
+  private Store ensureStore(String name, String storeType, String fileSystemFolderUri) throws IOException {
     Stores stores = restClient.follow(configurationState.getApplication(), LINK_STORES, Stores.class);
     Store store = stores.byName(name);
     if (store == null) {
-      createItem(stores, createStore(name));
+      createItem(stores, createStore(name, storeType, fileSystemFolderUri));
       store = restClient.refresh(stores)
         .byName(name);
       Objects.requireNonNull(store, "Could not create store");
     }
-    configurationState.setStoreUri(store.getSelfUri());
+    configurationState.setObjectUri("store", name, store.getSelfUri());
+    return store;
   }
 
-  private Store createStore(String name) {
-    Store result = new Store();
-    result.setName(name);
-    result.setFileSystemFolder(configurationState.getFileSystemFolderUri());
-    return result;
+  private Store createStore(String storeName, String storeType, String fileSystemFolderUri) {
+    Store store = new Store();
+    store.setName(storeName);
+    if (storeType != null && !storeType.isEmpty()) {
+      store.setStoreType(storeType);
+    }
+    store.setFileSystemFolder(fileSystemFolderUri);
+    return store;
   }
 
   private void ensureReceptionFolder() throws IOException {
@@ -953,10 +985,10 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       .getColumns();
 
     RepeatingConfigReader reader = new RepeatingConfigReader("maincolumns",
-        resolveTemplatedKeys(
-            Arrays.asList(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL,
-                SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT),
-            searchName, compositionName));
+        resolveTemplatedKeys(Arrays.asList(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME,
+            SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH,
+            SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT), searchName,
+            compositionName));
     List<Map<String, String>> columnCfgs = reader.read(configuration);
 
     for (Map<String, String> columnCfg : columnCfgs) {

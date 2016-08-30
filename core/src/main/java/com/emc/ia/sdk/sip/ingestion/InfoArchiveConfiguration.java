@@ -30,6 +30,12 @@ public interface InfoArchiveConfiguration {
   String HOLDING_PREFIX = PREFIX + "holding.";
   String HOLDING_NAME = HOLDING_PREFIX + NAME;
 
+  String FILE_SYSTEM_FOLDER = "filesystemfolder.name";
+
+  String STORE_NAME = "store.name";
+  String STORE_STORETYPE = "store.storetype";
+  String STORE_FOLDER = "store.folder";
+
   String AIC_PREFIX = PREFIX + "aic.";
   String AIC_NAME = AIC_PREFIX + NAME;
 

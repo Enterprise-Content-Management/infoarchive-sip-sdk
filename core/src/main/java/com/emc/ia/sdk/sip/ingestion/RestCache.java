@@ -49,6 +49,15 @@ class RestCache { // NOPMD TooManyFields
 
   private final Map<String, String> aicUriByName = new HashMap<>();
   private final Map<String, String> queryUriByName = new HashMap<>();
+  private final Map<String, String> objectUriByTypeAndName = new HashMap<>();
+
+  public void setObjectUri(String type, String name, String uri) {
+    objectUriByTypeAndName.put(type + "." + name, uri);
+  }
+
+  public String getObjectUri(String type, String name) {
+    return objectUriByTypeAndName.get(type + "." + name);
+  }
 
   public String getAicUri() {
     return aicUri;
