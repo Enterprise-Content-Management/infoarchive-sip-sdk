@@ -5,11 +5,7 @@ package com.emc.ia.sdk.sip.assembly;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
 import java.util.Map;
-
-import com.emc.ia.sdk.support.io.EncodedHash;
-
 
 /**
  * Assemble a PDI using a {@linkplain Template}.
@@ -19,17 +15,19 @@ public class TemplatePdiAssembler<D> extends PdiAssembler<D> {
 
   private final Template<D> template;
 
-  /** Create an instance that doesn't validate the PDI.
-  * @param template The template to use
-  */
+  /**
+   * Create an instance that doesn't validate the PDI.
+   * @param template The template to use
+   */
   public TemplatePdiAssembler(Template<D> template) {
     this(template, null);
   }
 
-  /** Create an instance.
-  * @param template The template to use
-  * @param validator Optional validator to check the assembled product
-  */
+  /**
+   * Create an instance.
+   * @param template The template to use
+   * @param validator Optional validator to check the assembled product
+   */
   public TemplatePdiAssembler(Template<D> template, Validator validator) {
     super(validator);
     this.template = template;
@@ -41,9 +39,9 @@ public class TemplatePdiAssembler<D> extends PdiAssembler<D> {
   }
 
   @Override
-  protected final void add(D domainObject, Map<String, Collection<EncodedHash>> hashes, PrintWriter writer)
+  protected final void add(D domainObject, Map<String, ContentInfo> contentInfo, PrintWriter writer)
       throws IOException {
-    template.writeRow(domainObject, hashes, writer);
+    template.writeRow(domainObject, contentInfo, writer);
   }
 
   @Override

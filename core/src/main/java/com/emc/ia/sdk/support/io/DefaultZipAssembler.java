@@ -30,23 +30,9 @@ public class DefaultZipAssembler implements ZipAssembler {
       throws IOException {
     hashAssembler.initialize();
     zip.putNextEntry(new ZipEntry(name));
-    copyStream(stream, hashAssembler);
+    IOStreams.copy(stream, zip, BUFFER_SIZE, hashAssembler);
     zip.closeEntry();
     return hashAssembler.get();
-  }
-
-  private void copyStream(InputStream stream, HashAssembler hashAssembler) throws IOException {
-    byte[] buffer = new byte[BUFFER_SIZE];
-    int numRead = stream.read(buffer);
-    if (numRead == 0) {
-      throw new IllegalArgumentException("Missing content");
-    }
-    while (numRead > 0) {
-      zip.write(buffer, 0, numRead);
-      hashAssembler.add(buffer, numRead);
-
-      numRead = stream.read(buffer);
-    }
   }
 
   /**

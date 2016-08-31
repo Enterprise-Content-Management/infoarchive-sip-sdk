@@ -68,10 +68,10 @@ public class WhenAssemblingSips extends XmlTestCase {
     when(contentHashAssembler.get()).thenAnswer(invocation -> hashes.next());
     long digitalObjectSize = randomInt(5, 255);
     when(contentHashAssembler.numBytesHashed()).thenReturn(digitalObjectSize);
-    Map<String, Collection<EncodedHash>> hashesById1 = new HashMap<>();
-    hashesById1.put(id1a, hashes1a);
-    hashesById1.put(id1b, hashes1b);
-    Map<String, Collection<EncodedHash>> hashesById2 = Collections.singletonMap(id2, hashes2);
+    Map<String, ContentInfo> hashesById1 = new HashMap<>();
+    hashesById1.put(id1a, new ContentInfo(id1a, hashes1a));
+    hashesById1.put(id1b, new ContentInfo(id1b, hashes1b));
+    Map<String, ContentInfo> hashesById2 = Collections.singletonMap(id2, new ContentInfo(id2, hashes2));
     PackagingInformation packagingInformationPrototype = somePackagingInformation();
     SipAssembler<Object> sipAssembler = SipAssembler.forPdiAndContentWithHashing(
         packagingInformationPrototype, pdiAssembler, pdiHashAssembler, contentsExtraction, contentHashAssembler);
@@ -204,7 +204,7 @@ public class WhenAssemblingSips extends XmlTestCase {
     Assembler<HashedContents<Object>> pdiAssembler = mock(Assembler.class);
     SipAssembler<Object> sipAssembler = new SipAssembler<>(
         new DefaultPackagingInformationFactory(somePackagingInformation()), pdiAssembler, noHashAssembler,
-        () -> pdiBuffer, domainObject -> Collections.emptyIterator(), noHashAssembler);
+        () -> pdiBuffer, ContentAssembler.noDedup(domainObject -> Collections.emptyIterator(), noHashAssembler));
 
     sipAssembler.start(new MemoryBuffer());
     sipAssembler.add(new Object());

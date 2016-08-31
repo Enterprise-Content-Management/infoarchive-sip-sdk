@@ -3,15 +3,9 @@
  */
 package com.emc.ia.sdk.sip.assembly;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
-
-import com.emc.ia.sdk.support.io.EncodedHash;
-
 
 /**
  * Hashes of zero or more contents extracted from some source.
@@ -20,16 +14,16 @@ import com.emc.ia.sdk.support.io.EncodedHash;
 public class HashedContents<S> {
 
   private final S source;
-  private final Map<String, Collection<EncodedHash>> contentHashes = new TreeMap<>();
+  private final Map<String, ContentInfo> contentInfo;
 
   /**
    * Store the hashes of a given source's contents.
    * @param source The source from which the contents was extracted
-   * @param contentHashes The hashes of the source's contents
+   * @param contentInfo The reference information and the hashes of the source's contents
    */
-  public HashedContents(S source, Map<String, Collection<EncodedHash>> contentHashes) {
+  public HashedContents(S source, Map<String, ContentInfo> contentInfo) {
     this.source = Objects.requireNonNull(source);
-    this.contentHashes.putAll(Objects.requireNonNull(contentHashes));
+    this.contentInfo = Objects.requireNonNull(contentInfo);
   }
 
   /**
@@ -41,20 +35,12 @@ public class HashedContents<S> {
   }
 
   /**
-   * Return the hashes of the contents extracted from the source.
-   * @return The hashes of the contents extracted from the source
-   */
-  public Map<String, Collection<EncodedHash>> getContentHashes() {
-    return Collections.unmodifiableMap(contentHashes);
-  }
-
-  /**
    * Return a hash code value for this object.
    * @return A hash code value for this object
    */
   @Override
   public int hashCode() {
-    return Objects.hash(source, contentHashes);
+    return Objects.hash(source, getContentInfo());
   }
 
   /**
@@ -69,7 +55,7 @@ public class HashedContents<S> {
     }
     @SuppressWarnings("unchecked")
     HashedContents<S> other = (HashedContents<S>)obj;
-    return source.equals(other.source) && contentHashes.equals(other.contentHashes);
+    return source.equals(other.source) && getContentInfo().equals(other.getContentInfo());
   }
 
   /**
@@ -78,9 +64,15 @@ public class HashedContents<S> {
    */
   @Override
   public String toString() {
-    return source + " with content hashes\n" + contentHashes.entrySet().stream()
-        .map(e -> "- " + e.getKey() + "=" + e.getValue())
-        .collect(Collectors.joining("\n"));
+    return source + " with contents " + getContentInfo().entrySet()
+      .stream()
+      .map(e -> "- " + e.getKey() + "=" + e.getValue())
+      .collect(Collectors.joining("\n"));
+
+  }
+
+  public Map<String, ContentInfo> getContentInfo() {
+    return contentInfo;
   }
 
 }

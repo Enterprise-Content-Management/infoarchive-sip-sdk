@@ -37,8 +37,9 @@ subprojects {
     jacksonCore
     jacksonDatabind
     validation
+    xmlunit
 
-    testCompile.extendsFrom junit, mockito
+    testCompile.extendsFrom junit, mockito, xmlunit
   }
 
   dependencies {
@@ -54,6 +55,7 @@ subprojects {
     junit "junit:junit:$junitVersion"
     mockito "org.mockito:mockito-core:$mockitoVersion"
     validation "javax.validation:validation-api:$validationVersion"
+    xmlunit "org.xmlunit:xmlunit-core:$xmlunitVersion"
   }
 
 

@@ -6,7 +6,6 @@ package com.emc.ia.sip.assembly.velocity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Collection;
 import java.util.Map;
 
 import org.apache.velocity.Template;
@@ -16,9 +15,9 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 
+import com.emc.ia.sdk.sip.assembly.ContentInfo;
 import com.emc.ia.sdk.sip.assembly.DigitalObject;
 import com.emc.ia.sdk.sip.assembly.FixedHeaderAndFooterTemplate;
-import com.emc.ia.sdk.support.io.EncodedHash;
 
 
 /**
@@ -69,12 +68,12 @@ public class VelocityTemplate<D> extends FixedHeaderAndFooterTemplate<D> {
   }
 
   @Override
-  public void writeRow(D domainObject, Map<String, Collection<EncodedHash>> hashes, PrintWriter writer)
+  public void writeRow(D domainObject, Map<String, ContentInfo> contentInfo, PrintWriter writer)
       throws IOException {
     VelocityContext context = new VelocityContext();
     context.put("isodate", new DatesTool());
     context.put("model", domainObject);
-    context.put("hashes", hashes);
+    context.put("content", contentInfo);
     template.merge(context, writer);
   }
 

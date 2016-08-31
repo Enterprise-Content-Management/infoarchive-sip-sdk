@@ -5,10 +5,7 @@ package com.emc.ia.sdk.sip.assembly;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
 import java.util.Map;
-
-import com.emc.ia.sdk.support.io.EncodedHash;
 
 
 /**
@@ -27,17 +24,17 @@ public abstract class PdiAssembler<D> extends PrintWriterAssembler<HashedContent
 
   @Override
   protected final void add(HashedContents<D> hashedContents, PrintWriter writer) throws IOException {
-    add(hashedContents.getSource(), hashedContents.getContentHashes(), writer);
+    add(hashedContents.getSource(), hashedContents.getContentInfo(), writer);
   }
 
   /**
    * Add a domain object.
    * @param domainObject The domain object to add
-   * @param contentHashes The encoded hashes of the content associated with the domain object
+   * @param contentInfo The reference information and the encoded hashes of the content associated with the domain object
    * @param writer The writer to print the PDI fragment to
    * @throws IOException When an I/O error occures
    */
-  protected abstract void add(D domainObject, Map<String, Collection<EncodedHash>> contentHashes, PrintWriter writer)
+  protected abstract void add(D domainObject, Map<String, ContentInfo> contentInfo, PrintWriter writer)
       throws IOException;
 
 }

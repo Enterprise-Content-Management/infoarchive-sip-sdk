@@ -3,9 +3,10 @@
  */
 package com.emc.ia.sdk.support.io;
 
+import java.util.Objects;
 
 /**
- * Result of a {@linkplain HashFunction hash function} applied to some  binary data, {@linkplain Encoding encoded} in
+ * Result of a {@linkplain HashFunction hash function} applied to some binary data, {@linkplain Encoding encoded} in
  * ASCII form. An encoded hash can serve as a
  * <a href="http://public.ccsds.org/publications/archive/650x0m2.pdf">Transformational Information Property</a>.
  */
@@ -58,6 +59,29 @@ public class EncodedHash {
   @Override
   public String toString() {
     return encoding + "(" + hashFunction + "(...)) = " + value;
+  }
+
+  /**
+   * Return a hash code value for this object.
+   * @return A hash code value for this object
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashFunction, encoding, value);
+  }
+
+  /**
+   * Indicates whether some other object is "equal to" this one.
+   * @param obj The reference object with which to compare
+   * @return <code>true</code> if this object is the same as the reference object; <code>false</code> otherwise
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    EncodedHash other = (EncodedHash)obj;
+    return value.equals(other.value) && hashFunction.equals(other.hashFunction) && encoding.equals(other.encoding);
   }
 
 }

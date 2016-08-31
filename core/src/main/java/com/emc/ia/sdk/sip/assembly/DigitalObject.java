@@ -97,4 +97,9 @@ public interface DigitalObject extends Supplier<InputStream> {
     return fromBytes(referenceInformation, value.getBytes(charset));
   }
 
+
+
+  static DigitalObject fromResource(String referenceInformation, Class<?> type, String resourceName) {
+    return fromSupplier(referenceInformation, () -> type.getResourceAsStream(resourceName));
+  }
 }

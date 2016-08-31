@@ -4,19 +4,19 @@
 package com.emc.ia.sdk.sip.assembly;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
 
-import com.emc.ia.sdk.support.io.EncodedHash;
 import com.emc.ia.sdk.support.io.MemoryBuffer;
 import com.emc.ia.sdk.support.test.TestCase;
 
@@ -34,7 +34,7 @@ public class WhenAssemblingFromTemplate extends TestCase {
     Template<Map<String, ? extends Object>> template = new FixedHeaderAndFooterTemplate<Map<String, ? extends Object>>(
         header, footer) {
       @Override
-      public void writeRow(Map<String, ? extends Object> values, Map<String, Collection<EncodedHash>> hashes,
+      public void writeRow(Map<String, ? extends Object> values, Map<String, ContentInfo> contentInfo,
           PrintWriter writer) {
       }
     };
