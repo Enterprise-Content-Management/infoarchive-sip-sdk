@@ -20,6 +20,9 @@ public class ContentInfo {
   private final String mimeType;
 
   /**
+   * Construct a new instance.
+   * @param referenceInformation The identifying information of the content
+   * @param contentHashes Any hashes over the content
    * @deprecated Use {@linkplain #ContentInfo(String, String, Collection)} instead.
    */
   @Deprecated
@@ -27,6 +30,12 @@ public class ContentInfo {
     this(referenceInformation, "application/octet-stream", contentHashes);
   }
 
+  /**
+   * Construct a new instance.
+   * @param referenceInformation The identifying information of the content
+   * @param mimeType The MIME type of the content
+   * @param contentHashes Any hashes over the content
+   */
   public ContentInfo(String referenceInformation, String mimeType, Collection<EncodedHash> contentHashes) {
     this.referenceInformation = Objects.requireNonNull(referenceInformation, "Missing reference information");
     this.mimeType = Objects.requireNonNull(mimeType, "Missing MIME type");
