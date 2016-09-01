@@ -50,4 +50,12 @@ public interface ArchiveClient {
    * @throws IOException When an I/O error occurs
    */
   SearchResults search(String searchName, String searchData, SearchOptions options) throws IOException;
+
+  /**
+   * Fetch the content for the specified content id.
+   * @param contentId The id of the content to fetch.
+   * @return A ContentResult
+   * @throws IOException When an I/O error occurs
+   */
+  ContentResult fetchContent(String contentId) throws IOException;
 }

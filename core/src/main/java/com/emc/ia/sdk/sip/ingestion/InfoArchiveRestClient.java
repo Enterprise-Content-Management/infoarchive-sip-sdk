@@ -6,6 +6,8 @@ package com.emc.ia.sdk.sip.ingestion;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.apache.http.client.utils.URIBuilder;
 
 import com.emc.ia.sdk.sip.ingestion.dto.Aic;
 import com.emc.ia.sdk.sip.ingestion.dto.Aics;
@@ -1054,6 +1058,19 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       .getSelfUri();
     Objects.requireNonNull(compositionUri, "Did you forget to call configure()?");
     return restClient.post(compositionUri, searchData, SearchResults.class);
+  }
+
+  @Override
+  public ContentResult fetchContent(String contentId) throws IOException {
+    try {
+      String contentResource = configurationState.getContentUri();
+      final URIBuilder builder = new URIBuilder(contentResource);
+      builder.setParameter("cid", contentId);
+      final URI uri = builder.build();
+      return restClient.get(uri.toString(), new ContentResultFactory());
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Failed to create content resource uri.", e);
+    }
   }
 
 }

@@ -22,6 +22,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
   private final HttpClient httpClient;
   private final JsonFormatter formatter = new JsonFormatter();
   private final Collection<Header> headers = new ArrayList<Header>();
+  private final Collection<Header> headersNoFormat = new ArrayList<Header>();
 
   public RestClient(HttpClient client) {
     this.httpClient = Objects.requireNonNull(client, "Missing HTTP client");
@@ -29,6 +30,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
 
   public void init(String bearerToken) {
     headers.add(new Header("Authorization", "Bearer " + bearerToken));
+    headersNoFormat.add(new Header("Authorization", "Bearer " + bearerToken));
     headers.add(new Header("Accept", MediaTypes.HAL));
   }
 
@@ -41,7 +43,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   public <T> T get(String uri, ResponseFactory<T> factory) throws IOException {
-    return httpClient.get(uri, headers, factory);
+    return httpClient.get(uri, headersNoFormat, factory);
   }
 
   public <T> T put(String uri, Class<T> type) throws IOException {

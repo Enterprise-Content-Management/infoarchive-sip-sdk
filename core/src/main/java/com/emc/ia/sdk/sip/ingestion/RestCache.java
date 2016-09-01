@@ -275,4 +275,8 @@ class RestCache { // NOPMD TooManyFields
     aicUriByName.put(name, uri);
   }
 
+  public String getContentUri() {
+    return application.getUri(InfoArchiveLinkRelations.LINK_CI);
+  }
+
 }
