@@ -42,7 +42,7 @@ public class ContentAssemblerWithDedupOnHash<D> extends ContentAssemblerDefault<
   }
 
   @Override
-  protected ContentInfo addContent(String ri, DigitalObject digitalObject) throws IOException {
+  protected ContentInfo addContent(DigitalObject digitalObject) throws IOException {
     RepeatableInputStream memoryStream = memoryStreamOf(digitalObject);
     // First compute hashes
     Collection<EncodedHash> hashes = contentHashFor(memoryStream);
@@ -55,9 +55,9 @@ public class ContentAssemblerWithDedupOnHash<D> extends ContentAssemblerDefault<
     }
 
     try (InputStream stream = memoryStream.get()) {
-      getZip().addEntry(ri, stream, noHashAssembler);
+      getZip().addEntry(digitalObject.getReferenceInformation(), stream, noHashAssembler);
       getMetrics().inc(SipMetrics.SIZE_DIGITAL_OBJECTS, getContentHashAssembler().numBytesHashed());
-      contentInfo = new ContentInfo(ri, hashes);
+      contentInfo = new ContentInfo(digitalObject.getReferenceInformation(), digitalObject.getMimeType(), hashes);
       hashesToContentInfo.put(hashes, contentInfo);
     }
     return contentInfo;

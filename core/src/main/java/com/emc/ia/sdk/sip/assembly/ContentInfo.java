@@ -17,9 +17,19 @@ public class ContentInfo {
 
   private final Collection<EncodedHash> contentHashes;
   private final String referenceInformation;
+  private final String mimeType;
 
+  /**
+   * @deprecated Use {@linkplain #ContentInfo(String, String, Collection)} instead.
+   */
+  @Deprecated
   public ContentInfo(String referenceInformation, Collection<EncodedHash> contentHashes) {
-    this.referenceInformation = Objects.requireNonNull(referenceInformation);
+    this(referenceInformation, "application/octet-stream", contentHashes);
+  }
+
+  public ContentInfo(String referenceInformation, String mimeType, Collection<EncodedHash> contentHashes) {
+    this.referenceInformation = Objects.requireNonNull(referenceInformation, "Missing reference information");
+    this.mimeType = Objects.requireNonNull(mimeType, "Missing MIME type");
     this.contentHashes = Collections.unmodifiableList(new ArrayList<EncodedHash>(contentHashes));
   }
 
@@ -35,13 +45,17 @@ public class ContentInfo {
     return referenceInformation;
   }
 
+  public String getMimeType() {
+    return mimeType;
+  }
+
   /**
    * Return a hash code value for this object.
    * @return A hash code value for this object
    */
   @Override
   public int hashCode() {
-    return Objects.hash(referenceInformation, contentHashes);
+    return Objects.hash(referenceInformation, mimeType, contentHashes);
   }
 
   /**
@@ -55,7 +69,8 @@ public class ContentInfo {
       return false;
     }
     ContentInfo other = (ContentInfo)obj;
-    return referenceInformation.equals(other.referenceInformation) && contentHashes.equals(other.contentHashes);
+    return referenceInformation.equals(other.referenceInformation) && mimeType.equals(other.mimeType)
+        && contentHashes.equals(other.contentHashes);
   }
 
   /**
@@ -64,7 +79,7 @@ public class ContentInfo {
    */
   @Override
   public String toString() {
-    return referenceInformation + " and content hashes " + contentHashes;
+    return referenceInformation + " (" + mimeType + ") is hashed as " + contentHashes;
   }
 
 }
