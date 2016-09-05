@@ -30,8 +30,11 @@ public class DefaultZipAssembler implements ZipAssembler {
       throws IOException {
     hashAssembler.initialize();
     zip.putNextEntry(new ZipEntry(name));
-    IOStreams.copy(stream, zip, BUFFER_SIZE, hashAssembler);
-    zip.closeEntry();
+    try {
+      IOStreams.copy(stream, zip, BUFFER_SIZE, hashAssembler);
+    } finally {
+      zip.closeEntry();
+    }
     return hashAssembler.get();
   }
 
