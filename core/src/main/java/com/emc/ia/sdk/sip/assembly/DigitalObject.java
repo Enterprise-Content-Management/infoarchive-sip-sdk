@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.emc.ia.sdk.support.io.RuntimeIoException;
@@ -73,6 +74,7 @@ public interface DigitalObject extends Supplier<InputStream> {
    * @return The newly created {@linkplain DigitalObject}
    */
   static DigitalObject fromSupplier(String referenceInformation, String mimeType, Supplier<InputStream> supplier) {
+    Objects.requireNonNull(referenceInformation, "Missing reference information");
     return new DigitalObject() {
       @Override
       public InputStream get() {
