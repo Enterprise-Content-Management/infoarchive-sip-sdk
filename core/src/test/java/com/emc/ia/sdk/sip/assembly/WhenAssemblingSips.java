@@ -44,7 +44,6 @@ import com.emc.ia.sdk.support.xml.XmlUtil;
 public class WhenAssemblingSips extends XmlTestCase {
 
   private static final float DELTA_MS = 10f;
-  private static final String MIME_TYPE = "application/octet-stream";
 
   @Test
   public void shouldZipContentsAndReportMetrics() throws IOException {
@@ -76,9 +75,9 @@ public class WhenAssemblingSips extends XmlTestCase {
     long digitalObjectSize = randomInt(5, 255);
     when(contentHashAssembler.numBytesHashed()).thenReturn(digitalObjectSize);
     Map<String, ContentInfo> hashesById1 = new HashMap<>();
-    hashesById1.put(id1a, new ContentInfo(id1a, MIME_TYPE, hashes1a));
-    hashesById1.put(id1b, new ContentInfo(id1b, MIME_TYPE, hashes1b));
-    Map<String, ContentInfo> hashesById2 = Collections.singletonMap(id2, new ContentInfo(id2, MIME_TYPE, hashes2));
+    hashesById1.put(id1a, new ContentInfo(id1a, hashes1a));
+    hashesById1.put(id1b, new ContentInfo(id1b, hashes1b));
+    Map<String, ContentInfo> hashesById2 = Collections.singletonMap(id2, new ContentInfo(id2, hashes2));
     PackagingInformation packagingInformationPrototype = somePackagingInformation();
     SipAssembler<Object> sipAssembler = SipAssembler.forPdiAndContentWithHashing(packagingInformationPrototype,
         pdiAssembler, pdiHashAssembler, contentsExtraction, contentHashAssembler);
@@ -143,7 +142,6 @@ public class WhenAssemblingSips extends XmlTestCase {
   private DigitalObject someContentDataObject(String id) {
     DigitalObject result = mock(DigitalObject.class);
     when(result.getReferenceInformation()).thenReturn(id);
-    when(result.getMimeType()).thenReturn("application/octet-stream");
     when(result.get()).thenReturn(new ByteArrayInputStream(randomBytes()));
     return result;
   }

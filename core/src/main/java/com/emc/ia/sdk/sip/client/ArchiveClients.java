@@ -78,6 +78,17 @@ public final class ArchiveClients {
   }
 
   /**
+   * Creates a new ArchiveClient instance without installing any artifacts in the archive using the default RestClient.
+   * @param billboardUrl The URL entry point to the InfoArchive REST api.
+   * @param applicationName The name of the application to create the ArchiveClient for.
+   * @return An ArchiveClient
+   */
+  public static ArchiveClient client(String billboardUrl, String applicationName) {
+    RestClient restClient = new RestClient(new ApacheHttpClient());
+    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, billboardUrl, applicationName));
+  }
+
+  /**
    * Creates a new ArchiveClient instance without installing any artifacts in the archive.
    * @param restClient The RestClient used to interact with the InfoArchive REST api.
    * @param billboardUrl The URL entry point to the InfoArchive REST api.

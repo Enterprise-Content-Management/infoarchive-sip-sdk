@@ -67,17 +67,17 @@ public class ContentAssemblerDefault<D> implements ContentAssembler<D> {
       DigitalObject digitalObject = digitalObjects.next();
       metrics.inc(SipMetrics.NUM_DIGITAL_OBJECTS);
       String entry = digitalObject.getReferenceInformation();
-      result.put(entry, addContent(digitalObject));
+      result.put(entry, addContent(entry, digitalObject));
     }
     return result;
   }
 
-  protected ContentInfo addContent(DigitalObject digitalObject) throws IOException {
+  protected ContentInfo addContent(String ri, DigitalObject digitalObject) throws IOException {
     try (InputStream stream = digitalObject.get()) {
       Collection<EncodedHash> hashes =
           zip.addEntry(digitalObject.getReferenceInformation(), stream, contentHashAssembler);
       metrics.inc(SipMetrics.SIZE_DIGITAL_OBJECTS, contentHashAssembler.numBytesHashed());
-      return new ContentInfo(digitalObject.getReferenceInformation(), digitalObject.getMimeType(), hashes);
+      return new ContentInfo(ri, hashes);
     }
   }
 

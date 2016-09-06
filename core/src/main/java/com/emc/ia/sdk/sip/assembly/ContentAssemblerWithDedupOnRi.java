@@ -44,16 +44,16 @@ public class ContentAssemblerWithDedupOnRi<D> extends ContentAssemblerDefault<D>
   }
 
   @Override
-  protected ContentInfo addContent(DigitalObject digitalObject) throws IOException {
-    ContentInfo contentInfo = riToContentInfo.get(digitalObject.getReferenceInformation());
+  protected ContentInfo addContent(String ri, DigitalObject digitalObject) throws IOException {
+    ContentInfo contentInfo = riToContentInfo.get(ri);
     if (contentInfo == null) {
-      ContentInfo newContentInfo = super.addContent(digitalObject);
+      ContentInfo newContentInfo = super.addContent(ri, digitalObject);
       checkNotAlreadyIncluded(newContentInfo);
-      riToContentInfo.put(digitalObject.getReferenceInformation(), newContentInfo);
-      hashesToRi.put(newContentInfo.getContentHashes(), digitalObject.getReferenceInformation());
+      riToContentInfo.put(ri, newContentInfo);
+      hashesToRi.put(newContentInfo.getContentHashes(), ri);
       return newContentInfo;
     } else {
-      checkSameRIMeansSameContent(digitalObject, contentInfo.getContentHashes());
+      checkSameRIMeansSameContent(ri, digitalObject, contentInfo.getContentHashes());
       return contentInfo;
     }
   }
@@ -67,13 +67,13 @@ public class ContentAssemblerWithDedupOnRi<D> extends ContentAssemblerDefault<D>
     }
   }
 
-  private void checkSameRIMeansSameContent(DigitalObject digitalObject, Collection<EncodedHash> existingHashes)
-      throws IOException {
+  private void checkSameRIMeansSameContent(String ri, DigitalObject digitalObject,
+      Collection<EncodedHash> existingHashes) throws IOException {
     if (errorWhenEqualRiAndNotEqualHash) {
       Collection<EncodedHash> hashes = contentHashFor(digitalObject);
       if (!hashes.equals(existingHashes)) {
-        throw new IllegalStateException("The same reference information (" + digitalObject.getReferenceInformation()
-            + ") was used to reference 2 distinct digital objects.");
+        throw new IllegalStateException(
+            "The same reference information (" + ri + ") was used to reference 2 distinct digital objects.");
       }
     }
   }
