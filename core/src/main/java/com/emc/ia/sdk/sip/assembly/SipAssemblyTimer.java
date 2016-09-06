@@ -8,7 +8,6 @@ import java.util.function.Consumer;
 import com.emc.ia.sdk.support.datetime.Clock;
 import com.emc.ia.sdk.support.datetime.DefaultClock;
 
-
 public class SipAssemblyTimer {
 
   private final long millis;

@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-
 /**
  * Several ways of supplying files.
  */
@@ -29,7 +28,8 @@ public final class FileSupplier {
 
   private static File tempDirectory() {
     try {
-      return Files.createTempDirectory(null).toFile();
+      return Files.createTempDirectory(null)
+        .toFile();
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
@@ -45,7 +45,8 @@ public final class FileSupplier {
   }
 
   private static File createFileIn(File dir) {
-    return new File(ensureDir(dir), UUID.randomUUID().toString());
+    return new File(ensureDir(dir), UUID.randomUUID()
+      .toString());
   }
 
   private static File ensureDir(File dir) {
@@ -64,6 +65,7 @@ public final class FileSupplier {
    */
   public static Supplier<File> fromDirectory(File dir, String prefix, String suffix) {
     return new Supplier<File>() {
+
       private int count;
 
       @Override

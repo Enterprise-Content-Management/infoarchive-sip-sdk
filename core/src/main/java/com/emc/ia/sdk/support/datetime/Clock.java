@@ -5,7 +5,6 @@ package com.emc.ia.sdk.support.datetime;
 
 import java.util.concurrent.TimeUnit;
 
-
 /**
  * Time-telling device.
  */
@@ -34,8 +33,8 @@ public interface Clock {
   void schedule(String name, long time, TimeUnit unit, Runnable task);
 
   /**
-   *  Cancel a scheduled job.
-   *  @param name The name of the scheduled task, as given to {@linkplain #schedule(String, long, TimeUnit, Runnable)}
+   * Cancel a scheduled job.
+   * @param name The name of the scheduled task, as given to {@linkplain #schedule(String, long, TimeUnit, Runnable)}
    */
   void cancel(String name);
 

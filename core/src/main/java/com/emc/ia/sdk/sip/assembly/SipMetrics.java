@@ -3,7 +3,6 @@
  */
 package com.emc.ia.sdk.sip.assembly;
 
-
 /**
  * Metrics about the {@linkplain SipAssembler SIP assembly process}.
  */

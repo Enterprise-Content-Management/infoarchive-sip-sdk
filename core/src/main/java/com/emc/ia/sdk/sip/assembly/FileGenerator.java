@@ -13,7 +13,6 @@ import java.util.function.Supplier;
 import com.emc.ia.sdk.support.io.FileBuffer;
 import com.emc.ia.sdk.support.io.FileSupplier;
 
-
 /**
  * {@linkplain #generate(Iterable) Generate} a file by {@linkplain Assembler assembling} components.
  * @param <C> The type of components to assemble

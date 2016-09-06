@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-
 /**
  * Buffer that stores data in a file.
  */
@@ -28,7 +27,8 @@ public class FileBuffer implements DataBuffer {
 
   private static File tempFile() {
     try {
-      return Files.createTempFile(null, null).toFile();
+      return Files.createTempFile(null, null)
+        .toFile();
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }

@@ -3,12 +3,12 @@
  */
 package com.emc.ia.sdk.support.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import org.junit.Test;
-
 
 public class WhenHandlingIoExceptions {
 

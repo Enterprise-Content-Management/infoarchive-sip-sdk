@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import com.emc.ia.sdk.support.test.RandomData;
 
-
 public class WhenReadingRepeatableInputStreamMultipleTimes {
 
   private final RandomData random = new RandomData();

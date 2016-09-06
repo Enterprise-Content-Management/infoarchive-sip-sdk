@@ -4,8 +4,12 @@
 package com.emc.ia.sdk.support.rest;
 
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +24,6 @@ import com.emc.ia.sdk.support.http.MediaTypes;
 import com.emc.ia.sdk.support.http.UriBuilder;
 import com.emc.ia.sdk.support.http.apache.WhenMakingHttpCallsUsingApache.Foo;
 import com.emc.ia.sdk.support.test.TestCase;
-
 
 public class WhenMakingRestCalls extends TestCase {
 
@@ -59,7 +62,8 @@ public class WhenMakingRestCalls extends TestCase {
     LinkContainer state = new LinkContainer();
     Link link = new Link();
     link.setHref(uri);
-    state.getLinks().put(relation, link);
+    state.getLinks()
+      .put(relation, link);
     Class<?> type = String.class;
 
     restClient.follow(state, relation, type);
@@ -74,7 +78,8 @@ public class WhenMakingRestCalls extends TestCase {
     LinkContainer state = new LinkContainer();
     Link link = new Link();
     link.setHref(uri);
-    state.getLinks().put(StandardLinkRelations.LINK_SELF, link);
+    state.getLinks()
+      .put(StandardLinkRelations.LINK_SELF, link);
 
     restClient.refresh(state);
 
@@ -89,7 +94,8 @@ public class WhenMakingRestCalls extends TestCase {
     LinkContainer collection = new LinkContainer();
     Link link = new Link();
     link.setHref(uri);
-    collection.getLinks().put(relation, link);
+    collection.getLinks()
+      .put(relation, link);
     Foo expected = new Foo();
     expected.setBar(randomString());
     when(httpClient.post(eq(uri), any(List.class), anyString(), eq(Foo.class))).thenReturn(expected);

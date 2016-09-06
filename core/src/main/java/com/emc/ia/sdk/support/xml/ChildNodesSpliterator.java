@@ -9,7 +9,6 @@ import java.util.function.Consumer;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-
 /**
  * Iterate over child nodes of a given parent node in an XML document.
  */
@@ -23,7 +22,8 @@ class ChildNodesSpliterator extends AbstractSpliterator<Node> {
   }
 
   private static int getSizeEstimate(Element parent) {
-    return parent == null ? 0 : parent.getChildNodes().getLength();
+    return parent == null ? 0 : parent.getChildNodes()
+      .getLength();
   }
 
   @Override

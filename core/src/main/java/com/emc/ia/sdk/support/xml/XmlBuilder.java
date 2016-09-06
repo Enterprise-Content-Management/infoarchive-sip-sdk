@@ -12,20 +12,22 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-
 /**
  * Fluent API for building XML documents. Example usage:
- * <pre>Document document = XmlBuilder.newDocument()
-    .namespace("http://company.com/ns/example")
-    .element("parent")
-        .attribute("name", "value")
-        .element("child")
-            .element("grandChild")
-            .end()
-        .end()
-        .element("child", "text")
-    .end()
-    .build();
+ * 
+ * <pre>
+ * 
+ * Document document = XmlBuilder.newDocument()
+ *   .namespace("http://company.com/ns/example")
+ *   .element("parent")
+ *   .attribute("name", "value")
+ *   .element("child")
+ *   .element("grandChild")
+ *   .end()
+ *   .end()
+ *   .element("child", "text")
+ *   .end()
+ *   .build();
  * </pre>
  */
 public class XmlBuilder {
@@ -54,7 +56,8 @@ public class XmlBuilder {
       this.document = node.getOwnerDocument();
       this.current = node;
     } else {
-      throw new IllegalArgumentException("Unhandled node type: " + Objects.requireNonNull(node).getNodeType());
+      throw new IllegalArgumentException("Unhandled node type: " + Objects.requireNonNull(node)
+        .getNodeType());
     }
   }
 
@@ -148,15 +151,19 @@ public class XmlBuilder {
   /**
    * Add an element containing the given text to the current location in the XML document. The element is automatically
    * closed. Note that this is a shorthand notation for
-   * <pre>element(name)
-   *     .text(text)
-   * .end()</pre>
+   * 
+   * <pre>
+   * element(name).text(text)
+   *   .end()
+   * </pre>
+   * 
    * @param name The name/tag of the element to add
    * @param text The text to add to the element
    * @return This builder
    */
   public XmlBuilder element(String name, String text) {
-    return text == null ? this : element(name).text(text).end();
+    return text == null ? this : element(name).text(text)
+      .end();
   }
 
   /**

@@ -3,7 +3,6 @@
  */
 package com.emc.ia.sdk.support.http;
 
-
 public interface MediaTypes {
 
   String BINARY = "application/octect-stream";

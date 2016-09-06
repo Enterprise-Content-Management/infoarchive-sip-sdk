@@ -8,7 +8,6 @@ import java.util.Date;
 
 import javax.xml.bind.DatatypeConverter;
 
-
 /**
  * Utilities for working with dates.
  */
@@ -41,7 +40,8 @@ public final class Dates {
     if (dateTime == null) {
       return null;
     }
-    return DatatypeConverter.parseDateTime(dateTime).getTime();
+    return DatatypeConverter.parseDateTime(dateTime)
+      .getTime();
   }
 
 }

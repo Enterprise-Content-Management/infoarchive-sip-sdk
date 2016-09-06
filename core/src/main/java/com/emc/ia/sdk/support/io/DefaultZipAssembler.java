@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-
 /**
  * Default implementation of {@linkplain ZipAssembler}.
  */

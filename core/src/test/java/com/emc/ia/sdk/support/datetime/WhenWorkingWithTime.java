@@ -3,7 +3,8 @@
  */
 package com.emc.ia.sdk.support.datetime;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -11,7 +12,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 import com.emc.ia.sdk.support.test.RandomData;
-
 
 public class WhenWorkingWithTime {
 

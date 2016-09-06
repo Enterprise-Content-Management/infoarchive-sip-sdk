@@ -13,7 +13,6 @@ import java.util.function.Supplier;
 import com.emc.ia.sdk.support.io.FileBuffer;
 import com.emc.ia.sdk.support.io.FileSupplier;
 
-
 /**
  * Assemble a batch of SIPs, based on some sort of {@linkplain SipSegmentationStrategy segmentation strategy} that
  * determines which domain objects go into which SIPs.
@@ -68,7 +67,8 @@ public class BatchSipAssembler<D> {
   }
 
   protected final void setFinalSipInDss(boolean finalSipInDss) {
-    assembler.getPackagingInformationFactory().setFinalSipInDss(finalSipInDss);
+    assembler.getPackagingInformationFactory()
+      .setFinalSipInDss(finalSipInDss);
   }
 
   /**

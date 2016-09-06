@@ -3,7 +3,8 @@
  */
 package com.emc.ia.sdk.support.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +20,6 @@ import org.junit.rules.TemporaryFolder;
 
 import com.emc.ia.sdk.support.test.RandomData;
 
-
 public class WhenCopyingFiles {
 
   @Rule
@@ -33,7 +33,8 @@ public class WhenCopyingFiles {
     setContents(source, contents);
     File destinationDir = temporaryFolder.newFolder();
 
-    CopyFile.from(source).to(destinationDir);
+    CopyFile.from(source)
+      .to(destinationDir);
 
     File destination = new File(destinationDir, source.getName());
     assertTrue("File not copied", destination.exists());

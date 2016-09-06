@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-
 /**
  * Run a recurring process.
  */

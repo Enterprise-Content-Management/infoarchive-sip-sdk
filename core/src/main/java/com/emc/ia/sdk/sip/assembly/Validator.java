@@ -7,7 +7,6 @@ import java.io.InputStream;
 
 import javax.validation.ValidationException;
 
-
 /**
  * Validate that the contents of a stream meets the expectations.
  */

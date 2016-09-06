@@ -16,7 +16,6 @@ import org.apache.commons.io.IOUtils;
 
 import com.emc.ia.sdk.support.io.DataBuffer;
 
-
 /**
  * Base class for assembling a product from domain objects by writing to a {@linkplain PrintWriter}.
  * @param <D> The type of domain objects to assemble the product from

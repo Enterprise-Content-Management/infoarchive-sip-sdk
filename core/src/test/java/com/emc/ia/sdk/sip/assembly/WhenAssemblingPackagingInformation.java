@@ -18,7 +18,6 @@ import com.emc.ia.sdk.support.io.DataBuffer;
 import com.emc.ia.sdk.support.io.MemoryBuffer;
 import com.emc.ia.sdk.support.xml.XmlUtil;
 
-
 public class WhenAssemblingPackagingInformation extends XmlTestCase {
 
   private final Assembler<PackagingInformation> assembler = new InfoArchivePackagingInformationAssembler();
@@ -32,17 +31,17 @@ public class WhenAssemblingPackagingInformation extends XmlTestCase {
     String pdiSchema = "s_" + randomString(254);
     String entity = "e_" + randomString(62);
     int aiuCount = randomInt(20);
-    PackagingInformationFactory packagingInformationFactory = new DefaultPackagingInformationFactory(
-        PackagingInformation.builder()
-            .dss()
-                .id(dssId)
-                .application(application)
-                .holding(holding)
-                .entity(entity)
-                .producer(producer)
-                .schema(pdiSchema)
-            .end()
-            .build());
+    PackagingInformationFactory packagingInformationFactory =
+        new DefaultPackagingInformationFactory(PackagingInformation.builder()
+          .dss()
+          .id(dssId)
+          .application(application)
+          .holding(holding)
+          .entity(entity)
+          .producer(producer)
+          .schema(pdiSchema)
+          .end()
+          .build());
     PackagingInformation packagingInformation = packagingInformationFactory.newInstance(aiuCount, Optional.empty());
     DataBuffer buffer = new MemoryBuffer();
 

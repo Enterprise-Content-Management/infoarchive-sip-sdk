@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.util.function.Function;
 import java.util.zip.ZipFile;
 
-
 /**
  * Process a named entry in a ZIP file.
  */

@@ -10,7 +10,7 @@ import java.util.Map;
 import com.emc.ia.sdk.support.io.ZipAssembler;
 
 /**
- * The ContentAssembler implementation that ignores any digital objects. Useful for structured data only SIPs. 
+ * The ContentAssembler implementation that ignores any digital objects. Useful for structured data only SIPs.
  * @param <D> The type of domain object to assemble SIPs from
  */
 public class ContentAssemblerIgnore<D> implements ContentAssembler<D> {

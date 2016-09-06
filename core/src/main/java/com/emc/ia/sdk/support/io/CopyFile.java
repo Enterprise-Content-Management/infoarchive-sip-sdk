@@ -12,7 +12,6 @@ import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 
-
 /**
  * Copy a file to a destination directory.
  */

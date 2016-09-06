@@ -6,7 +6,6 @@ package com.emc.ia.sdk.support.io;
 import java.io.File;
 import java.util.Iterator;
 
-
 /**
  * Listen for files being added to directories.
  */

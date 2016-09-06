@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import com.emc.ia.sdk.support.io.EncodedHash;
 
-
 /**
  * <a href="http://c2.com/cgi/wiki?AbstractFactoryPattern">Factory</a> for creating {@linkplain PackagingInformation}.
  */

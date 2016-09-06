@@ -37,7 +37,7 @@ public interface ContentAssembler<D> {
    * Do not deduplicate the digital objects but perform the specified hash calculations.
    * @param contentsExtraction Extraction of content from domain objects added to the SIP
    * @param contentHashAssembler Assembler that builds up an encoded hash for the extracted content
-   * @param <D> The type of domain objects to assemble the SIP from 
+   * @param <D> The type of domain objects to assemble the SIP from
    * @return The newly created content assembler
    */
   static <D> ContentAssembler<D> noDedup(DigitalObjectsExtraction<D> contentsExtraction,
@@ -48,7 +48,7 @@ public interface ContentAssembler<D> {
   /**
    * Do not deduplicate the digital objects and do not perform any hash calculations.
    * @param contentsExtraction Extraction of content from domain objects added to the SIP
-   * @param <D> The type of domain objects to assemble the SIP from 
+   * @param <D> The type of domain objects to assemble the SIP from
    * @return The newly created content assembler
    */
   static <D> ContentAssembler<D> noDedup(DigitalObjectsExtraction<D> contentsExtraction) {
@@ -57,7 +57,7 @@ public interface ContentAssembler<D> {
 
   /**
    * Ignore all digital objects, the SIP will contain structured data only.
-   * @param <D> The type of domain objects to assemble the SIP from 
+   * @param <D> The type of domain objects to assemble the SIP from
    * @return The newly created content assembler
    */
   static <D> ContentAssembler<D> ignoreContent() {
@@ -67,7 +67,7 @@ public interface ContentAssembler<D> {
   /**
    * Deduplicate digital objects based on the reference information but do not perform any hash calculation.
    * @param contentsExtraction Extraction of content from domain objects added to the SIP
-   * @param <D> The type of domain objects to assemble the SIP from 
+   * @param <D> The type of domain objects to assemble the SIP from
    * @return The newly created content assembler
    */
   static <D> ContentAssembler<D> withDedupOnRi(DigitalObjectsExtraction<D> contentsExtraction) {
@@ -78,7 +78,7 @@ public interface ContentAssembler<D> {
    * Deduplicate digital objects based on the reference information and perform the specified hash calculations.
    * @param contentsExtraction Extraction of content from domain objects added to the SIP
    * @param contentHashAssembler Assembler that builds up an encoded hash for the extracted content
-   * @param <D> The type of domain objects to assemble the SIP from 
+   * @param <D> The type of domain objects to assemble the SIP from
    * @return The newly created content assembler
    */
   static <D> ContentAssembler<D> withDedupOnRi(DigitalObjectsExtraction<D> contentsExtraction,
@@ -92,7 +92,7 @@ public interface ContentAssembler<D> {
    * @param contentHashAssembler Assembler that builds up an encoded hash for the extracted content
    * @param estimatedMaxDigitalObjects a hint which will initialize the internal buffers to handle the specified number
    *          of digital objects without reallocation
-   * @param <D> The type of domain objects to assemble the SIP from 
+   * @param <D> The type of domain objects to assemble the SIP from
    * @return The newly created content assembler
    */
   static <D> ContentAssembler<D> withDedupOnRi(DigitalObjectsExtraction<D> contentsExtraction,
@@ -117,7 +117,7 @@ public interface ContentAssembler<D> {
    *          actual content is different.
    * @param errorWhenEqualHashAndNotEqualRI Throw an exception when the same content is included twice but using
    *          different reference informations.
-   * @param <D> The type of domain objects to assemble the SIP from 
+   * @param <D> The type of domain objects to assemble the SIP from
    * @return The newly created content assembler
    */
   static <D> ContentAssembler<D> withDedupOnRiAndValidation(DigitalObjectsExtraction<D> contentsExtraction,
@@ -146,7 +146,7 @@ public interface ContentAssembler<D> {
    *          different reference informations.
    * @param estimatedMaxDigitalObjects a hint which will initialize the internal buffers to handle the specified number
    *          of digital objects without reallocation
-   * @param <D> The type of domain objects to assemble the SIP from 
+   * @param <D> The type of domain objects to assemble the SIP from
    * @return The newly created content assembler
    */
   static <D> ContentAssembler<D> withDedupOnRiAndValidation(DigitalObjectsExtraction<D> contentsExtraction,
@@ -160,7 +160,7 @@ public interface ContentAssembler<D> {
    * Deduplicate digital objects based on their hash value.
    * @param contentsExtraction Extraction of content from domain objects added to the SIP
    * @param contentHashAssembler Assembler that builds up an encoded hash for the extracted content
-   * @param <D> The type of domain objects to assemble the SIP from 
+   * @param <D> The type of domain objects to assemble the SIP from
    * @return The newly created content assembler
    */
   static <D> ContentAssembler<D> withDedupOnHash(DigitalObjectsExtraction<D> contentsExtraction,
@@ -174,7 +174,7 @@ public interface ContentAssembler<D> {
    * @param contentHashAssembler Assembler that builds up an encoded hash for the extracted content
    * @param estimatedMaxDigitalObjects a hint which will initialize the internal buffers to handle the specified number
    *          of digital objects without reallocation
-   * @param <D> The type of domain objects to assemble the SIP from 
+   * @param <D> The type of domain objects to assemble the SIP from
    * @return The newly created content assembler
    */
   static <D> ContentAssembler<D> withDedupOnHash(DigitalObjectsExtraction<D> contentsExtraction,

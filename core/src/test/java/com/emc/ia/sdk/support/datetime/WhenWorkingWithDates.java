@@ -3,7 +3,8 @@
  */
 package com.emc.ia.sdk.support.datetime;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -12,7 +13,6 @@ import java.util.TimeZone;
 import org.junit.Test;
 
 import com.emc.ia.sdk.support.test.RandomData;
-
 
 public class WhenWorkingWithDates {
 
@@ -23,7 +23,8 @@ public class WhenWorkingWithDates {
     Date dateTime = randomDate();
     TimeZone timeZone = TimeZone.getDefault();
     int offset = timeZone.getOffset(dateTime.getTime()) / 1000;
-    String sign = Arrays.asList("-", "", "+").get(1 + (int)Math.signum(offset));
+    String sign = Arrays.asList("-", "", "+")
+      .get(1 + (int)Math.signum(offset));
     offset = Math.abs(offset);
     int tzHour = offset / 60 / 60;
     int tzMinute = offset / 60 % 60;

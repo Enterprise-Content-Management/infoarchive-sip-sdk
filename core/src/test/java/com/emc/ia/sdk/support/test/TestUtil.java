@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 
-
 public final class TestUtil {
 
   private TestUtil() {
@@ -34,7 +33,9 @@ public final class TestUtil {
   }
 
   private static <T> String join(Collection<T> items) {
-    return items.stream().map(i -> String.valueOf(i)).collect(Collectors.joining("\n"));
+    return items.stream()
+      .map(i -> String.valueOf(i))
+      .collect(Collectors.joining("\n"));
   }
 
 }

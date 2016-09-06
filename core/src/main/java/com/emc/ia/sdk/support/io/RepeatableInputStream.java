@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 
 import org.apache.commons.io.IOUtils;
 
-
 /**
  * Provide repeatable access to the same {@linkplain InputStream} by caching it in memory.
  */

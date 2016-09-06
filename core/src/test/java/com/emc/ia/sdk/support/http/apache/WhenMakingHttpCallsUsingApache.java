@@ -3,8 +3,11 @@
  */
 package com.emc.ia.sdk.support.http.apache;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,7 +35,6 @@ import com.emc.ia.sdk.support.http.BinaryPart;
 import com.emc.ia.sdk.support.http.Header;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.test.TestCase;
-
 
 public class WhenMakingHttpCallsUsingApache extends TestCase {
 
@@ -71,7 +73,8 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   private <T extends HttpUriRequest> T assertRequest(String expectedUri, Class<T> expectedClass) {
     HttpUriRequest request = httpClient.getExecutedRequest();
     assertEquals("Request", expectedClass, request.getClass());
-    assertEquals("Request URI", expectedUri, request.getURI().toString());
+    assertEquals("Request URI", expectedUri, request.getURI()
+      .toString());
     return expectedClass.cast(request);
   }
 
@@ -83,7 +86,8 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   private <T> T getResponse(Class<T> type) throws IOException {
-    return httpClient.getResponseHandler(randomString(), randomString(), type).handleResponse(response);
+    return httpClient.getResponseHandler(randomString(), randomString(), type)
+      .handleResponse(response);
   }
 
   @Test
@@ -142,20 +146,23 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
     String uri = randomString();
     String data = randomString();
     try (InputStream stream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8))) {
-      httpClient.post(uri, Collections.emptyList(), null,
-          new TextPart(randomString(), randomString()),
+      httpClient.post(uri, Collections.emptyList(), null, new TextPart(randomString(), randomString()),
           new BinaryPart(randomString(), stream, randomString()));
     }
 
     HttpEntity entity = assertRequest(uri, HttpPost.class).getEntity();
-    assertTrue("Is multi part", entity.getClass().getSimpleName().toLowerCase(Locale.ENGLISH).contains("multipart"));
+    assertTrue("Is multi part", entity.getClass()
+      .getSimpleName()
+      .toLowerCase(Locale.ENGLISH)
+      .contains("multipart"));
   }
 
   @Test
   public void shouldBuildUris() {
-    assertEquals("URI", "http://google.com?q=foo+bar", httpClient.uri("http://google.com").addParameter("q", "foo bar").build());
+    assertEquals("URI", "http://google.com?q=foo+bar", httpClient.uri("http://google.com")
+      .addParameter("q", "foo bar")
+      .build());
   }
-
 
   public static class Foo {
 
@@ -170,7 +177,6 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
     }
 
   }
-
 
   private static class TestApacheHttpClient extends ApacheHttpClient {
 

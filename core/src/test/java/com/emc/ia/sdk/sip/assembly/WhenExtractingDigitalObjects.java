@@ -3,7 +3,8 @@
  */
 package com.emc.ia.sdk.sip.assembly;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +16,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.emc.ia.sdk.support.test.TestCase;
-
 
 public class WhenExtractingDigitalObjects extends TestCase {
 

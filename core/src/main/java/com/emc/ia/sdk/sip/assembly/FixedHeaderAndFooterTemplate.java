@@ -11,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 
-
 /**
  * {@linkplain Template} with fixed header and footer texts.
  * @param <D> The type of domain object to replace with text

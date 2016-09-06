@@ -20,7 +20,6 @@ import org.w3c.dom.Document;
 
 import com.emc.ia.sdk.support.test.TestCase;
 
-
 public class WhenWorkingWithXml extends TestCase {
 
   @Rule
@@ -49,7 +48,9 @@ public class WhenWorkingWithXml extends TestCase {
   @Test
   public void shouldNotThrowExceptionOnValidDocumentWhenValidating() throws IOException {
     String elementName = randomString(8);
-    Document document = XmlBuilder.newDocument().element(elementName).build();
+    Document document = XmlBuilder.newDocument()
+      .element(elementName)
+      .build();
     Document schema = someSchema(elementName);
 
     XmlUtil.validate(toStream(document), toStream(schema), randomString());
@@ -57,12 +58,12 @@ public class WhenWorkingWithXml extends TestCase {
 
   private Document someSchema(String elementName) {
     return XmlBuilder.newDocument()
-        .namespace(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-        .element("schema")
-            .element("element")
-                .attribute("name", elementName)
-                .attribute("type", "string")
-        .build();
+      .namespace(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+      .element("schema")
+      .element("element")
+      .attribute("name", elementName)
+      .attribute("type", "string")
+      .build();
   }
 
   private InputStream toStream(Document document) {
@@ -71,7 +72,9 @@ public class WhenWorkingWithXml extends TestCase {
 
   @Test
   public void shouldThrowExceptionOnInvalidDocumentWhenValidating() throws IOException {
-    Document document = XmlBuilder.newDocument().element(randomString(8)).build();
+    Document document = XmlBuilder.newDocument()
+      .element(randomString(8))
+      .build();
     Document schema = someSchema(randomString(8));
 
     thrown.expect(ValidationException.class);
@@ -80,7 +83,9 @@ public class WhenWorkingWithXml extends TestCase {
 
   @Test
   public void shouldThrowExceptionOnInvalidSchemaWhenValidating() throws IOException {
-    Document document = XmlBuilder.newDocument().element(randomString(8)).build();
+    Document document = XmlBuilder.newDocument()
+      .element(randomString(8))
+      .build();
 
     thrown.expect(ValidationException.class);
     XmlUtil.validate(toStream(document), toStream(document), randomString());

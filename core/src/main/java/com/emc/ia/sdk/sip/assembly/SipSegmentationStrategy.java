@@ -17,10 +17,9 @@ public interface SipSegmentationStrategy<D> {
    * @param domainObject The domain object to be added to either the current SIP or a new one
    * @param metrics Metrics about the assembly of the current SIP
    * @return <code>true</code> if a new SIP should be started for the given domain object, or <code>false</code> if
-   * the domain object should be stored in the current SIP
+   *         the domain object should be stored in the current SIP
    */
   boolean shouldStartNewSip(D domainObject, SipMetrics metrics);
-
 
   /**
    * Return a {@linkplain SipSegmentationStrategy} that allows a maximum number of AIUs per SIP.
@@ -82,9 +81,9 @@ public interface SipSegmentationStrategy<D> {
   @SafeVarargs
   static <D> SipSegmentationStrategy<D> combining(SipSegmentationStrategy<D>... partialStrategies) {
     return (domainObject, metrics) -> Arrays.stream(partialStrategies)
-        .filter(s -> s.shouldStartNewSip(domainObject, metrics))
-        .findAny()
-        .isPresent();
+      .filter(s -> s.shouldStartNewSip(domainObject, metrics))
+      .findAny()
+      .isPresent();
   }
 
 }

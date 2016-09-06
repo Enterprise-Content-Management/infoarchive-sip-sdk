@@ -7,7 +7,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
-
 public interface Response extends Closeable {
 
   String getHeaderValue(String name, String defaultValue);

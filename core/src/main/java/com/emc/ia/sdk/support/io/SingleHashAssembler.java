@@ -8,7 +8,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Collections;
 
-
 /**
  * Assemble a single hash.
  */
@@ -52,8 +51,8 @@ public class SingleHashAssembler extends NoHashAssembler {
 
   @Override
   public Collection<EncodedHash> get() {
-    return Collections.singletonList(
-        new EncodedHash(digester.getAlgorithm(), encoding.toString(), encoding.encode(digester.digest())));
+    return Collections
+      .singletonList(new EncodedHash(digester.getAlgorithm(), encoding.toString(), encoding.encode(digester.digest())));
   }
 
 }

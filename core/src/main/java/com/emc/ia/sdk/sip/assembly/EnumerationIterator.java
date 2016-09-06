@@ -6,7 +6,6 @@ package com.emc.ia.sdk.sip.assembly;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-
 /**
  * Adapt an {@linkplain Enumeration} to an {@linkplain Iterator}.
  * @param <T> The type of items to enumerate.

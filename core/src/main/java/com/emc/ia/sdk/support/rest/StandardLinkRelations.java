@@ -3,7 +3,6 @@
  */
 package com.emc.ia.sdk.support.rest;
 
-
 public interface StandardLinkRelations {
 
   String LINK_SELF = "self";

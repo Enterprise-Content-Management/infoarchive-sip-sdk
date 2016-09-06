@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-
 /**
  * Create uniquely named directories in a given parent directory.
  */
@@ -23,7 +22,8 @@ public final class UniqueDirectory {
    * @return The newly created directory
    */
   public static File in(File parentDir) {
-    File result = new File(parentDir, UUID.randomUUID().toString());
+    File result = new File(parentDir, UUID.randomUUID()
+      .toString());
     if (!result.mkdirs()) {
       throw new RuntimeIoException(new IOException("Could not create directory: " + result));
     }

@@ -3,9 +3,15 @@
  */
 package com.emc.ia.sdk.sip.assembly;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,7 +40,6 @@ import com.emc.ia.sdk.support.io.MemoryBuffer;
 import com.emc.ia.sdk.support.io.NoHashAssembler;
 import com.emc.ia.sdk.support.xml.XmlUtil;
 
-
 @SuppressWarnings("unchecked")
 public class WhenAssemblingSips extends XmlTestCase {
 
@@ -56,8 +61,8 @@ public class WhenAssemblingSips extends XmlTestCase {
     String id1a = randomString(8);
     String id1b = randomString(8);
     String id2 = randomString(8);
-    List<? extends DigitalObject> digitalObjects1 = Arrays.asList(someContentDataObject(id1a),
-        someContentDataObject(id1b));
+    List<? extends DigitalObject> digitalObjects1 =
+        Arrays.asList(someContentDataObject(id1a), someContentDataObject(id1b));
     List<? extends DigitalObject> digitalObjects2 = Arrays.asList(someContentDataObject(id2));
     when(contentsExtraction.apply(object1)).thenAnswer(invocation -> digitalObjects1.iterator());
     when(contentsExtraction.apply(object2)).thenAnswer(invocation -> digitalObjects2.iterator());
@@ -65,7 +70,8 @@ public class WhenAssemblingSips extends XmlTestCase {
     Collection<EncodedHash> hashes1a = Collections.singletonList(someHash());
     Collection<EncodedHash> hashes1b = Collections.singletonList(someHash());
     Collection<EncodedHash> hashes2 = Collections.singletonList(someHash());
-    Iterator<Collection<EncodedHash>> hashes = Arrays.asList(hashes1a, hashes1b, hashes2).iterator();
+    Iterator<Collection<EncodedHash>> hashes = Arrays.asList(hashes1a, hashes1b, hashes2)
+      .iterator();
     when(contentHashAssembler.get()).thenAnswer(invocation -> hashes.next());
     long digitalObjectSize = randomInt(5, 255);
     when(contentHashAssembler.numBytesHashed()).thenReturn(digitalObjectSize);
@@ -74,8 +80,8 @@ public class WhenAssemblingSips extends XmlTestCase {
     hashesById1.put(id1b, new ContentInfo(id1b, MIME_TYPE, hashes1b));
     Map<String, ContentInfo> hashesById2 = Collections.singletonMap(id2, new ContentInfo(id2, MIME_TYPE, hashes2));
     PackagingInformation packagingInformationPrototype = somePackagingInformation();
-    SipAssembler<Object> sipAssembler = SipAssembler.forPdiAndContentWithHashing(
-        packagingInformationPrototype, pdiAssembler, pdiHashAssembler, contentsExtraction, contentHashAssembler);
+    SipAssembler<Object> sipAssembler = SipAssembler.forPdiAndContentWithHashing(packagingInformationPrototype,
+        pdiAssembler, pdiHashAssembler, contentsExtraction, contentHashAssembler);
     DataBuffer buffer = new MemoryBuffer();
 
     long time = System.currentTimeMillis();
@@ -103,32 +109,35 @@ public class WhenAssemblingSips extends XmlTestCase {
     assertEquals(SipMetrics.NUM_AIUS.toString(), 2, metrics.numAius());
     assertEquals(SipMetrics.NUM_DIGITAL_OBJECTS.toString(), 3, metrics.numDigitalObjects());
     assertEquals(SipMetrics.ASSEMBLY_TIME.toString(), time, metrics.assemblyTime(), DELTA_MS);
-    assertEquals(SipMetrics.SIZE_DIGITAL_OBJECTS.toString(), 3 * digitalObjectSize,
-        metrics.digitalObjectsSize());
+    assertEquals(SipMetrics.SIZE_DIGITAL_OBJECTS.toString(), 3 * digitalObjectSize, metrics.digitalObjectsSize());
     assertEquals(SipMetrics.SIZE_PDI.toString(), pdiSize, metrics.pdiSize());
     long packagingInformationSize = getPackagingInformationSize(packagingInformationPrototype, 2, Optional.of(hash));
-    assertEquals(SipMetrics.SIZE_SIP.toString(), pdiSize + 3 * digitalObjectSize + packagingInformationSize, metrics.sipSize());
+    assertEquals(SipMetrics.SIZE_SIP.toString(), pdiSize + 3 * digitalObjectSize + packagingInformationSize,
+        metrics.sipSize());
     assertEquals(SipMetrics.SIZE_SIP_FILE.toString(), buffer.length(), metrics.sipFileSize());
   }
 
-  private long getPackagingInformationSize(PackagingInformation packagingInformationPrototype, long numAius, Optional<EncodedHash> pdiHash) throws IOException {
-    InfoArchivePackagingInformationAssembler packagingInformationAssembler = new InfoArchivePackagingInformationAssembler();
+  private long getPackagingInformationSize(PackagingInformation packagingInformationPrototype, long numAius,
+      Optional<EncodedHash> pdiHash) throws IOException {
+    InfoArchivePackagingInformationAssembler packagingInformationAssembler =
+        new InfoArchivePackagingInformationAssembler();
     DataBuffer buffer = new MemoryBuffer();
     packagingInformationAssembler.start(buffer);
-    packagingInformationAssembler.add(new DefaultPackagingInformationFactory(packagingInformationPrototype).newInstance(numAius, pdiHash));
+    packagingInformationAssembler
+      .add(new DefaultPackagingInformationFactory(packagingInformationPrototype).newInstance(numAius, pdiHash));
     packagingInformationAssembler.end();
     return buffer.length();
   }
 
   private PackagingInformation somePackagingInformation() {
     return PackagingInformation.builder()
-        .dss()
-            .application(randomString(64))
-            .holding(randomString(64))
-            .schema(randomString(256))
-            .entity(randomString(64))
-        .end()
-        .build();
+      .dss()
+      .application(randomString(64))
+      .holding(randomString(64))
+      .schema(randomString(256))
+      .entity(randomString(64))
+      .end()
+      .build();
   }
 
   private DigitalObject someContentDataObject(String id) {
@@ -175,28 +184,33 @@ public class WhenAssemblingSips extends XmlTestCase {
 
     ByteArrayInputOutputStream packagingInformation = new ByteArrayInputOutputStream();
     IOUtils.copy(zip, packagingInformation);
-    Element sipElement = assertValidXml(packagingInformation.getInputStream(), "PackagingInformation", "sip.xsd")
-        .getDocumentElement();
+    Element sipElement =
+        assertValidXml(packagingInformation.getInputStream(), "PackagingInformation", "sip.xsd").getDocumentElement();
     assertTrue("Missing pdi_hash: " + pdiHash, XmlUtil.namedElementsIn(sipElement, "pdi_hash")
-        .filter(e -> equals(pdiHash, e))
-        .findAny()
-        .isPresent());
-    String aiuCount = XmlUtil.getFirstChildElement(sipElement, "aiu_count").getTextContent();
+      .filter(e -> equals(pdiHash, e))
+      .findAny()
+      .isPresent());
+    String aiuCount = XmlUtil.getFirstChildElement(sipElement, "aiu_count")
+      .getTextContent();
     assertEquals("# AIUs", objects.size(), Integer.parseInt(aiuCount));
 
     zip.closeEntry();
   }
 
   private boolean equals(EncodedHash encodedHash, Element hashElement) {
-    return encodedHash.getHashFunction().equals(hashElement.getAttributeNS(null, "algorithm"))
-        && encodedHash.getEncoding().equals(hashElement.getAttributeNS(null, "encoding"))
-        && encodedHash.getValue().equals(hashElement.getTextContent());
+    return encodedHash.getHashFunction()
+      .equals(hashElement.getAttributeNS(null, "algorithm"))
+        && encodedHash.getEncoding()
+          .equals(hashElement.getAttributeNS(null, "encoding"))
+        && encodedHash.getValue()
+          .equals(hashElement.getTextContent());
   }
 
   @Test
   public void shouldMeasurePdiSizeBeforeEnd() throws IOException {
     long pdiSize = randomInt(13, 313);
     DataBuffer pdiBuffer = new MemoryBuffer() {
+
       @Override
       public long length() {
         return pdiSize;

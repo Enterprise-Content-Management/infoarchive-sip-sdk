@@ -12,7 +12,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 
 import com.emc.ia.sdk.support.http.Response;
 
-
 public class ApacheResponse implements Response {
 
   private final CloseableHttpResponse wrapped;

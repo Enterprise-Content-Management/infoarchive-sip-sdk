@@ -32,7 +32,6 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-
 /**
  * Generic XML processing functions.
  */
@@ -50,6 +49,7 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
 
   private static final DocumentBuilderFactory VALIDATING_DOCUMENT_BUILDER_FACTORY = newSecureDocumentBuilderFactory();
   private static final ThreadLocal<DocumentBuilder> VALIDATING_DOCUMENT_BUILDER = new ThreadLocal<DocumentBuilder>() {
+
     @Override
     protected DocumentBuilder initialValue() {
       try {
@@ -119,7 +119,8 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     return result.toString();
   }
 
-  private static void append(Node node, String indentation, Map<String, String> namespaces, // NOPMD CyclomaticComplexity
+  private static void append(Node node, String indentation, Map<String, String> namespaces, // NOPMD
+                                                                                            // CyclomaticComplexity
       StringBuilder builder) {
     switch (node.getNodeType()) {
       case Node.ELEMENT_NODE:
@@ -179,15 +180,21 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
 
   private static StringBuilder openElement(String indentation, StringBuilder builder, Element element) {
     String tag = element.getTagName();
-    builder.append(indentation).append('<');
+    builder.append(indentation)
+      .append('<');
     builder.append(tag);
     if (hasDifferentNamespaceThanParent(element)) {
       int index = tag.indexOf(':');
       if (index < 0) {
-        builder.append(" xmlns=\"").append(element.getNamespaceURI()).append('"');
+        builder.append(" xmlns=\"")
+          .append(element.getNamespaceURI())
+          .append('"');
       } else {
-        builder.append(" xmlns:").append(tag.substring(0, index)).append("=\"").append(element.getNamespaceURI())
-            .append('"');
+        builder.append(" xmlns:")
+          .append(tag.substring(0, index))
+          .append("=\"")
+          .append(element.getNamespaceURI())
+          .append('"');
       }
     }
     return builder;
@@ -206,12 +213,13 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     if (parent == null) {
       return true;
     }
-    return !node.getNamespaceURI().equals(parent.getNamespaceURI());
+    return !node.getNamespaceURI()
+      .equals(parent.getNamespaceURI());
   }
 
   private static boolean isNamespaceNode(Node node) {
-    return node.getNodeType() == Node.ATTRIBUTE_NODE && node.getNodeName().startsWith("xmlns")
-        && "http://www.w3.org/2000/xmlns/".equals(node.getNamespaceURI());
+    return node.getNodeType() == Node.ATTRIBUTE_NODE && node.getNodeName()
+      .startsWith("xmlns") && "http://www.w3.org/2000/xmlns/".equals(node.getNamespaceURI());
   }
 
   private static void appendAttributes(String indentation, Element element, Map<String, String> namespaces,
@@ -232,7 +240,9 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
       text.append(child.getNodeValue());
       child = child.getNextSibling();
     }
-    return text.length() > 0 && !text.toString().trim().isEmpty();
+    return text.length() > 0 && !text.toString()
+      .trim()
+      .isEmpty();
   }
 
   private static void appendChildren(Node node, String indentation, Map<String, String> namespaces,
@@ -245,7 +255,9 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
   }
 
   private static StringBuilder closeElement(StringBuilder builder, Element element) {
-    return builder.append("</").append(element.getTagName()).append(">\n");
+    return builder.append("</")
+      .append(element.getTagName())
+      .append(">\n");
   }
 
   private static void appendAttribute(Node node, Map<String, String> namespaces, StringBuilder builder) {
@@ -257,11 +269,19 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
       String uri = node.getNamespaceURI();
       String prefix = getPrefix(uri, namespaces);
       if (!"xml".equals(prefix)) {
-        builder.append("xmlns:").append(prefix).append("=\"").append(uri).append("\" ");
+        builder.append("xmlns:")
+          .append(prefix)
+          .append("=\"")
+          .append(uri)
+          .append("\" ");
       }
-      builder.append(prefix).append(':');
+      builder.append(prefix)
+        .append(':');
     }
-    builder.append(getAttributeName(node)).append("=\"").append(valueOf(node)).append('\"');
+    builder.append(getAttributeName(node))
+      .append("=\"")
+      .append(valueOf(node))
+      .append('\"');
   }
 
   private static String getAttributeName(Node node) {
@@ -287,20 +307,31 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
   }
 
   private static String valueOf(Node node) {
-    return node.getNodeValue().trim();
+    return node.getNodeValue()
+      .trim();
   }
 
   private static void appendComment(Node node, String indentation, StringBuilder builder) {
-    builder.append(indentation).append("<!-- ").append(valueOf(node)).append(" -->\n");
+    builder.append(indentation)
+      .append("<!-- ")
+      .append(valueOf(node))
+      .append(" -->\n");
   }
 
   private static void appendProcessingInstruction(Node node, String indentation, StringBuilder builder) {
-    builder.append(indentation).append("<?").append(node.getNodeName()).append(' ')
-        .append(valueOf(node)).append("?>\n");
+    builder.append(indentation)
+      .append("<?")
+      .append(node.getNodeName())
+      .append(' ')
+      .append(valueOf(node))
+      .append("?>\n");
   }
 
   private static void appendCdataSection(Node node, String indentation, StringBuilder builder) {
-    builder.append(indentation).append("<![CDATA[").append(valueOf(node)).append("]]>\n");
+    builder.append(indentation)
+      .append("<![CDATA[")
+      .append(valueOf(node))
+      .append("]]>\n");
   }
 
   /**
@@ -343,7 +374,8 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
    * @return The children of the parent element
    */
   public static Stream<Element> elementsIn(Element parent) {
-    return nodesIn(parent).filter(n -> n.getNodeType() == Node.ELEMENT_NODE).map(n -> (Element)n);
+    return nodesIn(parent).filter(n -> n.getNodeType() == Node.ELEMENT_NODE)
+      .map(n -> (Element)n);
   }
 
   /**
@@ -374,8 +406,7 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
    * @return The children of the parent element
    */
   public static Stream<Element> namedElementsIn(Element parent, String... childNames) {
-    return elementsIn(parent)
-        .filter(e -> isName(e, childNames));
+    return elementsIn(parent).filter(e -> isName(e, childNames));
   }
 
   private static boolean isName(Element element, String... names) {
@@ -395,7 +426,8 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
   }
 
   private static Element firstOf(Stream<Element> elements) {
-    return elements.findFirst().orElse(null);
+    return elements.findFirst()
+      .orElse(null);
   }
 
   /**
@@ -417,15 +449,14 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
   public static Validator newXmlSchemaValidator(InputStream xmlSchema) {
     try {
       return SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-          .newSchema(new StreamSource(xmlSchema))
-          .newValidator();
+        .newSchema(new StreamSource(xmlSchema))
+        .newValidator();
     } catch (SAXException | NullPointerException e) { // NOPMD AvoidCatchingNPE - Want better error message
       throw new ValidationException("Invalid XML Schema", e);
     } finally {
       IOUtils.closeQuietly(xmlSchema);
     }
   }
-
 
   private static final class DefaultErrorHandler implements ErrorHandler {
 
@@ -455,14 +486,12 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     }
   }
 
-
   public static String escape(String text) {
-    return text
-        .replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace("'", "&apos;")
-        .replace("\"", "&quot;");
+    return text.replace("&", "&amp;")
+      .replace("<", "&lt;")
+      .replace(">", "&gt;")
+      .replace("'", "&apos;")
+      .replace("\"", "&quot;");
   }
 
 }

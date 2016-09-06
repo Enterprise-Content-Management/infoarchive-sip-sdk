@@ -15,7 +15,6 @@ import org.junit.Test;
 
 import com.emc.ia.sdk.support.test.TestCase;
 
-
 public class WhenEncoding extends TestCase {
 
   private static final Charset CHAR_SET = StandardCharsets.UTF_8;

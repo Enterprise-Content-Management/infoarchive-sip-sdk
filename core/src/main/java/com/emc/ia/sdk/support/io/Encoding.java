@@ -9,13 +9,13 @@ import java.util.function.Function;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 
-
 /**
  * Mechanism for storing binary data in ASCII form.
  */
 public enum Encoding {
 
-  BASE64(Base64::encodeBase64String), HEX(Hex::encodeHexString);
+  BASE64(Base64::encodeBase64String),
+  HEX(Hex::encodeHexString);
 
   private final Function<byte[], String> encoder;
 

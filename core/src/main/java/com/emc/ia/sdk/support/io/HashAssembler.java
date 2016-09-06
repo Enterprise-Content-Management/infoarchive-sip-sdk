@@ -6,7 +6,6 @@ package com.emc.ia.sdk.support.io;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-
 /**
  * Assemble {@linkplain EncodedHash}es from binary data. The hash assembly process consists of the following stages:
  * <ol>

@@ -3,7 +3,6 @@
  */
 package com.emc.ia.sdk.support.rest;
 
-
 public class Link {
 
   private String href;

@@ -7,9 +7,9 @@ import java.io.IOException;
 
 import com.emc.ia.sdk.support.io.DataBuffer;
 
-
 /**
- * Assemble a product from components. The assembly process always progresses through the following stages:<ol>
+ * Assemble a product from components. The assembly process always progresses through the following stages:
+ * <ol>
  * <li>Start assembling using {@linkplain #start(DataBuffer)}</li>
  * <li>Add components to the assembly by repeatedly calling {@linkplain #add(Object)}</li>
  * <li>Make the assembly available through {@linkplain #end()}</li>

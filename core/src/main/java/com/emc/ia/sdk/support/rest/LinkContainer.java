@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 public class LinkContainer {
 
   @JsonProperty("_links")

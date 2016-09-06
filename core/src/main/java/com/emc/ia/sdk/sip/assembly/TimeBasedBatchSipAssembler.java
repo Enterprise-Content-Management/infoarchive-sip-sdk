@@ -12,7 +12,6 @@ import com.emc.ia.sdk.support.datetime.Timer;
 import com.emc.ia.sdk.support.io.FileSupplier;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 
-
 public class TimeBasedBatchSipAssembler<D> extends BatchSipAssembler<D> {
 
   private final Object lock = new Object();

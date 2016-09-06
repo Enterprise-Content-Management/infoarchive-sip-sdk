@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
-
 /**
  * Assemble a PDI from domain objects.
  * @param <D> The type of domain objects to assemble the PDI from
@@ -30,7 +29,8 @@ public abstract class PdiAssembler<D> extends PrintWriterAssembler<HashedContent
   /**
    * Add a domain object.
    * @param domainObject The domain object to add
-   * @param contentInfo The reference information and the encoded hashes of the content associated with the domain object
+   * @param contentInfo The reference information and the encoded hashes of the content associated with the domain
+   *          object
    * @param writer The writer to print the PDI fragment to
    * @throws IOException When an I/O error occures
    */

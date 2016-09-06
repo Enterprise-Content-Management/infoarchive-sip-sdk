@@ -17,7 +17,6 @@ import org.junit.rules.TemporaryFolder;
 
 import com.emc.ia.sdk.support.test.TestUtil;
 
-
 public class WhenListeningForFilesInDirectories {
 
   @Rule
@@ -57,7 +56,8 @@ public class WhenListeningForFilesInDirectories {
   }
 
   private Comparator<? super File> fileComparator() {
-    return (a, b) -> a.getName().compareTo(b.getName());
+    return (a, b) -> a.getName()
+      .compareTo(b.getName());
   }
 
   private void waitAWhile() {

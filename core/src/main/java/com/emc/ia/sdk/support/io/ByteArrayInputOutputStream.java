@@ -8,9 +8,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-
 /**
- * {@linkplain OutputStream} that stores its data in memory and allows it to be {@linkplain #getInputStream() read} back.
+ * {@linkplain OutputStream} that stores its data in memory and allows it to be {@linkplain #getInputStream() read}
+ * back.
  */
 public class ByteArrayInputOutputStream extends ByteArrayOutputStream {
 

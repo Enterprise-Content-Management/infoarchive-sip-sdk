@@ -3,7 +3,6 @@
  */
 package com.emc.ia.sdk.support.io;
 
-
 public class FileSize {
 
   private final int number;

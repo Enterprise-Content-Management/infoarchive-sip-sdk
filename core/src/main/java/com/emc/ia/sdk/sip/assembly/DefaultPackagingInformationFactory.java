@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import com.emc.ia.sdk.support.io.EncodedHash;
 
-
 /**
  * Default implementation of {@linkplain PackagingInformationFactory}.
  */
@@ -28,12 +27,12 @@ public class DefaultPackagingInformationFactory implements PackagingInformationF
   @Override
   public PackagingInformation newInstance(long aiuCount, Optional<EncodedHash> pdiHash) {
     PackagingInformation result = PackagingInformation.builder(prototype)
-        .productionDate(new Date())
-        .aiuCount(aiuCount)
-        .pdiHash(pdiHash)
-        .sequenceNumber(++numSipsInDss)
-        .last(finalSipInDss)
-        .build();
+      .productionDate(new Date())
+      .aiuCount(aiuCount)
+      .pdiHash(pdiHash)
+      .sequenceNumber(++numSipsInDss)
+      .last(finalSipInDss)
+      .build();
     if (finalSipInDss) {
       numSipsInDss = 0;
       finalSipInDss = false;

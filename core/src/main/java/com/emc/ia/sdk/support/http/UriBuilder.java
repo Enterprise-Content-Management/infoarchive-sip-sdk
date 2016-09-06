@@ -3,7 +3,6 @@
  */
 package com.emc.ia.sdk.support.http;
 
-
 public interface UriBuilder {
 
   UriBuilder addParameter(String name, String value);

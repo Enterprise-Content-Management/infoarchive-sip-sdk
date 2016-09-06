@@ -16,7 +16,6 @@ import org.xml.sax.SAXException;
 
 import com.emc.ia.sdk.support.xml.XmlUtil;
 
-
 /**
  * Validate an XML instance against an XML Schema.
  */

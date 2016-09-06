@@ -5,7 +5,6 @@ package com.emc.ia.sdk.support.http;
 
 import java.io.InputStream;
 
-
 public class BinaryPart extends Part {
 
   private final InputStream data;

@@ -5,7 +5,6 @@ package com.emc.ia.sdk.support;
 
 import java.util.Map;
 
-
 /**
  * Create instances of a configured class.
  */
@@ -24,7 +23,8 @@ public class NewInstance {
 
   public <T> T as(Class<T> type) {
     try {
-      return type.cast(Class.forName(className).newInstance());
+      return type.cast(Class.forName(className)
+        .newInstance());
     } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
       throw new RuntimeException(e);
     }

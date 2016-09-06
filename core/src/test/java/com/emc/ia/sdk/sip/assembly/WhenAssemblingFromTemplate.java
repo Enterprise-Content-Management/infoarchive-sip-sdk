@@ -20,7 +20,6 @@ import org.junit.Test;
 import com.emc.ia.sdk.support.io.MemoryBuffer;
 import com.emc.ia.sdk.support.test.TestCase;
 
-
 public class WhenAssemblingFromTemplate extends TestCase {
 
   private static final String NL = System.getProperty("line.separator");
@@ -31,13 +30,14 @@ public class WhenAssemblingFromTemplate extends TestCase {
     String footer = randomString();
     StringWriter output = new StringWriter();
     PrintWriter writer = new PrintWriter(output);
-    Template<Map<String, ? extends Object>> template = new FixedHeaderAndFooterTemplate<Map<String, ? extends Object>>(
-        header, footer) {
-      @Override
-      public void writeRow(Map<String, ? extends Object> values, Map<String, ContentInfo> contentInfo,
-          PrintWriter writer) {
-      }
-    };
+    Template<Map<String, ? extends Object>> template =
+        new FixedHeaderAndFooterTemplate<Map<String, ? extends Object>>(header, footer) {
+
+          @Override
+          public void writeRow(Map<String, ? extends Object> values, Map<String, ContentInfo> contentInfo,
+              PrintWriter writer) {
+          }
+        };
 
     template.writeHeader(writer);
     assertEquals("Header", header + NL, output.toString());
@@ -81,8 +81,6 @@ public class WhenAssemblingFromTemplate extends TestCase {
   private HashedContents<Person> hashedContents(Person p) {
     return new HashedContents<Person>(p, Collections.emptyMap());
   }
-
-
 
   public static class Person {
 

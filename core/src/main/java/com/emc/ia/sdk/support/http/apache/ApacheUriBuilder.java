@@ -9,7 +9,6 @@ import org.apache.http.client.utils.URIBuilder;
 
 import com.emc.ia.sdk.support.http.UriBuilder;
 
-
 public class ApacheUriBuilder implements UriBuilder {
 
   private final URIBuilder builder;
@@ -31,7 +30,8 @@ public class ApacheUriBuilder implements UriBuilder {
   @Override
   public String build() {
     try {
-      return builder.build().toString();
+      return builder.build()
+        .toString();
     } catch (URISyntaxException e) {
       throw new IllegalStateException(e);
     }

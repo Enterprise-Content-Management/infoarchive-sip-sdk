@@ -5,7 +5,6 @@ package com.emc.ia.sdk.support.io;
 
 import java.io.File;
 
-
 /**
  * Delete a file.
  */

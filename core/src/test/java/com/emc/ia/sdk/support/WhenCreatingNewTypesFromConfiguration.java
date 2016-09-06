@@ -15,7 +15,6 @@ import org.junit.rules.ExpectedException;
 
 import com.emc.ia.sdk.support.test.RandomData;
 
-
 public class WhenCreatingNewTypesFromConfiguration {
 
   @Rule
@@ -28,7 +27,8 @@ public class WhenCreatingNewTypesFromConfiguration {
     Class<?> type = HashMap.class; // NOPMD LooseCoupling
     Map<String, String> configuration = Collections.singletonMap(option, type.getName());
 
-    Map<?, ?> instance = NewInstance.fromConfiguration(configuration, option, null).as(Map.class);
+    Map<?, ?> instance = NewInstance.fromConfiguration(configuration, option, null)
+      .as(Map.class);
 
     assertEquals("Type", type, instance.getClass());
   }
@@ -37,7 +37,8 @@ public class WhenCreatingNewTypesFromConfiguration {
   public void shouldReturnInstanceOfDefaultClassWhenConfigurationIsMissing() {
     Class<?> type = HashMap.class; // NOPMD LooseCoupling
 
-    Map<?, ?> instance = NewInstance.fromConfiguration(Collections.emptyMap(), "", type.getName()).as(Map.class);
+    Map<?, ?> instance = NewInstance.fromConfiguration(Collections.emptyMap(), "", type.getName())
+      .as(Map.class);
 
     assertEquals("Type", type, instance.getClass());
   }
@@ -48,7 +49,8 @@ public class WhenCreatingNewTypesFromConfiguration {
     Class<Integer> type = Integer.class;
 
     thrown.expect(RuntimeException.class);
-    NewInstance.fromConfiguration(Collections.singletonMap(option, type.getName()), option, null).as(type);
+    NewInstance.fromConfiguration(Collections.singletonMap(option, type.getName()), option, null)
+      .as(type);
   }
 
 }

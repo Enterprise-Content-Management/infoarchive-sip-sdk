@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-
 public class WhenCreatingUniqueDirectories {
 
   @Rule
@@ -33,6 +32,5 @@ public class WhenCreatingUniqueDirectories {
     thrown.expect(RuntimeIoException.class);
     UniqueDirectory.in(temporaryFolder.newFile());
   }
-
 
 }

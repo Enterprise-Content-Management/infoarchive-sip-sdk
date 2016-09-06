@@ -19,7 +19,6 @@ import org.junit.rules.TemporaryFolder;
 
 import com.emc.ia.sdk.support.test.TestCase;
 
-
 public class WhenUnzippingFile extends TestCase {
 
   @Rule
@@ -37,7 +36,8 @@ public class WhenUnzippingFile extends TestCase {
       zipper.close();
     }
 
-    byte[] actual = Unzip.file(zip).andProcessEntry(entry, stream -> readContents(stream));
+    byte[] actual = Unzip.file(zip)
+      .andProcessEntry(entry, stream -> readContents(stream));
 
     assertArrayEquals("Contents", expected, actual);
   }

@@ -3,7 +3,8 @@
  */
 package com.emc.ia.sdk.support.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +19,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.emc.ia.sdk.support.test.TestCase;
-
 
 public class WhenBufferingDataToFile extends TestCase {
 

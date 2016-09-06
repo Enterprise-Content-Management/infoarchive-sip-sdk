@@ -74,8 +74,8 @@ public class ContentAssemblerDefault<D> implements ContentAssembler<D> {
 
   protected ContentInfo addContent(DigitalObject digitalObject) throws IOException {
     try (InputStream stream = digitalObject.get()) {
-      Collection<EncodedHash> hashes = zip.addEntry(digitalObject.getReferenceInformation(), stream,
-          contentHashAssembler);
+      Collection<EncodedHash> hashes =
+          zip.addEntry(digitalObject.getReferenceInformation(), stream, contentHashAssembler);
       metrics.inc(SipMetrics.SIZE_DIGITAL_OBJECTS, contentHashAssembler.numBytesHashed());
       return new ContentInfo(digitalObject.getReferenceInformation(), digitalObject.getMimeType(), hashes);
     }

@@ -14,7 +14,6 @@ import org.junit.rules.TemporaryFolder;
 
 import com.emc.ia.sdk.support.test.RandomData;
 
-
 public class WhenDeletingFile {
 
   @Rule

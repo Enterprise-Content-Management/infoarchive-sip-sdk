@@ -5,7 +5,6 @@ package com.emc.ia.sdk.support.io;
 
 import java.util.function.Supplier;
 
-
 /**
  * Supply instances of a particular type of {@linkplain DataBuffer}.
  */

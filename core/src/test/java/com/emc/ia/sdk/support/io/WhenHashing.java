@@ -3,7 +3,8 @@
  */
 package com.emc.ia.sdk.support.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,7 +14,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 import com.emc.ia.sdk.support.test.TestCase;
-
 
 public class WhenHashing extends TestCase {
 
@@ -28,12 +28,12 @@ public class WhenHashing extends TestCase {
     Collection<EncodedHash> actual = hashAssembler.get();
 
     assertEquals("# hashes", 1, actual.size());
-    EncodedHash encodedHash = actual.iterator().next();
+    EncodedHash encodedHash = actual.iterator()
+      .next();
     assertEquals("Algorithm", "SHA-1", encodedHash.getHashFunction());
     assertEquals("Encoding", "base64", encodedHash.getEncoding());
-    assertArrayEquals("Digest",
-        MessageDigest.getInstance("SHA-1").digest(content),
-        Base64.decodeBase64(encodedHash.getValue()));
+    assertArrayEquals("Digest", MessageDigest.getInstance("SHA-1")
+      .digest(content), Base64.decodeBase64(encodedHash.getValue()));
   }
 
   @Test

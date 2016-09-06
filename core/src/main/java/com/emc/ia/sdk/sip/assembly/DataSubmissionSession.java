@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import com.emc.ia.sdk.sip.assembly.PackagingInformation.PackagingInformationBuilder;
 
-
 /**
  * <a href="http://public.ccsds.org/publications/archive/650x0m2.pdf">Data Submission Session</a>. A DSS is probably
  * easiest created using a {@linkplain DataSubmissionSession#builder() builder}.
@@ -26,7 +25,8 @@ public class DataSubmissionSession {
   private final String application;
   private final String retentionClass;
 
-  public DataSubmissionSession(String id, String holding, String schema, Date productionDate, Date baseRetentionDate, // NOPMD ExcessiveParameterList
+  public DataSubmissionSession(String id, String holding, String schema, Date productionDate, Date baseRetentionDate, // NOPMD
+                                                                                                                      // ExcessiveParameterList
       String producer, String entity, int priority, String application, String retentionClass) {
     this.id = id;
     this.holding = holding;
@@ -87,7 +87,6 @@ public class DataSubmissionSession {
     return new DataSubmissionSessionBuilder();
   }
 
-
   /**
    * <a href="http://c2.com/cgi/wiki?BuilderPattern">Builder</a> object to construct a
    * {@linkplain DataSubmissionSession DSS}.
@@ -95,7 +94,8 @@ public class DataSubmissionSession {
   public static class DataSubmissionSessionBuilder {
 
     private final PackagingInformationBuilder packagingInformationBuilder;
-    private String id = UUID.randomUUID().toString();
+    private String id = UUID.randomUUID()
+      .toString();
     private String holding;
     private String schema;
     private Date productionDate = new Date();

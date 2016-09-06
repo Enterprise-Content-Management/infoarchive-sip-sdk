@@ -15,7 +15,6 @@ import java.util.function.Supplier;
 
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 
-
 /**
  * Digital Object (an object composed of a set of bit sequences) that is the original target of
  * <a href="http://public.ccsds.org/publications/archive/650x0m2.pdf">Long Term Preservation</a> in an Archive.
@@ -37,7 +36,6 @@ public interface DigitalObject extends Supplier<InputStream> {
    * @return The MIME type of the content
    */
   String getMimeType();
-
 
   /**
    * Create a {@linkplain DigitalObject} from a file.
@@ -76,6 +74,7 @@ public interface DigitalObject extends Supplier<InputStream> {
   static DigitalObject fromSupplier(String referenceInformation, String mimeType, Supplier<InputStream> supplier) {
     Objects.requireNonNull(referenceInformation, "Missing reference information");
     return new DigitalObject() {
+
       @Override
       public InputStream get() {
         return supplier.get();
@@ -167,7 +166,6 @@ public interface DigitalObject extends Supplier<InputStream> {
   static DigitalObject fromString(String referenceInformation, String value, Charset charset) {
     return fromString(referenceInformation, UNKNOWN_MIME_TYPE, value, charset);
   }
-
 
   /**
    * Create a {@linkplain DigitalObject} from a classpath resource.

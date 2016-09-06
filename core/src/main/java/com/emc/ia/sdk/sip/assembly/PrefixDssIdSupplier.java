@@ -6,7 +6,6 @@ package com.emc.ia.sdk.sip.assembly;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-
 public abstract class PrefixDssIdSupplier implements Supplier<String> {
 
   private final String prefix;

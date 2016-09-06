@@ -14,7 +14,6 @@ import com.emc.ia.sdk.support.io.RepeatableInputStream;
 import com.emc.ia.sdk.support.test.TestCase;
 import com.emc.ia.sdk.support.xml.XmlUtil;
 
-
 public class XmlTestCase extends TestCase {
 
   protected Document assertValidXmlFile(File file, String documentType, String schema) throws IOException {

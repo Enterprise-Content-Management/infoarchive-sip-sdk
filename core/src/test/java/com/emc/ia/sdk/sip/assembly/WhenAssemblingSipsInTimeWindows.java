@@ -3,9 +3,16 @@
  */
 package com.emc.ia.sdk.sip.assembly;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +27,6 @@ import org.mockito.ArgumentCaptor;
 
 import com.emc.ia.sdk.support.datetime.Clock;
 import com.emc.ia.sdk.support.test.TestCase;
-
 
 @SuppressWarnings("unchecked")
 public class WhenAssemblingSipsInTimeWindows extends TestCase {
@@ -76,7 +82,8 @@ public class WhenAssemblingSipsInTimeWindows extends TestCase {
     ArgumentCaptor<FileGenerationMetrics> metricsCaptor = ArgumentCaptor.forClass(FileGenerationMetrics.class);
     verify(callback).accept(metricsCaptor.capture());
     FileGenerationMetrics metrics = metricsCaptor.getValue();
-    assertEquals("SIP directory", sipDir, metrics.getFile().getParentFile());
+    assertEquals("SIP directory", sipDir, metrics.getFile()
+      .getParentFile());
     assertSame("SIP metrics", sipMetrics, metrics.getMetrics());
   }
 

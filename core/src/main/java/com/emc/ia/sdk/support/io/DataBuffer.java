@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-
 /**
  * Something that can hold arbitrary data. The data can be both {@linkplain #openForWriting() written} and
  * {@linkplain #openForReading() read} back.

@@ -9,7 +9,6 @@ import java.util.Optional;
 import com.emc.ia.sdk.sip.assembly.DataSubmissionSession.DataSubmissionSessionBuilder;
 import com.emc.ia.sdk.support.io.EncodedHash;
 
-
 /**
  * <a href="http://public.ccsds.org/publications/archive/650x0m2.pdf">Packaging Information</a> for a Submission
  * Information Package (SIP), describing the contents of the SIP. It is probably easiest created using a
@@ -25,8 +24,8 @@ public class PackagingInformation {
   private long pageCount;
   private Optional<EncodedHash> pdiHash;
 
-  public PackagingInformation(DataSubmissionSession dss, Date productionDate, int sequenceNumber,
-      boolean isLast, long aiuCount, long pageCount, Optional<EncodedHash> pdiHash) {
+  public PackagingInformation(DataSubmissionSession dss, Date productionDate, int sequenceNumber, boolean isLast,
+      long aiuCount, long pageCount, Optional<EncodedHash> pdiHash) {
     this.dss = dss;
     this.productionDate = productionDate;
     this.sequenceNumber = sequenceNumber;
@@ -101,21 +100,19 @@ public class PackagingInformation {
 
   /**
    * @return A <a href="http://c2.com/cgi/wiki?BuilderPattern">builder</a> object to construct
-   * {@linkplain PackagingInformation}
+   *         {@linkplain PackagingInformation}
    */
   public static PackagingInformationBuilder builder() {
     return new PackagingInformationBuilder();
   }
 
   public static PackagingInformationBuilder builder(PackagingInformation prototype) {
-    return builder()
-      .dss(prototype.getDss())
+    return builder().dss(prototype.getDss())
       .last(prototype.isLast())
       .pageCount(prototype.getPageCount())
       .productionDate(prototype.getProductionDate())
       .sequenceNumber(prototype.getSequenceNumber());
   }
-
 
   /**
    * <a href="http://c2.com/cgi/wiki?BuilderPattern">Builder</a> object to construct {@linkplain PackagingInformation}.

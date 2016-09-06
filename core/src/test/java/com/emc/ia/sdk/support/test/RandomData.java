@@ -8,7 +8,6 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Random;
 
-
 public final class RandomData {
 
   private static final int MAX_STRING_LENGTH = 64;

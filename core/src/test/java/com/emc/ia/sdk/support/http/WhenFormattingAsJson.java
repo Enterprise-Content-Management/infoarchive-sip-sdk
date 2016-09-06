@@ -9,7 +9,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-
 public class WhenFormattingAsJson {
 
   private static final String STR = "TestString";

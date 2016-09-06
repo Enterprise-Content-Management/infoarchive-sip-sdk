@@ -15,7 +15,6 @@ import org.junit.Test;
 
 import com.emc.ia.sdk.support.test.TestCase;
 
-
 public class WhenIteratingOverEnumerations extends TestCase {
 
   @Test

@@ -3,9 +3,14 @@
  */
 package com.emc.ia.sdk.support.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,7 +25,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.emc.ia.sdk.support.test.TestCase;
-
 
 public class WhenZipping extends TestCase {
 

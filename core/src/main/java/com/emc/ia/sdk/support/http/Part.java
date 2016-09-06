@@ -3,7 +3,6 @@
  */
 package com.emc.ia.sdk.support.http;
 
-
 public class Part {
 
   private final String name;

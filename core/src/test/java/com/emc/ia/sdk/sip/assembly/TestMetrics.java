@@ -3,7 +3,6 @@
  */
 package com.emc.ia.sdk.sip.assembly;
 
-
 class TestMetrics implements Metrics {
 
   static final String FOO = "foo";

@@ -95,7 +95,8 @@ public abstract class XmlPdiAssembler<D> extends PdiAssembler<D> {
   /**
    * Add the domain object to the XML document, using {@linkplain #getBuilder()}.
    * @param domainObject The domain object to add
-   * @param contentInfo The reference information and the encoded hashed of the content associated with the domain object
+   * @param contentInfo The reference information and the encoded hashed of the content associated with the domain
+   *          object
    */
   protected abstract void doAdd(D domainObject, Map<String, ContentInfo> contentInfo);
 

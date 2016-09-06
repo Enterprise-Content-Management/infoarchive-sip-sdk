@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 
-
 /**
  * Assemble a ZIP from entries. The ZIP assembly process consists of the following stages:
  * <ol>

@@ -6,7 +6,6 @@ package com.emc.ia.sdk.support.io;
 import java.util.Collection;
 import java.util.Collections;
 
-
 /**
  * Function that computes no {@linkplain EncodedHash} at all.
  * (<a href="http://c2.com/cgi/wiki?NullObject">Null Object</a>)

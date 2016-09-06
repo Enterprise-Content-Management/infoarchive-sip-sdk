@@ -3,7 +3,8 @@
  */
 package com.emc.ia.sdk.sip.assembly;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.function.Supplier;
@@ -12,7 +13,6 @@ import org.junit.Test;
 
 import com.emc.ia.sdk.support.datetime.Dates;
 import com.emc.ia.sdk.support.test.TestCase;
-
 
 public class WhenGeneratingDssIds extends TestCase {
 

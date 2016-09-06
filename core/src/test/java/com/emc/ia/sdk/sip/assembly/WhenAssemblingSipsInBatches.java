@@ -3,9 +3,16 @@
  */
 package com.emc.ia.sdk.sip.assembly;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +27,6 @@ import org.junit.rules.TemporaryFolder;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.test.TestCase;
 
-
 @SuppressWarnings("unchecked")
 public class WhenAssemblingSipsInBatches extends TestCase {
 
@@ -31,20 +37,20 @@ public class WhenAssemblingSipsInBatches extends TestCase {
 
   @Before
   public void init() {
-    sipAssembler = SipAssembler.forPdi(somePackagingInformation(),
-        (Assembler<HashedContents<String>>)mock(Assembler.class));
+    sipAssembler =
+        SipAssembler.forPdi(somePackagingInformation(), (Assembler<HashedContents<String>>)mock(Assembler.class));
     segmentationStrategy = mock(SipSegmentationStrategy.class);
   }
 
   private PackagingInformation somePackagingInformation() {
     return PackagingInformation.builder()
-        .dss()
-            .holding(randomString(64))
-            .schema(randomString(64))
-            .entity(randomString(64))
-            .producer(randomString(64))
-        .end()
-        .build();
+      .dss()
+      .holding(randomString(64))
+      .schema(randomString(64))
+      .entity(randomString(64))
+      .producer(randomString(64))
+      .end()
+      .build();
   }
 
   @Test
@@ -61,7 +67,8 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     batcher.add(object2);
     batcher.add(object3);
     batcher.end();
-    Iterator<FileGenerationMetrics> sips = batcher.getSipsMetrics().iterator();
+    Iterator<FileGenerationMetrics> sips = batcher.getSipsMetrics()
+      .iterator();
 
     verify(segmentationStrategy, never()).shouldStartNewSip(eq(object1), any(SipMetrics.class));
     verify(segmentationStrategy).shouldStartNewSip(eq(object2), any(SipMetrics.class));
@@ -84,7 +91,8 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     assertTrue("Missing SIP #" + n, sips.hasNext());
 
     FileGenerationMetrics sip = sips.next();
-    assertEquals("SIP dir #" + n, folder.getRoot(), sip.getFile().getParentFile());
+    assertEquals("SIP dir #" + n, folder.getRoot(), sip.getFile()
+      .getParentFile());
     assertEquals("# objects in SIP #" + n, n, ((SipMetrics)sip.getMetrics()).numAius());
   }
 
@@ -97,7 +105,8 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     batcher.end();
     Collection<FileGenerationMetrics> sips = batcher.getSipsMetrics();
 
-    sips.forEach(sip -> assertEquals("SIP directory", dir, sip.getFile().getParentFile()));
+    sips.forEach(sip -> assertEquals("SIP directory", dir, sip.getFile()
+      .getParentFile()));
   }
 
 }

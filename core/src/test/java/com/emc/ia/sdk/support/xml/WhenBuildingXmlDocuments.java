@@ -3,7 +3,11 @@
  */
 package com.emc.ia.sdk.support.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -18,7 +22,6 @@ import org.w3c.dom.Element;
 
 import com.emc.ia.sdk.support.test.TestCase;
 
-
 public class WhenBuildingXmlDocuments extends TestCase {
 
   @Test
@@ -32,15 +35,15 @@ public class WhenBuildingXmlDocuments extends TestCase {
     String text = randomString();
 
     Element element = XmlBuilder.newDocument()
-        .namespace(namespace)
-        .element(root)
-            .attribute(attributeName, attributeValue)
-            .element(child1)
-            .end()
-            .element(child2, text)
-        .end()
-        .build()
-        .getDocumentElement();
+      .namespace(namespace)
+      .element(root)
+      .attribute(attributeName, attributeValue)
+      .element(child1)
+      .end()
+      .element(child2, text)
+      .end()
+      .build()
+      .getDocumentElement();
 
     assertEquals("Namespace", namespace, element.getNamespaceURI());
     assertEquals("Root", root, element.getLocalName());
@@ -67,11 +70,11 @@ public class WhenBuildingXmlDocuments extends TestCase {
   @Test
   public void shouldNotAddElementForEmptyCollection() {
     Element root = XmlBuilder.newDocument()
-        .element(randomString())
-            .elements(randomString(), randomString(), Collections.emptyList(), null)
-        .end()
-        .build()
-        .getDocumentElement();
+      .element(randomString())
+      .elements(randomString(), randomString(), Collections.emptyList(), null)
+      .end()
+      .build()
+      .getDocumentElement();
 
     assertNull("Added collection", root.getFirstChild());
   }
@@ -85,16 +88,18 @@ public class WhenBuildingXmlDocuments extends TestCase {
     List<String> collection = Arrays.asList(item1, item2);
 
     Element root = XmlBuilder.newDocument()
-        .element(collectionName)
-            .elements(collectionName, itemName, collection, (item, builder) -> builder.element(item).end())
-        .end()
-        .build()
-        .getDocumentElement();
+      .element(collectionName)
+      .elements(collectionName, itemName, collection, (item, builder) -> builder.element(item)
+        .end())
+      .end()
+      .build()
+      .getDocumentElement();
 
     Element collectionElement = XmlUtil.getFirstChildElement(root, collectionName);
     assertNotNull("Missing collection element", collectionElement);
 
-    Iterator<Element> itemElements = XmlUtil.namedElementsIn(collectionElement, itemName).iterator();
+    Iterator<Element> itemElements = XmlUtil.namedElementsIn(collectionElement, itemName)
+      .iterator();
     assertTrue("Missing item #1", itemElements.hasNext());
 
     Element itemElement = itemElements.next();

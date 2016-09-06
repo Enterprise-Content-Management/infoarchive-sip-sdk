@@ -10,7 +10,6 @@ import java.util.Iterator;
 
 import com.emc.ia.sdk.support.io.DataBuffer;
 
-
 /**
  * {@linkplain #generate(Iterable, DataBuffer) Generate} a product by {@linkplain Assembler assembling} components.
  * @param <C> The type of components to assemble

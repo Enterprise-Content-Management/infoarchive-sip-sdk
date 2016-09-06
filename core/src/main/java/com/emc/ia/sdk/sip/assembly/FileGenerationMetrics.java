@@ -5,10 +5,9 @@ package com.emc.ia.sdk.sip.assembly;
 
 import java.io.File;
 
-
 /**
  * Metrics about file generation.
-*/
+ */
 public class FileGenerationMetrics {
 
   private final File file;
