@@ -8,11 +8,14 @@ import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.HTTP_CLIENT_CLA
 import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_URI;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 
+import com.emc.ia.sdk.configurer.InfoArchiveConfiguration;
 import com.emc.ia.sdk.configurer.InfoArchiveConfigurers;
 import com.emc.ia.sdk.sip.client.dto.Aics;
 import com.emc.ia.sdk.sip.client.dto.Application;
@@ -63,18 +66,9 @@ public final class ArchiveClients {
     RestClient client = potentialClient.orElseGet(() -> createRestClient(configuration));
     InfoArchiveConfigurers.propertyBased(configuration, client)
       .configure();
-    String billboardUrl = Objects.requireNonNull(configuration.get(SERVER_URI),
-        "The property " + SERVER_URI + " cannot be null or empty.");
-    String applicationName = Objects.requireNonNull(configuration.get(APPLICATION_NAME),
-        "The property " + APPLICATION_NAME + " cannot be null or empty.");
+    String billboardUrl = getBillboadUrl(configuration);
+    String applicationName = getApplicationName(configuration);
     return client(client, billboardUrl, applicationName);
-  }
-
-  private static RestClient createRestClient(Map<String, String> configuration) {
-    HttpClient httpClient =
-        NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
-          .as(HttpClient.class);
-    return new RestClient(httpClient);
   }
 
   /**
@@ -84,7 +78,32 @@ public final class ArchiveClients {
    * @return An ArchiveClient
    */
   public static ArchiveClient client(String billboardUrl, String applicationName) {
-    RestClient restClient = new RestClient(new ApacheHttpClient());
+    RestClient restClient = createDefaultRestClient();
+    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, billboardUrl, applicationName));
+  }
+
+  /**
+   * Creates a new ArchiveClient instance without installing any artifacts in the archive using the sdk configuration
+   * file.
+   * @return An ArchiveClient
+   */
+  public static ArchiveClient client() {
+    Map<String, String> configuration = getSdkConfiguration();
+    RestClient restClient = createRestClient(configuration);
+    String billboardUrl = getBillboadUrl(configuration);
+    String applicationName = getApplicationName(configuration);
+    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, billboardUrl, applicationName));
+  }
+
+  /**
+   * Creates a new ArchiveClient instance without installing any artifacts in the archive.
+   * @param configuration The configuration map.
+   * @return An ArchiveClient
+   */
+  public static ArchiveClient client(Map<String, String> configuration) {
+    RestClient restClient = createRestClient(configuration);
+    String billboardUrl = getBillboadUrl(configuration);
+    String applicationName = getApplicationName(configuration);
     return new InfoArchiveRestClient(restClient, appResourceCache(restClient, billboardUrl, applicationName));
   }
 
@@ -139,4 +158,45 @@ public final class ArchiveClients {
     resourceCache.setAipResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_AIPS));
   }
 
+  private static RestClient createDefaultRestClient() {
+    Map<String, String> configuration = getSdkConfiguration();
+    return createRestClient(configuration);
+  }
+
+  private static Map<String, String> getSdkConfiguration() {
+    try (InputStream stream = ClientConfigurationFinder.find()) {
+      return asMap(stream);
+    } catch (IOException e) {
+      throw new RuntimeIoException(e);
+    }
+  }
+
+  private static Map<String, String> asMap(InputStream stream) throws IOException {
+    Properties properties = new Properties();
+    properties.load(stream);
+    Map<String, String> map = new HashMap<String, String>();
+    for (Map.Entry<Object, Object> e : properties.entrySet()) {
+      map.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
+    }
+    return map;
+  }
+
+  private static RestClient createRestClient(Map<String, String> configuration) {
+    HttpClient httpClient =
+        NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
+          .as(HttpClient.class);
+    RestClient client = new RestClient(httpClient);
+    client.init(configuration.get(InfoArchiveConfiguration.SERVER_AUTENTICATON_TOKEN));
+    return client;
+  }
+
+  private static String getApplicationName(Map<String, String> configuration) {
+    return Objects.requireNonNull(configuration.get(APPLICATION_NAME),
+        "The property " + APPLICATION_NAME + " cannot be null or empty.");
+  }
+
+  private static String getBillboadUrl(Map<String, String> configuration) {
+    return Objects.requireNonNull(configuration.get(SERVER_URI),
+        "The property " + SERVER_URI + " cannot be null or empty.");
+  }
 }
