@@ -10,6 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+
 /**
  * Default implementation of {@linkplain Clock}.
  */
@@ -36,12 +37,10 @@ public class DefaultClock implements Clock {
     Timer timer = new Timer();
     timers.put(name, timer);
     timer.schedule(new TimerTask() {
-
       @Override
       public void run() {
         try {
-          timers.remove(name)
-            .cancel();
+          DefaultClock.this.cancel(name);
         } finally {
           task.run();
         }
