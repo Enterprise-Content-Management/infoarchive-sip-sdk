@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -72,6 +74,10 @@ import com.emc.ia.sdk.sip.client.dto.SubPriority;
 import com.emc.ia.sdk.sip.client.dto.Tenant;
 import com.emc.ia.sdk.sip.client.dto.XForm;
 import com.emc.ia.sdk.sip.client.dto.XdbPdiConfig;
+import com.emc.ia.sdk.sip.client.dto.export.ExportConfiguration;
+import com.emc.ia.sdk.sip.client.dto.export.ExportConfigurations;
+import com.emc.ia.sdk.sip.client.dto.export.ExportPipeline;
+import com.emc.ia.sdk.sip.client.dto.export.ExportPipelines;
 import com.emc.ia.sdk.sip.client.dto.result.Column;
 import com.emc.ia.sdk.sip.client.dto.result.Column.DataType;
 import com.emc.ia.sdk.sip.client.dto.result.Column.DefaultSort;
@@ -90,9 +96,11 @@ import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.RestClient;
 
+@SuppressWarnings("PMD.ExcessiveClassLength")
 public class PropertyBasedConfigurer
     implements InfoArchiveConfigurer, InfoArchiveLinkRelations, InfoArchiveConfiguration {
 
+  private static final String TYPE_EXPORT_PIPELINE = "export-pipeline";
   private static final int WAIT_RACE_CONDITION_MS = 2000;
   private static final String FORMAT_XML = "xml";
   private static final String FORMAT_XSD = "xsd";
@@ -125,6 +133,8 @@ public class PropertyBasedConfigurer
       ensureFederation();
       ensureDatabase();
       ensureFileSystemRoot();
+      ensureTenantLevelExportPipelines();
+      ensureTenantLevelExportConfigurations();
       ensureApplication();
       ensureSpace();
       ensureSpaceRootLibrary();
@@ -145,6 +155,8 @@ public class PropertyBasedConfigurer
       ensureQuota();
       ensureQuery();
       ensureResultConfigurationHelper();
+      ensureExportPipelines();
+      ensureExportConfigurations();
       ensureSearch();
     } catch (IOException e) {
       throw new RuntimeIoException(e);
@@ -480,6 +492,121 @@ public class PropertyBasedConfigurer
     result.getSips()
       .add(new Sip());
     return result;
+  }
+
+  private void ensureTenantLevelExportPipelines() throws IOException {
+    String defaultPipelineName = "search-results-csv-gzip";
+    ExportPipelines pipelines =
+        restClient.follow(configurationState.getTenant(), LINK_EXPORT_PIPELINE, ExportPipelines.class);
+    ExportPipeline pipeline = pipelines.byName("");
+    if (pipeline == null) {
+      pipeline = new ExportPipeline();
+      pipeline.setName(defaultPipelineName);
+      pipeline.setDescription("gzip envelope for csv export");
+      pipeline.setIncludesContent(false);
+      pipeline.setInputFormat("ROW_COLUMN");
+      pipeline.setOutputFormat("csv");
+      pipeline.setEnvelopeFormat("gz");
+      pipeline.setType("XPROC");
+      pipeline.setComposite(true);
+      pipeline.setContent(
+          "<p:declare-step version=\"2.0\" xmlns:p=\"http://www.w3.org/ns/xproc\" xmlns:ia=\"http://infoarchive.emc.com/xproc\">\n    <p:input port=\"source\" sequence=\"true\"/>\n    <ia:search-results-csv/>\n    <ia:gzip/>\n    <ia:store-export-result format=\"csv\"/>\n</p:declare-step>");
+
+      createItem(pipelines, pipeline);
+      pipeline = restClient.refresh(pipelines)
+        .byName(defaultPipelineName);
+      Objects.requireNonNull(pipeline, "Could not create export pipeline");
+    }
+    configurationState.setObjectUri(TYPE_EXPORT_PIPELINE, defaultPipelineName, pipeline.getSelfUri());
+  }
+
+  private void ensureTenantLevelExportConfigurations() throws IOException {
+    String defaultName = "gzip_csv";
+    ExportConfigurations configurations =
+        restClient.follow(configurationState.getTenant(), LINK_EXPORT_CONFIG, ExportConfigurations.class);
+    ExportConfiguration exportConfiguration = configurations.byName(defaultName);
+    if (exportConfiguration == null) {
+      exportConfiguration = new ExportConfiguration();
+      exportConfiguration.setName(defaultName);
+      exportConfiguration.setDescription("configurations");
+      exportConfiguration.setExportType("ASYNCHRONOUS");
+      exportConfiguration.setPipeline(configurationState.getObjectUri(TYPE_EXPORT_PIPELINE, "search-results-csv-gzip"));
+      createItem(configurations, exportConfiguration);
+      exportConfiguration = restClient.refresh(configurations)
+        .byName(defaultName);
+      Objects.requireNonNull(exportConfiguration, "Could not create export configuration");
+    }
+    configurationState.setObjectUri("export-configuration", defaultName, exportConfiguration.getSelfUri());
+
+  }
+
+  private void ensureExportPipelines() throws IOException {
+    String rawPipelineNames = configuration.get(EXPORT_PIPELINE_NAME);
+    if (rawPipelineNames != null && !rawPipelineNames.isEmpty()) {
+      String[] pipelineNames = rawPipelineNames.split(",");
+      for (String pipelineName : pipelineNames) {
+        ExportPipelines pipelines =
+            restClient.follow(configurationState.getApplication(), LINK_EXPORT_PIPELINE, ExportPipelines.class);
+        ExportPipeline pipeline = pipelines.byName(pipelineName);
+        if (pipeline == null) {
+          createItem(pipelines, createExportPipeline(pipelineName));
+          pipeline = restClient.refresh(pipelines)
+            .byName(pipelineName);
+          Objects.requireNonNull(pipeline, "Could not create export pipeline");
+        }
+        configurationState.setObjectUri(TYPE_EXPORT_PIPELINE, pipelineName, pipeline.getSelfUri());
+      }
+    }
+  }
+
+  private void ensureExportConfigurations() throws IOException {
+    String rawConfigurationNames = configuration.get(EXPORT_CONFIG_NAME);
+    if (rawConfigurationNames != null && !rawConfigurationNames.isEmpty()) {
+      String[] configurationNames = rawConfigurationNames.split(",");
+      for (String configurationName : configurationNames) {
+        ExportConfigurations configurations =
+            restClient.follow(configurationState.getApplication(), LINK_EXPORT_CONFIG, ExportConfigurations.class);
+        ExportConfiguration exportConfiguration = configurations.byName(configurationName);
+        if (exportConfiguration == null) {
+          createItem(configurations, createExportConfiguration(configurationName));
+          exportConfiguration = restClient.refresh(configurations)
+            .byName(configurationName);
+          Objects.requireNonNull(configuration, "Could not create export configuration");
+        }
+        configurationState.setObjectUri("export-configuration", configurationName, exportConfiguration.getSelfUri());
+      }
+    }
+  }
+
+  private ExportConfiguration createExportConfiguration(String name) {
+    ExportConfiguration conf = new ExportConfiguration();
+    conf.setName(name);
+    conf.setExportType(getString(EXPORT_CONFIG_TYPE_TEMPLATE, name));
+    conf.setPipeline(
+        configurationState.getObjectUri(TYPE_EXPORT_PIPELINE, getString(EXPORT_CONFIG_PIPELINE_TEMPLATE, name)));
+    return conf;
+  }
+
+  private ExportPipeline createExportPipeline(String name) {
+    ExportPipeline pipeline = new ExportPipeline();
+    pipeline.setName(name);
+    pipeline.setComposite(getBoolean(EXPORT_PIPELINE_COMPOSITE_TEMPLATE, name));
+    pipeline.setContent(getString(EXPORT_PIPELINE_CONTENT_TEMPLATE, name));
+    pipeline.setDescription(getString(EXPORT_PIPELINE_DESCRIPTION_TEMPLATE, name));
+    pipeline.setEnvelopeFormat(getString(EXPORT_PIPELINE_ENVELOPE_FORMAT_TEMPLATE, name));
+    pipeline.setIncludesContent(getBoolean(EXPORT_PIPELINE_INCLUDES_CONTENT_TEMPLATE, name));
+    pipeline.setInputFormat(getString(EXPORT_PIPELINE_INPUT_FORMAT_TEMPLATE, name));
+    pipeline.setOutputFormat(getString(EXPORT_PIPELINE_OUTPUT_FORMAT_TEMPLATE, name));
+    pipeline.setType(getString(EXPORT_PIPELINE_TYPE_TEMPLATE, name));
+    return pipeline;
+  }
+
+  private boolean getBoolean(String key, String name) {
+    return Boolean.parseBoolean(getString(key, name));
+  }
+
+  private String getString(String key, String name) {
+    return configuration.get(resolveTemplatedKey(key, name));
   }
 
   private void ensureIngestNode() throws IOException {
@@ -968,6 +1095,13 @@ public class PropertyBasedConfigurer
     List<Column> columns = resultMaster.getDefaultTab()
       .getColumns();
 
+    resultMaster.getDefaultTab()
+      .setExportEnabled(getBoolean(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE, searchName));
+    resultMaster.getDefaultTab()
+      .getExportConfigurations()
+      .addAll(uriFromNamesAndType("export-configuration",
+          getStrings(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName)));
+
     RepeatingConfigReader reader = new RepeatingConfigReader("maincolumns",
         resolveTemplatedKeys(Arrays.asList(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME,
             SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH,
@@ -991,6 +1125,30 @@ public class PropertyBasedConfigurer
       columns.add(column);
     }
     return resultMaster;
+  }
+
+  private List<String> uriFromNamesAndType(String type, Collection<String> strings) {
+    return strings.stream()
+      .map(it -> configurationState.getObjectUri(type, it))
+      .collect(Collectors.toList());
+  }
+
+  private List<String> getStrings(String key, String variable) {
+    String rawString = getString(key, variable);
+    if (rawString != null) {
+      String[] values = rawString.split(",");
+      List<String> normalizedStrings = new ArrayList<String>();
+      for (String value : values) {
+        if (value != null) {
+          String normalizedValue = value.trim();
+          if (!normalizedValue.isEmpty()) {
+            normalizedStrings.add(normalizedValue);
+          }
+        }
+      }
+      return normalizedStrings;
+    }
+    return Collections.emptyList();
   }
 
 }

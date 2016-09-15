@@ -13,6 +13,7 @@ public class Tab {
   private String description;
   private List<Column> columns;
   private boolean exportEnabled;
+  private List<String> exportConfigurations;
 
   public Tab() {
     this(null);
@@ -21,6 +22,7 @@ public class Tab {
   public Tab(String name) {
     this.name = name;
     columns = new ArrayList<>();
+    setExportConfigurations(new ArrayList<>());
   }
 
   public String getName() {
@@ -61,5 +63,13 @@ public class Tab {
 
   public void setExportEnabled(boolean exportEnabled) {
     this.exportEnabled = exportEnabled;
+  }
+
+  public List<String> getExportConfigurations() {
+    return exportConfigurations;
+  }
+
+  public void setExportConfigurations(List<String> exportConfigurations) {
+    this.exportConfigurations = exportConfigurations;
   }
 }

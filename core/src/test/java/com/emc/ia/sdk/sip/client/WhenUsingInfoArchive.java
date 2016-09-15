@@ -80,6 +80,10 @@ import com.emc.ia.sdk.sip.client.dto.Stores;
 import com.emc.ia.sdk.sip.client.dto.Tenant;
 import com.emc.ia.sdk.sip.client.dto.XForm;
 import com.emc.ia.sdk.sip.client.dto.XForms;
+import com.emc.ia.sdk.sip.client.dto.export.ExportConfiguration;
+import com.emc.ia.sdk.sip.client.dto.export.ExportConfigurations;
+import com.emc.ia.sdk.sip.client.dto.export.ExportPipeline;
+import com.emc.ia.sdk.sip.client.dto.export.ExportPipelines;
 import com.emc.ia.sdk.sip.client.dto.query.Comparison;
 import com.emc.ia.sdk.sip.client.dto.query.Operator;
 import com.emc.ia.sdk.sip.client.dto.query.SearchQuery;
@@ -114,7 +118,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private Aic aic;
 
   @Before
-  public void init() throws IOException {
+  public void init() throws IOException { // NOPMD NcssMethodCount
     prepareConfiguration();
 
     Services resource = new Services();
@@ -122,6 +126,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Tenant tenant = new Tenant();
     application = new Application();
     applications = mock(Applications.class);
+    ExportConfigurations exportConfigurations = mock(ExportConfigurations.class);
+    ExportPipelines exportPipelines = mock(ExportPipelines.class);
     Federations federations = mock(Federations.class);
     Spaces spaces = mock(Spaces.class);
     Databases databases = mock(Databases.class);
@@ -167,6 +173,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.get(BILLBOARD_URI, Services.class)).thenReturn(resource);
     when(restClient.follow(resource, LINK_TENANT, Tenant.class)).thenReturn(tenant);
     when(link.getHref()).thenReturn(BILLBOARD_URI);
+    mockCollection(ExportConfigurations.class, exportConfigurations);
+    mockCollection(ExportPipelines.class, exportPipelines);
+
     mockCollection(Applications.class, applications);
     mockCollection(Federations.class, federations);
     mockCollection(Spaces.class, spaces);
@@ -195,6 +204,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
     mockByName(federations, new Federation());
     mockByName(databases, new Database());
+    mockByName(exportConfigurations, new ExportConfiguration());
+    mockByName(exportPipelines, new ExportPipeline());
     mockByName(applications, application);
     mockByName(spaces, new Space());
     mockByName(spaceRootLibraries, new SpaceRootLibrary());
