@@ -10,3 +10,7 @@ bin/
 build/
 classes/
 .DS_Store
+
+# IntellIj Idea project files
+.idea/
+*.iml

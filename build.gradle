@@ -36,6 +36,7 @@ subprojects {
     httpmime
     jacksonCore
     jacksonDatabind
+    orgJson
     validation
     xmlunit
 
@@ -54,6 +55,7 @@ subprojects {
     jacksonDatabind "com.fasterxml.jackson.core:jackson-databind:$jacksonCoreVersion"
     junit "junit:junit:$junitVersion"
     mockito "org.mockito:mockito-core:$mockitoVersion"
+    orgJson "org.json:json:$orgJsonVersion"
     validation "javax.validation:validation-api:$validationVersion"
     xmlunit "org.xmlunit:xmlunit-core:$xmlunitVersion"
   }
@@ -136,7 +138,7 @@ subprojects {
 project(':infoarchive-sip-sdk-core') {
   configurations {
     compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, evoInflector, httpclient,
-        httpmime, jacksonCore, jacksonDatabind, validation
+        httpmime, jacksonCore, jacksonDatabind, orgJson, validation
 
   }
 

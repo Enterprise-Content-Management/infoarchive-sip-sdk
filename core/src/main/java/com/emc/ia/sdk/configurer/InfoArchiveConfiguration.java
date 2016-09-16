@@ -11,6 +11,9 @@ public interface InfoArchiveConfiguration {
 
   String SERVER_PREFIX = PREFIX + "server.";
   String SERVER_AUTENTICATON_TOKEN = SERVER_PREFIX + "authentication.token";
+  String SERVER_AUTHENTICATION_USER = SERVER_PREFIX + "authentication.user";
+  String SERVER_AUTHENTICATION_PASSWORD = SERVER_PREFIX + "authentication.password";
+  String SERVER_AUTHENTICATION_GATEWAY = SERVER_PREFIX + "authentication.gateway";
   String SERVER_URI = SERVER_PREFIX + "uri";
 
   String TENANT_NAME = PREFIX + "tenant." + NAME;
