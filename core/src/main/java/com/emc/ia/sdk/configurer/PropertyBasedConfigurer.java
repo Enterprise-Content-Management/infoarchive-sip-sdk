@@ -9,15 +9,15 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import org.json.JSONObject;
+import java.util.stream.Stream;
 
 import com.emc.ia.sdk.sip.client.dto.Aic;
 import com.emc.ia.sdk.sip.client.dto.Aics;
@@ -91,13 +91,16 @@ import com.emc.ia.sdk.sip.client.rest.RestCache;
 import com.emc.ia.sdk.support.NewInstance;
 import com.emc.ia.sdk.support.RepeatingConfigReader;
 import com.emc.ia.sdk.support.http.BinaryPart;
-import com.emc.ia.sdk.support.http.Header;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.http.MediaTypes;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
+import com.emc.ia.sdk.support.rest.AuthenticationStrategy;
+import com.emc.ia.sdk.support.rest.BasicAuthentication;
+import com.emc.ia.sdk.support.rest.JwtAuthentication;
 import com.emc.ia.sdk.support.rest.LinkContainer;
+import com.emc.ia.sdk.support.rest.NonExpiringTokenAuthentication;
 import com.emc.ia.sdk.support.rest.RestClient;
 
 @SuppressWarnings("PMD.ExcessiveClassLength")
@@ -134,7 +137,6 @@ public class PropertyBasedConfigurer
   @Override
   public void configure() {
     try {
-      authenticate();
       initRestClient();
       ensureTenant();
       ensureFederation();
@@ -178,61 +180,23 @@ public class PropertyBasedConfigurer
     return configuration = config;
   }
 
-  private void authenticate() {
-    if (isBasicAuthorizationConfiguration()) {
-      final String token = "Basic " + Base64.getEncoder().encodeToString(
-          (configuration.get(SERVER_AUTHENTICATION_USER) + ":" + configuration.get(SERVER_AUTHENTICATION_PASSWORD))
-              .getBytes(StandardCharsets.UTF_8)
-      );
-      configuration.put(SERVER_AUTENTICATON_TOKEN, token);
-    } else if (isJwtAuthorizationConfiguration()) {
-      final String basicAuthString = CLIENT_ID + ":" + CLIENT_SECRET;
-      final String authHeader = "Basic "
-          + Base64.getEncoder().encodeToString(basicAuthString.getBytes(StandardCharsets.US_ASCII));
-      final String uri = prepareAuthUri(configuration.get(SERVER_AUTHENTICATION_GATEWAY));
-      final String payload = "grant_type=password&username=" + configuration.get(SERVER_AUTHENTICATION_USER)
-                                 + "&password=" + configuration.get(SERVER_AUTHENTICATION_PASSWORD);
-      final Collection<Header> headers = Collections.singletonList(new Header("Authorisation", authHeader));
-      final HttpClient httpClient = new ApacheHttpClient();
-      String response;
-      try {
-        response = httpClient.post(uri, headers, payload, String.class);
-      } catch (IOException ex) {
-        throw new RuntimeException("Could not make POST to gateway: " + uri, ex);
-      }
-      final JSONObject responseJson = new JSONObject(response);
-      configuration.put(SERVER_AUTENTICATON_TOKEN, responseJson.getString(""));
-    }
-  }
-
-  private boolean isBasicAuthorizationConfiguration() {
-    return configuration.containsKey(SERVER_AUTHENTICATION_USER)
-            && configuration.containsKey(SERVER_AUTHENTICATION_PASSWORD)
-            && !configuration.containsKey(SERVER_AUTHENTICATION_GATEWAY);
-  }
-
-  private boolean isJwtAuthorizationConfiguration() {
-    return configuration.containsKey(SERVER_AUTHENTICATION_USER)
-            && configuration.containsKey(SERVER_AUTHENTICATION_PASSWORD)
-            && configuration.containsKey(SERVER_AUTHENTICATION_GATEWAY);
-  }
-
-  private String prepareAuthUri(final String gateway) {
-    if (gateway.endsWith("/")) {
-      return gateway.substring(0, gateway.length() - 1) + "/oauth/token";
-    } else {
-      return gateway + "/oauth/token";
-    }
-  }
-
   private void initRestClient() throws IOException {
     if (restClient == null) {
       HttpClient httpClient =
           NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
             .as(HttpClient.class);
-      restClient = new RestClient(httpClient);
+      AuthenticationStrategy authentication = Stream.<Supplier<Optional<AuthenticationStrategy>>>of(
+          () -> NonExpiringTokenAuthentication.fromConfiguration(configuration),
+          () -> BasicAuthentication.fromConfiguration(configuration),
+          () -> JwtAuthentication.fromConfiguration(configuration)
+        ).map(Supplier::get)
+          .filter(Optional::isPresent)
+          .map(Optional::get)
+          .findFirst()
+          .orElseThrow(() -> new NullPointerException("Authentication is not configured"));
+      restClient = new RestClient(httpClient, authentication);
     }
-    restClient.init(configuration.get(SERVER_AUTENTICATON_TOKEN));
+    restClient.init();
     configurationState.setServices(restClient.get(configured(SERVER_URI), Services.class));
   }
 

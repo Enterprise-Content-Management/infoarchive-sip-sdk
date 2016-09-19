@@ -14,8 +14,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
-import com.emc.ia.sdk.configurer.InfoArchiveConfiguration;
 import com.emc.ia.sdk.configurer.InfoArchiveConfigurers;
 import com.emc.ia.sdk.sip.client.dto.Aics;
 import com.emc.ia.sdk.sip.client.dto.Application;
@@ -29,6 +30,10 @@ import com.emc.ia.sdk.support.NewInstance;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
+import com.emc.ia.sdk.support.rest.AuthenticationStrategy;
+import com.emc.ia.sdk.support.rest.BasicAuthentication;
+import com.emc.ia.sdk.support.rest.JwtAuthentication;
+import com.emc.ia.sdk.support.rest.NonExpiringTokenAuthentication;
 import com.emc.ia.sdk.support.rest.RestClient;
 
 /**
@@ -185,8 +190,17 @@ public final class ArchiveClients {
     HttpClient httpClient =
         NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
           .as(HttpClient.class);
-    RestClient client = new RestClient(httpClient);
-    client.init(configuration.get(InfoArchiveConfiguration.SERVER_AUTENTICATON_TOKEN));
+    AuthenticationStrategy authentication = Stream.<Supplier<Optional<AuthenticationStrategy>>>of(
+        () -> NonExpiringTokenAuthentication.fromConfiguration(configuration),
+        () -> BasicAuthentication.fromConfiguration(configuration),
+        () -> JwtAuthentication.fromConfiguration(configuration)
+    ).map(Supplier::get)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .findFirst()
+        .orElseThrow(() -> new RuntimeException("Authentication is not configured"));
+    RestClient client = new RestClient(httpClient, authentication);
+    client.init();
     return client;
   }
 

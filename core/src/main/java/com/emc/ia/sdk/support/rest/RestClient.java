@@ -20,17 +20,20 @@ import com.emc.ia.sdk.support.http.UriBuilder;
 public class RestClient implements Closeable, StandardLinkRelations {
 
   private final HttpClient httpClient;
+  private final AuthenticationStrategy authentication;
   private final JsonFormatter formatter = new JsonFormatter();
   private final Collection<Header> headers = new ArrayList<Header>();
   private final Collection<Header> headersNoFormat = new ArrayList<Header>();
 
-  public RestClient(HttpClient client) {
+  public RestClient(HttpClient client, AuthenticationStrategy authentication) {
     this.httpClient = Objects.requireNonNull(client, "Missing HTTP client");
+    this.authentication = authentication;
   }
 
-  public void init(String bearerToken) {
-    headers.add(new Header("Authorization", "Bearer " + bearerToken));
-    headersNoFormat.add(new Header("Authorization", "Bearer " + bearerToken));
+  public void init() {
+    String token = authentication.issueToken();
+    headers.add(new Header("Authorization", token));
+    headersNoFormat.add(new Header("Authorization", token));
     headers.add(new Header("Accept", MediaTypes.HAL));
   }
 

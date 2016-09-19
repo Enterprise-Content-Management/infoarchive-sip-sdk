@@ -28,12 +28,14 @@ import com.emc.ia.sdk.support.test.TestCase;
 public class WhenMakingRestCalls extends TestCase {
 
   private final HttpClient httpClient = mock(HttpClient.class);
-  private final RestClient restClient = new RestClient(httpClient);
+  private final AuthenticationStrategy authentication = mock(AuthenticationStrategy.class);
+  private final RestClient restClient = new RestClient(httpClient, authentication);
   private final String token = randomString();
 
   @Before
   public void init() {
-    restClient.init(token);
+    when(authentication.issueToken()).thenReturn("Bearer " + token);
+    restClient.init();
   }
 
   @Test
