@@ -794,9 +794,24 @@ public class PropertyBasedConfigurer
       criterion.setIndexed(Boolean.parseBoolean(cfg.get(CRITERIA_INDEXED)));
       criterion.setLabel(cfg.get(CRITERIA_LABEL));
       criterion.setName(cfg.get(CRITERIA_NAME));
-      criterion.setpKeyMaxAttr(cfg.get(CRITERIA_PKEYMINATTR));
-      criterion.setpKeyMinAttr(cfg.get(CRITERIA_PKEYMAXATTR));
-      criterion.setpKeyValuesAttr(cfg.get(CRITERIA_PKEYVALUESATTR));
+
+      String minAttr = cfg.get(CRITERIA_PKEYMINATTR)
+        .trim();
+      if (!minAttr.isEmpty()) {
+        criterion.setpKeyMinAttr(minAttr);
+      }
+
+      String maxAttr = cfg.get(CRITERIA_PKEYMAXATTR)
+        .trim();
+      if (!maxAttr.isEmpty()) {
+        criterion.setpKeyMaxAttr(maxAttr);
+      }
+
+      String valueAttr = cfg.get(CRITERIA_PKEYVALUESATTR)
+        .trim();
+      if (!valueAttr.isEmpty()) {
+        criterion.setpKeyValuesAttr(valueAttr);
+      }
       criterion.setType(cfg.get(CRITERIA_TYPE));
       criteria.add(criterion);
     }
