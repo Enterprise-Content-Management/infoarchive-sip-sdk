@@ -47,7 +47,7 @@ public interface SipSegmentationStrategy<D> {
    * @param maxSize The maximum size of the PDI
    * @return A {@linkplain SipSegmentationStrategy} that allows a maximum size of the PDI per SIP
    */
-  static <D> SipSegmentationStrategy<String> byMaxPdiSize(long maxSize) {
+  static <D> SipSegmentationStrategy<D> byMaxPdiSize(long maxSize) {
     return (domainObject, metrics) -> metrics.pdiSize() >= maxSize;
   }
 
@@ -58,7 +58,7 @@ public interface SipSegmentationStrategy<D> {
    * @param maxSize The maximum size of the digital objects
    * @return A {@linkplain SipSegmentationStrategy} that allows a maximum total size of digital objects per SIP
    */
-  static <D> SipSegmentationStrategy<String> byMaxDigitalObjectsSize(long maxSize) {
+  static <D> SipSegmentationStrategy<D> byMaxDigitalObjectsSize(long maxSize) {
     return (domainObject, metrics) -> metrics.digitalObjectsSize() >= maxSize;
   }
 
@@ -68,7 +68,7 @@ public interface SipSegmentationStrategy<D> {
    * @param maxSize The maximum size of the SIP
    * @return A {@linkplain SipSegmentationStrategy} that allows a maximum total size of the SIP
    */
-  static <D> SipSegmentationStrategy<String> byMaxSipSize(long maxSize) {
+  static <D> SipSegmentationStrategy<D> byMaxSipSize(long maxSize) {
     return (domainObject, metrics) -> metrics.sipSize() >= maxSize;
   }
 
