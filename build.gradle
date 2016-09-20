@@ -10,7 +10,7 @@ buildscript {
 import org.gradle.api.logging.StandardOutputListener
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '3.0'
+  gradleVersion = '3.1'
 }
 
 apply plugin: 'eclipse'
