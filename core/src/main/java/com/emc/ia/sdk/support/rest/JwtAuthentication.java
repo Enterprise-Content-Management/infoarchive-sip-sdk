@@ -60,7 +60,7 @@ public final class JwtAuthentication implements AuthenticationStrategy {
   @Override
   public String issueToken() {
     String authToken = Base64.getEncoder().encodeToString("infoarchive.sipsdk:secret".getBytes(StandardCharsets.UTF_8));
-    Collection<Header> headers = Collections.singletonList(new Header("Authorization", authToken));
+    Collection<Header> headers = Collections.singletonList(new Header("Authorization", "Basic " + authToken));
     String payload = "grant_type=password&username=" + username + "&password=" + password;
     AuthenticationSuccess authSuccess;
     try {
