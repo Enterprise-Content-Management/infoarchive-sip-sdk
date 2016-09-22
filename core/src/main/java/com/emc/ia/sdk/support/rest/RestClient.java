@@ -27,13 +27,10 @@ public class RestClient implements Closeable, StandardLinkRelations {
 
   public RestClient(HttpClient client, AuthenticationStrategy authentication) {
     this.httpClient = Objects.requireNonNull(client, "Missing HTTP client");
-    this.authentication = authentication;
+    this.authentication = Objects.requireNonNull(authentication, "Missing Authentication strategy");
   }
 
   public void init() {
-    String token = authentication.issueToken();
-    headers.add(new Header("Authorization", token));
-    headersNoFormat.add(new Header("Authorization", token));
     headers.add(new Header("Accept", MediaTypes.HAL));
   }
 
@@ -42,27 +39,27 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   public <T> T get(String uri, Class<T> type) throws IOException {
-    return httpClient.get(uri, headers, type);
+    return httpClient.get(uri, withAuthorization(headers), type);
   }
 
   public <T> T get(String uri, ResponseFactory<T> factory) throws IOException {
-    return httpClient.get(uri, headersNoFormat, factory);
+    return httpClient.get(uri, withAuthorization(headersNoFormat), factory);
   }
 
   public <T> T put(String uri, Class<T> type) throws IOException {
-    return httpClient.put(uri, headers, type);
+    return httpClient.put(uri, withAuthorization(headers), type);
   }
 
   public <S, T> T put(String uri, Class<T> type, S payload) throws IOException {
-    return httpClient.put(uri, withContentType(MediaTypes.HAL), type, toJson(payload));
+    return httpClient.put(uri, withAuthorization(withContentType(MediaTypes.HAL)), type, toJson(payload));
   }
 
   public <T> T post(String uri, Class<T> type, Part... parts) throws IOException {
-    return httpClient.post(uri, headers, type, parts);
+    return httpClient.post(uri, withAuthorization(headers), type, parts);
   }
 
   public <T> T post(String uri, String data, Class<T> type) throws IOException {
-    return httpClient.post(uri, withContentType(MediaTypes.HAL), toJson(data), type);
+    return httpClient.post(uri, withAuthorization(withContentType(MediaTypes.HAL)), toJson(data), type);
   }
 
   public <T> T follow(LinkContainer state, String relation, Class<T> type) throws IOException {
@@ -100,6 +97,12 @@ public class RestClient implements Closeable, StandardLinkRelations {
     Collection<Header> result = new ArrayList<>(headers);
     result.add(new Header("Content-Type", contentType));
     return result;
+  }
+
+  private Collection<Header> withAuthorization(Collection<Header> givenHeaders) {
+    Collection<Header> updated = new ArrayList<>(givenHeaders);
+    updated.add(authentication.issueAuthHeader());
+    return updated;
   }
 
   private String toJson(Object object) throws IOException {

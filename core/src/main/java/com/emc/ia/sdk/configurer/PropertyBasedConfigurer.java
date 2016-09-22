@@ -14,10 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.emc.ia.sdk.sip.client.dto.Aic;
 import com.emc.ia.sdk.sip.client.dto.Aics;
@@ -97,10 +94,7 @@ import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.AuthenticationStrategy;
-import com.emc.ia.sdk.support.rest.BasicAuthentication;
-import com.emc.ia.sdk.support.rest.JwtAuthentication;
 import com.emc.ia.sdk.support.rest.LinkContainer;
-import com.emc.ia.sdk.support.rest.NonExpiringTokenAuthentication;
 import com.emc.ia.sdk.support.rest.RestClient;
 
 @SuppressWarnings("PMD.ExcessiveClassLength")
@@ -117,8 +111,6 @@ public class PropertyBasedConfigurer
   private static final String INGEST_NODE_NAME = "ingest_node_01";
   private static final String DEFAULT_STORE_NAME = "filestore_01";
   private static final String DEFAULT_RESULT_HELPER_NAME = "result_helper";
-  private static final String CLIENT_ID = "infoarchive.sipsdk";
-  private static final String CLIENT_SECRET = "secret";
 
   private final RestCache configurationState = new RestCache();
 
@@ -185,15 +177,8 @@ public class PropertyBasedConfigurer
       HttpClient httpClient =
           NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
             .as(HttpClient.class);
-      AuthenticationStrategy authentication = Stream.<Supplier<Optional<AuthenticationStrategy>>>of(
-          () -> NonExpiringTokenAuthentication.fromConfiguration(configuration),
-          () -> BasicAuthentication.fromConfiguration(configuration),
-          () -> JwtAuthentication.fromConfiguration(configuration)
-        ).map(Supplier::get)
-          .filter(Optional::isPresent)
-          .map(Optional::get)
-          .findFirst()
-          .orElseThrow(() -> new NullPointerException("Authentication is not configured"));
+      AuthenticationStrategy authentication = new AuthenticationStrategyFactory(configuration)
+                                                  .getAuthenticationStrategy(() -> httpClient);
       restClient = new RestClient(httpClient, authentication);
     }
     restClient.init();

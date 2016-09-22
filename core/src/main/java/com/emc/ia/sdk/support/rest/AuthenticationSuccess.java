@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.sip.client.dto.result;
+package com.emc.ia.sdk.support.rest;
 
 public class AuthenticationSuccess {
   private String accessToken;

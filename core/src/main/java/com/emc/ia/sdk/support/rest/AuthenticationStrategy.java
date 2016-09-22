@@ -3,6 +3,8 @@
  */
 package com.emc.ia.sdk.support.rest;
 
+import com.emc.ia.sdk.support.http.Header;
+
 public interface AuthenticationStrategy {
-  String issueToken();
+  Header issueAuthHeader();
 }

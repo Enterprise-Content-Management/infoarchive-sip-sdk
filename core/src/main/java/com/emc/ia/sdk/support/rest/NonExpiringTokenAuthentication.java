@@ -3,22 +3,17 @@
  */
 package com.emc.ia.sdk.support.rest;
 
-import java.util.Map;
 import java.util.Optional;
 
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_AUTENTICATON_TOKEN;
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_AUTHENTICATION_PASSWORD;
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_AUTHENTICATION_USER;
+import com.emc.ia.sdk.support.http.Header;
 
 public final class NonExpiringTokenAuthentication implements AuthenticationStrategy {
 
   private final String token;
 
-  public static Optional<AuthenticationStrategy> fromConfiguration(Map<String, String> configuration) {
-    if (!configuration.containsKey(SERVER_AUTHENTICATION_USER)
-               && !configuration.containsKey(SERVER_AUTHENTICATION_PASSWORD)
-               && configuration.containsKey(SERVER_AUTENTICATON_TOKEN)) {
-      return Optional.of(new NonExpiringTokenAuthentication(configuration.get(SERVER_AUTENTICATON_TOKEN)));
+  public static Optional<AuthenticationStrategy> of(String token, String user, String password) {
+    if ((user == null) && (password == null) && (token != null)) {
+      return Optional.of(new NonExpiringTokenAuthentication(token));
     } else {
       return Optional.empty();
     }
@@ -29,7 +24,7 @@ public final class NonExpiringTokenAuthentication implements AuthenticationStrat
   }
 
   @Override
-  public String issueToken() {
-    return token;
+  public Header issueAuthHeader() {
+    return new Header("Authorization", token);
   }
 }

@@ -4,70 +4,87 @@
 package com.emc.ia.sdk.support.rest;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.HTTP_CLIENT_CLASSNAME;
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_AUTHENTICATION_GATEWAY;
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_AUTHENTICATION_PASSWORD;
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_AUTHENTICATION_USER;
-
-import com.emc.ia.sdk.sip.client.dto.result.AuthenticationSuccess;
-import com.emc.ia.sdk.support.NewInstance;
 import com.emc.ia.sdk.support.http.Header;
 import com.emc.ia.sdk.support.http.HttpClient;
-import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 
 public final class JwtAuthentication implements AuthenticationStrategy {
 
-  private final String gatewayUri;
+  private final GatewayInfo gatewayInfo;
   private final String username;
   private final String password;
   private final HttpClient httpClient;
+  private final int expirationThreshold;
+  private AuthenticationSuccess authResult;
+  private long lastIssuingTime;
 
-  public static Optional<AuthenticationStrategy> fromConfiguration(Map<String, String> configuration) {
-    if (configuration.containsKey(SERVER_AUTHENTICATION_USER)
-               && configuration.containsKey(SERVER_AUTHENTICATION_PASSWORD)
-               && configuration.containsKey(SERVER_AUTHENTICATION_GATEWAY)) {
-      return Optional.of(new JwtAuthentication(
-          configuration.get(SERVER_AUTHENTICATION_GATEWAY),
-          configuration.get(SERVER_AUTHENTICATION_USER),
-          configuration.get(SERVER_AUTHENTICATION_PASSWORD),
-          NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
-              .as(HttpClient.class)
-      ));
-    } else {
+  public static Optional<AuthenticationStrategy> of(String username, String password, GatewayInfo gatewayInfo,
+                                                    int expirationThreshold, HttpClient httpClient) {
+    if ((username == null) || (password == null) || (gatewayInfo == null) || (httpClient == null)) {
       return Optional.empty();
+    } else {
+      return Optional.of(new JwtAuthentication(
+          username, password, gatewayInfo, expirationThreshold, httpClient));
     }
   }
 
-  public JwtAuthentication(String gatewayUri, String username, String password, HttpClient httpClient) {
-    if (gatewayUri.endsWith("/")) {
-      this.gatewayUri = gatewayUri.substring(0, gatewayUri.length() - 1) + "/oauth/token";
-    } else {
-      this.gatewayUri = gatewayUri + "/oauth/token";
-    }
-    this.username = username;
-    this.password = password;
-    this.httpClient = httpClient;
+  public JwtAuthentication(String username, String password, GatewayInfo gatewayInfo, int expirationThreshold, HttpClient httpClient) {
+    this.username = Objects.requireNonNull(username, "Missing username");
+    this.password = Objects.requireNonNull(password, "Missing password");
+    this.gatewayInfo = Objects.requireNonNull(gatewayInfo, "Missing gateway information");
+    this.httpClient = Objects.requireNonNull(httpClient, "Missing HttpClient");
+    this.expirationThreshold = expirationThreshold;
+    this.authResult = null;
+    this.lastIssuingTime = 0;
   }
 
   @Override
-  public String issueToken() {
-    String authToken = Base64.getEncoder().encodeToString("infoarchive.sipsdk:secret".getBytes(StandardCharsets.UTF_8));
-    Collection<Header> headers = Collections.singletonList(new Header("Authorization", "Basic " + authToken));
+  public Header issueAuthHeader() {
+    authResult = issueAuthentication();
+    return new Header("Authorization", authResult.getTokenType() + " " + authResult.getAccessToken());
+  }
+
+  private AuthenticationSuccess issueAuthentication() {
+    if (authResult == null) {
+      return fetchAuthentication();
+    } else {
+      return tryRefreshAuthentication();
+    }
+  }
+
+  private AuthenticationSuccess fetchAuthentication() {
     String payload = "grant_type=password&username=" + username + "&password=" + password;
+    return postToGateway(payload);
+  }
+
+  private AuthenticationSuccess tryRefreshAuthentication() {
+    if (isTokenExpiring()) {
+      String payload = "grant_type=refresh_token&refresh_token=" + authResult.getRefreshToken();
+      return postToGateway(payload);
+    } else {
+      return authResult;
+    }
+  }
+
+  private boolean isTokenExpiring() {
+    return authResult.getExpiresIn() - (System.currentTimeMillis() / 1000000 - lastIssuingTime) < expirationThreshold;
+  }
+
+  private AuthenticationSuccess postToGateway(String payload) {
+    String gatewayUrl = gatewayInfo.getGatewayUrl();
+    Collection<Header> headers = Collections.singletonList(gatewayInfo.getAuthorizationHeader());
     AuthenticationSuccess authSuccess;
     try {
-      authSuccess = httpClient.post(gatewayUri, headers, payload, AuthenticationSuccess.class);
+      authSuccess = httpClient.post(gatewayUrl, headers, payload, AuthenticationSuccess.class);
+      lastIssuingTime = System.currentTimeMillis() / 1000000;
     } catch (IOException ex) {
       throw new RuntimeIoException(ex);
     }
-    return "Bearer " + authSuccess.getAccessToken();
+    return authSuccess;
   }
 }

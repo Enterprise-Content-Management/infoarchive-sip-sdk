@@ -5,24 +5,18 @@ package com.emc.ia.sdk.support.rest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Map;
 import java.util.Optional;
 
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_AUTHENTICATION_GATEWAY;
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_AUTHENTICATION_PASSWORD;
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_AUTHENTICATION_USER;
+import com.emc.ia.sdk.support.http.Header;
 
 public final class BasicAuthentication implements AuthenticationStrategy {
 
   private final String username;
   private final String password;
 
-  public static Optional<AuthenticationStrategy> fromConfiguration(Map<String, String> configuration) {
-    if (configuration.containsKey(SERVER_AUTHENTICATION_USER)
-               && configuration.containsKey(SERVER_AUTHENTICATION_PASSWORD)
-               && !configuration.containsKey(SERVER_AUTHENTICATION_GATEWAY)) {
-      return Optional.of(new BasicAuthentication(configuration.get(SERVER_AUTHENTICATION_USER),
-                                                    configuration.get(SERVER_AUTHENTICATION_PASSWORD)));
+  public static Optional<AuthenticationStrategy> of(String username, String password, String gateway) {
+    if ((username != null) && (password != null) && (gateway == null)) {
+      return Optional.of(new BasicAuthentication(username, password));
     } else {
       return Optional.empty();
     }
@@ -34,7 +28,9 @@ public final class BasicAuthentication implements AuthenticationStrategy {
   }
 
   @Override
-  public String issueToken() {
-    return Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
+  public Header issueAuthHeader() {
+    String token = "Basic " + Base64.getEncoder()
+                                  .encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
+    return new Header("Authorization", token);
   }
 }

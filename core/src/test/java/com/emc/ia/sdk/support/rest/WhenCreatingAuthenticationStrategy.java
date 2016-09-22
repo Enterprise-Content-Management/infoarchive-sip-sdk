@@ -1,0 +1,68 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
+package com.emc.ia.sdk.support.rest;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
+import org.junit.Test;
+
+import com.emc.ia.sdk.support.http.HttpClient;
+import com.emc.ia.sdk.support.test.TestCase;
+
+public class WhenCreatingAuthenticationStrategy extends TestCase {
+
+  @Test
+  public void shouldConfigureNonExpiringAuthentication() {
+    String token = randomString();
+    assertTrue("Should configure NonExpiringTokenAuthentication",
+        NonExpiringTokenAuthentication.of(token, null, null).isPresent());
+  }
+
+  @Test
+  public void shoultNotConfigureNonExpiringAuthentication() {
+    String token = randomString();
+    String username = randomString();
+    String password = randomString();
+    assertFalse("Should not configure NonExpiringTokenAuthentication because of user and password",
+        NonExpiringTokenAuthentication.of(token, username, password).isPresent());
+  }
+
+  @Test
+  public void shouldConfigureBasicAuthentication() {
+    String username = randomString();
+    String password = randomString();
+    assertTrue("Should configure BasicAuthentication",
+        BasicAuthentication.of(username, password, null).isPresent());
+  }
+
+  @Test
+  public void shouldNotConfigureBasicAuthentication() {
+    String username = randomString();
+    String password = randomString();
+    String gateway = randomString();
+    assertFalse("Should not configure BasicAuthentication because of gateway",
+        BasicAuthentication.of(username, password, gateway).isPresent());
+  }
+
+  @Test
+  public void shouldConfigureJwtAuthentication() {
+    String username = randomString();
+    String password = randomString();
+    GatewayInfo gatewayInfo = GatewayInfo.of(randomString(), randomString(), randomString());
+    HttpClient httpClient = mock(HttpClient.class);
+    assertTrue("Should configure JwtAuthentication",
+        JwtAuthentication.of(username, password, gatewayInfo, 10, httpClient).isPresent());
+  }
+
+  @Test
+  public void shouldNotConfigureJwtAuthentication() {
+    String username = randomString();
+    String password = randomString();
+    HttpClient httpClient = mock(HttpClient.class);
+    assertFalse("Should not configure JwtAuthentication because of abscence of gatewayInfo",
+        JwtAuthentication.of(username, password, null, 10, httpClient).isPresent());
+  }
+}
