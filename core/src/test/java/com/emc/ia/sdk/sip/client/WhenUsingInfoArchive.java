@@ -4,11 +4,8 @@
 package com.emc.ia.sdk.sip.client;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,6 +88,8 @@ import com.emc.ia.sdk.sip.client.dto.result.searchconfig.AllSearchComponents;
 import com.emc.ia.sdk.sip.client.rest.DefaultQueryResult;
 import com.emc.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
 import com.emc.ia.sdk.sip.client.rest.QueryResultFactory;
+import com.emc.ia.sdk.support.datetime.Clock;
+import com.emc.ia.sdk.support.http.HttpException;
 import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.Response;
 import com.emc.ia.sdk.support.http.UriBuilder;
@@ -100,6 +99,7 @@ import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.RestClient;
 import com.emc.ia.sdk.support.test.TestCase;
 
+
 public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations {
 
   private static final String BILLBOARD_URI = "http://foo.com/bar";
@@ -108,14 +108,15 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private static final String TENANT_NAME = "TeNaNt";
   private static final String NAMESPACE = "urn:SoMeNaMeSpAcE";
 
-  private final Map<String, Link> links = new HashMap<String, Link>();
-  private final Map<String, String> configuration = new HashMap<String, String>();
+  private final Map<String, Link> links = new HashMap<>();
+  private final Map<String, String> configuration = new HashMap<>();
   private final RestClient restClient = mock(RestClient.class);
   private ArchiveClient archiveClient;
   private Applications applications;
   private Application application;
   private Aics aics;
   private Aic aic;
+  private Federations federations;
 
   @Before
   public void init() throws IOException { // NOPMD NcssMethodCount
@@ -128,7 +129,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     applications = mock(Applications.class);
     ExportConfigurations exportConfigurations = mock(ExportConfigurations.class);
     ExportPipelines exportPipelines = mock(ExportPipelines.class);
-    Federations federations = mock(Federations.class);
+    federations = mock(Federations.class);
     Spaces spaces = mock(Spaces.class);
     Databases databases = mock(Databases.class);
     FileSystemRoots fileSystemRoots = mock(FileSystemRoots.class);
@@ -360,13 +361,13 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   @Test(expected = NullPointerException.class)
   public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull() throws IOException {
-    Map<String, String> config = new HashMap<String, String>();
+    Map<String, String> config = new HashMap<>();
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(config, restClient);
   }
 
   @Test
   public void shouldCreateApplicationWhenNotFound() throws IOException {
-    final AtomicReference<Application> app = new AtomicReference<Application>(null);
+    final AtomicReference<Application> app = new AtomicReference<>(null);
     when(applications.byName(APPLICATION_NAME)).thenAnswer(invocation -> {
       return app.get();
     });
@@ -424,6 +425,20 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
 
     // Verify no exceptions are thrown
+  }
+
+  @Test
+  public void shouldRetryWhenTemporarilyUnavailable() throws IOException {
+    configuration.put(InfoArchiveConfiguration.FEDERATION_NAME, randomString());
+    when(restClient.createCollectionItem(eq(federations), any(Federation.class), eq(LINK_ADD), eq(LINK_SELF)))
+        .then(invocation -> {
+      throw new HttpException(503, "");
+    });
+
+    ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient, mock(Clock.class));
+
+    verify(restClient, times(5)).createCollectionItem(
+        eq(federations), any(Federation.class), eq(LINK_ADD), eq(LINK_SELF));
   }
 
 }

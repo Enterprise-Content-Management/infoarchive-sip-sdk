@@ -36,6 +36,7 @@ import org.apache.http.util.EntityUtils;
 import com.emc.ia.sdk.support.http.BinaryPart;
 import com.emc.ia.sdk.support.http.Header;
 import com.emc.ia.sdk.support.http.HttpClient;
+import com.emc.ia.sdk.support.http.HttpException;
 import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.ResponseFactory;
 import com.emc.ia.sdk.support.http.TextPart;
@@ -85,24 +86,32 @@ public class ApacheHttpClient implements HttpClient {
 
   protected <T> T execute(HttpUriRequest request, Class<T> type) throws IOException {
     Objects.requireNonNull(request, "Missing request");
-    return client.execute(request, getResponseHandler(request.getMethod(), request.getURI()
-      .toString(), type));
+    try {
+      return client.execute(request, getResponseHandler(request.getMethod(), request.getURI().toString(), type));
+    } catch (HttpResponseException e) {
+      throw new HttpException(e.getStatusCode(), e);
+    }
   }
 
   protected <T> T execute(HttpUriRequest request, ResponseFactory<T> factory) throws IOException {
-    CloseableHttpResponse httpResponse = client.execute(request);
-    StatusLine statusLine = httpResponse.getStatusLine();
-    int status = statusLine.getStatusCode();
-    if (!isOk(status)) {
-      HttpEntity entity = httpResponse.getEntity();
-      String body = entity == null ? "" : EntityUtils.toString(entity);
-      String method = request.getMethod();
-      URI uri = request.getURI();
-      throw new HttpResponseException(status,
-          String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
+    CloseableHttpResponse httpResponse;
+    try {
+      httpResponse = client.execute(request);
+    } catch (HttpResponseException e) {
+      throw new HttpException(e.getStatusCode(), e);
     }
     boolean cleanUp = true;
     try {
+      StatusLine statusLine = httpResponse.getStatusLine();
+      int status = statusLine.getStatusCode();
+      if (!isOk(status)) {
+        HttpEntity entity = httpResponse.getEntity();
+        String body = entity == null ? "" : EntityUtils.toString(entity);
+        String method = request.getMethod();
+        URI uri = request.getURI();
+        throw new HttpException(status,
+            String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
+      }
       T result = factory.create(new ApacheResponse(httpResponse));
       cleanUp = false;
       return result;
@@ -122,7 +131,7 @@ public class ApacheHttpClient implements HttpClient {
       HttpEntity entity = response.getEntity();
       String body = entity == null ? "" : EntityUtils.toString(entity);
       if (!isOk(status)) {
-        throw new HttpResponseException(status,
+        throw new HttpException(status,
             String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
       }
       if (body.isEmpty() || type == null) {
@@ -197,8 +206,7 @@ public class ApacheHttpClient implements HttpClient {
       BinaryPart binaryPart = (BinaryPart)part;
       return new InputStreamBody(binaryPart.getData(), contentType, binaryPart.getDownloadName());
     }
-    throw new IllegalArgumentException("Unhandled part type: " + part.getClass()
-      .getName());
+    throw new IllegalArgumentException("Unhandled part type: " + part.getClass().getName());
   }
 
   @Override

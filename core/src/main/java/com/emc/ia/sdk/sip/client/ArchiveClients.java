@@ -3,9 +3,7 @@
  */
 package com.emc.ia.sdk.sip.client;
 
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.APPLICATION_NAME;
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.HTTP_CLIENT_CLASSNAME;
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_URI;
+import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +13,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
-import com.emc.ia.sdk.configurer.InfoArchiveConfiguration;
 import com.emc.ia.sdk.configurer.InfoArchiveConfigurers;
 import com.emc.ia.sdk.sip.client.dto.Aics;
 import com.emc.ia.sdk.sip.client.dto.Application;
@@ -26,6 +23,8 @@ import com.emc.ia.sdk.sip.client.rest.ArchiveOperationsByApplicationResourceCach
 import com.emc.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
 import com.emc.ia.sdk.sip.client.rest.InfoArchiveRestClient;
 import com.emc.ia.sdk.support.NewInstance;
+import com.emc.ia.sdk.support.datetime.Clock;
+import com.emc.ia.sdk.support.datetime.DefaultClock;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
@@ -58,14 +57,25 @@ public final class ArchiveClients {
    */
   public static ArchiveClient withPropertyBasedAutoConfiguration(Map<String, String> configuration,
       RestClient restClient) {
-    return withPropertyBasedAutoConfiguration(configuration, Optional.of(restClient));
+    return withPropertyBasedAutoConfiguration(configuration, restClient, null);
+  }
+
+  public static ArchiveClient withPropertyBasedAutoConfiguration(Map<String, String> configuration,
+      RestClient restClient, Clock clock) {
+    return withPropertyBasedAutoConfiguration(configuration, Optional.ofNullable(restClient),
+        Optional.ofNullable(clock));
   }
 
   private static ArchiveClient withPropertyBasedAutoConfiguration(Map<String, String> configuration,
       Optional<RestClient> potentialClient) {
+    return withPropertyBasedAutoConfiguration(configuration, potentialClient, Optional.empty());
+  }
+
+  private static ArchiveClient withPropertyBasedAutoConfiguration(Map<String, String> configuration,
+      Optional<RestClient> potentialClient, Optional<Clock> potentialClock) {
     RestClient client = potentialClient.orElseGet(() -> createRestClient(configuration));
-    InfoArchiveConfigurers.propertyBased(configuration, client)
-      .configure();
+    Clock clock = potentialClock.orElseGet(() -> new DefaultClock());
+    InfoArchiveConfigurers.propertyBased(configuration, client, clock).configure();
     String billboardUrl = getBillboadUrl(configuration);
     String applicationName = getApplicationName(configuration);
     return client(client, billboardUrl, applicationName);
@@ -174,7 +184,7 @@ public final class ArchiveClients {
   private static Map<String, String> asMap(InputStream stream) throws IOException {
     Properties properties = new Properties();
     properties.load(stream);
-    Map<String, String> map = new HashMap<String, String>();
+    Map<String, String> map = new HashMap<>();
     for (Map.Entry<Object, Object> e : properties.entrySet()) {
       map.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
     }
@@ -186,7 +196,7 @@ public final class ArchiveClients {
         NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
           .as(HttpClient.class);
     RestClient client = new RestClient(httpClient);
-    client.init(configuration.get(InfoArchiveConfiguration.SERVER_AUTENTICATON_TOKEN));
+    client.init(configuration.get(SERVER_AUTENTICATON_TOKEN));
     return client;
   }
 
