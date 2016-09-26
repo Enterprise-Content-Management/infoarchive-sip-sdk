@@ -14,7 +14,7 @@ public final class BasicAuthentication implements AuthenticationStrategy {
   private final String username;
   private final String password;
 
-  public static Optional<AuthenticationStrategy> of(String username, String password, String gateway) {
+  public static Optional<AuthenticationStrategy> optional(String username, String password, String gateway) {
     if ((username != null) && (password != null) && (gateway == null)) {
       return Optional.of(new BasicAuthentication(username, password));
     } else {
@@ -23,8 +23,16 @@ public final class BasicAuthentication implements AuthenticationStrategy {
   }
 
   public BasicAuthentication(String username, String password) {
-    this.username = username;
-    this.password = password;
+    if (username.isEmpty()) {
+      throw new IllegalArgumentException("Username is empty");
+    } else {
+      this.username = username;
+    }
+    if (password.isEmpty()) {
+      throw new IllegalArgumentException("Password is empty");
+    } else {
+      this.password = password;
+    }
   }
 
   @Override

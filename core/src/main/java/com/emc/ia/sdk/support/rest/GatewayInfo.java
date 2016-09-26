@@ -5,6 +5,7 @@ package com.emc.ia.sdk.support.rest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 
 import com.emc.ia.sdk.support.http.Header;
 
@@ -13,11 +14,11 @@ public final class GatewayInfo {
   private final String clientId;
   private final String clientSecret;
 
-  public static GatewayInfo of(String gatewayUri, String clientId, String clientSecret) {
+  public static Optional<GatewayInfo> optional(String gatewayUri, String clientId, String clientSecret) {
     if ((gatewayUri == null) || (clientId == null) || (clientSecret == null)) {
-      return null;
+      return Optional.empty();
     } else {
-      return new GatewayInfo(gatewayUri, clientId, clientSecret);
+      return Optional.of(new GatewayInfo(gatewayUri, clientId, clientSecret));
     }
   }
 
@@ -27,8 +28,16 @@ public final class GatewayInfo {
     } else {
       this.gatewayUrl = gatewayUrl + "/oauth/token";
     }
-    this.clientId = clientId;
-    this.clientSecret = clientSecret;
+    if (clientId.isEmpty()) {
+      throw new IllegalArgumentException("Client Id is empty");
+    } else {
+      this.clientId = clientId;
+    }
+    if (clientSecret.isEmpty()) {
+      throw new IllegalArgumentException("Client Secret is empty");
+    } else {
+      this.clientSecret = clientSecret;
+    }
   }
 
   public Header getAuthorizationHeader() {

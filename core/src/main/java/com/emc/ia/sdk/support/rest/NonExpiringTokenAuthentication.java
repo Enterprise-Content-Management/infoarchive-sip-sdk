@@ -11,7 +11,7 @@ public final class NonExpiringTokenAuthentication implements AuthenticationStrat
 
   private final String token;
 
-  public static Optional<AuthenticationStrategy> of(String token, String user, String password) {
+  public static Optional<AuthenticationStrategy> optional(String token, String user, String password) {
     if ((user == null) && (password == null) && (token != null)) {
       return Optional.of(new NonExpiringTokenAuthentication(token));
     } else {
@@ -20,7 +20,11 @@ public final class NonExpiringTokenAuthentication implements AuthenticationStrat
   }
 
   public NonExpiringTokenAuthentication(String token) {
-    this.token = "Bearer " + token;
+    if (token.isEmpty()) {
+      throw new IllegalArgumentException("Token is empty");
+    } else {
+      this.token = "Bearer " + token;
+    }
   }
 
   @Override

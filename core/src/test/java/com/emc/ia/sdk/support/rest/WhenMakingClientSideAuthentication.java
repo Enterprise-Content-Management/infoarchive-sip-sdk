@@ -21,6 +21,24 @@ public class WhenMakingClientSideAuthentication extends TestCase {
   private final BasicAuthentication basicAuth = new BasicAuthentication(username, password);
   private final NonExpiringTokenAuthentication tokenAuth = new NonExpiringTokenAuthentication(token);
 
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldFailBecauseOfUsername() {
+    String illegalUsername = "";
+    new BasicAuthentication(illegalUsername, password);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldFailBecauseOfPassword() {
+    String illegalPassword = "";
+    new BasicAuthentication(username, illegalPassword);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldFailBecauseOfToken() {
+    String illegalToken = "";
+    new NonExpiringTokenAuthentication(illegalToken);
+  }
+
   @Test
   public void shouldIssueBasicHeader() {
     String finalToken = "Basic " + Base64.getEncoder()

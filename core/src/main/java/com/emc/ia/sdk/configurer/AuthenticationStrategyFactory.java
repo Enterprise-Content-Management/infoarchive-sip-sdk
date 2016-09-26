@@ -9,7 +9,6 @@ import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_AUTHENTI
 import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_AUTHENTICATION_USER;
 import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_CLIENT_ID;
 import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_CLIENT_SECRET;
-import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.SERVER_TOKEN_EXPIRATION_THRESHOLD;
 
 import java.util.Map;
 import java.util.Objects;
@@ -34,19 +33,18 @@ public final class AuthenticationStrategyFactory {
 
   public AuthenticationStrategy getAuthenticationStrategy(Supplier<? extends HttpClient> httpClientSupplier) {
     return Stream.<Supplier<Optional<AuthenticationStrategy>>>of(
-               () -> NonExpiringTokenAuthentication.of(configuration.get(SERVER_AUTENTICATON_TOKEN),
+               () -> NonExpiringTokenAuthentication.optional(configuration.get(SERVER_AUTENTICATON_TOKEN),
                    configuration.get(SERVER_AUTHENTICATION_USER), configuration.get(SERVER_AUTHENTICATION_PASSWORD)),
-               () -> BasicAuthentication.of(configuration.get(SERVER_AUTHENTICATION_USER),
+               () -> BasicAuthentication.optional(configuration.get(SERVER_AUTHENTICATION_USER),
                    configuration.get(SERVER_AUTHENTICATION_PASSWORD), configuration.get(SERVER_AUTHENTICATION_GATEWAY)),
-               () -> JwtAuthentication.of(
+               () -> JwtAuthentication.optional(
                    configuration.get(SERVER_AUTHENTICATION_USER),
                    configuration.get(SERVER_AUTHENTICATION_PASSWORD),
-                   GatewayInfo.of(
+                   GatewayInfo.optional(
                        configuration.get(SERVER_AUTHENTICATION_GATEWAY),
                        configuration.get(SERVER_CLIENT_ID),
                        configuration.get(SERVER_CLIENT_SECRET)
-                   ),
-                   Integer.parseInt(configuration.getOrDefault(SERVER_TOKEN_EXPIRATION_THRESHOLD, "10")),
+                   ).orElse(null),
                    httpClientSupplier.get()
                )
     ).map(Supplier::get)

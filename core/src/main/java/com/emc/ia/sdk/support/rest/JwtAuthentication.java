@@ -8,39 +8,49 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
+import com.emc.ia.sdk.support.datetime.Timer;
 import com.emc.ia.sdk.support.http.Header;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 
 public final class JwtAuthentication implements AuthenticationStrategy {
 
+  private static final long RESERVE_TIME = 10000;
+  private static final long REFRESHING_TIME_BORDER = 20000;
+
   private final GatewayInfo gatewayInfo;
   private final String username;
   private final String password;
   private final HttpClient httpClient;
-  private final int expirationThreshold;
-  private AuthenticationSuccess authResult;
-  private long lastIssuingTime;
+  private volatile AuthenticationSuccess authResult;
+  private Timer timer;
 
-  public static Optional<AuthenticationStrategy> of(String username, String password, GatewayInfo gatewayInfo,
-                                                    int expirationThreshold, HttpClient httpClient) {
+  public static Optional<AuthenticationStrategy> optional(String username, String password, GatewayInfo gatewayInfo,
+                                                          HttpClient httpClient) {
     if ((username == null) || (password == null) || (gatewayInfo == null) || (httpClient == null)) {
       return Optional.empty();
     } else {
       return Optional.of(new JwtAuthentication(
-          username, password, gatewayInfo, expirationThreshold, httpClient));
+          username, password, gatewayInfo, httpClient));
     }
   }
 
-  public JwtAuthentication(String username, String password, GatewayInfo gatewayInfo, int expirationThreshold, HttpClient httpClient) {
-    this.username = Objects.requireNonNull(username, "Missing username");
-    this.password = Objects.requireNonNull(password, "Missing password");
+  public JwtAuthentication(String username, String password, GatewayInfo gatewayInfo, HttpClient httpClient) {
+    if (username.isEmpty()) {
+      throw new IllegalArgumentException("Username is empty");
+    } else {
+      this.username = username;
+    }
+    if (password.isEmpty()) {
+      throw new IllegalArgumentException("Password is empty");
+    } else {
+      this.password = password;
+    }
     this.gatewayInfo = Objects.requireNonNull(gatewayInfo, "Missing gateway information");
     this.httpClient = Objects.requireNonNull(httpClient, "Missing HttpClient");
-    this.expirationThreshold = expirationThreshold;
     this.authResult = null;
-    this.lastIssuingTime = 0;
   }
 
   @Override
@@ -51,9 +61,11 @@ public final class JwtAuthentication implements AuthenticationStrategy {
 
   private AuthenticationSuccess issueAuthentication() {
     if (authResult == null) {
-      return fetchAuthentication();
+      AuthenticationSuccess firstResult = fetchAuthentication();
+      startRefreshingTimer(TimeUnit.MILLISECONDS.convert(firstResult.getExpiresIn(), TimeUnit.SECONDS));
+      return firstResult;
     } else {
-      return tryRefreshAuthentication();
+      return authResult;
     }
   }
 
@@ -62,17 +74,17 @@ public final class JwtAuthentication implements AuthenticationStrategy {
     return postToGateway(payload);
   }
 
-  private AuthenticationSuccess tryRefreshAuthentication() {
-    if (isTokenExpiring()) {
-      String payload = "grant_type=refresh_token&refresh_token=" + authResult.getRefreshToken();
-      return postToGateway(payload);
+  private void startRefreshingTimer(long expiresInMilliseconds) {
+    if (expiresInMilliseconds > REFRESHING_TIME_BORDER) {
+      timer = new Timer(expiresInMilliseconds - RESERVE_TIME, this::refreshAuthentication);
     } else {
-      return authResult;
+      timer = new Timer(expiresInMilliseconds / 2, this::refreshAuthentication);
     }
   }
 
-  private boolean isTokenExpiring() {
-    return authResult.getExpiresIn() - (System.currentTimeMillis() / 1000000 - lastIssuingTime) < expirationThreshold;
+  private void refreshAuthentication() {
+    String payload = "grant_type=refresh_token&refresh_token=" + authResult.getRefreshToken();
+    authResult = postToGateway(payload);
   }
 
   private AuthenticationSuccess postToGateway(String payload) {
@@ -81,8 +93,10 @@ public final class JwtAuthentication implements AuthenticationStrategy {
     AuthenticationSuccess authSuccess;
     try {
       authSuccess = httpClient.post(gatewayUrl, headers, payload, AuthenticationSuccess.class);
-      lastIssuingTime = System.currentTimeMillis() / 1000000;
     } catch (IOException ex) {
+      if (timer != null) {
+        timer.stop();
+      }
       throw new RuntimeIoException(ex);
     }
     return authSuccess;

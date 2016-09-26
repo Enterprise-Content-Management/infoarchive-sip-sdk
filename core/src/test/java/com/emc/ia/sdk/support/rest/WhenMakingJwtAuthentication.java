@@ -26,14 +26,16 @@ import com.emc.ia.sdk.support.test.TestCase;
 
 public class WhenMakingJwtAuthentication extends TestCase {
 
+  private static final String GATEWAY_URL = "http://authgateway.com/";
+
   private final String username = randomString();
   private final String password = randomString();
   private final String clientId = randomString();
   private final String clientSecret = randomString();
   private final HttpClient httpClient = mock(HttpClient.class);
-  private final GatewayInfo gatewayInfo = new GatewayInfo("http://authgateway.com/", clientId, clientSecret);
+  private final GatewayInfo gatewayInfo = new GatewayInfo(GATEWAY_URL, clientId, clientSecret);
   private final AuthenticationStrategy authentication =
-      new JwtAuthentication(username, password, gatewayInfo, 5, httpClient);
+      new JwtAuthentication(username, password, gatewayInfo, httpClient);
   private final String accessToken = randomString();
   private final String secondAccessToken = randomString();
   private final String refreshToken = randomString();
@@ -56,6 +58,30 @@ public class WhenMakingJwtAuthentication extends TestCase {
     when(httpClient.post(any(), any(), any(), eq(AuthenticationSuccess.class)))
         .thenReturn(authResult)
         .thenReturn(authRefresh);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldFailBecauseOfClientId() {
+    String illegalClientId = "";
+    new GatewayInfo(GATEWAY_URL, illegalClientId, clientSecret);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldFailBecauseOfClientSecret() {
+    String illegalSecret = "";
+    new GatewayInfo(GATEWAY_URL, clientId, illegalSecret);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldFailBecauseOfUsername() {
+    String illegalUsername = "";
+    new JwtAuthentication(illegalUsername, password, gatewayInfo, httpClient);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldFailBecauseOfPassword() {
+    String illegalPassword = "";
+    new JwtAuthentication(username, illegalPassword, gatewayInfo, httpClient);
   }
 
   @Test
@@ -86,16 +112,19 @@ public class WhenMakingJwtAuthentication extends TestCase {
   }
 
   @Test
-  public void shouldChangeToken() throws IOException {
+  public void shouldChangeToken() throws Exception {
+    authResult.setExpiresIn(1);
     authentication.issueAuthHeader();
+    Thread.sleep(700);
     assertEquals("Should be refreshed", secondAuthorizationHeader, authentication.issueAuthHeader());
   }
 
   @Test
-  public void shouldFormCorrectPayloadToRefreshToken() throws IOException {
+  public void shouldFormCorrectPayloadToRefreshToken() throws Exception {
+    authResult.setExpiresIn(1);
     String payload = "grant_type=refresh_token&refresh_token=" + refreshToken;
     authentication.issueAuthHeader();
-    authentication.issueAuthHeader();
+    Thread.sleep(700);
     verify(httpClient).post(any(), any(), eq(payload), eq(AuthenticationSuccess.class));
   }
 
