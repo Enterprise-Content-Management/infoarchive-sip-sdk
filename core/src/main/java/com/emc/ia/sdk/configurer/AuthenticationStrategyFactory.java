@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import com.emc.ia.sdk.support.datetime.Clock;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.rest.AuthenticationStrategy;
 import com.emc.ia.sdk.support.rest.BasicAuthentication;
@@ -31,7 +32,8 @@ public final class AuthenticationStrategyFactory {
     this.configuration = Objects.requireNonNull(configuration);
   }
 
-  public AuthenticationStrategy getAuthenticationStrategy(Supplier<? extends HttpClient> httpClientSupplier) {
+  public AuthenticationStrategy getAuthenticationStrategy(Supplier<? extends HttpClient> httpClientSupplier,
+                                                          Supplier<? extends Clock> clockSupplier) {
     return Stream.<Supplier<Optional<AuthenticationStrategy>>>of(
                () -> NonExpiringTokenAuthentication.optional(configuration.get(SERVER_AUTENTICATON_TOKEN),
                    configuration.get(SERVER_AUTHENTICATION_USER), configuration.get(SERVER_AUTHENTICATION_PASSWORD)),
@@ -45,7 +47,8 @@ public final class AuthenticationStrategyFactory {
                        configuration.get(SERVER_CLIENT_ID),
                        configuration.get(SERVER_CLIENT_SECRET)
                    ).orElse(null),
-                   httpClientSupplier.get()
+                   httpClientSupplier.get(),
+                   clockSupplier.get()
                )
     ).map(Supplier::get)
       .filter(Optional::isPresent)

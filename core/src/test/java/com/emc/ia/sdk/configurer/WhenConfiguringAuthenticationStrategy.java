@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.emc.ia.sdk.support.datetime.Clock;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.rest.AuthenticationStrategy;
 import com.emc.ia.sdk.support.rest.BasicAuthentication;
@@ -26,7 +27,7 @@ public class WhenConfiguringAuthenticationStrategy extends TestCase {
   @Test
   public void shouldGetTokenAuthenticationConfiguration() {
     configuration.put(InfoArchiveConfiguration.SERVER_AUTENTICATON_TOKEN, randomString());
-    AuthenticationStrategy authentication = authFactory.getAuthenticationStrategy(() -> null);
+    AuthenticationStrategy authentication = authFactory.getAuthenticationStrategy(() -> null, () -> null);
     assertTrue(authentication instanceof NonExpiringTokenAuthentication);
   }
 
@@ -34,7 +35,7 @@ public class WhenConfiguringAuthenticationStrategy extends TestCase {
   public void shouldGetBasicAuthentication() {
     configuration.put(InfoArchiveConfiguration.SERVER_AUTHENTICATION_USER, randomString());
     configuration.put(InfoArchiveConfiguration.SERVER_AUTHENTICATION_PASSWORD, randomString());
-    AuthenticationStrategy authentication = authFactory.getAuthenticationStrategy(() -> null);
+    AuthenticationStrategy authentication = authFactory.getAuthenticationStrategy(() -> null, () -> null);
     assertTrue(authentication instanceof BasicAuthentication);
   }
 
@@ -46,7 +47,8 @@ public class WhenConfiguringAuthenticationStrategy extends TestCase {
     configuration.put(InfoArchiveConfiguration.SERVER_AUTHENTICATION_USER, randomString());
     configuration.put(InfoArchiveConfiguration.SERVER_AUTHENTICATION_PASSWORD, randomString());
     HttpClient httpClient = mock(HttpClient.class);
-    AuthenticationStrategy authentication = authFactory.getAuthenticationStrategy(() -> httpClient);
+    Clock clock = mock(Clock.class);
+    AuthenticationStrategy authentication = authFactory.getAuthenticationStrategy(() -> httpClient, () -> clock);
     assertTrue(authentication instanceof JwtAuthentication);
   }
 
@@ -57,6 +59,7 @@ public class WhenConfiguringAuthenticationStrategy extends TestCase {
     configuration.put(InfoArchiveConfiguration.SERVER_AUTHENTICATION_GATEWAY, randomString());
     configuration.put(InfoArchiveConfiguration.SERVER_AUTHENTICATION_USER, randomString());
     HttpClient httpClient = mock(HttpClient.class);
-    authFactory.getAuthenticationStrategy(() -> httpClient);
+    Clock clock = mock(Clock.class);
+    authFactory.getAuthenticationStrategy(() -> httpClient, () -> clock);
   }
 }

@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import com.emc.ia.sdk.support.datetime.Clock;
 import com.emc.ia.sdk.support.datetime.Timer;
 import com.emc.ia.sdk.support.http.Header;
 import com.emc.ia.sdk.support.http.HttpClient;
@@ -25,19 +26,21 @@ public final class JwtAuthentication implements AuthenticationStrategy {
   private final String password;
   private final HttpClient httpClient;
   private volatile AuthenticationSuccess authResult;
+  private final Clock clock;
   private Timer timer;
 
   public static Optional<AuthenticationStrategy> optional(String username, String password, GatewayInfo gatewayInfo,
-                                                          HttpClient httpClient) {
+                                                          HttpClient httpClient, Clock clock) {
     if ((username == null) || (password == null) || (gatewayInfo == null) || (httpClient == null)) {
       return Optional.empty();
     } else {
       return Optional.of(new JwtAuthentication(
-          username, password, gatewayInfo, httpClient));
+          username, password, gatewayInfo, httpClient, clock));
     }
   }
 
-  public JwtAuthentication(String username, String password, GatewayInfo gatewayInfo, HttpClient httpClient) {
+  public JwtAuthentication(String username, String password, GatewayInfo gatewayInfo,
+                           HttpClient httpClient, Clock clock) {
     if (username.isEmpty()) {
       throw new IllegalArgumentException("Username is empty");
     } else {
@@ -48,6 +51,7 @@ public final class JwtAuthentication implements AuthenticationStrategy {
     } else {
       this.password = password;
     }
+    this.clock = Objects.requireNonNull(clock, "Missing clock");
     this.gatewayInfo = Objects.requireNonNull(gatewayInfo, "Missing gateway information");
     this.httpClient = Objects.requireNonNull(httpClient, "Missing HttpClient");
     this.authResult = null;
@@ -76,9 +80,9 @@ public final class JwtAuthentication implements AuthenticationStrategy {
 
   private void startRefreshingTimer(long expiresInMilliseconds) {
     if (expiresInMilliseconds > REFRESHING_TIME_BORDER) {
-      timer = new Timer(expiresInMilliseconds - RESERVE_TIME, this::refreshAuthentication);
+      timer = new Timer(expiresInMilliseconds - RESERVE_TIME, this::refreshAuthentication, clock);
     } else {
-      timer = new Timer(expiresInMilliseconds / 2, this::refreshAuthentication);
+      timer = new Timer(expiresInMilliseconds / 2, this::refreshAuthentication, clock);
     }
   }
 

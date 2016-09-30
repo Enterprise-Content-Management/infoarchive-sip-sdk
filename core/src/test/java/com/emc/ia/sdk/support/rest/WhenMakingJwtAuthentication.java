@@ -5,6 +5,7 @@ package com.emc.ia.sdk.support.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -15,10 +16,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
+import com.emc.ia.sdk.support.datetime.Clock;
 import com.emc.ia.sdk.support.http.Header;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
@@ -33,13 +37,13 @@ public class WhenMakingJwtAuthentication extends TestCase {
   private final String clientId = randomString();
   private final String clientSecret = randomString();
   private final HttpClient httpClient = mock(HttpClient.class);
+  private final Clock clock = mock(Clock.class);
   private final GatewayInfo gatewayInfo = new GatewayInfo(GATEWAY_URL, clientId, clientSecret);
   private final AuthenticationStrategy authentication =
-      new JwtAuthentication(username, password, gatewayInfo, httpClient);
+      new JwtAuthentication(username, password, gatewayInfo, httpClient, clock);
   private final String accessToken = randomString();
   private final String secondAccessToken = randomString();
   private final String refreshToken = randomString();
-  private final String secondRefreshToken = randomString();
   private final AuthenticationSuccess authResult = new AuthenticationSuccess();
   private final AuthenticationSuccess authRefresh = new AuthenticationSuccess();
   private final Header authorizationHeader = new Header("Authorization", "Bearer " + accessToken);
@@ -50,11 +54,10 @@ public class WhenMakingJwtAuthentication extends TestCase {
     authResult.setAccessToken(accessToken);
     authResult.setRefreshToken(refreshToken);
     authResult.setTokenType("Bearer");
-    authResult.setExpiresIn(4);
+    authResult.setExpiresIn(25);
     authRefresh.setAccessToken(secondAccessToken);
-    authRefresh.setRefreshToken(secondRefreshToken);
     authRefresh.setTokenType("Bearer");
-    authRefresh.setExpiresIn(4);
+    authRefresh.setExpiresIn(25);
     when(httpClient.post(any(), any(), any(), eq(AuthenticationSuccess.class)))
         .thenReturn(authResult)
         .thenReturn(authRefresh);
@@ -75,13 +78,13 @@ public class WhenMakingJwtAuthentication extends TestCase {
   @Test(expected = IllegalArgumentException.class)
   public void shouldFailBecauseOfUsername() {
     String illegalUsername = "";
-    new JwtAuthentication(illegalUsername, password, gatewayInfo, httpClient);
+    new JwtAuthentication(illegalUsername, password, gatewayInfo, httpClient, clock);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldFailBecauseOfPassword() {
     String illegalPassword = "";
-    new JwtAuthentication(username, illegalPassword, gatewayInfo, httpClient);
+    new JwtAuthentication(username, illegalPassword, gatewayInfo, httpClient, clock);
   }
 
   @Test
@@ -112,19 +115,36 @@ public class WhenMakingJwtAuthentication extends TestCase {
   }
 
   @Test
-  public void shouldChangeToken() throws Exception {
-    authResult.setExpiresIn(1);
+  public void shouldCorrectlySetRefreshingTime() throws IOException {
     authentication.issueAuthHeader();
-    Thread.sleep(700);
+    verify(clock)
+        .schedule(any(), eq(TimeUnit.MILLISECONDS.convert(15, TimeUnit.SECONDS)), eq(TimeUnit.MILLISECONDS), any());
+  }
+
+  @Test
+  public void shouldCorrectlySetLittleRefreshingTime() throws IOException {
+    authResult.setExpiresIn(18);
+    authentication.issueAuthHeader();
+    verify(clock)
+        .schedule(any(), eq(TimeUnit.MILLISECONDS.convert(9, TimeUnit.SECONDS)), eq(TimeUnit.MILLISECONDS), any());
+  }
+
+  @Test
+  public void shouldChangeToken() throws IOException {
+    final ArgumentCaptor<Runnable> taskArgumentCaptor = ArgumentCaptor.forClass(Runnable.class);
+    authentication.issueAuthHeader();
+    verify(clock).schedule(any(), anyLong(), any(), taskArgumentCaptor.capture());
+    taskArgumentCaptor.getValue().run();
     assertEquals("Should be refreshed", secondAuthorizationHeader, authentication.issueAuthHeader());
   }
 
   @Test
-  public void shouldFormCorrectPayloadToRefreshToken() throws Exception {
-    authResult.setExpiresIn(1);
+  public void shouldFormCorrectPayloadToRefreshToken() throws IOException {
+    final ArgumentCaptor<Runnable> taskArgumentCaptor = ArgumentCaptor.forClass(Runnable.class);
     String payload = "grant_type=refresh_token&refresh_token=" + refreshToken;
     authentication.issueAuthHeader();
-    Thread.sleep(700);
+    verify(clock).schedule(any(), anyLong(), any(), taskArgumentCaptor.capture());
+    taskArgumentCaptor.getValue().run();
     verify(httpClient).post(any(), any(), eq(payload), eq(AuthenticationSuccess.class));
   }
 

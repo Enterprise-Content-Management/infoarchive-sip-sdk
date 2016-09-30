@@ -191,7 +191,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
           NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
             .as(HttpClient.class);
       AuthenticationStrategy authentication = new AuthenticationStrategyFactory(configuration)
-                                                  .getAuthenticationStrategy(() -> httpClient);
+                                                  .getAuthenticationStrategy(() -> httpClient, () -> clock);
       restClient = new RestClient(httpClient, authentication);
     }
     restClient.init();

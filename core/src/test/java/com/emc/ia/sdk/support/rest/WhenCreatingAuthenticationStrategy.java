@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import org.junit.Test;
 
+import com.emc.ia.sdk.support.datetime.Clock;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.test.TestCase;
 
@@ -56,8 +57,9 @@ public class WhenCreatingAuthenticationStrategy extends TestCase {
     String password = randomString();
     Optional<GatewayInfo> gatewayInfo = GatewayInfo.optional(randomString(), randomString(), randomString());
     HttpClient httpClient = mock(HttpClient.class);
+    Clock clock = mock(Clock.class);
     assertTrue("Should configure JwtAuthentication",
-        JwtAuthentication.optional(username, password, gatewayInfo.orElse(null), httpClient).isPresent());
+        JwtAuthentication.optional(username, password, gatewayInfo.orElse(null), httpClient, clock).isPresent());
   }
 
   @Test
@@ -65,7 +67,8 @@ public class WhenCreatingAuthenticationStrategy extends TestCase {
     String username = randomString();
     String password = randomString();
     HttpClient httpClient = mock(HttpClient.class);
+    Clock clock = mock(Clock.class);
     assertFalse("Should not configure JwtAuthentication because of abscence of gatewayInfo",
-        JwtAuthentication.optional(username, password, null, httpClient).isPresent());
+        JwtAuthentication.optional(username, password, null, httpClient, clock).isPresent());
   }
 }

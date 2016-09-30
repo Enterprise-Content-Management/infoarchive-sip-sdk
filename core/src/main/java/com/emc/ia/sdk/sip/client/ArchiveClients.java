@@ -75,8 +75,8 @@ public final class ArchiveClients {
 
   private static ArchiveClient withPropertyBasedAutoConfiguration(Map<String, String> configuration,
       Optional<RestClient> potentialClient, Optional<Clock> potentialClock) {
-    RestClient client = potentialClient.orElseGet(() -> createRestClient(configuration));
-    Clock clock = potentialClock.orElseGet(() -> new DefaultClock());
+    Clock clock = potentialClock.orElseGet(DefaultClock::new);
+    RestClient client = potentialClient.orElseGet(() -> createRestClient(configuration, clock));
     InfoArchiveConfigurers.propertyBased(configuration, client, clock).configure();
     String billboardUrl = getBillboadUrl(configuration);
     String applicationName = getApplicationName(configuration);
@@ -101,7 +101,7 @@ public final class ArchiveClients {
    */
   public static ArchiveClient client() {
     Map<String, String> configuration = getSdkConfiguration();
-    RestClient restClient = createRestClient(configuration);
+    RestClient restClient = createRestClient(configuration, null);
     String billboardUrl = getBillboadUrl(configuration);
     String applicationName = getApplicationName(configuration);
     return new InfoArchiveRestClient(restClient, appResourceCache(restClient, billboardUrl, applicationName));
@@ -113,7 +113,7 @@ public final class ArchiveClients {
    * @return An ArchiveClient
    */
   public static ArchiveClient client(Map<String, String> configuration) {
-    RestClient restClient = createRestClient(configuration);
+    RestClient restClient = createRestClient(configuration, null);
     String billboardUrl = getBillboadUrl(configuration);
     String applicationName = getApplicationName(configuration);
     return new InfoArchiveRestClient(restClient, appResourceCache(restClient, billboardUrl, applicationName));
@@ -172,7 +172,7 @@ public final class ArchiveClients {
 
   private static RestClient createDefaultRestClient() {
     Map<String, String> configuration = getSdkConfiguration();
-    return createRestClient(configuration);
+    return createRestClient(configuration, null);
   }
 
   private static Map<String, String> getSdkConfiguration() {
@@ -193,12 +193,13 @@ public final class ArchiveClients {
     return map;
   }
 
-  private static RestClient createRestClient(Map<String, String> configuration) {
+  private static RestClient createRestClient(Map<String, String> configuration, Clock clock) {
     HttpClient httpClient =
         NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
           .as(HttpClient.class);
     AuthenticationStrategy authentication = new AuthenticationStrategyFactory(configuration)
-                                                .getAuthenticationStrategy(() -> httpClient);
+                                                .getAuthenticationStrategy(() -> httpClient,
+                                                    () -> Optional.ofNullable(clock).orElseGet(DefaultClock::new));
     RestClient client = new RestClient(httpClient, authentication);
     client.init();
     return client;
