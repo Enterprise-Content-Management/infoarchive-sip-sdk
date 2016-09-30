@@ -3,11 +3,8 @@
  */
 package com.emc.ia.sdk.support.http.apache;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,7 +17,6 @@ import java.util.Locale;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -33,8 +29,10 @@ import org.junit.Test;
 
 import com.emc.ia.sdk.support.http.BinaryPart;
 import com.emc.ia.sdk.support.http.Header;
+import com.emc.ia.sdk.support.http.HttpException;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.test.TestCase;
+
 
 public class WhenMakingHttpCallsUsingApache extends TestCase {
 
@@ -78,7 +76,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
     return expectedClass.cast(request);
   }
 
-  @Test(expected = HttpResponseException.class)
+  @Test(expected = HttpException.class)
   public void shouldThrowExceptionOnNonOkStatusCode() throws IOException {
     when(statusLine.getStatusCode()).thenReturn(400);
 

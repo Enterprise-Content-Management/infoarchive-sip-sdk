@@ -5,7 +5,10 @@ package com.emc.ia.sdk.configurer;
 
 import java.util.Map;
 
+import com.emc.ia.sdk.support.datetime.Clock;
+import com.emc.ia.sdk.support.datetime.DefaultClock;
 import com.emc.ia.sdk.support.rest.RestClient;
+
 
 /**
  * Factory methods for creating InfoArchiveConfigurers.
@@ -20,6 +23,12 @@ public final class InfoArchiveConfigurers {
   }
 
   public static InfoArchiveConfigurer propertyBased(Map<String, String> configuration, RestClient restClient) {
-    return new PropertyBasedConfigurer(restClient, configuration);
+    return propertyBased(configuration, restClient, new DefaultClock());
   }
+
+  public static InfoArchiveConfigurer propertyBased(Map<String, String> configuration, RestClient restClient,
+      Clock clock) {
+    return new PropertyBasedConfigurer(restClient, clock, configuration);
+  }
+
 }

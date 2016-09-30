@@ -6,6 +6,7 @@ package com.emc.ia.sdk.support.http;
 import java.io.IOException;
 import java.util.Collection;
 
+
 public interface HttpClient {
 
   <T> T get(String uri, Collection<Header> headers, Class<T> type) throws IOException;

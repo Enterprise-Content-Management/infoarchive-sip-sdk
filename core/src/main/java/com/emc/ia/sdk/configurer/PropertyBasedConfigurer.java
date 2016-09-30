@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.emc.ia.sdk.sip.client.dto.Aic;
@@ -87,8 +88,11 @@ import com.emc.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
 import com.emc.ia.sdk.sip.client.rest.RestCache;
 import com.emc.ia.sdk.support.NewInstance;
 import com.emc.ia.sdk.support.RepeatingConfigReader;
+import com.emc.ia.sdk.support.datetime.Clock;
+import com.emc.ia.sdk.support.datetime.DefaultClock;
 import com.emc.ia.sdk.support.http.BinaryPart;
 import com.emc.ia.sdk.support.http.HttpClient;
+import com.emc.ia.sdk.support.http.HttpException;
 import com.emc.ia.sdk.support.http.MediaTypes;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
@@ -97,11 +101,14 @@ import com.emc.ia.sdk.support.rest.AuthenticationStrategy;
 import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.RestClient;
 
+
 @SuppressWarnings("PMD.ExcessiveClassLength")
-public class PropertyBasedConfigurer
-    implements InfoArchiveConfigurer, InfoArchiveLinkRelations, InfoArchiveConfiguration {
+public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLinkRelations,
+    InfoArchiveConfiguration {
 
   private static final String TYPE_EXPORT_PIPELINE = "export-pipeline";
+  private static final int MAX_RETRIES = 5;
+  private static final int RETRY_MS = 500;
   private static final int WAIT_RACE_CONDITION_MS = 2000;
   private static final String FORMAT_XML = "xml";
   private static final String FORMAT_XSD = "xsd";
@@ -116,13 +123,19 @@ public class PropertyBasedConfigurer
 
   private Map<String, String> configuration;
   private RestClient restClient;
+  private final Clock clock;
 
   public PropertyBasedConfigurer(Map<String, String> configuration) {
     this(null, configuration);
   }
 
   public PropertyBasedConfigurer(RestClient restClient, Map<String, String> configuration) {
+    this(restClient, new DefaultClock(), configuration);
+  }
+
+  public PropertyBasedConfigurer(RestClient restClient, Clock clock, Map<String, String> configuration) {
     this.restClient = restClient;
+    this.clock = clock;
     this.configuration = configuration;
   }
 
@@ -220,32 +233,39 @@ public class PropertyBasedConfigurer
   }
 
   public <T> T createItem(LinkContainer collection, T item, String... linkRelations) throws IOException {
-    try {
-      return restClient.createCollectionItem(collection, item, linkRelations);
-    } catch (IOException e) {
-      handleDuplicateObjects(e);
-      return null;
-    }
+    return perform(() -> restClient.createCollectionItem(collection, item, linkRelations));
   }
 
-  private void handleDuplicateObjects(IOException exception) throws IOException {
-    if (!isDuplicateObjectException(exception.getMessage())) {
-      throw exception;
+  private <T> T perform(Operation<T> operation) throws IOException {
+    int retry = 0;
+    while (retry < MAX_RETRIES) {
+      retry++;
+      try {
+        return operation.perform();
+      } catch (IOException e) {
+        if (isTemporarilyUnavailable(e)) {
+          clock.sleep(RETRY_MS * retry, TimeUnit.MILLISECONDS);
+        } else if (isDuplicateObjectException(e.getMessage())) {
+          clock.sleep(WAIT_RACE_CONDITION_MS, TimeUnit.MILLISECONDS);
+          break;
+        } else {
+          throw e;
+        }
+      }
     }
-    // This can happen when multiple processes/threads attempt to create resources simultaneously
-    waitForOtherInstanceToCreateObjects();
+    return null;
+  }
+
+  private boolean isTemporarilyUnavailable(IOException exception) {
+    if (exception instanceof HttpException) {
+      HttpException httpException = (HttpException)exception;
+      return httpException.getStatusCode() == 503;
+    }
+    return false;
   }
 
   private boolean isDuplicateObjectException(String error) {
     return error.contains("DUPLICATE_KEY") || error.contains("NAME_ALREADY_EXISTS");
-  }
-
-  private void waitForOtherInstanceToCreateObjects() {
-    try {
-      Thread.sleep(WAIT_RACE_CONDITION_MS);
-    } catch (InterruptedException e1) {
-      // Ignore
-    }
   }
 
   private void ensureDatabase() throws IOException {
@@ -673,13 +693,9 @@ public class PropertyBasedConfigurer
     }
     String content = configured(configurationName);
     try (InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
-      try {
-        restClient.post(state.getUri(LINK_CONTENTS), null,
+      perform(() -> restClient.post(state.getUri(LINK_CONTENTS), null,
             new TextPart("content", MediaTypes.HAL, "{ \"format\": \"" + format + "\" }"),
-            new BinaryPart("file", stream, configurationName));
-      } catch (IOException e) {
-        handleDuplicateObjects(e);
-      }
+            new BinaryPart("file", stream, configurationName)));
     }
   }
 
@@ -797,9 +813,24 @@ public class PropertyBasedConfigurer
       criterion.setIndexed(Boolean.parseBoolean(cfg.get(CRITERIA_INDEXED)));
       criterion.setLabel(cfg.get(CRITERIA_LABEL));
       criterion.setName(cfg.get(CRITERIA_NAME));
-      criterion.setpKeyMaxAttr(cfg.get(CRITERIA_PKEYMINATTR));
-      criterion.setpKeyMinAttr(cfg.get(CRITERIA_PKEYMAXATTR));
-      criterion.setpKeyValuesAttr(cfg.get(CRITERIA_PKEYVALUESATTR));
+
+      String minAttr = cfg.get(CRITERIA_PKEYMINATTR)
+        .trim();
+      if (!minAttr.isEmpty()) {
+        criterion.setpKeyMinAttr(minAttr);
+      }
+
+      String maxAttr = cfg.get(CRITERIA_PKEYMAXATTR)
+        .trim();
+      if (!maxAttr.isEmpty()) {
+        criterion.setpKeyMaxAttr(maxAttr);
+      }
+
+      String valueAttr = cfg.get(CRITERIA_PKEYVALUESATTR)
+        .trim();
+      if (!valueAttr.isEmpty()) {
+        criterion.setpKeyValuesAttr(valueAttr);
+      }
       criterion.setType(cfg.get(CRITERIA_TYPE));
       criteria.add(criterion);
     }
@@ -809,7 +840,7 @@ public class PropertyBasedConfigurer
 
   private void ensureQuery() throws IOException {
     String rawQueryNames = configuration.get(QUERY_NAME);
-    List<String> queryUris = new ArrayList<String>();
+    List<String> queryUris = new ArrayList<>();
     if (rawQueryNames != null && !rawQueryNames.isEmpty()) {
       String[] queryNames = rawQueryNames.split(",");
       for (String queryName : queryNames) {
@@ -1140,7 +1171,7 @@ public class PropertyBasedConfigurer
     String rawString = getString(key, variable);
     if (rawString != null) {
       String[] values = rawString.split(",");
-      List<String> normalizedStrings = new ArrayList<String>();
+      List<String> normalizedStrings = new ArrayList<>();
       for (String value : values) {
         if (value != null) {
           String normalizedValue = value.trim();
@@ -1152,6 +1183,12 @@ public class PropertyBasedConfigurer
       return normalizedStrings;
     }
     return Collections.emptyList();
+  }
+
+
+  @FunctionalInterface
+  interface Operation<T> {
+    T perform() throws IOException;
   }
 
 }

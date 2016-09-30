@@ -23,7 +23,7 @@ public class Comparison extends Item {
   }
 
   public Comparison(String name, Operator operator, String value) {
-    this(name, operator, Arrays.asList(value));
+    this(name, operator, Arrays.asList(Objects.requireNonNull(value, "Missing comparison value")));
   }
 
   public Comparison(String name, Operator operator, List<String> value) {
