@@ -43,10 +43,16 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   @Override
   public String ingest(InputStream sip) throws IOException {
-    ReceptionResponse response = restClient.post(resourceCache.getAipResourceUri(), ReceptionResponse.class,
-        new TextPart("format", "sip_zip"), new BinaryPart("sip", sip, "IASIP.zip"));
-    return restClient.put(response.getUri(LINK_INGEST), IngestionResponse.class)
-      .getAipId();
+    final String ingestDirectUri = resourceCache.getAipIngestDirectResourceUri();
+    if (ingestDirectUri != null) {
+      return restClient.post(ingestDirectUri, IngestionResponse.class, new TextPart("format", "sip_zip"),
+          new BinaryPart("sip", sip, "IASIP.zip")).getAipId();
+    } else {
+      ReceptionResponse response = restClient.post(resourceCache.getAipResourceUri(), ReceptionResponse.class,
+          new TextPart("format", "sip_zip"), new BinaryPart("sip", sip, "IASIP.zip"));
+      return restClient.put(response.getUri(LINK_INGEST), IngestionResponse.class)
+          .getAipId();
+    }
   }
 
   @Override

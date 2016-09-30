@@ -28,6 +28,7 @@ import com.emc.ia.sdk.support.datetime.DefaultClock;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
+import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.RestClient;
 
 /**
@@ -159,6 +160,7 @@ public final class ArchiveClients {
   private static void cacheResourceUris(ArchiveOperationsByApplicationResourceCache resourceCache,
       RestClient restClient, Application application) throws IOException {
     Aics aics = restClient.follow(application, InfoArchiveLinkRelations.LINK_AICS, Aics.class);
+    LinkContainer aips = restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class);
 
     Map<String, String> dipResourceUriByAicName = new HashMap<>();
     aics.getItems()
@@ -166,6 +168,7 @@ public final class ArchiveClients {
     resourceCache.setDipResourceUriByAicName(dipResourceUriByAicName);
     resourceCache.setCiResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_CI));
     resourceCache.setAipResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_AIPS));
+    resourceCache.setAipIngestDirectResourceUri(aips.getUri(InfoArchiveLinkRelations.LINK_INGEST_DIRECT));
   }
 
   private static RestClient createDefaultRestClient() {

@@ -27,6 +27,7 @@ public interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_FILE_SYSTEM_ROOTS = LINK_PREFIX + "file-system-roots";
   String LINK_HOLDINGS = LINK_PREFIX + "holdings";
   String LINK_INGEST = LINK_PREFIX + "ingest";
+  String LINK_INGEST_DIRECT = LINK_PREFIX + "ingest-direct";
   String LINK_INGEST_NODES = LINK_PREFIX + "ingest-nodes";
   String LINK_INGESTS = LINK_INGEST + "s";
   String LINK_JOB_CONFIRMATION = "?spel=?[name=='Confirmation']";
