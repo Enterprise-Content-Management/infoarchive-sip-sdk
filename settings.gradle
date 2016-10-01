@@ -8,3 +8,6 @@ project(':stringtemplate').name = 'infoarchive-sip-sdk-stringtemplate'
 
 include 'velocity'
 project(':velocity').name = 'infoarchive-sip-sdk-velocity'
+
+include 'samples/hello-sip'
+project(':samples/hello-sip').name ='hello-sip'
