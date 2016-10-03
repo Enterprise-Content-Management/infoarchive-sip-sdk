@@ -149,6 +149,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Libraries libraries = mock(Libraries.class);
     Contents contents = new Contents();
     aics = mock(Aics.class);
+    LinkContainer aips = new LinkContainer();
     Queries queries = mock(Queries.class);
     Quotas quotas = mock(Quotas.class);
     ResultConfigurationHelpers helpers = mock(ResultConfigurationHelpers.class);
@@ -176,6 +177,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(link.getHref()).thenReturn(BILLBOARD_URI);
     mockCollection(ExportConfigurations.class, exportConfigurations);
     mockCollection(ExportPipelines.class, exportPipelines);
+    when(restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class)).thenReturn(aips);
+    aips.setLinks(links);
 
     mockCollection(Applications.class, applications);
     mockCollection(Federations.class, federations);
@@ -345,6 +348,24 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(ingestionResponse.getAipId()).thenReturn("sip001");
 
     assertEquals(archiveClient.ingest(sip), "sip001");
+  }
+
+  @Test
+  public void shouldIngestWithIngestDirect() throws IOException {
+    Link link = new Link();
+    link.setHref(BILLBOARD_URI);
+    links.put(InfoArchiveLinkRelations.LINK_INGEST_DIRECT, link);
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+
+    String source = "This is the source of my input stream";
+    InputStream sip = IOUtils.toInputStream(source, "UTF-8");
+
+    IngestionResponse ingestionResponse = mock(IngestionResponse.class);
+    when(restClient.post(anyString(), eq(IngestionResponse.class), any(Part.class), any(Part.class)))
+        .thenReturn(ingestionResponse);
+    when(ingestionResponse.getAipId()).thenReturn("sip002");
+
+    assertEquals(archiveClient.ingest(sip), "sip002");
   }
 
   @Test(expected = RuntimeException.class)
