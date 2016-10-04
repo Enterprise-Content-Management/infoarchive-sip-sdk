@@ -9,6 +9,8 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -85,6 +87,8 @@ import com.emc.ia.sdk.sip.client.dto.query.Comparison;
 import com.emc.ia.sdk.sip.client.dto.query.Operator;
 import com.emc.ia.sdk.sip.client.dto.query.SearchQuery;
 import com.emc.ia.sdk.sip.client.dto.result.searchconfig.AllSearchComponents;
+import com.emc.ia.sdk.sip.client.rest.ContentResultFactory;
+import com.emc.ia.sdk.sip.client.rest.DefaultContentResult;
 import com.emc.ia.sdk.sip.client.rest.DefaultQueryResult;
 import com.emc.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
 import com.emc.ia.sdk.sip.client.rest.QueryResultFactory;
@@ -418,6 +422,30 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     QueryResult result = archiveClient.query(query, aicName, schema, 10);
 
     assertEquals(queryResult, result);
+  }
+
+  @Test
+  public void shouldFetchExportedPackageSuccessfully() throws IOException, URISyntaxException {
+    UriBuilder uriBuilder = mock(UriBuilder.class);
+
+    URI baseUri = new URI("http://localhost:8888/");
+    String fileName = randomString();
+    String downloadToken = randomString();
+
+    String uri = baseUri.toString();
+    when(uriBuilder.build()).thenReturn(uri);
+    when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
+    when(restClient.uri(anyString())).thenReturn(uriBuilder);
+
+    ContentResultFactory contentResultFactory = mock(ContentResultFactory.class);
+    DefaultContentResult contentResult = mock(DefaultContentResult.class);
+    when(contentResultFactory.create(any(Response.class))).thenReturn(contentResult);
+    when(restClient.get(eq(uri), any(ContentResultFactory.class))).thenReturn(contentResult);
+
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    ContentResult result = archiveClient.fetchExportedPackage(baseUri, fileName, downloadToken);
+
+    assertEquals(contentResult, result);
   }
 
   @Test
