@@ -5,6 +5,7 @@ package com.emc.ia.sdk.sip.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 
 import com.emc.ia.sdk.sip.client.dto.query.SearchQuery;
 
@@ -39,5 +40,15 @@ public interface ArchiveClient {
    * @throws IOException When an I/O error occurs
    */
   ContentResult fetchContent(String contentId) throws IOException;
+
+  /**
+   * Fetch the exported package for the specified URI, file name and download token.
+   * @param baseUri The URI of the package to fetch.
+   * @param fileName The file name of the package.
+   * @param downloadToken The download token to fetch.
+   * @return A ContentResult
+   * @throws IOException When an I/O error occurs
+   */
+  ContentResult fetchExportedPackage(URI baseUri, String fileName, String downloadToken) throws IOException;
 
 }

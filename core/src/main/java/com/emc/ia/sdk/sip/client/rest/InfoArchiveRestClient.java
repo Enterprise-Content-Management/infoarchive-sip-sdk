@@ -76,4 +76,13 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     }
   }
 
+  @Override
+  public ContentResult fetchExportedPackage(URI baseUri, String fileName, String downloadToken) throws IOException {
+    String queryUri = restClient.uri(baseUri.toString())
+      .addParameter("filename", fileName.replace(" ", "%20"))
+      .addParameter("downloadToken", downloadToken)
+      .build();
+    return restClient.get(queryUri, contentResultFactory);
+  }
+
 }
