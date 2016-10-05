@@ -36,7 +36,6 @@ subprojects {
     httpmime
     jacksonCore
     jacksonDatabind
-    orgJson
     validation
     xmlunit
 
