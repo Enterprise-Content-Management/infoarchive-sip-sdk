@@ -41,7 +41,7 @@ public final class ArchiveClients {
   }
 
   /**
-   * Installs, of necessary, the application and holding artifacts based on the details in the configuration map then
+   * Installs, if necessary, the application and holding artifacts based on the details in the configuration map then
    * returns an ArchiveClient instance.
    * @param configuration The configuration map.
    * @return An ArchiveClient
@@ -51,7 +51,7 @@ public final class ArchiveClients {
   }
 
   /**
-   * Installs, of necessary, the application and holding artifacts based on the details in the configuration map then
+   * Installs, if necessary, the application and holding artifacts based on the details in the configuration map then
    * returns an ArchiveClient instance.
    * @param configuration The configuration map.
    * @param restClient The RestClient used to interact with the InfoArchive REST api.
