@@ -22,6 +22,18 @@ public interface ArchiveClient {
   String ingest(InputStream sip) throws IOException;
 
   /**
+   * Ingest a Submission Information Package (SIP) into the Archive. Will take advantage of the ingestDirect resource if
+   * present, otherwise will revert to receive + ingest.
+   * 
+   * <b>Note</b>, only works if synchronous commit is enabled on the holding and the SIP being ingested is NOT part of a
+   * multi-SIP DSS.
+   * @param sip The SIP to add to the Archive
+   * @return The ID of the Archival Information Package (AIP) that was generated from the SIP
+   * @throws IOException When an I/O error occurs
+   */
+  String ingestDirect(InputStream sip) throws IOException;
+
+  /**
    * Execute a query against the Archive.
    * @param query The query.
    * @param aic The name of the AIC.

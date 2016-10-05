@@ -10,6 +10,7 @@ public class ArchiveOperationsByApplicationResourceCache {
   private final String applicationName;
   private String ciResourceUri;
   private String aipResourceUri;
+  private String aipIngestDirectResourceUri;
   private Map<String, String> dipResourceUriByAicName;
 
   public ArchiveOperationsByApplicationResourceCache(String applicationName) {
@@ -30,6 +31,14 @@ public class ArchiveOperationsByApplicationResourceCache {
 
   public void setAipResourceUri(String aipResourceUri) {
     this.aipResourceUri = aipResourceUri;
+  }
+
+  public String getAipIngestDirectResourceUri() {
+    return aipIngestDirectResourceUri;
+  }
+
+  public void setAipIngestDirectResourceUri(String aipIngestDirectResourceUri) {
+    this.aipIngestDirectResourceUri = aipIngestDirectResourceUri;
   }
 
   public Map<String, String> getDipResourceUriByAicName() {
