@@ -28,12 +28,13 @@ import com.emc.ia.sdk.support.test.TestCase;
 public class WhenMakingRestCalls extends TestCase {
 
   private final HttpClient httpClient = mock(HttpClient.class);
-  private final RestClient restClient = new RestClient(httpClient);
   private final String token = randomString();
+  private final AuthenticationStrategy authentication = new NonExpiringTokenAuthentication(token);
+  private final RestClient restClient = new RestClient(httpClient, authentication);
 
   @Before
   public void init() {
-    restClient.init(token);
+    restClient.init();
   }
 
   @Test
@@ -41,8 +42,8 @@ public class WhenMakingRestCalls extends TestCase {
     String uri = randomString();
     Class<?> type = String.class;
     List<Header> headers = new ArrayList<>();
-    headers.add(new Header("Authorization", "Bearer " + token));
     headers.add(new Header("Accept", MediaTypes.HAL));
+    headers.add(new Header("Authorization", "Bearer " + token));
 
     restClient.get(uri, type);
     verify(httpClient).get(eq(uri), eq(headers), eq(type));
