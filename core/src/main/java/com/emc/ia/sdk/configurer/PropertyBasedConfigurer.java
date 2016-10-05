@@ -97,6 +97,7 @@ import com.emc.ia.sdk.support.http.MediaTypes;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
+import com.emc.ia.sdk.support.rest.AuthenticationStrategy;
 import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.RestClient;
 
@@ -189,9 +190,11 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       HttpClient httpClient =
           NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
             .as(HttpClient.class);
-      restClient = new RestClient(httpClient);
+      AuthenticationStrategy authentication = new AuthenticationStrategyFactory(configuration)
+                                                  .getAuthenticationStrategy(() -> httpClient, () -> clock);
+      restClient = new RestClient(httpClient, authentication);
     }
-    restClient.init(configuration.get(SERVER_AUTENTICATON_TOKEN));
+    restClient.init();
     configurationState.setServices(restClient.get(configured(SERVER_URI), Services.class));
   }
 
