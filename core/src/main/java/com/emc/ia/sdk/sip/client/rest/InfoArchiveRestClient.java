@@ -45,21 +45,27 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   public String ingest(InputStream sip) throws IOException {
     ReceptionResponse response = restClient.post(resourceCache.getAipResourceUri(), ReceptionResponse.class,
         new TextPart("format", "sip_zip"), new BinaryPart("sip", sip, "IASIP.zip"));
-    return restClient.put(response.getUri(LINK_INGEST), IngestionResponse.class)
-      .getAipId();
+    return restClient.put(response.getUri(LINK_INGEST), IngestionResponse.class).getAipId();
+  }
+
+  @Override
+  public String ingestDirect(InputStream sip) throws IOException {
+    final String ingestDirectUri = resourceCache.getAipIngestDirectResourceUri();
+    if (ingestDirectUri == null) {
+      return ingest(sip);
+    } else {
+      return restClient.post(ingestDirectUri, IngestionResponse.class, new TextPart("format", "sip_zip"),
+          new BinaryPart("sip", sip, "IASIP.zip")).getAipId();
+    }
   }
 
   @Override
   public QueryResult query(SearchQuery query, String aic, String schema, int pageSize) throws IOException {
     String formattedQuery = queryFormatter.format(query);
-    String baseUri = resourceCache.getDipResourceUriByAicName()
-      .get(aic);
+    String baseUri = resourceCache.getDipResourceUriByAicName().get(aic);
     Objects.requireNonNull(baseUri, String.format("No DIP resource found for AIC %s", aic));
-    String queryUri = restClient.uri(baseUri)
-      .addParameter("query", formattedQuery)
-      .addParameter("schema", schema)
-      .addParameter("size", String.valueOf(pageSize))
-      .build();
+    String queryUri = restClient.uri(baseUri).addParameter("query", formattedQuery).addParameter("schema", schema)
+        .addParameter("size", String.valueOf(pageSize)).build();
     return restClient.get(queryUri, queryResultFactory);
   }
 
