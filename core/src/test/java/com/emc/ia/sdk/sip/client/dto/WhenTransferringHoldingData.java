@@ -18,11 +18,12 @@ public class WhenTransferringHoldingData extends TestCase {
 
     holding.setAllStores(store);
 
-    assertEquals("Ci", store, holding.getCiStore());
-    assertEquals("Ci", store, holding.getLogStore());
-    assertEquals("Ci", store, holding.getRenditionStore());
-    assertEquals("Ci", store, holding.getXdbStore());
-    assertEquals("Ci", store, holding.getXmlStore());
+    assertEquals("Ci Store", store, holding.getCiStore());
+    assertEquals("Log Store", store, holding.getLogStore());
+    assertEquals("Rendition Store", store, holding.getRenditionStore());
+    assertEquals("XDB Store", store, holding.getXdbStore());
+    assertEquals("XML Store", store, holding.getXmlStore());
+    assertEquals("Managed Item Store", store, holding.getManagedItemStore());
   }
 
 }
