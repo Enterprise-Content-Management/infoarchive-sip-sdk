@@ -9,7 +9,9 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -46,6 +48,7 @@ import com.emc.ia.sdk.sip.client.dto.ItemContainer;
 import com.emc.ia.sdk.sip.client.dto.Libraries;
 import com.emc.ia.sdk.sip.client.dto.Library;
 import com.emc.ia.sdk.sip.client.dto.NamedLinkContainer;
+import com.emc.ia.sdk.sip.client.dto.OrderItem;
 import com.emc.ia.sdk.sip.client.dto.Pdi;
 import com.emc.ia.sdk.sip.client.dto.PdiSchema;
 import com.emc.ia.sdk.sip.client.dto.PdiSchemas;
@@ -64,6 +67,7 @@ import com.emc.ia.sdk.sip.client.dto.RetentionPolicy;
 import com.emc.ia.sdk.sip.client.dto.Search;
 import com.emc.ia.sdk.sip.client.dto.SearchComposition;
 import com.emc.ia.sdk.sip.client.dto.SearchCompositions;
+import com.emc.ia.sdk.sip.client.dto.SearchResults;
 import com.emc.ia.sdk.sip.client.dto.Searches;
 import com.emc.ia.sdk.sip.client.dto.Services;
 import com.emc.ia.sdk.sip.client.dto.Space;
@@ -82,9 +86,12 @@ import com.emc.ia.sdk.sip.client.dto.export.ExportConfigurations;
 import com.emc.ia.sdk.sip.client.dto.export.ExportPipeline;
 import com.emc.ia.sdk.sip.client.dto.export.ExportPipelines;
 import com.emc.ia.sdk.sip.client.dto.query.Comparison;
+import com.emc.ia.sdk.sip.client.dto.query.Item;
 import com.emc.ia.sdk.sip.client.dto.query.Operator;
 import com.emc.ia.sdk.sip.client.dto.query.SearchQuery;
 import com.emc.ia.sdk.sip.client.dto.result.searchconfig.AllSearchComponents;
+import com.emc.ia.sdk.sip.client.rest.ContentResultFactory;
+import com.emc.ia.sdk.sip.client.rest.DefaultContentResult;
 import com.emc.ia.sdk.sip.client.rest.DefaultQueryResult;
 import com.emc.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
 import com.emc.ia.sdk.sip.client.rest.QueryResultFactory;
@@ -439,6 +446,98 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
     verify(restClient, times(5)).createCollectionItem(
         eq(federations), any(Federation.class), eq(LINK_ADD), eq(LINK_SELF));
+  }
+
+  @Test
+  public void shouldSearchSuccessfully() throws IOException {
+    SearchResults searchResults = mock(SearchResults.class);
+    when(searchResults.getUri("next")).thenReturn(null);
+    when(restClient.postXml(anyString(), anyString(), eq(SearchResults.class))).thenReturn(searchResults);
+
+    SearchQuery searchQuery = new SearchQuery();
+    List<Item> items = new ArrayList<>();
+    items.add(new Comparison("from", Operator.EQUAL, ""));
+    items.add(new Comparison("recipient", Operator.EQUAL, ""));
+    List<String> dates = new ArrayList<>();
+    dates.add("2014-04-27");
+    dates.add("2016-10-11");
+    items.add(new Comparison("sentDate", Operator.BETWEEN, dates));
+    items.add(new Comparison("fromCountry", Operator.EQUAL, ""));
+    items.add(new Comparison("toCountry", Operator.EQUAL, ""));
+    searchQuery.setItems(items);
+
+    SearchComposition searchComparison = new SearchComposition();
+    Map<String, Link> searchComparisonLinks = new HashMap<>();
+    Link compositionLink = new Link();
+    compositionLink.setHref(randomString());
+    searchComparisonLinks.put("self", compositionLink);
+    searchComparison.setLinks(searchComparisonLinks);
+
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    SearchResults result = archiveClient.search(searchQuery, searchComparison);
+
+    assertEquals(searchResults, result);
+  }
+
+  @Test
+  public void shouldExportSuccessfully() throws IOException {
+    UriBuilder uriBuilder = mock(UriBuilder.class);
+    String uri = randomString();
+    when(uriBuilder.build()).thenReturn(uri);
+    when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
+    when(restClient.uri(anyString())).thenReturn(uriBuilder);
+    OrderItem orderItem = mock(OrderItem.class);
+    when(restClient.post(eq(uri), anyString(), eq(OrderItem.class))).thenReturn(orderItem);
+
+    SearchResults searchResults = new SearchResults();
+    ExportConfiguration exportConfiguration = mock(ExportConfiguration.class);
+    when(exportConfiguration.getSelfUri()).thenReturn(uri);
+
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    OrderItem result = archiveClient.export(searchResults, exportConfiguration, randomString());
+
+    assertEquals(orderItem, result);
+  }
+
+  @Test
+  public void shouldExportAndWaitSuccessfully() throws IOException {
+    UriBuilder uriBuilder = mock(UriBuilder.class);
+    String uri = randomString();
+    when(uriBuilder.build()).thenReturn(uri);
+    when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
+    when(restClient.uri(anyString())).thenReturn(uriBuilder);
+    OrderItem orderItem = mock(OrderItem.class);
+    when(orderItem.getUri(anyString())).thenReturn(randomString());
+    when(restClient.post(eq(uri), anyString(), eq(OrderItem.class))).thenReturn(orderItem);
+    when(restClient.get(anyString(), eq(OrderItem.class))).thenReturn(orderItem);
+
+    SearchResults searchResults = new SearchResults();
+    ExportConfiguration exportConfiguration = mock(ExportConfiguration.class);
+    when(exportConfiguration.getSelfUri()).thenReturn(uri);
+
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    OrderItem result = archiveClient.exportAndWait(searchResults, exportConfiguration, randomString(), randomInt(6000));
+
+    assertEquals(orderItem, result);
+  }
+
+  @Test
+  public void shouldFetchOrderContentSuccessfully() throws IOException {
+    UriBuilder uriBuilder = mock(UriBuilder.class);
+    String uri = randomString();
+    when(uriBuilder.build()).thenReturn(uri);
+    when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
+    when(restClient.uri(anyString())).thenReturn(uriBuilder);
+    ContentResultFactory contentResultFactory = mock(ContentResultFactory.class);
+    DefaultContentResult contentResult = mock(DefaultContentResult.class);
+    when(contentResultFactory.create(any(Response.class))).thenReturn(contentResult);
+    when(restClient.get(eq(uri), any(ContentResultFactory.class))).thenReturn(contentResult);
+    OrderItem orderItem = new OrderItem();
+
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    ContentResult result = archiveClient.fetchOrderContent(orderItem);
+
+    assertEquals(contentResult, result);
   }
 
 }

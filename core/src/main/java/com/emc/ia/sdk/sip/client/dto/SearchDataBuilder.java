@@ -27,6 +27,16 @@ public final class SearchDataBuilder {
     return this;
   }
 
+  private SearchDataBuilder criterion(String field, String operator, String value1, String value2) {
+    builder.element("criterion")
+      .element("name", field)
+      .element("operator", operator)
+      .element("value", value1)
+      .element("value", value2)
+      .end();
+    return this;
+  }
+
   public SearchDataBuilder equal(String filed, String value) {
     return criterion(filed, "EQUAL", value);
   }
@@ -41,6 +51,10 @@ public final class SearchDataBuilder {
 
   public SearchDataBuilder endsWith(String filed, String value) {
     return criterion(filed, "ENDS_WITH", value);
+  }
+
+  public SearchDataBuilder between(String filed, String value1, String value2) {
+    return criterion(filed, "BETWEEN", value1, value2);
   }
 
   public SearchDataBuilder contains(String filed, String value) {
