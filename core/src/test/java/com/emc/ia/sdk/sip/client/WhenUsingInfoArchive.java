@@ -64,9 +64,11 @@ import com.emc.ia.sdk.sip.client.dto.ResultConfigurationHelper;
 import com.emc.ia.sdk.sip.client.dto.ResultConfigurationHelpers;
 import com.emc.ia.sdk.sip.client.dto.RetentionPolicies;
 import com.emc.ia.sdk.sip.client.dto.RetentionPolicy;
+import com.emc.ia.sdk.sip.client.dto.Row;
 import com.emc.ia.sdk.sip.client.dto.Search;
 import com.emc.ia.sdk.sip.client.dto.SearchComposition;
 import com.emc.ia.sdk.sip.client.dto.SearchCompositions;
+import com.emc.ia.sdk.sip.client.dto.SearchResult;
 import com.emc.ia.sdk.sip.client.dto.SearchResults;
 import com.emc.ia.sdk.sip.client.dto.Searches;
 import com.emc.ia.sdk.sip.client.dto.Services;
@@ -490,6 +492,13 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.post(eq(uri), anyString(), eq(OrderItem.class))).thenReturn(orderItem);
 
     SearchResults searchResults = new SearchResults();
+    SearchResult searchResult = new SearchResult();
+    List<Row> rows = new ArrayList<>();
+    Row row = new Row();
+    row.setId(randomString());
+    rows.add(row);
+    searchResult.setRows(rows);
+    searchResults.addResult(searchResult);
     ExportConfiguration exportConfiguration = mock(ExportConfiguration.class);
     when(exportConfiguration.getSelfUri()).thenReturn(uri);
 
