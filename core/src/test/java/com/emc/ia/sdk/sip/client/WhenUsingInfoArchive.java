@@ -9,6 +9,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -438,13 +439,13 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put(InfoArchiveConfiguration.FEDERATION_NAME, randomString());
     when(restClient.createCollectionItem(eq(federations), any(Federation.class), eq(LINK_ADD), eq(LINK_SELF)))
         .then(invocation -> {
-      throw new HttpException(503, "");
-    });
+          throw new HttpException(503, "");
+        });
 
     ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient, mock(Clock.class));
 
     verify(restClient, times(5)).createCollectionItem(
-        eq(federations), any(Federation.class), eq(LINK_ADD), eq(LINK_SELF));
+                                                       eq(federations), any(Federation.class), eq(LINK_ADD), eq(LINK_SELF));
   }
 
   @Test
