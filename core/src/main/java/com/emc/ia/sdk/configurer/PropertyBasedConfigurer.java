@@ -192,9 +192,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
             .as(HttpClient.class);
       AuthenticationStrategy authentication = new AuthenticationStrategyFactory(configuration)
                                                   .getAuthenticationStrategy(() -> httpClient, () -> clock);
-      restClient = new RestClient(httpClient, authentication);
+      restClient = new RestClient(httpClient);
+      restClient.init(authentication);
     }
-    restClient.init();
     configurationState.setServices(restClient.get(configured(SERVER_URI), Services.class));
   }
 

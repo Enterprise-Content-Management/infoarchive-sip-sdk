@@ -30,11 +30,11 @@ public class WhenMakingRestCalls extends TestCase {
   private final HttpClient httpClient = mock(HttpClient.class);
   private final String token = randomString();
   private final AuthenticationStrategy authentication = new NonExpiringTokenAuthentication(token);
-  private final RestClient restClient = new RestClient(httpClient, authentication);
+  private final RestClient restClient = new RestClient(httpClient);
 
   @Before
   public void init() {
-    restClient.init();
+    restClient.init(authentication);
   }
 
   @Test
@@ -53,6 +53,20 @@ public class WhenMakingRestCalls extends TestCase {
 
     restClient.post(uri, type);
     verify(httpClient).post(eq(uri), eq(headers), eq(type));
+  }
+
+  @Test
+  public void postXmlShouldForwardToHttpClient() throws IOException {
+    String uri = randomString();
+    String data = randomString();
+    Class<?> type = String.class;
+    List<Header> headers = new ArrayList<>();
+    headers.add(new Header("Accept", MediaTypes.HAL));
+    headers.add(new Header("Content-Type", MediaTypes.XML));
+    headers.add(new Header("Authorization", "Bearer " + token));
+
+    restClient.postXml(uri, data, type);
+    verify(httpClient).post(eq(uri), eq(headers), eq(data), eq(type));
   }
 
   @Test

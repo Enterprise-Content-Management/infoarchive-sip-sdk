@@ -24,15 +24,15 @@ public class RestClient implements Closeable, StandardLinkRelations {
   private final Collection<Header> headers = new ArrayList<>();
   private final Collection<Header> headersNoFormat = new ArrayList<>();
   private final HttpClient httpClient;
-  private final AuthenticationStrategy authentication;
+  private AuthenticationStrategy authentication;
 
-  public RestClient(HttpClient client, AuthenticationStrategy authentication) {
+  public RestClient(HttpClient client) {
     this.httpClient = Objects.requireNonNull(client, "Missing HTTP client");
-    this.authentication = Objects.requireNonNull(authentication, "Missing Authentication strategy");
   }
 
-  public void init() {
+  public void init(AuthenticationStrategy auth) {
     headers.add(new Header("Accept", MediaTypes.HAL));
+    this.authentication = Objects.requireNonNull(auth, "Missing Authentication strategy");
   }
 
   public UriBuilder uri(String baseUri) {
@@ -64,7 +64,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   public <T> T postXml(String uri, String data, Class<T> type) throws IOException {
-    return httpClient.post(uri, withContentType(MediaTypes.XML), data, type);
+    return httpClient.post(uri, withAuthorization(withContentType(MediaTypes.XML)), data, type);
   }
 
   public <T> T follow(LinkContainer state, String relation, Class<T> type) throws IOException {
@@ -92,7 +92,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
   @SuppressWarnings("unchecked")
   public <T> T createCollectionItem(LinkContainer collection, T item, String... addLinkRelations) throws IOException {
     String uri = linkIn(collection, addLinkRelations).getHref();
-    T result = (T)httpClient.post(uri, withContentType(MediaTypes.HAL), toJson(item), item.getClass());
+    T result = (T)httpClient.post(uri, withAuthorization(withContentType(MediaTypes.HAL)), toJson(item), item.getClass());
     Objects.requireNonNull(result, String.format("Could not create item in %s%n%s", uri, item));
     return result;
   }
@@ -104,9 +104,13 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   private Collection<Header> withAuthorization(Collection<Header> givenHeaders) {
-    Collection<Header> updated = new ArrayList<>(givenHeaders);
-    updated.add(authentication.issueAuthHeader());
-    return updated;
+    if (authentication == null) {
+      return givenHeaders;
+    } else {
+      Collection<Header> updated = new ArrayList<>(givenHeaders);
+      updated.add(authentication.issueAuthHeader());
+      return updated;
+    }
   }
 
   private String toJson(Object object) throws IOException {
