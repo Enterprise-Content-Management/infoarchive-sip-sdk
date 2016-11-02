@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -16,13 +18,28 @@ import com.emc.ia.sdk.sip.client.ArchiveClient;
 import com.emc.ia.sdk.sip.client.ContentResult;
 import com.emc.ia.sdk.sip.client.QueryResult;
 import com.emc.ia.sdk.sip.client.dto.IngestionResponse;
+import com.emc.ia.sdk.sip.client.dto.OrderItem;
 import com.emc.ia.sdk.sip.client.dto.ReceptionResponse;
+import com.emc.ia.sdk.sip.client.dto.Row;
+import com.emc.ia.sdk.sip.client.dto.SearchComposition;
+import com.emc.ia.sdk.sip.client.dto.SearchDataBuilder;
+import com.emc.ia.sdk.sip.client.dto.SearchResult;
+import com.emc.ia.sdk.sip.client.dto.SearchResults;
+import com.emc.ia.sdk.sip.client.dto.export.ExportConfiguration;
+import com.emc.ia.sdk.sip.client.dto.query.Comparison;
+import com.emc.ia.sdk.sip.client.dto.query.Item;
 import com.emc.ia.sdk.sip.client.dto.query.QueryFormatter;
 import com.emc.ia.sdk.sip.client.dto.query.SearchQuery;
 import com.emc.ia.sdk.support.http.BinaryPart;
 import com.emc.ia.sdk.support.http.ResponseFactory;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.rest.RestClient;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
  * Implementation of {@linkplain ArchiveClient} that uses the REST API of a running InfoArchive server.
@@ -80,6 +97,108 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     } catch (URISyntaxException e) {
       throw new RuntimeException("Failed to create content resource uri.", e);
     }
+  }
+
+  @Override
+  public ContentResult fetchOrderContent(OrderItem orderItem) throws IOException {
+    String fetchUri = restClient.uri(orderItem.getUri(LINK_DOWNLOAD))
+      .addParameter("downloadToken", "")
+      .build();
+    return restClient.get(fetchUri, contentResultFactory);
+  }
+
+  @Override
+  public SearchResults search(SearchQuery searchQuery, SearchComposition searchComposition) throws IOException {
+    String searchResultBaseUri = searchComposition.getSelfUri();
+    String xmlSearchQuery = getXmlStringFromSearchQuery(searchQuery);
+    SearchResults totalSearchResults = restClient.postXml(searchResultBaseUri, xmlSearchQuery, SearchResults.class);
+    while (searchResultBaseUri != null) {
+      SearchResults onePageSearchResults = restClient.postXml(searchResultBaseUri, "", SearchResults.class);
+      for (SearchResult searchResult: onePageSearchResults.getResults()) {
+        totalSearchResults.addResult(searchResult);
+      }
+      searchResultBaseUri = onePageSearchResults.getUri("next");
+    }
+    return totalSearchResults;
+  }
+
+  private String getXmlStringFromSearchQuery(SearchQuery searchQuery) {
+    SearchDataBuilder searchDataBuilder = SearchDataBuilder.builder();
+    for (Item item: searchQuery.getItems()) {
+      if (item instanceof Comparison) {
+        Comparison comparison = (Comparison)item;
+        switch (comparison.getOperator()) {
+          case EQUAL: searchDataBuilder.equal(comparison.getName(), comparison.getValue().get(0));
+            break;
+          case NOT_EQUAL:
+            searchDataBuilder.notEqual(comparison.getName(), comparison.getValue().get(0));
+            break;
+          case STARTS_WITH:
+            searchDataBuilder.startsWith(comparison.getName(), comparison.getValue().get(0));
+            break;
+          case BETWEEN:
+            searchDataBuilder.between(comparison.getName(), comparison.getValue().get(0), comparison.getValue().get(1));
+            break;
+          default:
+            break;
+        }
+      }
+    }
+    return searchDataBuilder.build().replaceFirst("<\\?.*\\?>", "").replace(" ", "").replace("\n", "");
+  }
+
+  @Override
+  public OrderItem export(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName) throws IOException {
+    String fullOutputName = outputName + '_' + Long.toString(new Date().getTime());
+    String exportUri = restClient.uri(searchResults.getUri(LINK_EXPORT))
+      .addParameter("name", fullOutputName)
+      .build();
+    String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(), searchResults.getResults());
+    return restClient.post(exportUri, exportRequestBody, OrderItem.class);
+  }
+
+  @Override
+  public OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName, long timeOutInMillis) throws IOException {
+    String fullOutputName = outputName + '_' + Long.toString(new Date().getTime());
+    String exportUri = restClient.uri(searchResults.getUri(LINK_EXPORT))
+      .addParameter("name", fullOutputName)
+      .build();
+    String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(), searchResults.getResults());
+    OrderItem plainOrderItem = restClient.post(exportUri, exportRequestBody, OrderItem.class);
+
+    long endTimeOfExport;
+    if (timeOutInMillis < 5000) {
+      endTimeOfExport = System.currentTimeMillis() + 5000;
+    } else {
+      endTimeOfExport = System.currentTimeMillis() + timeOutInMillis;
+    }
+    while (System.currentTimeMillis() < endTimeOfExport) {
+      OrderItem downloadOrderItem = restClient.get(plainOrderItem.getSelfUri(), OrderItem.class);
+      if (downloadOrderItem.getUri(LINK_DOWNLOAD) != null) {
+        return downloadOrderItem;
+      }
+      try {
+        Thread.sleep(3000);
+      } catch (InterruptedException e) {
+        // Ignored
+      }
+    }
+    return plainOrderItem;
+  }
+
+  private String getValidJsonRequestForExport(String exportConfigurationUri, List<SearchResult> searchResults) throws IOException {
+    JsonNodeFactory jsonNodeFactory = new ObjectMapper().getNodeFactory();
+    ObjectNode root = jsonNodeFactory.objectNode();
+    ArrayNode includedRows = jsonNodeFactory.arrayNode();
+    for (SearchResult searchResult: searchResults) {
+      for (Row row: searchResult.getRows()) {
+        includedRows.add(row.getId());
+      }
+    }
+    TextNode exportConfiguration = jsonNodeFactory.textNode(exportConfigurationUri);
+    root.set("exportConfiguration", exportConfiguration);
+    root.set("includedRows", includedRows);
+    return root.toString();
   }
 
 }

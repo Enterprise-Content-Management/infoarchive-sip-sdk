@@ -6,6 +6,10 @@ package com.emc.ia.sdk.sip.client;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.emc.ia.sdk.sip.client.dto.OrderItem;
+import com.emc.ia.sdk.sip.client.dto.SearchComposition;
+import com.emc.ia.sdk.sip.client.dto.SearchResults;
+import com.emc.ia.sdk.sip.client.dto.export.ExportConfiguration;
 import com.emc.ia.sdk.sip.client.dto.query.SearchQuery;
 
 /**
@@ -51,5 +55,43 @@ public interface ArchiveClient {
    * @throws IOException When an I/O error occurs
    */
   ContentResult fetchContent(String contentId) throws IOException;
+
+  /**
+   * Fetch the content for the specified order item.
+   * @param orderItem The order item.
+   * @return A ContentResult
+   * @throws IOException When an I/O error occurs
+   */
+  ContentResult fetchOrderContent(OrderItem orderItem) throws IOException;
+
+  /**
+   * Get the search results for the specified search query and composition.
+   * @param searchQuery The search query.
+   * @param searchComposition The search composition.
+   * @return A SearchResults
+   * @throws IOException When an I/O error occurs
+   */
+  SearchResults search(SearchQuery searchQuery, SearchComposition searchComposition) throws IOException;
+
+  /**
+   * Start the export of the search results for the specified export configuration.
+   * @param searchResults The search results.
+   * @param exportConfiguration The export configuration.
+   * @param outputName The output name of result package.
+   * @return An OrderItem object that contains information about exported package without link to download it
+   * @throws IOException When an I/O error occurs
+   */
+  OrderItem export(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName) throws IOException;
+
+  /**
+   * Start and wait the export of the search results for the specified export configuration.
+   * @param searchResults The search results.
+   * @param exportConfiguration The export configuration.
+   * @param outputName The output name of result package.
+   * @param timeOutInMillis The timeout of export process in milliseconds.
+   * @return An OrderItem object that contains information about exported package and link to download it
+   * @throws IOException When an I/O error occurs
+   */
+  OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName, long timeOutInMillis) throws IOException;
 
 }
