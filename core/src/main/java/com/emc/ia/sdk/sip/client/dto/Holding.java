@@ -27,6 +27,7 @@ public class Holding extends NamedLinkContainer { // NOPMD TooManyFields - Dicta
   private String xdbLibraryParent;
   private boolean pdiXmlHashEnforced;
   private String sipStore;
+  private String managedItemStore;
   private List<RetentionClass> retentionClasses;
   private List<PdiConfig> pdiConfigs;
 
@@ -197,6 +198,14 @@ public class Holding extends NamedLinkContainer { // NOPMD TooManyFields - Dicta
     this.sipStore = sipStore;
   }
 
+  public String getManagedItemStore() {
+    return managedItemStore;
+  }
+
+  public void setManagedItemStore(String managedItemStore) {
+    this.managedItemStore = managedItemStore;
+  }
+
   public List<RetentionClass> getRetentionClasses() {
     return retentionClasses;
   }
@@ -220,6 +229,7 @@ public class Holding extends NamedLinkContainer { // NOPMD TooManyFields - Dicta
     setSipStore(store);
     setXdbStore(store);
     setXmlStore(store);
+    setManagedItemStore(store);
   }
 
 }
