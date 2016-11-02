@@ -7,6 +7,7 @@ public interface MediaTypes {
 
   String BINARY = "application/octect-stream";
   String HAL = "application/hal+json";
+  String XML = "application/xml";
   String TEXT = "text/plain";
 
 }
