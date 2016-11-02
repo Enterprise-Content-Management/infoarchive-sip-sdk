@@ -3,6 +3,7 @@
  */
 package com.emc.ia.sdk.sip.client.dto;
 
+
 public class OrderItem extends NamedLinkContainer {
 
   private String type;

@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.emc.ia.sdk.support.rest.LinkContainer;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 public class SearchResults extends LinkContainer {
 
@@ -21,8 +21,8 @@ public class SearchResults extends LinkContainer {
     results.clear();
     List<SearchResult> embeddedItems = embedded.get(KEY);
     if (embeddedItems == null) {
-      throw new IllegalArgumentException(
-        String.format("Expected results under key '%s', but got keys %s", KEY, embedded.keySet()));
+      throw new IllegalArgumentException(String.format("Expected results under key '%s', but got keys %s", KEY,
+          embedded.keySet()));
     }
     results.addAll(embeddedItems);
   }

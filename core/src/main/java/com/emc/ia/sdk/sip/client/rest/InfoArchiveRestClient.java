@@ -34,12 +34,12 @@ import com.emc.ia.sdk.support.http.BinaryPart;
 import com.emc.ia.sdk.support.http.ResponseFactory;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.rest.RestClient;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+
 
 /**
  * Implementation of {@linkplain ArchiveClient} that uses the REST API of a running InfoArchive server.
@@ -67,7 +67,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   @Override
   public String ingestDirect(InputStream sip) throws IOException {
-    final String ingestDirectUri = resourceCache.getAipIngestDirectResourceUri();
+    String ingestDirectUri = resourceCache.getAipIngestDirectResourceUri();
     if (ingestDirectUri == null) {
       return ingest(sip);
     } else {
@@ -90,9 +90,9 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   public ContentResult fetchContent(String contentId) throws IOException {
     try {
       String contentResource = resourceCache.getCiResourceUri();
-      final URIBuilder builder = new URIBuilder(contentResource);
+      URIBuilder builder = new URIBuilder(contentResource);
       builder.setParameter("cid", contentId);
-      final URI uri = builder.build();
+      URI uri = builder.build();
       return restClient.get(uri.toString(), contentResultFactory);
     } catch (URISyntaxException e) {
       throw new RuntimeException("Failed to create content resource uri.", e);
@@ -148,22 +148,26 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   @Override
-  public OrderItem export(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName) throws IOException {
+  public OrderItem export(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName)
+      throws IOException {
     String fullOutputName = outputName + '_' + Long.toString(new Date().getTime());
     String exportUri = restClient.uri(searchResults.getUri(LINK_EXPORT))
-      .addParameter("name", fullOutputName)
-      .build();
-    String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(), searchResults.getResults());
+        .addParameter("name", fullOutputName)
+        .build();
+    String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(),
+        searchResults.getResults());
     return restClient.post(exportUri, exportRequestBody, OrderItem.class);
   }
 
   @Override
-  public OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName, long timeOutInMillis) throws IOException {
+  public OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration,
+      String outputName, long timeOutInMillis) throws IOException {
     String fullOutputName = outputName + '_' + Long.toString(new Date().getTime());
     String exportUri = restClient.uri(searchResults.getUri(LINK_EXPORT))
-      .addParameter("name", fullOutputName)
-      .build();
-    String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(), searchResults.getResults());
+        .addParameter("name", fullOutputName)
+        .build();
+    String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(),
+        searchResults.getResults());
     OrderItem plainOrderItem = restClient.post(exportUri, exportRequestBody, OrderItem.class);
 
     long endTimeOfExport;
@@ -186,7 +190,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return plainOrderItem;
   }
 
-  private String getValidJsonRequestForExport(String exportConfigurationUri, List<SearchResult> searchResults) throws IOException {
+  private String getValidJsonRequestForExport(String exportConfigurationUri, List<SearchResult> searchResults)
+      throws IOException {
     JsonNodeFactory jsonNodeFactory = new ObjectMapper().getNodeFactory();
     ObjectNode root = jsonNodeFactory.objectNode();
     ArrayNode includedRows = jsonNodeFactory.arrayNode();

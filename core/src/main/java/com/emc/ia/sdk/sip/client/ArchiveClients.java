@@ -33,13 +33,13 @@ import com.emc.ia.sdk.support.rest.AuthenticationStrategy;
 import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.RestClient;
 
+
 /**
  * Factory methods for creating ArchiveClient.
  */
 public final class ArchiveClients {
 
-  private ArchiveClients() {
-  }
+  private ArchiveClients() { }
 
   /**
    * Installs, if necessary, the application and holding artifacts based on the details in the configuration map then
@@ -153,8 +153,8 @@ public final class ArchiveClients {
 
   private static Application getApplication(RestClient restClient, Tenant tenant, String applicationName)
       throws IOException {
-    Applications applications =
-        restClient.follow(tenant, InfoArchiveLinkRelations.LINK_APPLICATIONS, Applications.class);
+    Applications applications = restClient.follow(tenant, InfoArchiveLinkRelations.LINK_APPLICATIONS,
+        Applications.class);
     return Objects.requireNonNull(applications.byName(applicationName),
         "Application named " + applicationName + " not found.");
   }
@@ -166,7 +166,7 @@ public final class ArchiveClients {
 
     Map<String, String> dipResourceUriByAicName = new HashMap<>();
     aics.getItems()
-      .forEach(aic -> dipResourceUriByAicName.put(aic.getName(), aic.getUri(InfoArchiveLinkRelations.LINK_DIP)));
+        .forEach(aic -> dipResourceUriByAicName.put(aic.getName(), aic.getUri(InfoArchiveLinkRelations.LINK_DIP)));
     resourceCache.setDipResourceUriByAicName(dipResourceUriByAicName);
     resourceCache.setCiResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_CI));
     resourceCache.setAipResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_AIPS));
@@ -189,23 +189,21 @@ public final class ArchiveClients {
   private static Map<String, String> asMap(InputStream stream) throws IOException {
     Properties properties = new Properties();
     properties.load(stream);
-    Map<String, String> map = new HashMap<>();
+    Map<String, String> result = new HashMap<>();
     for (Map.Entry<Object, Object> e : properties.entrySet()) {
-      map.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
+      result.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
     }
-    return map;
+    return result;
   }
 
   private static RestClient createRestClient(Map<String, String> configuration, Clock clock) {
-    HttpClient httpClient =
-        NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME, ApacheHttpClient.class.getName())
-          .as(HttpClient.class);
-    AuthenticationStrategy authentication = new AuthenticationStrategyFactory(configuration)
-                                                .getAuthenticationStrategy(() -> httpClient,
-                                                    () -> Optional.ofNullable(clock).orElseGet(DefaultClock::new));
-    RestClient client = new RestClient(httpClient, authentication);
-    client.init();
-    return client;
+    HttpClient httpClient = NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME,
+        ApacheHttpClient.class.getName()).as(HttpClient.class);
+    AuthenticationStrategy authentication = new AuthenticationStrategyFactory(configuration).getAuthenticationStrategy(
+        () -> httpClient, () -> Optional.ofNullable(clock).orElseGet(DefaultClock::new));
+    RestClient result = new RestClient(httpClient, authentication);
+    result.init();
+    return result;
   }
 
   private static String getApplicationName(Map<String, String> configuration) {
@@ -217,4 +215,5 @@ public final class ArchiveClients {
     return Objects.requireNonNull(configuration.get(SERVER_URI),
         "The property " + SERVER_URI + " cannot be null or empty.");
   }
+
 }

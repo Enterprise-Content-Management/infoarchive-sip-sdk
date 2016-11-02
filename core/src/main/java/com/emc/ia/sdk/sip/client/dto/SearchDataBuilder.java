@@ -5,6 +5,7 @@ package com.emc.ia.sdk.sip.client.dto;
 
 import com.emc.ia.sdk.support.xml.XmlBuilder;
 
+
 public final class SearchDataBuilder {
 
   private final XmlBuilder builder;
@@ -20,49 +21,49 @@ public final class SearchDataBuilder {
 
   private SearchDataBuilder criterion(String field, String operator, String value) {
     builder.element("criterion")
-      .element("name", field)
-      .element("operator", operator)
-      .element("value", value)
-      .end();
+        .element("name", field)
+        .element("operator", operator)
+        .element("value", value)
+        .end();
     return this;
   }
 
   private SearchDataBuilder criterion(String field, String operator, String value1, String value2) {
     builder.element("criterion")
-      .element("name", field)
-      .element("operator", operator)
-      .element("value", value1)
-      .element("value", value2)
-      .end();
+        .element("name", field)
+        .element("operator", operator)
+        .element("value", value1)
+        .element("value", value2)
+        .end();
     return this;
   }
 
-  public SearchDataBuilder equal(String filed, String value) {
-    return criterion(filed, "EQUAL", value);
+  public SearchDataBuilder equal(String field, String value) {
+    return criterion(field, "EQUAL", value);
   }
 
-  public SearchDataBuilder notEqual(String filed, String value) {
-    return criterion(filed, "NOT_EQUAL", value);
+  public SearchDataBuilder notEqual(String field, String value) {
+    return criterion(field, "NOT_EQUAL", value);
   }
 
-  public SearchDataBuilder startsWith(String filed, String value) {
-    return criterion(filed, "STARTS_WITH", value);
+  public SearchDataBuilder startsWith(String field, String value) {
+    return criterion(field, "STARTS_WITH", value);
   }
 
-  public SearchDataBuilder endsWith(String filed, String value) {
-    return criterion(filed, "ENDS_WITH", value);
+  public SearchDataBuilder endsWith(String field, String value) {
+    return criterion(field, "ENDS_WITH", value);
   }
 
-  public SearchDataBuilder between(String filed, String value1, String value2) {
-    return criterion(filed, "BETWEEN", value1, value2);
+  public SearchDataBuilder between(String field, String value1, String value2) {
+    return criterion(field, "BETWEEN", value1, value2);
   }
 
-  public SearchDataBuilder contains(String filed, String value) {
-    return criterion(filed, "CONTAINS", value);
+  public SearchDataBuilder contains(String field, String value) {
+    return criterion(field, "CONTAINS", value);
   }
 
   public String build() {
-    return builder.end()
-      .toString();
+    return builder.end().toString();
   }
+
 }

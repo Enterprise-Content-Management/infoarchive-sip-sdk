@@ -6,6 +6,7 @@ package com.emc.ia.sdk.sip.client.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Row {
 
   private String id;

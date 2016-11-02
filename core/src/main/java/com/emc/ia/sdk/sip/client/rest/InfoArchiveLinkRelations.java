@@ -5,6 +5,7 @@ package com.emc.ia.sdk.sip.client.rest;
 
 import com.emc.ia.sdk.support.rest.StandardLinkRelations;
 
+
 public interface InfoArchiveLinkRelations extends StandardLinkRelations {
 
   String LINK_PREFIX = "http://identifiers.emc.com/";
@@ -50,4 +51,5 @@ public interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_STORES = LINK_PREFIX + "stores";
   String LINK_TENANT = LINK_PREFIX + "tenant";
   String LINK_XFORMS = LINK_PREFIX + "xforms";
+
 }

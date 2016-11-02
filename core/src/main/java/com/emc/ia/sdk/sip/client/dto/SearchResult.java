@@ -6,6 +6,7 @@ package com.emc.ia.sdk.sip.client.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class SearchResult extends NamedLinkContainer {
 
   private int totalElements;
@@ -48,4 +49,5 @@ public class SearchResult extends NamedLinkContainer {
   public void setEmpty(boolean empty) {
     this.empty = empty;
   }
+
 }

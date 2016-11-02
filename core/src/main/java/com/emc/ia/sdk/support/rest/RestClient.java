@@ -17,13 +17,14 @@ import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.ResponseFactory;
 import com.emc.ia.sdk.support.http.UriBuilder;
 
+
 public class RestClient implements Closeable, StandardLinkRelations {
 
+  private final JsonFormatter formatter = new JsonFormatter();
+  private final Collection<Header> headers = new ArrayList<>();
+  private final Collection<Header> headersNoFormat = new ArrayList<>();
   private final HttpClient httpClient;
   private final AuthenticationStrategy authentication;
-  private final JsonFormatter formatter = new JsonFormatter();
-  private final Collection<Header> headers = new ArrayList<Header>();
-  private final Collection<Header> headersNoFormat = new ArrayList<Header>();
 
   public RestClient(HttpClient client, AuthenticationStrategy authentication) {
     this.httpClient = Objects.requireNonNull(client, "Missing HTTP client");
@@ -74,8 +75,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
   private Link linkIn(LinkContainer state, String... relations) {
     Link result = null;
     for (String relation : relations) {
-      result = state.getLinks()
-        .get(relation);
+      result = state.getLinks().get(relation);
       if (result != null) {
         break;
       }

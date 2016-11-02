@@ -243,7 +243,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(xForms, new XForm());
 
     when(restClient.put(anyString(), eq(SearchComposition.class), any(AllSearchComponents.class)))
-      .thenReturn(new SearchComposition());
+        .thenReturn(new SearchComposition());
 
     when(aics.getItems()).thenReturn(Stream.of(aic));
 
@@ -339,12 +339,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   public void shouldIngestSuccessfully() throws IOException {
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
 
-//    String aipsUri = randomString();
-//    when(application.getUri(LINK_AIPS)).thenReturn(aipsUri);
-//    archiveClient.getConfigurationState()
-//      .setApplication(application);
-//    archiveClient.cacheAipsUri();
-
     String source = "This is the source of my input stream";
     InputStream sip = IOUtils.toInputStream(source, "UTF-8");
 
@@ -403,10 +397,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     });
     final AtomicBoolean created = new AtomicBoolean(false);
     when(restClient.createCollectionItem(eq(applications), any(Application.class), Matchers.<String>anyVararg()))
-      .thenAnswer(invocation -> {
-        created.set(true);
-        return null;
-      });
+        .thenAnswer(invocation -> {
+      created.set(true);
+      return null;
+    });
     when(restClient.refresh(applications)).thenAnswer(invocation -> {
       if (created.get()) {
         app.set(application);
@@ -424,10 +418,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(aics.getItems()).thenReturn(Stream.of(aic));
     Link dipLink = new Link();
     dipLink.setHref(randomString());
-    aic.getLinks()
-      .put(LINK_DIP, dipLink);
+    aic.getLinks().put(LINK_DIP, dipLink);
     aic.setName("MyAic");
-//    archiveClient.cacheDipUris();
     UriBuilder uriBuilder = mock(UriBuilder.class);
     String uri = randomString();
     when(uriBuilder.build()).thenReturn(uri);
@@ -439,8 +431,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.get(eq(uri), any(QueryResultFactory.class))).thenReturn(queryResult);
 
     SearchQuery query = new SearchQuery();
-    query.getItems()
-      .add(new Comparison("variable", Operator.EQUAL, "value"));
+    query.getItems().add(new Comparison("variable", Operator.EQUAL, "value"));
     String aicName = "MyAic";
     String schema = NAMESPACE;
 
@@ -467,8 +458,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
     ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient, mock(Clock.class));
 
-    verify(restClient, times(5)).createCollectionItem(
-        eq(federations), any(Federation.class), eq(LINK_ADD), eq(LINK_SELF));
+    verify(restClient, times(5)).createCollectionItem(eq(federations), any(Federation.class), eq(LINK_ADD),
+        eq(LINK_SELF));
   }
 
   @Test
