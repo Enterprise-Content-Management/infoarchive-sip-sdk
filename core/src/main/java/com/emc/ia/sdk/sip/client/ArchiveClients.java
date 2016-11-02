@@ -201,8 +201,8 @@ public final class ArchiveClients {
         ApacheHttpClient.class.getName()).as(HttpClient.class);
     AuthenticationStrategy authentication = new AuthenticationStrategyFactory(configuration).getAuthenticationStrategy(
         () -> httpClient, () -> Optional.ofNullable(clock).orElseGet(DefaultClock::new));
-    RestClient result = new RestClient(httpClient, authentication);
-    result.init();
+    RestClient result = new RestClient(httpClient);
+    result.init(authentication);
     return result;
   }
 

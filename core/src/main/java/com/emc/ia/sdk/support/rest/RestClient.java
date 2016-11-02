@@ -24,15 +24,15 @@ public class RestClient implements Closeable, StandardLinkRelations {
   private final Collection<Header> headers = new ArrayList<>();
   private final Collection<Header> headersNoFormat = new ArrayList<>();
   private final HttpClient httpClient;
-  private final AuthenticationStrategy authentication;
+  private AuthenticationStrategy authentication;
 
-  public RestClient(HttpClient client, AuthenticationStrategy authentication) {
+  public RestClient(HttpClient client) {
     this.httpClient = Objects.requireNonNull(client, "Missing HTTP client");
-    this.authentication = Objects.requireNonNull(authentication, "Missing Authentication strategy");
   }
 
-  public void init() {
+  public void init(AuthenticationStrategy auth) {
     headers.add(new Header("Accept", MediaTypes.HAL));
+    this.authentication = Objects.requireNonNull(auth, "Missing Authentication strategy");
   }
 
   public UriBuilder uri(String baseUri) {
@@ -104,9 +104,13 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   private Collection<Header> withAuthorization(Collection<Header> givenHeaders) {
-    Collection<Header> updated = new ArrayList<>(givenHeaders);
-    updated.add(authentication.issueAuthHeader());
-    return updated;
+    if (authentication == null) {
+      return givenHeaders;
+    } else {
+      Collection<Header> updated = new ArrayList<>(givenHeaders);
+      updated.add(authentication.issueAuthHeader());
+      return updated;
+    }
   }
 
   private String toJson(Object object) throws IOException {

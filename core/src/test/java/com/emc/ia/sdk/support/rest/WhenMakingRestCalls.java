@@ -30,11 +30,11 @@ public class WhenMakingRestCalls extends TestCase {
   private final HttpClient httpClient = mock(HttpClient.class);
   private final String token = randomString();
   private final AuthenticationStrategy authentication = new NonExpiringTokenAuthentication(token);
-  private final RestClient restClient = new RestClient(httpClient, authentication);
+  private final RestClient restClient = new RestClient(httpClient);
 
   @Before
   public void init() {
-    restClient.init();
+    restClient.init(authentication);
   }
 
   @Test
