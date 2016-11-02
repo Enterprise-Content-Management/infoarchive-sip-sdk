@@ -64,7 +64,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   public <T> T postXml(String uri, String data, Class<T> type) throws IOException {
-    return httpClient.post(uri, withContentType(MediaTypes.XML), data, type);
+    return httpClient.post(uri, withAuthorization(withContentType(MediaTypes.XML)), data, type);
   }
 
   public <T> T follow(LinkContainer state, String relation, Class<T> type) throws IOException {
@@ -92,7 +92,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
   @SuppressWarnings("unchecked")
   public <T> T createCollectionItem(LinkContainer collection, T item, String... addLinkRelations) throws IOException {
     String uri = linkIn(collection, addLinkRelations).getHref();
-    T result = (T)httpClient.post(uri, withContentType(MediaTypes.HAL), toJson(item), item.getClass());
+    T result = (T)httpClient.post(uri, withAuthorization(withContentType(MediaTypes.HAL)), toJson(item), item.getClass());
     Objects.requireNonNull(result, String.format("Could not create item in %s%n%s", uri, item));
     return result;
   }

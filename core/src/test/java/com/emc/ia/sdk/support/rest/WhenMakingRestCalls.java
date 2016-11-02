@@ -56,6 +56,20 @@ public class WhenMakingRestCalls extends TestCase {
   }
 
   @Test
+  public void postXmlShouldForwardToHttpClient() throws IOException {
+    String uri = randomString();
+    String data = randomString();
+    Class<?> type = String.class;
+    List<Header> headers = new ArrayList<>();
+    headers.add(new Header("Accept", MediaTypes.HAL));
+    headers.add(new Header("Content-Type", MediaTypes.XML));
+    headers.add(new Header("Authorization", "Bearer " + token));
+
+    restClient.postXml(uri, data, type);
+    verify(httpClient).post(eq(uri), eq(headers), eq(data), eq(type));
+  }
+
+  @Test
   @SuppressWarnings("unchecked")
   public void shouldFollowLinkRelations() throws IOException {
     String relation = randomString();
