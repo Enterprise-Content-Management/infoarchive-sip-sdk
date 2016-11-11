@@ -172,7 +172,7 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   @Override
-  public <T> T post(String uri, Collection<Header> headers, String payload, Class<T> type) throws IOException {
+  public <T> T post(String uri, Collection<Header> headers, Class<T> type, String payload) throws IOException {
     HttpPost request = newPost(uri, headers);
     request.setEntity(new StringEntity(payload));
     return execute(request, type);

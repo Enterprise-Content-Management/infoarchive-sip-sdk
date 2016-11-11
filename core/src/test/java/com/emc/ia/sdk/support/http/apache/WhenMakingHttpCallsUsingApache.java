@@ -133,7 +133,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
     String uri = randomString();
     String payload = randomString();
 
-    httpClient.post(uri, Collections.emptyList(), payload, null);
+    httpClient.post(uri, Collections.emptyList(), null, payload);
 
     HttpPost request = assertRequest(uri, HttpPost.class);
     assertEquals("Payload", payload, EntityUtils.toString(request.getEntity()));

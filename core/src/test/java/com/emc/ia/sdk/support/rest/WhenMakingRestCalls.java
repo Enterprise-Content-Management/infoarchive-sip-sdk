@@ -4,12 +4,8 @@
 package com.emc.ia.sdk.support.rest;
 
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,20 +52,6 @@ public class WhenMakingRestCalls extends TestCase {
   }
 
   @Test
-  public void postXmlShouldForwardToHttpClient() throws IOException {
-    String uri = randomString();
-    String data = randomString();
-    Class<?> type = String.class;
-    List<Header> headers = new ArrayList<>();
-    headers.add(new Header("Accept", MediaTypes.HAL));
-    headers.add(new Header("Content-Type", MediaTypes.XML));
-    headers.add(new Header("Authorization", "Bearer " + token));
-
-    restClient.postXml(uri, data, type);
-    verify(httpClient).post(eq(uri), eq(headers), eq(data), eq(type));
-  }
-
-  @Test
   @SuppressWarnings("unchecked")
   public void shouldFollowLinkRelations() throws IOException {
     String relation = randomString();
@@ -113,7 +95,7 @@ public class WhenMakingRestCalls extends TestCase {
       .put(relation, link);
     Foo expected = new Foo();
     expected.setBar(randomString());
-    when(httpClient.post(eq(uri), any(List.class), anyString(), eq(Foo.class))).thenReturn(expected);
+    when(httpClient.post(eq(uri), any(List.class), eq(Foo.class), anyString())).thenReturn(expected);
 
     Foo actual = restClient.createCollectionItem(collection, new Foo(), relation);
 

@@ -4,12 +4,8 @@
 package com.emc.ia.sdk.support.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -58,7 +54,7 @@ public class WhenMakingJwtAuthentication extends TestCase {
     authRefresh.setAccessToken(secondAccessToken);
     authRefresh.setTokenType("Bearer");
     authRefresh.setExpiresIn(25);
-    when(httpClient.post(any(), any(), any(), eq(AuthenticationSuccess.class)))
+    when(httpClient.post(anyString(), any(), eq(AuthenticationSuccess.class), anyString()))
         .thenReturn(authResult)
         .thenReturn(authRefresh);
   }
@@ -95,7 +91,8 @@ public class WhenMakingJwtAuthentication extends TestCase {
   @Test
   public void shouldCorrectlyFormUrl() throws IOException {
     authentication.issueAuthHeader();
-    verify(httpClient).post(eq("http://authgateway.com/oauth/token"), any(), any(), eq(AuthenticationSuccess.class));
+    verify(httpClient).post(eq("http://authgateway.com/oauth/token"), any(), eq(AuthenticationSuccess.class),
+        anyString());
   }
 
   @Test
@@ -104,14 +101,14 @@ public class WhenMakingJwtAuthentication extends TestCase {
                            .encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8));
     Collection<Header> headers = Collections.singletonList(new Header("Authorization", "Basic " + authToken));
     authentication.issueAuthHeader();
-    verify(httpClient).post(any(), eq(headers), any(), eq(AuthenticationSuccess.class));
+    verify(httpClient).post(any(), eq(headers), eq(AuthenticationSuccess.class), anyString());
   }
 
   @Test
   public void shouldCorrectlyFormPayload() throws IOException {
     String payload = "grant_type=password&username=" + username + "&password=" + password;
     authentication.issueAuthHeader();
-    verify(httpClient).post(any(), any(), eq(payload), eq(AuthenticationSuccess.class));
+    verify(httpClient).post(any(), any(), eq(AuthenticationSuccess.class), eq(payload));
   }
 
   @Test
@@ -145,7 +142,7 @@ public class WhenMakingJwtAuthentication extends TestCase {
     authentication.issueAuthHeader();
     verify(clock).schedule(any(), anyLong(), any(), taskArgumentCaptor.capture());
     taskArgumentCaptor.getValue().run();
-    verify(httpClient).post(any(), any(), eq(payload), eq(AuthenticationSuccess.class));
+    verify(httpClient).post(any(), any(), eq(AuthenticationSuccess.class), eq(payload));
   }
 
   @Test
@@ -157,7 +154,7 @@ public class WhenMakingJwtAuthentication extends TestCase {
 
   @Test(expected = RuntimeIoException.class)
   public void shouldFailWithRuntimeIoException() throws IOException {
-    when(httpClient.post(any(), any(), any(), eq(AuthenticationSuccess.class)))
+    when(httpClient.post(any(), any(), eq(AuthenticationSuccess.class), anyString()))
         .thenThrow(new IOException());
     authentication.issueAuthHeader();
   }

@@ -51,20 +51,38 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return httpClient.put(uri, withAuthorization(headers), type);
   }
 
+  public <T> T put(String uri, Class<T> type, String payload) throws IOException {
+    return httpClient.put(uri, withAuthorization(headers), type, payload);
+  }
+
   public <S, T> T put(String uri, Class<T> type, S payload) throws IOException {
-    return httpClient.put(uri, withAuthorization(withContentType(MediaTypes.HAL)), type, toJson(payload));
+    return put(uri, type, toJson(payload));
+  }
+
+  public <S, T> T post(String uri, Class<T> type, S payload) throws IOException {
+    return post(uri, type, toJson(payload));
+  }
+
+  public <T> T post(String uri, Class<T> type, String data) throws IOException {
+    return post(uri, type, data, MediaTypes.HAL);
   }
 
   public <T> T post(String uri, Class<T> type, Part... parts) throws IOException {
     return httpClient.post(uri, withAuthorization(headers), type, parts);
   }
 
+  @Deprecated
   public <T> T post(String uri, String data, Class<T> type) throws IOException {
-    return httpClient.post(uri, withAuthorization(withContentType(MediaTypes.HAL)), data, type);
+    return post(uri, type, data);
   }
 
-  public <T> T postXml(String uri, String data, Class<T> type) throws IOException {
-    return httpClient.post(uri, withAuthorization(withContentType(MediaTypes.XML)), data, type);
+  public <T> T post(String uri, Class<T> type, String data, String contentType) throws IOException {
+    return httpClient.post(uri, withAuthorization(withContentType(contentType)), type, data);
+  }
+
+  @Deprecated
+  public <T> T post(String uri, String data, String contentType, Class<T> type) throws IOException {
+    return post(uri, type, data, contentType);
   }
 
   public <T> T follow(LinkContainer state, String relation, Class<T> type) throws IOException {
@@ -92,7 +110,8 @@ public class RestClient implements Closeable, StandardLinkRelations {
   @SuppressWarnings("unchecked")
   public <T> T createCollectionItem(LinkContainer collection, T item, String... addLinkRelations) throws IOException {
     String uri = linkIn(collection, addLinkRelations).getHref();
-    T result = (T)httpClient.post(uri, withAuthorization(withContentType(MediaTypes.HAL)), toJson(item), item.getClass());
+    T result = (T)httpClient.post(uri, withAuthorization(withContentType(MediaTypes.HAL)), item.getClass(),
+        toJson(item));
     Objects.requireNonNull(result, String.format("Could not create item in %s%n%s", uri, item));
     return result;
   }

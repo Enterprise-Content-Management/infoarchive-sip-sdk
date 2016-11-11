@@ -99,6 +99,7 @@ import com.emc.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
 import com.emc.ia.sdk.sip.client.rest.QueryResultFactory;
 import com.emc.ia.sdk.support.datetime.Clock;
 import com.emc.ia.sdk.support.http.HttpException;
+import com.emc.ia.sdk.support.http.MediaTypes;
 import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.Response;
 import com.emc.ia.sdk.support.http.UriBuilder;
@@ -466,7 +467,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   public void shouldSearchSuccessfully() throws IOException {
     SearchResults searchResults = mock(SearchResults.class);
     when(searchResults.getUri("next")).thenReturn(null);
-    when(restClient.postXml(anyString(), anyString(), eq(SearchResults.class))).thenReturn(searchResults);
+    when(restClient.post(anyString(), eq(SearchResults.class), anyString(), eq(MediaTypes.XML)))
+        .thenReturn(searchResults);
 
     SearchQuery searchQuery = new SearchQuery();
     List<Item> items = new ArrayList<>();
@@ -501,7 +503,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
     when(restClient.uri(anyString())).thenReturn(uriBuilder);
     OrderItem orderItem = mock(OrderItem.class);
-    when(restClient.post(eq(uri), anyString(), eq(OrderItem.class))).thenReturn(orderItem);
+    when(restClient.post(eq(uri), eq(OrderItem.class), anyString())).thenReturn(orderItem);
 
     SearchResults searchResults = new SearchResults();
     SearchResult searchResult = new SearchResult();
@@ -529,7 +531,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.uri(anyString())).thenReturn(uriBuilder);
     OrderItem orderItem = mock(OrderItem.class);
     when(orderItem.getUri(anyString())).thenReturn(randomString());
-    when(restClient.post(eq(uri), anyString(), eq(OrderItem.class))).thenReturn(orderItem);
+    when(restClient.post(eq(uri), eq(OrderItem.class), anyString())).thenReturn(orderItem);
     when(restClient.get(anyString(), eq(OrderItem.class))).thenReturn(orderItem);
 
     SearchResults searchResults = new SearchResults();

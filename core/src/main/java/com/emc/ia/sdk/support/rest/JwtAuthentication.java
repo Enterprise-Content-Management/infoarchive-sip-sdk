@@ -96,7 +96,7 @@ public final class JwtAuthentication implements AuthenticationStrategy {
     Collection<Header> headers = Collections.singletonList(gatewayInfo.getAuthorizationHeader());
     AuthenticationSuccess authSuccess;
     try {
-      authSuccess = httpClient.post(gatewayUrl, headers, payload, AuthenticationSuccess.class);
+      authSuccess = httpClient.post(gatewayUrl, headers, AuthenticationSuccess.class, payload);
     } catch (IOException ex) {
       if (timer != null) {
         timer.stop();

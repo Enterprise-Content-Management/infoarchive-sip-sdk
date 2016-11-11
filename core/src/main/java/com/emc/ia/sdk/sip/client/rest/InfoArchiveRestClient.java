@@ -31,6 +31,7 @@ import com.emc.ia.sdk.sip.client.dto.query.Item;
 import com.emc.ia.sdk.sip.client.dto.query.QueryFormatter;
 import com.emc.ia.sdk.sip.client.dto.query.SearchQuery;
 import com.emc.ia.sdk.support.http.BinaryPart;
+import com.emc.ia.sdk.support.http.MediaTypes;
 import com.emc.ia.sdk.support.http.ResponseFactory;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.rest.RestClient;
@@ -111,15 +112,16 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   public SearchResults search(SearchQuery searchQuery, SearchComposition searchComposition) throws IOException {
     String searchResultBaseUri = searchComposition.getSelfUri();
     String xmlSearchQuery = getXmlStringFromSearchQuery(searchQuery);
-    SearchResults totalSearchResults = restClient.postXml(searchResultBaseUri, xmlSearchQuery, SearchResults.class);
+    SearchResults result = restClient.post(searchResultBaseUri, SearchResults.class, xmlSearchQuery, MediaTypes.XML);
     while (searchResultBaseUri != null) {
-      SearchResults onePageSearchResults = restClient.postXml(searchResultBaseUri, "", SearchResults.class);
+      SearchResults onePageSearchResults = restClient.post(searchResultBaseUri, SearchResults.class, "",
+          MediaTypes.XML);
       for (SearchResult searchResult: onePageSearchResults.getResults()) {
-        totalSearchResults.addResult(searchResult);
+        result.addResult(searchResult);
       }
       searchResultBaseUri = onePageSearchResults.getUri("next");
     }
-    return totalSearchResults;
+    return result;
   }
 
   private String getXmlStringFromSearchQuery(SearchQuery searchQuery) {
@@ -156,7 +158,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
         .build();
     String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(),
         searchResults.getResults());
-    return restClient.post(exportUri, exportRequestBody, OrderItem.class);
+    return restClient.post(exportUri, OrderItem.class, exportRequestBody);
   }
 
   @Override
@@ -168,7 +170,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
         .build();
     String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(),
         searchResults.getResults());
-    OrderItem plainOrderItem = restClient.post(exportUri, exportRequestBody, OrderItem.class);
+    OrderItem plainOrderItem = restClient.post(exportUri, OrderItem.class, exportRequestBody);
 
     long endTimeOfExport;
     if (timeOutInMillis < 5000) {
