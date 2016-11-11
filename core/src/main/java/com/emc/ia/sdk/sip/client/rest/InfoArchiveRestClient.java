@@ -13,7 +13,6 @@ import java.util.Objects;
 
 import org.apache.http.client.utils.URIBuilder;
 
-import com.emc.ia.sdk.configurer.InfoArchiveConfiguration;
 import com.emc.ia.sdk.sip.client.ArchiveClient;
 import com.emc.ia.sdk.sip.client.ContentResult;
 import com.emc.ia.sdk.sip.client.QueryResult;
@@ -45,7 +44,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 /**
  * Implementation of {@linkplain ArchiveClient} that uses the REST API of a running InfoArchive server.
  */
-public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRelations, InfoArchiveConfiguration {
+public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRelations {
 
   private final ResponseFactory<DefaultQueryResult> queryResultFactory = new QueryResultFactory();
   private final ResponseFactory<ContentResult> contentResultFactory = new ContentResultFactory();
