@@ -1,21 +1,40 @@
-apply plugin: 'jdepend'
-
-jdependMain << {
-  failOnCycles(reports)
-}
-
-def failOnCycles(reports) {
-  def error = '';
-  def jdepend = new XmlSlurper().parse(reports.xml.destination)
-  jdepend.Cycles.Package.each { p ->
-    error += '\nCycle from ' + p.@Name
-    p.Package.each { error += "\n-> $it" }
+buildscript {
+  repositories {
+    mavenCentral()
   }
-  if (!error.isEmpty()) {
-    throw new GradleException('Detected cycle in package dependencies: ' + error)
+  dependencies {
+    classpath 'guru.nidi:jdepend:2.9.5'
   }
 }
 
-jdependTest << {
-  failOnCycles(reports)
+import jdepend.framework.JDepend
+
+task jdepend {
+  enabled = !sourceSets.main.allJava.isEmpty()
+  inputs.files sourceSets.main.output
+  doLast {
+    JDepend jdepend = new JDepend()
+    jdepend.addDirectory(sourceSets.main.output.classesDir.path)
+    def packages = jdepend.analyze()
+    if (jdepend.containsCycles()) {
+      def allCyclicPackages = []
+      packages.each { p ->
+        if (!allCyclicPackages.contains(p) && p.containsCycle()) {
+          def cycles = []
+          p.collectAllCycles(cycles)
+          if (cycles[-1] == p) {
+            logger.quiet 'Package cycle detected:'
+            cycles.each {
+              logger.quiet "- $it.name"
+              allCyclicPackages.add it
+            }
+          }
+        }
+      }
+      logger.quiet 'Found cyclic dependencies between packages'
+      //throw new GradleException('Found cyclic dependencies between packages')
+    }
+  }
 }
+
+check.dependsOn jdepend
