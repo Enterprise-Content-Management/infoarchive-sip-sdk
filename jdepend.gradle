@@ -32,7 +32,7 @@ task jdepend {
         }
       }
       logger.quiet 'Found cyclic dependencies between packages'
-      //throw new GradleException('Found cyclic dependencies between packages')
+      throw new GradleException('Found cyclic dependencies between packages')
     }
   }
 }

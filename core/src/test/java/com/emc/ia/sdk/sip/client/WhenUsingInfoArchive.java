@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.stubbing.OngoingStubbing;
 
+import com.emc.ia.sdk.configurer.ArchiveClients;
 import com.emc.ia.sdk.configurer.InfoArchiveConfiguration;
 import com.emc.ia.sdk.sip.client.dto.Aic;
 import com.emc.ia.sdk.sip.client.dto.Aics;

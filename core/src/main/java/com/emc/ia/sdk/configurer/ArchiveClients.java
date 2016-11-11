@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.sip.client;
+package com.emc.ia.sdk.configurer;
 
 import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.*;
 
@@ -13,8 +13,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
-import com.emc.ia.sdk.configurer.AuthenticationStrategyFactory;
-import com.emc.ia.sdk.configurer.InfoArchiveConfigurers;
+import com.emc.ia.sdk.sip.client.ArchiveClient;
+import com.emc.ia.sdk.sip.client.ClientConfigurationFinder;
 import com.emc.ia.sdk.sip.client.dto.Aics;
 import com.emc.ia.sdk.sip.client.dto.Application;
 import com.emc.ia.sdk.sip.client.dto.Applications;
