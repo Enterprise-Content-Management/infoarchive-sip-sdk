@@ -15,6 +15,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -207,6 +208,13 @@ public class ApacheHttpClient implements HttpClient {
       return new InputStreamBody(binaryPart.getData(), contentType, binaryPart.getDownloadName());
     }
     throw new IllegalArgumentException("Unhandled part type: " + part.getClass().getName());
+  }
+
+  @Override
+  public void delete(String uri, Collection<Header> headers) throws IOException {
+    HttpDelete request = new HttpDelete(uri);
+    setHeaders(request, headers);
+    execute(request, Void.class);
   }
 
   @Override

@@ -26,6 +26,8 @@ public interface HttpClient {
 
   <T> T post(String uri, Collection<Header> headers, Class<T> type, Part... parts) throws IOException;
 
+  void delete(String uri, Collection<Header> headers) throws IOException;
+
   void close();
 
   UriBuilder uri(String baseUri);

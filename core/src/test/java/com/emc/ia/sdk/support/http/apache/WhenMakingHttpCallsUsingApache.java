@@ -3,8 +3,11 @@
  */
 package com.emc.ia.sdk.support.http.apache;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,6 +20,7 @@ import java.util.Locale;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -161,6 +165,16 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
       .addParameter("q", "foo bar")
       .build());
   }
+
+  @Test
+  public void shouldDelete() throws Exception {
+    String uri = randomString();
+
+    httpClient.delete(uri, Collections.emptyList());
+
+    assertRequest(uri, HttpDelete.class);
+  }
+
 
   public static class Foo {
 

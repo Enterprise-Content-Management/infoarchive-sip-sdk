@@ -7,6 +7,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 import com.emc.ia.sdk.support.http.Header;
@@ -85,6 +86,10 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return post(uri, type, data, contentType);
   }
 
+  public void delete(String uri) throws IOException {
+    httpClient.delete(uri, withAuthorization(Collections.emptyList()));
+  }
+
   public <T> T follow(LinkContainer state, String relation, Class<T> type) throws IOException {
     Objects.requireNonNull(state, "Missing state");
     return get(linkIn(state, relation).getHref(), type);
@@ -123,13 +128,9 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   private Collection<Header> withAuthorization(Collection<Header> givenHeaders) {
-    if (authentication == null) {
-      return givenHeaders;
-    } else {
-      Collection<Header> updated = new ArrayList<>(givenHeaders);
-      updated.add(authentication.issueAuthHeader());
-      return updated;
-    }
+    Collection<Header> updated = new ArrayList<>(givenHeaders);
+    updated.add(authentication.issueAuthHeader());
+    return updated;
   }
 
   private String toJson(Object object) throws IOException {

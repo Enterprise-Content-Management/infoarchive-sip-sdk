@@ -4,11 +4,16 @@
 package com.emc.ia.sdk.support.rest;
 
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Before;
@@ -37,18 +42,24 @@ public class WhenMakingRestCalls extends TestCase {
   public void shouldForwardToHttpClient() throws IOException {
     String uri = randomString();
     Class<?> type = String.class;
-    List<Header> headers = new ArrayList<>();
-    headers.add(new Header("Accept", MediaTypes.HAL));
-    headers.add(new Header("Authorization", "Bearer " + token));
+    Collection<Header> authorizationHeader = new ArrayList<>();
+    authorizationHeader.add(new Header("Authorization", "Bearer " + token));
+
+    Collection<Header> contentAndAuthorizationHeaders = new ArrayList<>();
+    contentAndAuthorizationHeaders.add(new Header("Accept", MediaTypes.HAL));
+    contentAndAuthorizationHeaders.addAll(authorizationHeader);
 
     restClient.get(uri, type);
-    verify(httpClient).get(eq(uri), eq(headers), eq(type));
+    verify(httpClient).get(eq(uri), eq(contentAndAuthorizationHeaders), eq(type));
 
     restClient.put(uri, type);
-    verify(httpClient).put(eq(uri), eq(headers), eq(type));
+    verify(httpClient).put(eq(uri), eq(contentAndAuthorizationHeaders), eq(type));
 
     restClient.post(uri, type);
-    verify(httpClient).post(eq(uri), eq(headers), eq(type));
+    verify(httpClient).post(eq(uri), eq(contentAndAuthorizationHeaders), eq(type));
+
+    restClient.delete(uri);
+    verify(httpClient).delete(eq(uri), eq(authorizationHeader));
   }
 
   @Test

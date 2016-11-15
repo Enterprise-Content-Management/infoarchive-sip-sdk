@@ -5,7 +5,8 @@ package com.emc.ia.sdk.support.http;
 
 import java.util.Objects;
 
-public class Header {
+
+public class Header implements Comparable<Header> {
 
   private final String name;
   private final String value;
@@ -24,6 +25,11 @@ public class Header {
   }
 
   @Override
+  public int compareTo(Header other) {
+    return name.compareTo(other.name);
+  }
+
+  @Override
   public int hashCode() {
     return Objects.hash(name, value);
   }
@@ -35,6 +41,11 @@ public class Header {
     }
     Header other = (Header)obj;
     return Objects.equals(name, other.name) && Objects.equals(value, other.value);
+  }
+
+  @Override
+  public String toString() {
+    return String.format("%s=%s", name, value);
   }
 
 }
