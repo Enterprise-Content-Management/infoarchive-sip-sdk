@@ -521,7 +521,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     String defaultPipelineName = "search-results-csv-gzip";
     ExportPipelines pipelines =
         restClient.follow(configurationState.getTenant(), LINK_EXPORT_PIPELINE, ExportPipelines.class);
-    ExportPipeline pipeline = pipelines.byName("");
+    ExportPipeline pipeline = pipelines.byName(defaultPipelineName);
     if (pipeline == null) {
       pipeline = new ExportPipeline();
       pipeline.setName(defaultPipelineName);
