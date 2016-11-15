@@ -4,6 +4,7 @@
 package com.emc.ia.sdk.support.http;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 
 
@@ -17,7 +18,11 @@ public interface HttpClient {
 
   <T> T put(String uri, Collection<Header> headers, Class<T> type, String payload) throws IOException;
 
+  <T> T put(String uri, Collection<Header> headers, Class<T> type, InputStream payload) throws IOException;
+
   <T> T post(String uri, Collection<Header> headers, Class<T> type, String payload) throws IOException;
+
+  <T> T post(String uri, Collection<Header> headers, Class<T> type, InputStream payload) throws IOException;
 
   @Deprecated
   default <T> T post(String uri, Collection<Header> headers, String payload, Class<T> type) throws IOException {

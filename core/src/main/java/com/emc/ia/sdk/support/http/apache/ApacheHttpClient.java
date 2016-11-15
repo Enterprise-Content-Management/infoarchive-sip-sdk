@@ -4,6 +4,7 @@
 package com.emc.ia.sdk.support.http.apache;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Collection;
@@ -23,6 +24,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
@@ -42,8 +44,10 @@ import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.ResponseFactory;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.http.UriBuilder;
+import com.emc.ia.sdk.support.io.ByteArrayInputOutputStream;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 public class ApacheHttpClient implements HttpClient {
 
@@ -130,27 +134,41 @@ public class ApacheHttpClient implements HttpClient {
       StatusLine statusLine = response.getStatusLine();
       int status = statusLine.getStatusCode();
       HttpEntity entity = response.getEntity();
-      String body = entity == null ? "" : EntityUtils.toString(entity);
+      boolean isBinary = InputStream.class.equals(type);
+      String body = isBinary ? "<binary>" : entity == null ? "" : EntityUtils.toString(entity);
       if (!isOk(status)) {
         throw new HttpException(status,
             String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
       }
-      if (body.isEmpty() || type == null) {
-        return null;
-      }
-      if (type.equals(String.class)) {
-        return type.cast(body);
-      }
-      try {
-        return mapper.readValue(body, type);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
+      return isBinary ? binaryResponse(entity, type) : textResponse(body, type);
     };
   }
 
   private boolean isOk(int status) {
     return STATUS_CODE_RANGE_MIN <= status && status < STATUS_CODE_RANGE_MAX;
+  }
+
+  private <T> T binaryResponse(HttpEntity entity, Class<T> type) throws IOException {
+    ByteArrayInputOutputStream result = new ByteArrayInputOutputStream();
+    IOUtils.copy(entity.getContent(), result);
+    return type.cast(result.getInputStream());
+  }
+
+  private <T> T textResponse(String body, Class<T> type) {
+    if (type == null) {
+      return null;
+    }
+    if (body.isEmpty()) {
+      return null;
+    }
+    if (type.equals(String.class)) {
+      return type.cast(body);
+    }
+    try {
+      return mapper.readValue(body, type);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -170,6 +188,20 @@ public class ApacheHttpClient implements HttpClient {
     HttpPut result = new HttpPut(uri);
     setHeaders(result, headers);
     return result;
+  }
+
+  @Override
+  public <T> T put(String uri, Collection<Header> headers, Class<T> type, InputStream payload) throws IOException {
+    HttpPut request = newPut(uri, headers);
+    request.setEntity(new InputStreamEntity(payload));
+    return execute(request, type);
+  }
+
+  @Override
+  public <T> T post(String uri, Collection<Header> headers, Class<T> type, InputStream payload) throws IOException {
+    HttpPost request = newPost(uri, headers);
+    request.setEntity(new InputStreamEntity(payload));
+    return execute(request, type);
   }
 
   @Override
