@@ -25,12 +25,12 @@ The SDK consists of the following jars:
 - `infoarchive-sip-sdk-velocity` contains code for working with the [Velocity](http://velocity.apache.org/) template engine
 
 All jars can be found in the [Central Repository](https://repo1.maven.org/maven2/com/emc/ia/). The easiest way to get
-them is through a dependency management system like [Gradle](http://gradle.org/) or [Maven](https://maven.apache.org/).
+them is through a dependency management system like [Gradle](http://gradle.org/) or [Maven](https://maven.apache.org/). For the latest version, see the `maven-central` button at the top of this page.
 
 **Gradle**
 
     dependencies { 
-      compile 'com.emc.ia:infoarchive-sip-sdk-core:5.1.0'
+      compile 'com.emc.ia:infoarchive-sip-sdk-core:5.2.1'
     }
     
 **Maven**
@@ -39,7 +39,7 @@ them is through a dependency management system like [Gradle](http://gradle.org/)
       <dependency>
         <groupId>com.emc.ia</groupId>
         <artifactId>infoarchive-sip-sdk-core</artifactId>
-        <version>5.1.0</version>
+        <version>5.2.1</version>
       </dependency>
     </dependencies>
     
