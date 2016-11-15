@@ -80,23 +80,35 @@ uploadArchives {
               developer {
                 id = 'ray'
                 name = 'Remon Sinnema'
-                organization = 'EMC'
-                email = 'remon.sinnema@emc.com'
+                organization = 'Dell Technologies'
+                email = 'remon.sinnema@dell.com'
                 timezone = 'Europe/Amsterdam'
               }
               developer {
                 id = 'tord'
                 name = 'Tord Svensson'
-                organization = 'EMC'
-                email = 'tord.svensson@emc.com'
+                organization = 'Dell Technologies'
+                email = 'tord.svensson@dell.com'
                 timezone = 'Europe/Stockholm'
               }
-              developer {
-                id = 'mouli'
+            }
+            
+            contributors {
+              contributor {
                 name = 'Chandramouli Addaguduru'
-                organization = 'EMC'
-                email = 'chandramouli.addaguduru@emc.com'
-                timezone = 'Asia/Kolkata'
+                organization = 'Dell Technologies'
+              }
+              contributor {
+                name = 'Roman Kochkar'
+                organization = 'Dell Technologies'
+              }
+              contributor {
+                name = 'Artem Kovalev'
+                organization = 'Dell Technologies'
+              }
+              contributor {
+                name = 'Erik Silkensen'
+                organization = 'Flatirons Solutions'
               }
             }
           }
