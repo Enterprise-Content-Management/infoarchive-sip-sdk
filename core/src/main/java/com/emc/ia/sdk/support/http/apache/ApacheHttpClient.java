@@ -243,10 +243,10 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   @Override
-  public void delete(String uri, Collection<Header> headers) throws IOException {
+  public <T> T delete(String uri, Collection<Header> headers, Class<T> type) throws IOException {
     HttpDelete request = new HttpDelete(uri);
     setHeaders(request, headers);
-    execute(request, Void.class);
+    return execute(request, type);
   }
 
   @Override

@@ -31,7 +31,11 @@ public interface HttpClient {
 
   <T> T post(String uri, Collection<Header> headers, Class<T> type, Part... parts) throws IOException;
 
-  void delete(String uri, Collection<Header> headers) throws IOException;
+  default void delete(String uri, Collection<Header> headers) throws IOException {
+    delete(uri, headers, null);
+  }
+
+  <T> T delete(String uri, Collection<Header> headers, Class<T> type) throws IOException;
 
   void close();
 
