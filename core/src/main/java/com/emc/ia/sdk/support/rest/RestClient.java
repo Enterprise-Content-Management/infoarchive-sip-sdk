@@ -132,9 +132,11 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   private Collection<Header> withAuthorization(Collection<Header> givenHeaders) {
-    Collection<Header> updated = new ArrayList<>(givenHeaders);
-    updated.add(authentication.issueAuthHeader());
-    return updated;
+    Collection<Header> result = new ArrayList<>(givenHeaders);
+    if (authentication != null) {
+      result.add(authentication.issueAuthHeader());
+    }
+    return result;
   }
 
   private String toJson(Object object) throws IOException {
