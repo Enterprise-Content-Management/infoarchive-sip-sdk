@@ -53,7 +53,11 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   public <T> T put(String uri, Class<T> type, String payload) throws IOException {
-    return httpClient.put(uri, withAuthorization(headers), type, payload);
+    return put(uri, type, payload, MediaTypes.HAL);
+  }
+
+  public <T> T put(String uri, Class<T> type, String payload, String contentType) throws IOException {
+    return httpClient.put(uri, withAuthorization(withContentType(contentType)), type, payload);
   }
 
   public <S, T> T put(String uri, Class<T> type, S payload) throws IOException {
