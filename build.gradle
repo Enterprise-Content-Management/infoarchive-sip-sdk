@@ -38,6 +38,7 @@ subprojects {
     jacksonDatabind
     validation
     xmlunit
+    snakeYaml
 
     testCompile.extendsFrom junit, mockito, xmlunit
   }
@@ -56,6 +57,7 @@ subprojects {
     mockito "org.mockito:mockito-core:$mockitoVersion"
     validation "javax.validation:validation-api:$validationVersion"
     xmlunit "org.xmlunit:xmlunit-core:$xmlunitVersion"
+    snakeYaml "org.yaml:snakeyaml:1.17"
   }
 
 
@@ -136,7 +138,7 @@ subprojects {
 project(':infoarchive-sip-sdk-core') {
   configurations {
     compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, evoInflector, httpclient,
-        httpmime, jacksonCore, jacksonDatabind, validation
+        httpmime, jacksonCore, jacksonDatabind, validation, snakeYaml
 
   }
 
@@ -185,6 +187,12 @@ project(':infoarchive-sip-sdk-velocity') {
     velocityTools "org.apache.velocity:velocity-tools:$velocityToolsVersion"
     compile project(':infoarchive-sip-sdk-core')
     testCompile project(':infoarchive-sip-sdk-core').sourceSets.test.output
+  }
+}
+
+project(':config-install-example') {
+  dependencies {
+    compile project(':infoarchive-sip-sdk-core')
   }
 }
 

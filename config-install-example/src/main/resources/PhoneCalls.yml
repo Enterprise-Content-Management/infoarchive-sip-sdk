@@ -1,0 +1,6 @@
+tenant: MyCompany
+
+application:
+  name: PhoneCalls
+  type: ACTIVE_ARCHIVING
+  archiveType: SIP
