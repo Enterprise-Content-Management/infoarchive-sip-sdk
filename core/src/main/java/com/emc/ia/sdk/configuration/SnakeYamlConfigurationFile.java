@@ -1,6 +1,8 @@
 package com.emc.ia.sdk.configuration;
 
 import com.emc.ia.sdk.sip.client.dto.Application;
+import com.emc.ia.sdk.sip.client.dto.Federation;
+import com.emc.ia.sdk.sip.client.dto.NamedLinkContainer;
 import com.emc.ia.sdk.sip.client.dto.Tenant;
 import org.yaml.snakeyaml.Yaml;
 
@@ -24,22 +26,23 @@ public class SnakeYamlConfigurationFile implements YamlConfigurationFile {
     }
   }
 
-
   @Override
-  public Tenant getTenant() { // TODO: Delegate?
-    String tenantName = (String) configuration.get("tenant");
-    Tenant targetTenant = new Tenant();
-    targetTenant.setName(tenantName);
-    return targetTenant;
+  public <T extends NamedLinkContainer> T getNamedObject(Class<T> typeToken) {
+    return null;
   }
 
   @Override
-  public Application getApplication() { // TODO: Delegate?
-    Map appRepresentation = (Map) configuration.get("application");
-    Application application = new Application();
-    application.setName((String) appRepresentation.get("name"));
-    application.setArchiveType((String) appRepresentation.get("archiveType"));
-    application.setType((String) appRepresentation.get("type"));
-    return application;
+  public Tenant getTenant() {
+    return Extractors.getTenantExtractor().extract("tenant", configuration);
+  }
+
+  @Override
+  public Application getApplication() {
+    return Extractors.getApplicationExtractor().extract("application", configuration);
+  }
+
+  @Override
+  public Federation getFederation() {
+    return Extractors.getFederationExtractor().extract("federation", configuration);
   }
 }

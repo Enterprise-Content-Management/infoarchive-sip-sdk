@@ -3,6 +3,7 @@ package com.emc.ia.sdk.configuration;
 
 import com.emc.ia.sdk.sip.client.ArchiveClient;
 import com.emc.ia.sdk.sip.client.dto.Applications;
+import com.emc.ia.sdk.sip.client.dto.Federations;
 import com.emc.ia.sdk.sip.client.dto.Services;
 import com.emc.ia.sdk.sip.client.dto.Tenants;
 import com.emc.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
@@ -42,6 +43,13 @@ public class IAYamlConfigurer implements IAConfigurer, InfoArchiveLinkRelations 
       configurationState.setApplication(applications.byName(applicationName));
       if (configurationState.getApplication() == null) {
         configurationState.setApplication(client.createCollectionItem(applications, configuration.getApplication(), LINK_ADD, LINK_SELF));
+      }
+
+      String federationName = configuration.getFederation().getName();
+      Federations federations = client.follow(configurationState.getServices(), LINK_FEDERATIONS, Federations.class);
+      configurationState.setFederation(federations.byName(federationName));
+      if (configurationState.getFederation() == null) {
+        configurationState.setFederation(client.createCollectionItem(federations, configuration.getFederation(), LINK_ADD, LINK_SELF));
       }
     } catch (IOException ex) {
       throw new RuntimeIoException(ex);
