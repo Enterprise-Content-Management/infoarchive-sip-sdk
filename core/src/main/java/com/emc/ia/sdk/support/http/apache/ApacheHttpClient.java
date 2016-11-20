@@ -53,12 +53,16 @@ public class ApacheHttpClient implements HttpClient {
 
   private static final int STATUS_CODE_RANGE_MIN = 200;
   private static final int STATUS_CODE_RANGE_MAX = 300;
+  private static final int MAX_HTTP_CONNECTIONS = 50;
+  private static final int DEFULTE_CONNECTIONS_PER_ROUTE = 50;
 
   private final CloseableHttpClient client;
   private final ObjectMapper mapper;
 
   public ApacheHttpClient() {
-    HttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
+	PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
+	manager.setMaxTotal(MAX_HTTP_CONNECTIONS);
+	manager.setDefaultMaxPerRoute(DEFULTE_CONNECTIONS_PER_ROUTE);
     client = HttpClients.custom()
       .setConnectionManager(manager)
       .build();
