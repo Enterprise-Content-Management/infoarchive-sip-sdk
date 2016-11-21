@@ -27,7 +27,7 @@ public class ConfigCreator {
   public static void main(String... args) throws IOException {
     RestClient client = new RestClient(new ApacheHttpClient());
     client.init(new NonExpiringTokenAuthentication(TOKEN));
-    IAConfigurer configurer = new IAYamlConfigurer(client, SERVICES_URI, new SnakeYamlConfigurationFile(new File(CONFIG_FILE)));
+    IAConfigurer configurer = new IAYamlConfigurer(client, SERVICES_URI, SnakeYamlConfigurationFile.fromFile(new File(CONFIG_FILE)));
     configurer.configure();
 //    configurer.getSnaplshot();
 //    configurer.install???

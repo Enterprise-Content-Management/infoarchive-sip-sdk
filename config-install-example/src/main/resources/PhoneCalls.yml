@@ -9,3 +9,7 @@ federation:
   name: mainFederation
   bootstrap: "xhive://127.0.0.1:2910"
   superUserPassword: test
+
+xdbDatabase:
+  name: AIP-xdb
+  adminPassword: secret

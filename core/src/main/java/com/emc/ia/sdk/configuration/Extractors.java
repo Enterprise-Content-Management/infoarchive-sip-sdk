@@ -1,6 +1,7 @@
 package com.emc.ia.sdk.configuration;
 
 import com.emc.ia.sdk.sip.client.dto.Application;
+import com.emc.ia.sdk.sip.client.dto.Database;
 import com.emc.ia.sdk.sip.client.dto.Federation;
 import com.emc.ia.sdk.sip.client.dto.Tenant;
 
@@ -11,8 +12,8 @@ public class Extractors {
   private Extractors(){}
 
   public static Extractor<Tenant> getTenantExtractor() {
-    return (k, config) -> {
-      String tenantName = (String) config.get(k);
+    return representation -> {
+      String tenantName = (String) representation;
       Tenant targetTenant = new Tenant();
       targetTenant.setName(tenantName);
       return targetTenant;
@@ -20,8 +21,8 @@ public class Extractors {
   }
 
   public static Extractor<Application> getApplicationExtractor() {
-    return (k, config) -> {
-      Map appRepresentation = (Map) config.get(k);
+    return representation -> {
+      Map appRepresentation = (Map) representation;
       Application application = new Application();
       application.setName((String) appRepresentation.get("name"));
       application.setArchiveType((String) appRepresentation.get("archiveType"));
@@ -31,13 +32,23 @@ public class Extractors {
   }
 
   public static Extractor<Federation> getFederationExtractor() {
-    return (k, config) -> {
-      Map federationRepresentation = (Map) config.get(k);
+    return representation -> {
+      Map federationRepresentation = (Map) representation;
       Federation federation = new Federation();
       federation.setName((String) federationRepresentation.get("name"));
       federation.setBootstrap((String) federationRepresentation.get("bootstrap"));
       federation.setSuperUserPassword((String) federationRepresentation.get("superUserPassword"));
       return federation;
+    };
+  }
+
+  public static Extractor<Database> getDatabaseExtractor() {
+    return representation -> {
+      Map databaseRepresentation = (Map) representation;
+      Database db = new Database();
+      db.setName((String) databaseRepresentation.get("name"));
+      db.setAdminPassword((String) databaseRepresentation.get("adminPassword"));
+      return db;
     };
   }
 
