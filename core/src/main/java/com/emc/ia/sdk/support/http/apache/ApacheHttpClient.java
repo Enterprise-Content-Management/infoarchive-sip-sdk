@@ -60,9 +60,9 @@ public class ApacheHttpClient implements HttpClient {
   private final ObjectMapper mapper;
 
   public ApacheHttpClient() {
-	PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
-	manager.setMaxTotal(MAX_HTTP_CONNECTIONS);
-	manager.setDefaultMaxPerRoute(DEFULTE_CONNECTIONS_PER_ROUTE);
+    PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
+    manager.setMaxTotal(MAX_HTTP_CONNECTIONS);
+    manager.setDefaultMaxPerRoute(DEFULTE_CONNECTIONS_PER_ROUTE);
     client = HttpClients.custom()
       .setConnectionManager(manager)
       .build();
