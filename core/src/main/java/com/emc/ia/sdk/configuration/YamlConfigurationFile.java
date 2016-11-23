@@ -14,10 +14,5 @@ import java.util.List;
  */
 
 public interface YamlConfigurationFile {
-  <T extends NamedLinkContainer> T getNamedObject(Class<T> typeToken); // This is mostly the class for future use
-  <T extends NamedLinkContainer> List<T> getNamedObjects(Class<T> typeToken);
-  Tenant getTenant();
-  Federation getFederation();
-  Application getApplication();
-  Database getDatabase();
+  BaseIAArtifact extractWith(Extractor extractor);
 }

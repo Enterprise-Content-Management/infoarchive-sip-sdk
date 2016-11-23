@@ -3,6 +3,7 @@ package com.emc.ia.sdk.configuration;
 
 import com.emc.ia.sdk.sip.client.dto.Application;
 import com.emc.ia.sdk.sip.client.dto.Federation;
+import com.emc.ia.sdk.sip.client.dto.FileSystemRoot;
 import com.emc.ia.sdk.sip.client.dto.NamedLinkContainer;
 import com.emc.ia.sdk.sip.client.dto.Services;
 import com.emc.ia.sdk.sip.client.dto.Tenant;
@@ -11,12 +12,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents the cached Infoarchive Application. It also helps with finding defaults for referencing
  */
 
-public class IACache {
+public final class IACache {
 
   /*
       ???: Maybe to change both hash maps to single Multimap???
@@ -29,10 +31,11 @@ public class IACache {
     singles.put(Tenant.class, null);
     singles.put(Application.class, null);
     singles.put(Federation.class, null);
+    singles.put(FileSystemRoot.class, null);
   }
 
   @SuppressWarnings("unchecked")
-  <T extends NamedLinkContainer> List<T> getAll(Class<T> token) {
+  public <T extends NamedLinkContainer> List<T> getAll(Class<T> token) {
     if (singles.containsKey(token)) {
       return Collections.singletonList((T) singles.get(token));
     } else if (collections.containsKey(token)) {
@@ -42,7 +45,7 @@ public class IACache {
   }
 
   @SuppressWarnings("unchecked")
-  <T extends NamedLinkContainer> void cacheOne(T object) {
+  public <T extends NamedLinkContainer> void cacheOne(T object) {
     if (singles.containsKey(object.getClass())) {
       singles.put(object.getClass(), object);
     } else {
@@ -56,7 +59,7 @@ public class IACache {
   }
 
   @SuppressWarnings("unchecked")
-  <T extends NamedLinkContainer> T getByClassWithName(Class<T> token, String name) {
+  public <T extends NamedLinkContainer> T getByClassWithName(Class<T> token, String name) {
     if (singles.containsKey(token)) {
       T object = (T) singles.get(token);
       if (object.getName().equals(name)) {
@@ -74,7 +77,7 @@ public class IACache {
   }
 
   @SuppressWarnings("unchecked")
-  <T extends NamedLinkContainer> T getFirst(Class<T> token) {
+  public <T extends NamedLinkContainer> T getFirst(Class<T> token) {
     if (singles.containsKey(token)) {
       return (T) singles.get(token);
     } else if (collections.containsKey(token)) {

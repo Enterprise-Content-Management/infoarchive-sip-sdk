@@ -13,3 +13,5 @@ federation:
 xdbDatabase:
   name: AIP-xdb
   adminPassword: secret
+
+fileSystemRoot: defaultFileSystemRoot
