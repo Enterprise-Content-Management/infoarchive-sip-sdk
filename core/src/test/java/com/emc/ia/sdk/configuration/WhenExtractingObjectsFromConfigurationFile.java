@@ -16,7 +16,7 @@ public class WhenExtractingObjectsFromConfigurationFile {
   public void shouldGetTenantWithTheSameName() {
     String tenantConfiguration = "tenant: MyTenant";
     configuration = new ByteArrayInputStream(tenantConfiguration.getBytes());
-    YamlConfigurationFile yamlConfig = new SnakeYamlConfigurationFile(configuration);
+    ConfigurationReader yamlConfig = new SnakeYamlConfigurationReader(configuration);
     Tenant targetTenant = yamlConfig.getTenant();
     assertEquals("Should be equal", "MyTenant", targetTenant.getName());
   }
@@ -28,7 +28,7 @@ public class WhenExtractingObjectsFromConfigurationFile {
                                   "  type: ACTIVE_ARCHIVING\n" +
                                   "  archiveType: SIP\n";
     configuration = new ByteArrayInputStream(appConfiguration.getBytes());
-    YamlConfigurationFile yamlConfig = new SnakeYamlConfigurationFile(configuration);
+    ConfigurationReader yamlConfig = new SnakeYamlConfigurationReader(configuration);
     Application targetApplication = yamlConfig.getApplication();
     assertEquals("Should be equal", "PhoneCalls", targetApplication.getName());
     assertEquals("Should be equal", "ACTIVE_ARCHIVING", targetApplication.getType());

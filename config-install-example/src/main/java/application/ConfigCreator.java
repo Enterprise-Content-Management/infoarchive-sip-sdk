@@ -2,8 +2,7 @@ package application;
 
 import com.emc.ia.sdk.configuration.IAConfigurer;
 import com.emc.ia.sdk.configuration.IAYamlConfigurer;
-import com.emc.ia.sdk.configuration.SnakeYamlConfigurationFile;
-import com.emc.ia.sdk.sip.client.ArchiveClient;
+import com.emc.ia.sdk.configuration.SnakeYamlConfigurationReader;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.rest.NonExpiringTokenAuthentication;
 import com.emc.ia.sdk.support.rest.RestClient;
@@ -27,7 +26,7 @@ public class ConfigCreator {
   public static void main(String... args) throws IOException {
     RestClient client = new RestClient(new ApacheHttpClient());
     client.init(new NonExpiringTokenAuthentication(TOKEN));
-    IAConfigurer configurer = new IAYamlConfigurer(client, SERVICES_URI, SnakeYamlConfigurationFile.fromFile(new File(CONFIG_FILE)));
+    IAConfigurer configurer = new IAYamlConfigurer(client, SERVICES_URI, SnakeYamlConfigurationReader.fromFile(new File(CONFIG_FILE)));
     configurer.configure();
 //    configurer.getSnaplshot();
 //    configurer.install???
