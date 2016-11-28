@@ -20,12 +20,12 @@ public final class ApplicationIaHandler extends BaseIAArtifact {
 
   private final Application application;
 
-  private ApplicationIaHandler(Application source) {
+  public ApplicationIaHandler(Application source) {
     this.application = source;
   }
 
   @Override
-  public void install(RestClient client, IACache cache) throws IOException {
+  public void installArtifact(RestClient client, IACache cache) throws IOException {
     Applications applications = client.follow(cache.getFirst(Tenant.class), LINK_APPLICATIONS, Applications.class);
     Application createdApplication = applications.byName(application.getName());
     if (createdApplication == null) {

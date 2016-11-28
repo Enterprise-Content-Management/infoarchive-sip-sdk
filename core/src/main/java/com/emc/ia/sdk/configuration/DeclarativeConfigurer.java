@@ -8,14 +8,14 @@ import com.emc.ia.sdk.support.rest.RestClient;
 
 import java.io.IOException;
 
-public final class IAYamlConfigurer implements IAConfigurer {
+public final class DeclarativeConfigurer implements IAConfigurer {
 
   private final RestClient client;
   private final ArtifactCollection artifacts;
 
   private final IACache cache = new IACache();
 
-  public IAYamlConfigurer(RestClient client, String servicesUri, ArtifactCollection artifacts) throws IOException {
+  public DeclarativeConfigurer(RestClient client, String servicesUri, ArtifactCollection artifacts) throws IOException {
     this.client = client;
     this.artifacts = artifacts;
     cache.cacheOne(client.get(servicesUri, Services.class));
@@ -23,19 +23,11 @@ public final class IAYamlConfigurer implements IAConfigurer {
 
   @Override
   public void configure() {
-    artifacts.forEach(this::installArtifact);
+    artifacts.forEach(installable -> installable.install(client, cache));
   }
 
   @Override
   public ArchiveClient createArchiveClient() {
     throw new UnsupportedOperationException();
-  }
-
-  private void installArtifact(BaseIAArtifact artifact) {
-    try {
-      artifact.install(client, cache);
-    } catch (IOException ex) {
-      throw new RuntimeIoException(ex);
-    }
   }
 }

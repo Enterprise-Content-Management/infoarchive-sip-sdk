@@ -2,7 +2,11 @@ package com.emc.ia.sdk.configuration;
 
 import com.emc.ia.sdk.configuration.artifacts.ApplicationIaHandler;
 import com.emc.ia.sdk.configuration.artifacts.FederationIaHandler;
+import com.emc.ia.sdk.configuration.artifacts.FileSystemFolderIaHandler;
 import com.emc.ia.sdk.configuration.artifacts.FileSystemRootIaHandler;
+import com.emc.ia.sdk.configuration.artifacts.SpaceIaHandler;
+import com.emc.ia.sdk.configuration.artifacts.SpaceRootFolderIaHandler;
+import com.emc.ia.sdk.configuration.artifacts.SpaceRootLibraryIaHandler;
 import com.emc.ia.sdk.configuration.artifacts.TenantIaHandler;
 import com.emc.ia.sdk.configuration.artifacts.XdbDatabaseIaHandler;
 import org.yaml.snakeyaml.Yaml;
@@ -36,12 +40,16 @@ public final class SnakeYamlConfigurationReader implements ConfigurationReader {
 
   @Override
   public ArtifactCollection readConfiguration() {
-    List<BaseIAArtifact> artifacts = Stream.of(
+    List<Installable> artifacts = Stream.of(
         TenantIaHandler.extractor(),
         ApplicationIaHandler.extractor(),
         FederationIaHandler.extractor(),
         XdbDatabaseIaHandler.extractor(),
-        FileSystemRootIaHandler.extractor()
+        FileSystemRootIaHandler.extractor(),
+        SpaceIaHandler.extractor(),
+        SpaceRootLibraryIaHandler.extractor(),
+        SpaceRootFolderIaHandler.extractor(),
+        new ListExtractor(FileSystemFolderIaHandler.extractor(), "fileSystemFolders")
     ).map(this::extractWith).collect(Collectors.toList());
     return new ArtifactCollection(artifacts);
 //    for (Artifact artifact : Artifact.values()) {
@@ -49,7 +57,7 @@ public final class SnakeYamlConfigurationReader implements ConfigurationReader {
 //    }
   }
 
-  private BaseIAArtifact extractWith(Extractor extractor) {
+  private Installable extractWith(Extractor extractor) {
     return extractor.extract(configuration.get(extractor.getFieldName()));
   }
 }

@@ -4,16 +4,16 @@ package com.emc.ia.sdk.configuration;
 import java.util.Iterator;
 import java.util.List;
 
-public final class ArtifactCollection implements Iterable<BaseIAArtifact> {
+public final class ArtifactCollection implements Iterable<Installable> {
 
-  private List<BaseIAArtifact> artifactInstallationOrder;
+  private List<Installable> artifactInstallationOrder;
 
-  public ArtifactCollection(List<BaseIAArtifact> source) {
+  public ArtifactCollection(List<Installable> source) {
     this.artifactInstallationOrder = source;
   }
 
   @Override
-  public Iterator<BaseIAArtifact> iterator() {
+  public Iterator<Installable> iterator() {
     return artifactInstallationOrder.iterator();
   }
 }

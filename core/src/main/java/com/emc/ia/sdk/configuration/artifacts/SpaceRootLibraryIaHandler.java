@@ -30,7 +30,7 @@ public final class SpaceRootLibraryIaHandler extends BaseIAArtifact {
   }
 
   @Override
-  public void install(RestClient client, IACache cache) throws IOException {
+  public void installArtifact(RestClient client, IACache cache) throws IOException {
     SpaceRootLibraries libraries = client.follow(cache.getByClassWithName(Space.class, parentSpaceName), // What if there is no space with such name ???
         LINK_SPACE_ROOT_LIBRARIES, SpaceRootLibraries.class);
     SpaceRootLibrary createdLibrary = libraries.byName(srLibrary.getName());

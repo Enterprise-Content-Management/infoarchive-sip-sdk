@@ -20,12 +20,12 @@ public final class XdbDatabaseIaHandler extends BaseIAArtifact {
 
   private final Database xdbDatabase;
 
-  private XdbDatabaseIaHandler(Database source) {
+  public XdbDatabaseIaHandler(Database source) {
     this.xdbDatabase = source;
   }
 
   @Override
-  public void install(RestClient client, IACache cache) throws IOException {
+  public void installArtifact(RestClient client, IACache cache) throws IOException {
     Databases databases = client.follow(cache.getFirst(Federation.class), LINK_DATABASES, Databases.class);
     Database createdDb = databases.byName(xdbDatabase.getName());
     if (createdDb == null) {

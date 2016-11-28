@@ -1,6 +1,7 @@
 package com.emc.ia.sdk.configuration.artifacts;
 
 
+import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
 import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
@@ -15,6 +16,10 @@ import java.util.Map;
 
 public final class SpaceRootFolderIaHandler extends BaseIAArtifact {
 
+  public static SpaceRootFolderExtractor extractor() {
+    return new SpaceRootFolderExtractor();
+  }
+
   private final SpaceRootFolder srFolder;
   private final String parentSpaceName;
   private final String fsRootName;
@@ -26,7 +31,7 @@ public final class SpaceRootFolderIaHandler extends BaseIAArtifact {
   }
 
   @Override
-  public void install(RestClient client, IACache cache) throws IOException {
+  public void installArtifact(RestClient client, IACache cache) throws IOException {
     SpaceRootFolders srFolders = client.follow(cache.getByClassWithName(Space.class, parentSpaceName),
         LINK_SPACE_ROOT_FOLDERS, SpaceRootFolders.class);
     SpaceRootFolder createdFolder = srFolders.byName(srFolder.getName());
@@ -39,7 +44,7 @@ public final class SpaceRootFolderIaHandler extends BaseIAArtifact {
     cache.cacheOne(createdFolder);
   }
 
-  private static final class SpaceRootFolderExtractor implements Extractor {
+  private static final class SpaceRootFolderExtractor extends ArtifactExtractor {
     @Override
     public BaseIAArtifact extract(Object representation) {
       Map srFolderRepresentation = (Map) representation;

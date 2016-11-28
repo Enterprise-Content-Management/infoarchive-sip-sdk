@@ -1,7 +1,7 @@
 package application;
 
 import com.emc.ia.sdk.configuration.IAConfigurer;
-import com.emc.ia.sdk.configuration.IAYamlConfigurer;
+import com.emc.ia.sdk.configuration.DeclarativeConfigurer;
 import com.emc.ia.sdk.configuration.SnakeYamlConfigurationReader;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.rest.NonExpiringTokenAuthentication;
@@ -26,7 +26,7 @@ public class ConfigCreator {
   public static void main(String... args) throws IOException {
     RestClient client = new RestClient(new ApacheHttpClient());
     client.init(new NonExpiringTokenAuthentication(TOKEN));
-    IAConfigurer configurer = new IAYamlConfigurer(client, SERVICES_URI, SnakeYamlConfigurationReader.fromFile(new File(CONFIG_FILE)));
+    IAConfigurer configurer = new DeclarativeConfigurer(client, SERVICES_URI, SnakeYamlConfigurationReader.fromFile(new File(CONFIG_FILE)).readConfiguration());
     configurer.configure();
 //    configurer.getSnaplshot();
 //    configurer.install???

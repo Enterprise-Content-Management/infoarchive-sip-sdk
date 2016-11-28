@@ -24,7 +24,7 @@ public final class SpaceIaHandler extends BaseIAArtifact {
   }
 
   @Override
-  public void install(RestClient client, IACache cache) throws IOException {
+  public void installArtifact(RestClient client, IACache cache) throws IOException {
     Spaces spaces = client.follow(cache.getFirst(Application.class), LINK_SPACES, Spaces.class);
     Space createdSpace = spaces.byName(space.getName());
     if (createdSpace == null) {

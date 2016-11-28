@@ -19,19 +19,19 @@ public final class FileSystemRootIaHandler extends BaseIAArtifact {
 
   private final FileSystemRoot fsRoot;
 
-  private FileSystemRootIaHandler(FileSystemRoot source) {
+  public FileSystemRootIaHandler(FileSystemRoot source) {
     this.fsRoot = source;
   }
 
   @Override
-  public void install(RestClient client, IACache cache) throws IOException {
+  public void installArtifact(RestClient client, IACache cache) throws IOException {
     FileSystemRoots fsRoots = client.follow(cache.getFirst(Services.class), LINK_FILE_SYSTEM_ROOTS, FileSystemRoots.class);
     FileSystemRoot existingFsRoot = fsRoots.byName(fsRoot.getName());
     if (existingFsRoot == null) {
       // TODO: Fail or get the first fsRoot???
       throw new IllegalStateException("No such FileSystemRoot on running IA instance");
     }
-    cache.cacheOne(fsRoot);
+    cache.cacheOne(existingFsRoot);
   }
 
   private static final class FileSystemRootExtractor implements Extractor {

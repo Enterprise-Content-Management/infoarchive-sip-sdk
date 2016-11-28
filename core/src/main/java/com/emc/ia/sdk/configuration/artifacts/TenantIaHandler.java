@@ -19,12 +19,12 @@ public final class TenantIaHandler extends BaseIAArtifact {
 
   private final Tenant tenant;
 
-  private TenantIaHandler(Tenant source) {
+  public TenantIaHandler(Tenant source) {
     this.tenant = source;
   }
 
   @Override
-  public void install(RestClient client, IACache cache) throws IOException {
+  public void installArtifact(RestClient client, IACache cache) throws IOException {
     Tenants tenants = client.follow(cache.getFirst(Services.class), LINK_TENANTS, Tenants.class);
     Tenant createdTenant = tenants.byName(tenant.getName());
     if (createdTenant == null) {

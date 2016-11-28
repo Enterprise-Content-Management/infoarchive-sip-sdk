@@ -20,12 +20,12 @@ public final class FederationIaHandler extends BaseIAArtifact {
 
   private final Federation federation;
 
-  private FederationIaHandler(Federation source) {
+  public FederationIaHandler(Federation source) {
     this.federation = source;
   }
 
   @Override
-  public void install(RestClient client, IACache cache) throws IOException {
+  public void installArtifact(RestClient client, IACache cache) throws IOException {
     Federations federations = client.follow(cache.getFirst(Services.class), LINK_FEDERATIONS, Federations.class);
     Federation createdFederation = federations.byName(federation.getName());
     if (createdFederation == null) {
