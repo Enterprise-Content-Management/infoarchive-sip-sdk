@@ -1,5 +1,6 @@
 package com.emc.ia.sdk.configuration.artifacts;
 
+import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
 import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
@@ -24,7 +25,7 @@ public final class FileSystemRootIaHandler extends BaseIAArtifact {
   }
 
   @Override
-  public void installArtifact(RestClient client, IACache cache) throws IOException {
+  protected void installArtifact(RestClient client, IACache cache) throws IOException {
     FileSystemRoots fsRoots = client.follow(cache.getFirst(Services.class), LINK_FILE_SYSTEM_ROOTS, FileSystemRoots.class);
     FileSystemRoot existingFsRoot = fsRoots.byName(fsRoot.getName());
     if (existingFsRoot == null) {
@@ -34,19 +35,19 @@ public final class FileSystemRootIaHandler extends BaseIAArtifact {
     cache.cacheOne(existingFsRoot);
   }
 
-  private static final class FileSystemRootExtractor implements Extractor {
+  private static final class FileSystemRootExtractor extends ArtifactExtractor {
     @Override
     public BaseIAArtifact extract(Object representation) {
       if (representation instanceof String) {
-        String fsRootName = (String) representation;
+        String fsRootName = asString(representation);
         FileSystemRoot fsRoot = new FileSystemRoot();
         fsRoot.setName(fsRootName);
         return new FileSystemRootIaHandler(fsRoot);
       } else {
-        Map fsRootRepresentation = (Map) representation;
+        Map fsRootRepresentation = asMap(representation);
         FileSystemRoot fsRoot = new FileSystemRoot();
-        fsRoot.setName((String) fsRootRepresentation.get("name"));
-        fsRoot.setPath((String) fsRootRepresentation.get("path"));
+        fsRoot.setName(extractString(fsRootRepresentation, "name"));
+        fsRoot.setPath(extractString(fsRootRepresentation, "path"));
         return new FileSystemRootIaHandler(fsRoot);
       }
     }

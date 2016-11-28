@@ -1,6 +1,7 @@
 package com.emc.ia.sdk.configuration.artifacts;
 
 
+import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
 import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
@@ -24,7 +25,7 @@ public final class TenantIaHandler extends BaseIAArtifact {
   }
 
   @Override
-  public void installArtifact(RestClient client, IACache cache) throws IOException {
+  protected void installArtifact(RestClient client, IACache cache) throws IOException {
     Tenants tenants = client.follow(cache.getFirst(Services.class), LINK_TENANTS, Tenants.class);
     Tenant createdTenant = tenants.byName(tenant.getName());
     if (createdTenant == null) {
@@ -33,10 +34,10 @@ public final class TenantIaHandler extends BaseIAArtifact {
     cache.cacheOne(createdTenant);
   }
 
-  private static final class TenantExtractor implements Extractor {
+  private static final class TenantExtractor extends ArtifactExtractor {
     @Override
     public BaseIAArtifact extract(Object representation) {
-      String tenantName = (String) representation;
+      String tenantName = asString(representation);
       Tenant tenant = new Tenant();
       tenant.setName(tenantName);
       return new TenantIaHandler(tenant);

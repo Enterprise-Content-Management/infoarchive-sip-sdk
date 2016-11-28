@@ -29,7 +29,7 @@ public final class FileSystemFolderIaHandler extends BaseIAArtifact {
   }
 
   @Override
-  public void installArtifact(RestClient client, IACache cache) throws IOException {
+  protected void installArtifact(RestClient client, IACache cache) throws IOException {
     if (parentFileSystemFolderName == null) {
       FileSystemFolders fsFolders = client.follow(
           cache.getFirst(SpaceRootFolder.class),
@@ -47,12 +47,12 @@ public final class FileSystemFolderIaHandler extends BaseIAArtifact {
   private static class FileSystemFolderExtractor extends ArtifactExtractor {
     @Override
     public BaseIAArtifact extract(Object representation) {
-      Map fsFolderRepresentation = (Map) representation;
+      Map fsFolderRepresentation = asMap(representation);
       FileSystemFolder fsFolder = new FileSystemFolder();
-      fsFolder.setName((String) fsFolderRepresentation.get("name"));
-      fsFolder.setSubPath((String) fsFolderRepresentation.get("subPath"));
-      String parentSrFolderName = (String) fsFolderRepresentation.get("spaceRootFolder");
-      String parentFsFolderName = (String) fsFolderRepresentation.get("fileSystemFolder");
+      fsFolder.setName(extractString(fsFolderRepresentation, "name"));
+      fsFolder.setSubPath(extractString(fsFolderRepresentation, "subPath"));
+      String parentSrFolderName = extractString(fsFolderRepresentation, "spaceRootFolder");
+      String parentFsFolderName = extractString(fsFolderRepresentation, "fileSystemFolder");
       return new FileSystemFolderIaHandler(fsFolder, parentSrFolderName, parentFsFolderName);
     }
 

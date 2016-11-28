@@ -1,6 +1,7 @@
 package com.emc.ia.sdk.configuration.artifacts;
 
 
+import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
 import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
@@ -30,7 +31,7 @@ public final class SpaceRootLibraryIaHandler extends BaseIAArtifact {
   }
 
   @Override
-  public void installArtifact(RestClient client, IACache cache) throws IOException {
+  protected void installArtifact(RestClient client, IACache cache) throws IOException {
     SpaceRootLibraries libraries = client.follow(cache.getByClassWithName(Space.class, parentSpaceName), // What if there is no space with such name ???
         LINK_SPACE_ROOT_LIBRARIES, SpaceRootLibraries.class);
     SpaceRootLibrary createdLibrary = libraries.byName(srLibrary.getName());
@@ -43,14 +44,14 @@ public final class SpaceRootLibraryIaHandler extends BaseIAArtifact {
     cache.cacheOne(createdLibrary);
   }
 
-  private static final class SpaceRootLibraryExtractor implements Extractor {
+  private static final class SpaceRootLibraryExtractor extends ArtifactExtractor {
     @Override
     public BaseIAArtifact extract(Object representation) {
-      Map srLibraryRepresentation = (Map) representation;
+      Map srLibraryRepresentation = asMap(representation);
       SpaceRootLibrary srLibrary = new SpaceRootLibrary();
-      srLibrary.setName((String) srLibraryRepresentation.get("name"));
-      String parentSpaceName = (String) srLibraryRepresentation.get("space");
-      String xdbDatabaseName = (String) srLibraryRepresentation.get("xdbDatabase");
+      srLibrary.setName(extractString(srLibraryRepresentation, "name"));
+      String parentSpaceName = extractString(srLibraryRepresentation, "space");
+      String xdbDatabaseName = extractString(srLibraryRepresentation, "xdbDatabase");
       return new SpaceRootLibraryIaHandler(srLibrary, parentSpaceName, xdbDatabaseName);
     }
 

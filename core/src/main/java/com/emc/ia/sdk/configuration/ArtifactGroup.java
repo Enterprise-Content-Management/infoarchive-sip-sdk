@@ -5,6 +5,11 @@ import com.emc.ia.sdk.support.rest.RestClient;
 
 import java.util.List;
 
+/**
+ * Implements Installable artifact, represents group of artifacts with the same alias type.
+ * Delegates installation to the each contained.
+ */
+
 public final class ArtifactGroup implements Installable {
 
   private final List<BaseIAArtifact> artifacts;

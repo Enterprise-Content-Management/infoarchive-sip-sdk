@@ -1,6 +1,7 @@
 package com.emc.ia.sdk.configuration.artifacts;
 
 
+import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
 import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
@@ -25,7 +26,7 @@ public final class FederationIaHandler extends BaseIAArtifact {
   }
 
   @Override
-  public void installArtifact(RestClient client, IACache cache) throws IOException {
+  protected void installArtifact(RestClient client, IACache cache) throws IOException {
     Federations federations = client.follow(cache.getFirst(Services.class), LINK_FEDERATIONS, Federations.class);
     Federation createdFederation = federations.byName(federation.getName());
     if (createdFederation == null) {
@@ -34,14 +35,14 @@ public final class FederationIaHandler extends BaseIAArtifact {
     cache.cacheOne(createdFederation);
   }
 
-  private static final class FederationExtractor implements Extractor {
+  private static final class FederationExtractor extends ArtifactExtractor {
     @Override
     public BaseIAArtifact extract(Object representation) {
-      Map federationRepresentation = (Map) representation;
+      Map federationRepresentation = asMap(representation);
       Federation federation = new Federation();
-      federation.setName((String) federationRepresentation.get("name"));
-      federation.setBootstrap((String) federationRepresentation.get("bootstrap"));
-      federation.setSuperUserPassword((String) federationRepresentation.get("superUserPassword"));
+      federation.setName(extractString(federationRepresentation, "name"));
+      federation.setBootstrap(extractString(federationRepresentation, "bootstrap"));
+      federation.setSuperUserPassword(extractString(federationRepresentation, "superUserPassword"));
       return new FederationIaHandler(federation);
     }
 

@@ -31,7 +31,7 @@ public final class SpaceRootFolderIaHandler extends BaseIAArtifact {
   }
 
   @Override
-  public void installArtifact(RestClient client, IACache cache) throws IOException {
+  protected void installArtifact(RestClient client, IACache cache) throws IOException {
     SpaceRootFolders srFolders = client.follow(cache.getByClassWithName(Space.class, parentSpaceName),
         LINK_SPACE_ROOT_FOLDERS, SpaceRootFolders.class);
     SpaceRootFolder createdFolder = srFolders.byName(srFolder.getName());
@@ -47,11 +47,11 @@ public final class SpaceRootFolderIaHandler extends BaseIAArtifact {
   private static final class SpaceRootFolderExtractor extends ArtifactExtractor {
     @Override
     public BaseIAArtifact extract(Object representation) {
-      Map srFolderRepresentation = (Map) representation;
+      Map srFolderRepresentation = asMap(representation);
       SpaceRootFolder srFolder = new SpaceRootFolder();
-      srFolder.setName((String) srFolderRepresentation.get("name"));
-      String parentSpaceName = (String) srFolderRepresentation.get("space");
-      String fsRootName = (String) srFolderRepresentation.get("fileSystemRoot");
+      srFolder.setName(extractString(srFolderRepresentation, "name"));
+      String parentSpaceName = extractString(srFolderRepresentation,"space");
+      String fsRootName = extractString(srFolderRepresentation, "fileSystemRoot");
       return new SpaceRootFolderIaHandler(srFolder, parentSpaceName, fsRootName);
     }
 

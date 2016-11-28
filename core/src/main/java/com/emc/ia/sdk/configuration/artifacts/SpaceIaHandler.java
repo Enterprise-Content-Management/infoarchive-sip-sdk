@@ -1,6 +1,7 @@
 package com.emc.ia.sdk.configuration.artifacts;
 
 
+import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
 import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
@@ -24,7 +25,7 @@ public final class SpaceIaHandler extends BaseIAArtifact {
   }
 
   @Override
-  public void installArtifact(RestClient client, IACache cache) throws IOException {
+  protected void installArtifact(RestClient client, IACache cache) throws IOException {
     Spaces spaces = client.follow(cache.getFirst(Application.class), LINK_SPACES, Spaces.class);
     Space createdSpace = spaces.byName(space.getName());
     if (createdSpace == null) {
@@ -33,10 +34,10 @@ public final class SpaceIaHandler extends BaseIAArtifact {
     cache.cacheOne(createdSpace);
   }
 
-  private static final class SpaceExtractor implements Extractor {
+  private static final class SpaceExtractor extends ArtifactExtractor {
     @Override
     public BaseIAArtifact extract(Object representation) {
-      String spaceName = (String) representation;
+      String spaceName = asString(representation);
       Space space = new Space();
       space.setName(spaceName);
       return new SpaceIaHandler(space);

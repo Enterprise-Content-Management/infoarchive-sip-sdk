@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class represents the cached Infoarchive Application. It also helps with finding defaults for referencing
+ * This class represents the cache for all the installed InfoArchive artifacts.
+ * The main purpose is to make it easy to store recently installed artifacts and retrieve them by need.
  */
 
 public final class IACache {

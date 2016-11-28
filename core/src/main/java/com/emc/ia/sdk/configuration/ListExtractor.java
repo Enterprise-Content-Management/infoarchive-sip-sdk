@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This implementation of Extractor extracts ArtifactGroup from the List representation in configuration file.
+ * It should be supplied with original extractor to extract individual entities and key for the List in the root of
+ * the configuration
+ */
 public final class ListExtractor implements Extractor {
 
   private final ArtifactExtractor original;
@@ -16,6 +21,11 @@ public final class ListExtractor implements Extractor {
     this.fieldName = fieldName;
   }
 
+  /**
+   * Extracts the list and delegates the extraction of each individual item to the original ArtifactExtractor.
+   * @param representation the String/Map/List representation of the installable artifact in configuration.
+   * @return ArifactGroup that contains all the artifacts from the list
+   */
   @Override
   public ArtifactGroup extract(Object representation) {
     List listRepresentation = (List) representation;

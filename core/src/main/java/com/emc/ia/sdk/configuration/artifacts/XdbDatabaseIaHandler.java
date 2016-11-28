@@ -1,6 +1,7 @@
 package com.emc.ia.sdk.configuration.artifacts;
 
 
+import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
 import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
@@ -25,7 +26,7 @@ public final class XdbDatabaseIaHandler extends BaseIAArtifact {
   }
 
   @Override
-  public void installArtifact(RestClient client, IACache cache) throws IOException {
+  protected void installArtifact(RestClient client, IACache cache) throws IOException {
     Databases databases = client.follow(cache.getFirst(Federation.class), LINK_DATABASES, Databases.class);
     Database createdDb = databases.byName(xdbDatabase.getName());
     if (createdDb == null) {
@@ -34,13 +35,13 @@ public final class XdbDatabaseIaHandler extends BaseIAArtifact {
     cache.cacheOne(createdDb);
   }
 
-  private static final class XdbDatabaseExtractor implements Extractor {
+  private static final class XdbDatabaseExtractor extends ArtifactExtractor {
     @Override
     public BaseIAArtifact extract(Object representation) {
-      Map databaseRepresentation = (Map) representation;
+      Map databaseRepresentation = asMap(representation);
       Database db = new Database();
-      db.setName((String) databaseRepresentation.get("name"));
-      db.setAdminPassword((String) databaseRepresentation.get("adminPassword"));
+      db.setName(extractString(databaseRepresentation, "name"));
+      db.setAdminPassword(extractString(databaseRepresentation, "adminPassword"));
       return new XdbDatabaseIaHandler(db);
 
     }

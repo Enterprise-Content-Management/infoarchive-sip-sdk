@@ -1,6 +1,7 @@
 package com.emc.ia.sdk.configuration.artifacts;
 
 
+import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
 import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
@@ -25,7 +26,7 @@ public final class ApplicationIaHandler extends BaseIAArtifact {
   }
 
   @Override
-  public void installArtifact(RestClient client, IACache cache) throws IOException {
+  protected void installArtifact(RestClient client, IACache cache) throws IOException {
     Applications applications = client.follow(cache.getFirst(Tenant.class), LINK_APPLICATIONS, Applications.class);
     Application createdApplication = applications.byName(application.getName());
     if (createdApplication == null) {
@@ -34,14 +35,14 @@ public final class ApplicationIaHandler extends BaseIAArtifact {
     cache.cacheOne(createdApplication);
   }
 
-  private static final class ApplicationExtractor implements Extractor {
+  private static final class ApplicationExtractor extends ArtifactExtractor {
     @Override
     public BaseIAArtifact extract(Object representation) {
-      Map appRepresentation = (Map) representation;
+      Map appRepresentation = asMap(representation);
       Application application = new Application();
-      application.setName((String) appRepresentation.get("name"));
-      application.setArchiveType((String) appRepresentation.get("archiveType"));
-      application.setType((String) appRepresentation.get("type"));
+      application.setName(extractString(appRepresentation, "name"));
+      application.setArchiveType(extractString(appRepresentation, "archiveType"));
+      application.setType(extractString(appRepresentation, "type"));
       return new ApplicationIaHandler(application);
     }
 
