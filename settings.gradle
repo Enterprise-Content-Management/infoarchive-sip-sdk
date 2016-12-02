@@ -12,4 +12,5 @@ project(':velocity').name = 'infoarchive-sip-sdk-velocity'
 include 'samples/hello-sip'
 project(':samples/hello-sip').name ='hello-sip'
 
-include 'config-install-example'
+include 'samples/config-install-example'
+project(':samples/config-install-example').name = 'config-install-example'

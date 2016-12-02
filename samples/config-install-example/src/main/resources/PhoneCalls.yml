@@ -4,6 +4,8 @@ application:
   name: PhoneCalls
   type: ACTIVE_ARCHIVING
   archiveType: SIP
+  description: "The application has customer support phone calls history"
+  category: "Customer Support"
 
 federation:
   name: mainFederation

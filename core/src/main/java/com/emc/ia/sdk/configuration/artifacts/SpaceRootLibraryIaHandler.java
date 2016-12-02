@@ -16,7 +16,7 @@ import java.util.Map;
 
 public final class SpaceRootLibraryIaHandler extends BaseIAArtifact {
 
-  public static Extractor extractor() {
+  public static SpaceRootLibraryExtractor extractor() {
     return new SpaceRootLibraryExtractor();
   }
 

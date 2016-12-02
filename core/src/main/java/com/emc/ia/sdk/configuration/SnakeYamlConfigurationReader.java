@@ -49,15 +49,17 @@ public final class SnakeYamlConfigurationReader implements ConfigurationReader {
         SpaceIaHandler.extractor(),
         SpaceRootLibraryIaHandler.extractor(),
         SpaceRootFolderIaHandler.extractor(),
-        new ListExtractor(FileSystemFolderIaHandler.extractor(), "fileSystemFolders")
-    ).map(this::extractWith).collect(Collectors.toList());
+        FileSystemFolderIaHandler.extractor().fromList()
+    ).flatMap(this::extractWith).collect(Collectors.toList());
     return new ArtifactCollection(artifacts);
-//    for (Artifact artifact : Artifact.values()) {
-//
-//    }
   }
 
-  private Installable extractWith(Extractor extractor) {
-    return extractor.extract(configuration.get(extractor.getFieldName()));
+  private Stream<Installable> extractWith(Extractor extractor) {
+    Object representation = configuration.get(extractor.getFieldName());
+    if (representation == null){
+      return Stream.empty();
+    } else {
+      return Stream.of(extractor.extract(representation));
+    }
   }
 }

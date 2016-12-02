@@ -5,6 +5,7 @@ import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
 import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
+import com.emc.ia.sdk.configuration.ListExtractor;
 import com.emc.ia.sdk.sip.client.dto.Application;
 import com.emc.ia.sdk.sip.client.dto.Applications;
 import com.emc.ia.sdk.sip.client.dto.Tenant;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 public final class ApplicationIaHandler extends BaseIAArtifact {
 
-  public static Extractor extractor() {
+  public static ApplicationExtractor extractor() {
     return new ApplicationExtractor();
   }
 
@@ -40,9 +41,11 @@ public final class ApplicationIaHandler extends BaseIAArtifact {
     public BaseIAArtifact extract(Object representation) {
       Map appRepresentation = asMap(representation);
       Application application = new Application();
-      application.setName(extractString(appRepresentation, "name"));
+      application.setName(extractName(appRepresentation));
       application.setArchiveType(extractString(appRepresentation, "archiveType"));
       application.setType(extractString(appRepresentation, "type"));
+      application.setCategory(extractString(appRepresentation, "category"));
+      application.setDescription(extractString(appRepresentation, "description"));
       return new ApplicationIaHandler(application);
     }
 

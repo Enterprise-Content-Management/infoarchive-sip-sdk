@@ -7,6 +7,8 @@ public class Application extends NamedLinkContainer {
 
   private String type;
   private String archiveType;
+  private String category;
+  private String description;
 
   public Application() {
     setType("ACTIVE_ARCHIVING");
@@ -29,4 +31,19 @@ public class Application extends NamedLinkContainer {
     this.archiveType = archiveType;
   }
 
+  public String getCategory() {
+    return category;
+  }
+
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
 }

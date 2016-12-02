@@ -14,7 +14,7 @@ import java.util.Map;
 
 public final class FileSystemRootIaHandler extends BaseIAArtifact {
 
-  public static Extractor extractor() {
+  public static FileSystemRootExtractor extractor() {
     return new FileSystemRootExtractor();
   }
 

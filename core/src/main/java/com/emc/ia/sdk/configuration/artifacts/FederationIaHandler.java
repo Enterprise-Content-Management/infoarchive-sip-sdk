@@ -15,7 +15,7 @@ import java.util.Map;
 
 public final class FederationIaHandler extends BaseIAArtifact {
 
-  public static Extractor extractor() {
+  public static FederationExtractor extractor() {
     return new FederationExtractor();
   }
 
@@ -30,7 +30,20 @@ public final class FederationIaHandler extends BaseIAArtifact {
     Federations federations = client.follow(cache.getFirst(Services.class), LINK_FEDERATIONS, Federations.class);
     Federation createdFederation = federations.byName(federation.getName());
     if (createdFederation == null) {
+      if (federation.getBootstrap() == null) {
+        federation.setBootstrap("xhive://127.0.0.1:2910");
+      }
+      if (federation.getSuperUserPassword() == null) {
+        federation.setSuperUserPassword("test");
+      }
       createdFederation = client.createCollectionItem(federations, federation, LINK_ADD, LINK_SELF);
+    } else {
+      if (federation.getBootstrap() != null) {
+        createdFederation.setBootstrap(federation.getBootstrap());
+      }
+      if (federation.getSuperUserPassword() != null) {
+        createdFederation.setSuperUserPassword(federation.getSuperUserPassword());
+      }
     }
     cache.cacheOne(createdFederation);
   }
@@ -40,7 +53,7 @@ public final class FederationIaHandler extends BaseIAArtifact {
     public BaseIAArtifact extract(Object representation) {
       Map federationRepresentation = asMap(representation);
       Federation federation = new Federation();
-      federation.setName(extractString(federationRepresentation, "name"));
+      federation.setName(extractName(federationRepresentation));
       federation.setBootstrap(extractString(federationRepresentation, "bootstrap"));
       federation.setSuperUserPassword(extractString(federationRepresentation, "superUserPassword"));
       return new FederationIaHandler(federation);

@@ -1,5 +1,6 @@
 package application;
 
+import com.emc.ia.sdk.configuration.ConfigurationReader;
 import com.emc.ia.sdk.configuration.IAConfigurer;
 import com.emc.ia.sdk.configuration.DeclarativeConfigurer;
 import com.emc.ia.sdk.configuration.SnakeYamlConfigurationReader;
@@ -26,12 +27,11 @@ public class ConfigCreator {
   public static void main(String... args) throws IOException {
     RestClient client = new RestClient(new ApacheHttpClient());
     client.init(new NonExpiringTokenAuthentication(TOKEN));
-    IAConfigurer configurer = new DeclarativeConfigurer(client, SERVICES_URI, SnakeYamlConfigurationReader.fromFile(new File(CONFIG_FILE)).readConfiguration());
+    IAConfigurer configurer = new DeclarativeConfigurer(client, SERVICES_URI, fullConfiguration().readConfiguration());
     configurer.configure();
-//    configurer.getSnaplshot();
-//    configurer.install???
-//    configurer.setConfgurationStrategy(ConfigurationStrategy.OVERWRITE)
-//    configurer.setConfigurationStrategy(ConfigurationStrategy.READ)
-//    ArchiveClient archiveClient = configurer.createArchiveClient();
+  }
+
+  private static ConfigurationReader fullConfiguration() throws IOException {
+    return SnakeYamlConfigurationReader.fromFile(new File(CONFIG_FILE));
   }
 }

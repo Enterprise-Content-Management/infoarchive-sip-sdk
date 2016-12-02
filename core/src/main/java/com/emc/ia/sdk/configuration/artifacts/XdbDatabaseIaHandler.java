@@ -15,7 +15,7 @@ import java.util.Map;
 
 public final class XdbDatabaseIaHandler extends BaseIAArtifact {
 
-  public static Extractor extractor() {
+  public static XdbDatabaseExtractor extractor() {
     return new XdbDatabaseExtractor();
   }
 
@@ -40,7 +40,7 @@ public final class XdbDatabaseIaHandler extends BaseIAArtifact {
     public BaseIAArtifact extract(Object representation) {
       Map databaseRepresentation = asMap(representation);
       Database db = new Database();
-      db.setName(extractString(databaseRepresentation, "name"));
+      db.setName(extractName(databaseRepresentation));
       db.setAdminPassword(extractString(databaseRepresentation, "adminPassword"));
       return new XdbDatabaseIaHandler(db);
 

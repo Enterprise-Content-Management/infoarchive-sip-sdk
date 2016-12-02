@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public final class SpaceIaHandler extends BaseIAArtifact {
 
-  public static Extractor extractor() {
+  public static SpaceExtractor extractor() {
     return new SpaceExtractor();
   }
 

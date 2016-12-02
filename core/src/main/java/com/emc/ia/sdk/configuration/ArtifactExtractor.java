@@ -2,6 +2,7 @@ package com.emc.ia.sdk.configuration;
 
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Implementation of Extractor that represents single InfoArchive artifact object.
@@ -14,6 +15,10 @@ public abstract class ArtifactExtractor implements Extractor {
 
   protected final String extractString(Map configuration, String key) {
     return (String) configuration.get(key);
+  }
+
+  protected final String extractName(Map configuration) {
+    return extractString(configuration, "name");
   }
 
   protected final Map asMap(Object representation) {

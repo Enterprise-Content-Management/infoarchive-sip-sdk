@@ -19,7 +19,6 @@ public abstract class BaseIAArtifact implements Installable, InfoArchiveLinkRela
    * @param client creates requests to the running InfoArchive
    * @param cache used to retrieve some needed data (e.g. URI's of already installed artifacts) and cache installed
    */
-  //TODO: Multiple trying to install artifacts like in PropertyBasedConfigurer::perform
   @Override
   public final void install(RestClient client, IACache cache) {
     try {

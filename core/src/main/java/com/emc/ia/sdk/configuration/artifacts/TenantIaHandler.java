@@ -11,36 +11,41 @@ import com.emc.ia.sdk.sip.client.dto.Tenants;
 import com.emc.ia.sdk.support.rest.RestClient;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public final class TenantIaHandler extends BaseIAArtifact {
 
-  public static Extractor extractor() {
+  public static TenantExtractor extractor() {
     return new TenantExtractor();
   }
 
-  private final Tenant tenant;
+  private final String tenantName;
 
-  public TenantIaHandler(Tenant source) {
-    this.tenant = source;
+  public TenantIaHandler(String tenantName) {
+    this.tenantName = tenantName;
   }
 
   @Override
   protected void installArtifact(RestClient client, IACache cache) throws IOException {
-    Tenants tenants = client.follow(cache.getFirst(Services.class), LINK_TENANTS, Tenants.class);
-    Tenant createdTenant = tenants.byName(tenant.getName());
-    if (createdTenant == null) {
-      createdTenant = client.createCollectionItem(tenants, tenant, LINK_ADD, LINK_SELF);
+    Tenant usedTenant;
+    if (tenantName == null) {
+      usedTenant = client.follow(cache.getFirst(Services.class), LINK_TENANT, Tenant.class);
+    } else {
+      Tenants tenants = client.follow(cache.getFirst(Services.class), LINK_TENANTS, Tenants.class);
+      usedTenant = tenants.byName(tenantName);
+      if (usedTenant == null) {
+        usedTenant = new Tenant();
+        usedTenant.setName(tenantName);
+        usedTenant = client.createCollectionItem(tenants, usedTenant, LINK_ADD, LINK_SELF);
+      }
     }
-    cache.cacheOne(createdTenant);
+    cache.cacheOne(usedTenant);
   }
 
   private static final class TenantExtractor extends ArtifactExtractor {
     @Override
     public BaseIAArtifact extract(Object representation) {
-      String tenantName = asString(representation);
-      Tenant tenant = new Tenant();
-      tenant.setName(tenantName);
-      return new TenantIaHandler(tenant);
+      return new TenantIaHandler(asString(representation));
     }
 
     @Override

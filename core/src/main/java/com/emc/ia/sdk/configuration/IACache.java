@@ -36,26 +36,12 @@ public final class IACache {
   }
 
   @SuppressWarnings("unchecked")
-  public <T extends NamedLinkContainer> List<T> getAll(Class<T> token) {
-    if (singles.containsKey(token)) {
-      return Collections.singletonList((T) singles.get(token));
-    } else if (collections.containsKey(token)) {
-      return collections.get(token);
-    }
-    return null;
-  }
-
-  @SuppressWarnings("unchecked")
   public <T extends NamedLinkContainer> void cacheOne(T object) {
     if (singles.containsKey(object.getClass())) {
       singles.put(object.getClass(), object);
     } else {
-      List<T> collection = collections.get(object.getClass());
-      if (collection == null) {
-        collection = new ArrayList<>();
-        collections.put(object.getClass(), collection);
-      }
-      collection.add(object);// TODO: Should check for existence of the object with the same name???
+      List<T> collection = collections.computeIfAbsent(object.getClass(), token -> new ArrayList());
+      collection.add(object);
     }
   }
 

@@ -4,6 +4,7 @@ package com.emc.ia.sdk.configuration.artifacts;
 import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
 import com.emc.ia.sdk.configuration.IACache;
+import com.emc.ia.sdk.configuration.ListExtractor;
 import com.emc.ia.sdk.sip.client.dto.FileSystemFolder;
 import com.emc.ia.sdk.sip.client.dto.FileSystemFolders;
 import com.emc.ia.sdk.sip.client.dto.SpaceRootFolder;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 public final class FileSystemFolderIaHandler extends BaseIAArtifact {
 
-  public static ArtifactExtractor extractor() {
+  public static FileSystemFolderExtractor extractor() {
     return new FileSystemFolderExtractor();
   }
 
@@ -44,7 +45,7 @@ public final class FileSystemFolderIaHandler extends BaseIAArtifact {
     }
   }
 
-  private static class FileSystemFolderExtractor extends ArtifactExtractor {
+  public static class FileSystemFolderExtractor extends ArtifactExtractor {
     @Override
     public BaseIAArtifact extract(Object representation) {
       Map fsFolderRepresentation = asMap(representation);
@@ -59,6 +60,10 @@ public final class FileSystemFolderIaHandler extends BaseIAArtifact {
     @Override
     public String getFieldName() {
       return "fileSystemFolder";
+    }
+
+    public ListExtractor fromList() {
+      return new ListExtractor(this, "fileSystemFolders");
     }
   }
 
