@@ -216,16 +216,18 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   @Override
   public LinkContainer uploadTransformationFile(ExportTransformation exportTransformation, File zipFile) throws IOException {
     String uri = exportTransformation.getUri(LINK_EXPORT_TRANSFORMATION_ZIP);
-    checkZipFile(zipFile);
     try (InputStream transformationZipStream = new FileInputStream(zipFile)) {
+      checkZipFile(zipFile);
       Part data = new BinaryPart(zipFile.getName(), "multipart/form-data", transformationZipStream, zipFile.getName());
       return restClient.post(uri, LinkContainer.class, data);
+    } catch (FileNotFoundException e) {
+      throw new IOException("Zip file with stylesheet doesn't exist", e);
     }
   }
 
   private void checkZipFile(File zipFile) throws FileNotFoundException {
-    if (!zipFile.exists() || !zipFile.canRead() || zipFile.isDirectory()) {
-      throw new FileNotFoundException("Zip file with stylesheet doesn't exist or unreadable");
+    if (!zipFile.isFile()) {
+      throw new IllegalArgumentException("Expected file, but passed directory");
     }
     String ext;
     try {
