@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -122,6 +123,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private static final String APPLICATION_NAME = "ApPlIcAtIoN";
   private static final String TENANT_NAME = "TeNaNt";
   private static final String NAMESPACE = "urn:SoMeNaMeSpAcE";
+
+  private static final String SOURCE = "This is the source of my input stream";
   private static final String TRUE = "true";
   private static final String FALSE = "false";
 
@@ -366,8 +369,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   public void shouldIngestSuccessfully() throws IOException {
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
 
-    String source = "This is the source of my input stream";
-    InputStream sip = IOUtils.toInputStream(source, "UTF-8");
+    InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
     ReceptionResponse receptionResponse = new ReceptionResponse();
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
@@ -387,8 +389,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     links.put(InfoArchiveLinkRelations.LINK_INGEST_DIRECT, link);
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
 
-    String source = "This is the source of my input stream";
-    InputStream sip = IOUtils.toInputStream(source, "UTF-8");
+    InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
     when(restClient.post(anyString(), eq(IngestionResponse.class), any(Part.class), any(Part.class)))
@@ -398,10 +399,16 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     assertEquals(archiveClient.ingestDirect(sip), "sip002");
   }
 
+  @Test(expected = NullPointerException.class)
+  public void shouldIngestWithoutIngestDirect() throws IOException {
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
+    archiveClient.ingestDirect(sip);
+  }
+
   @Test(expected = RuntimeException.class)
   public void ingestShouldThrowRuntimeExceptionWhenConfigureIsNotInvoked() throws IOException {
-    String source = "This is the source of my input stream";
-    InputStream sip = IOUtils.toInputStream(source, "UTF-8");
+    InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
     archiveClient.ingest(sip);
   }
 
@@ -590,6 +597,12 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     OrderItem result = archiveClient.exportAndWait(searchResults, exportConfiguration, randomString(), randomInt(3000));
 
     assertEquals(orderItem, result);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void shouldFetchContentUnsuccessfully() throws IOException {
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    archiveClient.fetchContent(randomString());
   }
 
   @Test
