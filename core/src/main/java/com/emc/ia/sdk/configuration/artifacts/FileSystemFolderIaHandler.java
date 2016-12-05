@@ -1,5 +1,10 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration.artifacts;
 
+import java.io.IOException;
+import java.util.Map;
 
 import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
@@ -9,9 +14,6 @@ import com.emc.ia.sdk.sip.client.dto.FileSystemFolder;
 import com.emc.ia.sdk.sip.client.dto.FileSystemFolders;
 import com.emc.ia.sdk.sip.client.dto.SpaceRootFolder;
 import com.emc.ia.sdk.support.rest.RestClient;
-
-import java.io.IOException;
-import java.util.Map;
 
 public final class FileSystemFolderIaHandler extends BaseIAArtifact {
 
@@ -47,7 +49,7 @@ public final class FileSystemFolderIaHandler extends BaseIAArtifact {
 
   public static class FileSystemFolderExtractor extends ArtifactExtractor {
     @Override
-    public BaseIAArtifact extract(Object representation) {
+    public FileSystemFolderIaHandler extract(Object representation) {
       Map fsFolderRepresentation = asMap(representation);
       FileSystemFolder fsFolder = new FileSystemFolder();
       fsFolder.setName(extractString(fsFolderRepresentation, "name"));

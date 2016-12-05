@@ -1,16 +1,16 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import com.emc.ia.sdk.sip.client.dto.Application;
-import com.emc.ia.sdk.sip.client.dto.FileSystemFolder;
-import com.emc.ia.sdk.sip.client.dto.Space;
-import com.emc.ia.sdk.sip.client.dto.Tenant;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import com.emc.ia.sdk.sip.client.dto.FileSystemFolder;
+import com.emc.ia.sdk.sip.client.dto.Space;
+import com.emc.ia.sdk.sip.client.dto.Tenant;
 
 public class WhenCachingArtifacts {
 

@@ -1,17 +1,18 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration.artifacts;
 
+import java.io.IOException;
+import java.util.Map;
 
 import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
-import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
 import com.emc.ia.sdk.sip.client.dto.Database;
 import com.emc.ia.sdk.sip.client.dto.Databases;
 import com.emc.ia.sdk.sip.client.dto.Federation;
 import com.emc.ia.sdk.support.rest.RestClient;
-
-import java.io.IOException;
-import java.util.Map;
 
 public final class XdbDatabaseIaHandler extends BaseIAArtifact {
 
@@ -37,7 +38,7 @@ public final class XdbDatabaseIaHandler extends BaseIAArtifact {
 
   private static final class XdbDatabaseExtractor extends ArtifactExtractor {
     @Override
-    public BaseIAArtifact extract(Object representation) {
+    public XdbDatabaseIaHandler extract(Object representation) {
       Map databaseRepresentation = asMap(representation);
       Database db = new Database();
       db.setName(extractName(databaseRepresentation));

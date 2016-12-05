@@ -1,17 +1,18 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration.artifacts;
 
+import java.io.IOException;
+import java.util.Map;
 
 import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
-import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
 import com.emc.ia.sdk.sip.client.dto.Federation;
 import com.emc.ia.sdk.sip.client.dto.Federations;
 import com.emc.ia.sdk.sip.client.dto.Services;
 import com.emc.ia.sdk.support.rest.RestClient;
-
-import java.io.IOException;
-import java.util.Map;
 
 public final class FederationIaHandler extends BaseIAArtifact {
 
@@ -50,7 +51,7 @@ public final class FederationIaHandler extends BaseIAArtifact {
 
   private static final class FederationExtractor extends ArtifactExtractor {
     @Override
-    public BaseIAArtifact extract(Object representation) {
+    public FederationIaHandler extract(Object representation) {
       Map federationRepresentation = asMap(representation);
       Federation federation = new Federation();
       federation.setName(extractName(federationRepresentation));

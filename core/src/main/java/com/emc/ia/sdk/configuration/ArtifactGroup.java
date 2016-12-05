@@ -1,9 +1,11 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration;
 
+import java.util.List;
 
 import com.emc.ia.sdk.support.rest.RestClient;
-
-import java.util.List;
 
 /**
  * Implements Installable artifact, represents group of artifacts with the same alias type.

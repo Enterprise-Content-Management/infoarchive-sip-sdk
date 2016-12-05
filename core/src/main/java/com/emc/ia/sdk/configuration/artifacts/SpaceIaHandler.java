@@ -1,16 +1,17 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration.artifacts;
 
+import java.io.IOException;
 
 import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
-import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
 import com.emc.ia.sdk.sip.client.dto.Application;
 import com.emc.ia.sdk.sip.client.dto.Space;
 import com.emc.ia.sdk.sip.client.dto.Spaces;
 import com.emc.ia.sdk.support.rest.RestClient;
-
-import java.io.IOException;
 
 public final class SpaceIaHandler extends BaseIAArtifact {
 
@@ -36,7 +37,7 @@ public final class SpaceIaHandler extends BaseIAArtifact {
 
   private static final class SpaceExtractor extends ArtifactExtractor {
     @Override
-    public BaseIAArtifact extract(Object representation) {
+    public SpaceIaHandler extract(Object representation) {
       String spaceName = asString(representation);
       Space space = new Space();
       space.setName(spaceName);

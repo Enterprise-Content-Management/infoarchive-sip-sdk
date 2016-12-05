@@ -1,16 +1,18 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration.artifacts;
+
+import java.io.IOException;
+import java.util.Map;
 
 import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
-import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
 import com.emc.ia.sdk.sip.client.dto.FileSystemRoot;
 import com.emc.ia.sdk.sip.client.dto.FileSystemRoots;
 import com.emc.ia.sdk.sip.client.dto.Services;
 import com.emc.ia.sdk.support.rest.RestClient;
-
-import java.io.IOException;
-import java.util.Map;
 
 public final class FileSystemRootIaHandler extends BaseIAArtifact {
 
@@ -37,7 +39,7 @@ public final class FileSystemRootIaHandler extends BaseIAArtifact {
 
   private static final class FileSystemRootExtractor extends ArtifactExtractor {
     @Override
-    public BaseIAArtifact extract(Object representation) {
+    public FileSystemRootIaHandler extract(Object representation) {
       if (representation instanceof String) {
         String fsRootName = asString(representation);
         FileSystemRoot fsRoot = new FileSystemRoot();

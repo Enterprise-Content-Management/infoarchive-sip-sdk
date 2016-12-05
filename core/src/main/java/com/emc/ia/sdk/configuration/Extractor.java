@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration;
 
 /**
@@ -41,7 +44,7 @@ public interface Extractor {
   Installable extract(Object representation);
 
   /**
-   * Gets the key under which the representation can be found in the root of the configuration
+   * Gets the key under which the representation can be found in the root of the configuration.
    * @return key of the representation.
    */
   String getFieldName();

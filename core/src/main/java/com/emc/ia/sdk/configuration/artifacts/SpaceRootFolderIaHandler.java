@@ -1,18 +1,19 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration.artifacts;
 
+import java.io.IOException;
+import java.util.Map;
 
 import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
-import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
 import com.emc.ia.sdk.sip.client.dto.FileSystemRoot;
 import com.emc.ia.sdk.sip.client.dto.Space;
 import com.emc.ia.sdk.sip.client.dto.SpaceRootFolder;
 import com.emc.ia.sdk.sip.client.dto.SpaceRootFolders;
 import com.emc.ia.sdk.support.rest.RestClient;
-
-import java.io.IOException;
-import java.util.Map;
 
 public final class SpaceRootFolderIaHandler extends BaseIAArtifact {
 
@@ -46,11 +47,11 @@ public final class SpaceRootFolderIaHandler extends BaseIAArtifact {
 
   private static final class SpaceRootFolderExtractor extends ArtifactExtractor {
     @Override
-    public BaseIAArtifact extract(Object representation) {
+    public SpaceRootFolderIaHandler extract(Object representation) {
       Map srFolderRepresentation = asMap(representation);
       SpaceRootFolder srFolder = new SpaceRootFolder();
       srFolder.setName(extractString(srFolderRepresentation, "name"));
-      String parentSpaceName = extractString(srFolderRepresentation,"space");
+      String parentSpaceName = extractString(srFolderRepresentation, "space");
       String fsRootName = extractString(srFolderRepresentation, "fileSystemRoot");
       return new SpaceRootFolderIaHandler(srFolder, parentSpaceName, fsRootName);
     }

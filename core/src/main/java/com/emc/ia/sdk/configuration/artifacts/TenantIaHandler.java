@@ -1,17 +1,18 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration.artifacts;
 
+import java.io.IOException;
+import java.util.Objects;
 
 import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
-import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
 import com.emc.ia.sdk.sip.client.dto.Services;
 import com.emc.ia.sdk.sip.client.dto.Tenant;
 import com.emc.ia.sdk.sip.client.dto.Tenants;
 import com.emc.ia.sdk.support.rest.RestClient;
-
-import java.io.IOException;
-import java.util.Objects;
 
 public final class TenantIaHandler extends BaseIAArtifact {
 
@@ -42,9 +43,23 @@ public final class TenantIaHandler extends BaseIAArtifact {
     cache.cacheOne(usedTenant);
   }
 
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof TenantIaHandler)) {
+      return false;
+    }
+    TenantIaHandler handler = (TenantIaHandler)other;
+    return Objects.equals(tenantName, handler.tenantName);
+  }
+
+  @Override
+  public int hashCode() {
+    return tenantName == null ? 0 : tenantName.hashCode();
+  }
+
   private static final class TenantExtractor extends ArtifactExtractor {
     @Override
-    public BaseIAArtifact extract(Object representation) {
+    public TenantIaHandler extract(Object representation) {
       return new TenantIaHandler(asString(representation));
     }
 

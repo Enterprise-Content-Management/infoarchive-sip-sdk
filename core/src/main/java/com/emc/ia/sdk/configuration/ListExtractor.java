@@ -1,5 +1,7 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,7 @@ public final class ListExtractor implements Extractor {
    */
   @Override
   public ArtifactGroup extract(Object representation) {
-    List listRepresentation = (List) representation;
+    List listRepresentation = (List)representation;
     List<BaseIAArtifact> baseArtifacts = new ArrayList<>();
     for (Object artifact : listRepresentation) {
       Map artifactRepresentation = transformToArtifact(artifact);
@@ -43,11 +45,11 @@ public final class ListExtractor implements Extractor {
 
   @SuppressWarnings("unchecked")
   private Map transformToArtifact(Object artifactEntity) {
-    Map mapObject = (Map) artifactEntity;
+    Map mapObject = (Map)artifactEntity;
     if (mapObject.size() == 1) {
-      Map.Entry objectEntry = (Map.Entry) mapObject.entrySet().iterator().next();
+      Map.Entry objectEntry = (Map.Entry)mapObject.entrySet().iterator().next();
       Object name = objectEntry.getKey();
-      Map artifactRepresentation = (Map) objectEntry.getValue();
+      Map artifactRepresentation = (Map)objectEntry.getValue();
       artifactRepresentation.put("name", name);
       return artifactRepresentation;
     } else {

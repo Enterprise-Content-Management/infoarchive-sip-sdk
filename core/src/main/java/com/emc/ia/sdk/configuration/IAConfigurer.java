@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration;
 
 import com.emc.ia.sdk.configurer.InfoArchiveConfigurer;

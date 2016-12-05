@@ -1,5 +1,7 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration;
-
 
 import com.emc.ia.sdk.support.rest.RestClient;
 
@@ -11,7 +13,7 @@ import com.emc.ia.sdk.support.rest.RestClient;
 public interface Installable {
   /**
    * Installs artifact to the running InfoArchive instance using RestClient to make requests and IACache to retrieve
-   * some values needed during installation or to cache installed artifact for future use
+   * some values needed during installation or to cache installed artifact for future use.
    * @param client creates requests to the running InfoArchive
    * @param cache used to retrieve some needed data (e.g. URI's of already installed artifacts) and cache installed
    *              artifact

@@ -1,18 +1,19 @@
+/*
+ * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
+ */
 package com.emc.ia.sdk.configuration.artifacts;
 
+import java.io.IOException;
+import java.util.Map;
 
 import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
-import com.emc.ia.sdk.configuration.Extractor;
 import com.emc.ia.sdk.configuration.IACache;
 import com.emc.ia.sdk.sip.client.dto.Database;
 import com.emc.ia.sdk.sip.client.dto.Space;
 import com.emc.ia.sdk.sip.client.dto.SpaceRootLibraries;
 import com.emc.ia.sdk.sip.client.dto.SpaceRootLibrary;
 import com.emc.ia.sdk.support.rest.RestClient;
-
-import java.io.IOException;
-import java.util.Map;
 
 public final class SpaceRootLibraryIaHandler extends BaseIAArtifact {
 
@@ -46,7 +47,7 @@ public final class SpaceRootLibraryIaHandler extends BaseIAArtifact {
 
   private static final class SpaceRootLibraryExtractor extends ArtifactExtractor {
     @Override
-    public BaseIAArtifact extract(Object representation) {
+    public SpaceRootLibraryIaHandler extract(Object representation) {
       Map srLibraryRepresentation = asMap(representation);
       SpaceRootLibrary srLibrary = new SpaceRootLibrary();
       srLibrary.setName(extractString(srLibraryRepresentation, "name"));
