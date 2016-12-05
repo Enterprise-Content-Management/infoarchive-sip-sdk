@@ -231,9 +231,9 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     try {
       ext = zipFile.getName().substring(zipFile.getName().lastIndexOf("."));
     } catch (StringIndexOutOfBoundsException e) {
-      throw new IllegalArgumentException("Expected file, but passed file without extension");
+      throw new IllegalArgumentException("Expected file, but passed file without extension", e);
     }
-    if ("zip".equals(ext)) {
+    if (!".zip".equals(ext)) {
       throw new IllegalArgumentException("Expected 'zip' file, but passed file with extension: " + ext);
     }
   }
