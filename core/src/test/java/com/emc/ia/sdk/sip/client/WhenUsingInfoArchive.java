@@ -9,7 +9,6 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -640,7 +639,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     try {
       result = archiveClient.uploadTransformationFile(exportTransformation, notFile);
     } catch (Exception e) {
-      assertEquals(FileNotFoundException.class, e.getClass());
+      assertEquals(NullPointerException.class, e.getClass());
     }
     assertNull(result);
 
