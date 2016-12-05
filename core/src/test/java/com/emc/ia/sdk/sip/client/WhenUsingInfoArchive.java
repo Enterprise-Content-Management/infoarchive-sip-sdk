@@ -4,9 +4,12 @@
 package com.emc.ia.sdk.sip.client;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -88,6 +91,7 @@ import com.emc.ia.sdk.sip.client.dto.export.ExportConfiguration;
 import com.emc.ia.sdk.sip.client.dto.export.ExportConfigurations;
 import com.emc.ia.sdk.sip.client.dto.export.ExportPipeline;
 import com.emc.ia.sdk.sip.client.dto.export.ExportPipelines;
+import com.emc.ia.sdk.sip.client.dto.export.ExportTransformation;
 import com.emc.ia.sdk.sip.client.dto.query.Comparison;
 import com.emc.ia.sdk.sip.client.dto.query.Item;
 import com.emc.ia.sdk.sip.client.dto.query.Operator;
@@ -312,6 +316,25 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.path", "n:sender/n:email");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.type", "STRING");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.sort", "NONE");
+
+    configuration.put("ia.exportpipeline.names", "ExportPipeline");
+    configuration.put("ia.exportpipeline.ExportPipeline.composite", "NONE");
+    configuration.put("ia.exportpipeline.ExportPipeline.content", "<pipeline></pipeline>");
+    configuration.put("ia.exportpipeline.ExportPipeline.description", "gzip envelope for xsl csv export");
+    configuration.put("ia.exportpipeline.ExportPipeline.envelopeformat", "gzip");
+    configuration.put("ia.exportpipeline.ExportPipeline.includescontent", "true");
+    configuration.put("ia.exportpipeline.ExportPipeline.outputformat", "csv");
+    configuration.put("ia.exportpipeline.ExportPipeline.inputformat", "ROW_COLUMN");
+    configuration.put("ia.exportpipeline.ExportPipeline.type", "NONE");
+
+    configuration.put("ia.exportconfig.names", "ExportConfiguration");
+    configuration.put("ia.exportconfig.ExportConfiguration.type", "ASYNCHRONOUS");
+    configuration.put("ia.exportconfig.ExportConfiguration.pipeline", "ExportPipeline");
+
+    configuration.put("ia.exporttransformation.names", "ExportTransformation");
+    configuration.put("ia.exporttransformation.ExportTransformation.description", "csv xsl transformation");
+    configuration.put("ia.exporttransformation.ExportTransformation.type", "XSLT");
+    configuration.put("ia.exporttransformation.ExportTransformation.mainpath", "search-results-csv.xsl");
   }
 
   private <T> OngoingStubbing<T> mockCollection(Class<T> type, T object) throws IOException {
@@ -562,6 +585,60 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     ContentResult result = archiveClient.fetchOrderContent(orderItem);
 
     assertEquals(contentResult, result);
+  }
+
+  @Test
+  public void shouldUploadTransformationFileUnsuccessfully() throws IOException {
+    ExportTransformation exportTransformation = mock(ExportTransformation.class);
+    when(exportTransformation.getUri(anyString())).thenReturn(randomString());
+    LinkContainer linkContainer = mock(LinkContainer.class);
+    when(linkContainer.getUri(anyString())).thenReturn(randomString());
+    when(restClient.post(anyString(), eq(LinkContainer.class), any(Part.class))).thenReturn(linkContainer);
+
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+
+    LinkContainer result = null;
+    File notFile = mock(File.class);
+    when(notFile.getName()).thenReturn(randomString());
+    try {
+      result = archiveClient.uploadTransformationFile(exportTransformation, notFile);
+    } catch (Exception e) {
+      assertEquals(FileNotFoundException.class, e.getClass());
+    }
+    assertNull(result);
+
+    File zipFile = File.createTempFile("csv_stylesheet", ".txt");
+    zipFile.deleteOnExit();
+    try {
+      archiveClient.uploadTransformationFile(exportTransformation, zipFile);
+    } catch (Exception e) {
+      assertEquals(IllegalArgumentException.class, e.getClass());
+    }
+
+    File extFile = File.createTempFile("csv_stylesheet", "");
+    extFile.deleteOnExit();
+    try {
+      archiveClient.uploadTransformationFile(exportTransformation, extFile);
+    } catch (Exception e) {
+      assertEquals(IllegalArgumentException.class, e.getClass());
+    }
+  }
+
+  @Test
+  public void shouldUploadTransformationFileSuccessfully() throws IOException {
+    ExportTransformation exportTransformation = mock(ExportTransformation.class);
+    when(exportTransformation.getUri(anyString())).thenReturn(randomString());
+    File zipFile = File.createTempFile("csv_stylesheet", ".zip");
+    zipFile.deleteOnExit();
+
+    LinkContainer linkContainer = mock(LinkContainer.class);
+    when(linkContainer.getUri(anyString())).thenReturn(randomString());
+    when(restClient.post(anyString(), eq(LinkContainer.class), any(Part.class))).thenReturn(linkContainer);
+
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    LinkContainer result = archiveClient.uploadTransformationFile(exportTransformation, zipFile);
+
+    assertEquals(linkContainer, result);
   }
 
 }

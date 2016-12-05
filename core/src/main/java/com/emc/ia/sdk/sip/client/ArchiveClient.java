@@ -3,6 +3,7 @@
  */
 package com.emc.ia.sdk.sip.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -10,7 +11,9 @@ import com.emc.ia.sdk.sip.client.dto.OrderItem;
 import com.emc.ia.sdk.sip.client.dto.SearchComposition;
 import com.emc.ia.sdk.sip.client.dto.SearchResults;
 import com.emc.ia.sdk.sip.client.dto.export.ExportConfiguration;
+import com.emc.ia.sdk.sip.client.dto.export.ExportTransformation;
 import com.emc.ia.sdk.sip.client.dto.query.SearchQuery;
+import com.emc.ia.sdk.support.rest.LinkContainer;
 
 /**
  * Client that interacts with an Archive.
@@ -28,7 +31,7 @@ public interface ArchiveClient {
   /**
    * Ingest a Submission Information Package (SIP) into the Archive. Will take advantage of the ingestDirect resource if
    * present, otherwise will revert to receive + ingest.
-   * 
+   *
    * <b>Note</b>, only works if synchronous commit is enabled on the holding and the SIP being ingested is NOT part of a
    * multi-SIP DSS.
    * @param sip The SIP to add to the Archive
@@ -93,5 +96,13 @@ public interface ArchiveClient {
    * @throws IOException When an I/O error occurs
    */
   OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName, long timeOutInMillis) throws IOException;
+
+  /**
+   * Upload the transformation zip file with the stylesheet.
+   * @param exportTransformation The export transformation.
+   * @param zipFile The zip file with stylesheet.
+   * @throws IOException When an I/O error occurs
+   */
+  LinkContainer uploadTransformationFile(ExportTransformation exportTransformation, File zipFile) throws IOException;
 
 }

@@ -79,6 +79,8 @@ import com.emc.ia.sdk.sip.client.dto.export.ExportConfiguration;
 import com.emc.ia.sdk.sip.client.dto.export.ExportConfigurations;
 import com.emc.ia.sdk.sip.client.dto.export.ExportPipeline;
 import com.emc.ia.sdk.sip.client.dto.export.ExportPipelines;
+import com.emc.ia.sdk.sip.client.dto.export.ExportTransformation;
+import com.emc.ia.sdk.sip.client.dto.export.ExportTransformations;
 import com.emc.ia.sdk.sip.client.dto.result.Column;
 import com.emc.ia.sdk.sip.client.dto.result.Column.DataType;
 import com.emc.ia.sdk.sip.client.dto.result.Column.DefaultSort;
@@ -171,6 +173,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       ensureResultConfigurationHelper();
       ensureExportPipelines();
       ensureExportConfigurations();
+      ensureExportTransformations();
       ensureSearch();
     } catch (IOException e) {
       throw new RuntimeIoException(e);
@@ -601,6 +604,25 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     }
   }
 
+  private void ensureExportTransformations() throws IOException {
+    String rawTransformationNames = configuration.get(EXPORT_TRANSFORMATION_NAME);
+    if (rawTransformationNames != null && !rawTransformationNames.isEmpty()) {
+      String[] transformationNames = rawTransformationNames.split(",");
+      for (String transformationName : transformationNames) {
+        ExportTransformations transformations =
+          restClient.follow(configurationState.getApplication(), LINK_EXPORT_TRANSFORMATION, ExportTransformations.class);
+        ExportTransformation exportTransformation = transformations.byName(transformationName);
+        if (exportTransformation == null) {
+          createItem(transformations, createExportTransformation(transformationName));
+          exportTransformation = restClient.refresh(transformations)
+                                  .byName(transformationName);
+          Objects.requireNonNull(configuration, "Could not create export transformation");
+        }
+        configurationState.setObjectUri("export-transformation", transformationName, exportTransformation.getSelfUri());
+      }
+    }
+  }
+
   private ExportConfiguration createExportConfiguration(String name) {
     ExportConfiguration conf = new ExportConfiguration();
     conf.setName(name);
@@ -622,6 +644,15 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     pipeline.setOutputFormat(getString(EXPORT_PIPELINE_OUTPUT_FORMAT_TEMPLATE, name));
     pipeline.setType(getString(EXPORT_PIPELINE_TYPE_TEMPLATE, name));
     return pipeline;
+  }
+
+  private ExportTransformation createExportTransformation(String name) {
+    ExportTransformation transformation = new ExportTransformation();
+    transformation.setName(name);
+    transformation.setDescription(getString(EXPORT_TRANSFORMATION_DESCRIPTION_TEMPLATE, name));
+    transformation.setType(getString(EXPORT_TRANSFORMATION_TYPE_TEMPLATE, name));
+    transformation.setMainPath(getString(EXPORT_TRANSFORMATION_MAIN_PATH_TEMPLATE, name));
+    return transformation;
   }
 
   private boolean getBoolean(String key, String name) {
