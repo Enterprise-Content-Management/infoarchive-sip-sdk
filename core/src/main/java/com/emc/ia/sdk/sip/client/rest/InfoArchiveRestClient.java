@@ -35,7 +35,6 @@ import com.emc.ia.sdk.sip.client.dto.query.QueryFormatter;
 import com.emc.ia.sdk.sip.client.dto.query.SearchQuery;
 import com.emc.ia.sdk.support.http.BinaryPart;
 import com.emc.ia.sdk.support.http.MediaTypes;
-import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.ResponseFactory;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.rest.LinkContainer;
@@ -218,8 +217,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     String uri = exportTransformation.getUri(LINK_EXPORT_TRANSFORMATION_ZIP);
     try (InputStream transformationZipStream = new FileInputStream(zipFile)) {
       checkZipFile(zipFile);
-      Part data = new BinaryPart(zipFile.getName(), "multipart/form-data", transformationZipStream, zipFile.getName());
-      return restClient.post(uri, LinkContainer.class, data);
+      return restClient.post(uri, LinkContainer.class, new TextPart("format", "transformation_zip"),
+          new BinaryPart("file", "application/zip", transformationZipStream, zipFile.getName()));
     } catch (FileNotFoundException e) {
       throw new IOException("Zip file with stylesheet doesn't exist", e);
     }
