@@ -124,8 +124,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private static final String NAMESPACE = "urn:SoMeNaMeSpAcE";
 
   private static final String SOURCE = "This is the source of my input stream";
-  private static final String TRUE = "true";
-  private static final String FALSE = "false";
 
   private final Map<String, Link> links = new HashMap<>();
   private final Map<String, String> configuration = new HashMap<>();
@@ -273,10 +271,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put(InfoArchiveConfiguration.PDI_SCHEMA, "");
     configuration.put(InfoArchiveConfiguration.INGEST_XML, "");
     configuration.put(InfoArchiveConfiguration.SEARCH_DESCRIPTION, "Default emails search");
-    configuration.put(InfoArchiveConfiguration.SEARCH_NESTED, FALSE);
+    configuration.put(InfoArchiveConfiguration.SEARCH_NESTED, Boolean.FALSE.toString());
     configuration.put(InfoArchiveConfiguration.SEARCH_NAME, "emailsSearch");
     configuration.put(InfoArchiveConfiguration.SEARCH_STATE, "DRAFT");
-    configuration.put(InfoArchiveConfiguration.SEARCH_INUSE, FALSE);
+    configuration.put(InfoArchiveConfiguration.SEARCH_INUSE, Boolean.FALSE.toString());
     configuration.put(InfoArchiveConfiguration.SEARCH_COMPOSITION_NAME, "DefaultSearchComposition");
     configuration.put(InfoArchiveConfiguration.SEARCH_COMPOSITION_XFORM_NAME, "Test Search Form");
     configuration.put(InfoArchiveConfiguration.SEARCH_DEFAULT_RESULT_MASTER, "");
@@ -289,13 +287,13 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.aic.criteria.pkeyminattr", "");
     configuration.put("ia.aic.criteria.pkeymaxattr", "");
     configuration.put("ia.aic.criteria.pkeyvaluesattr", "");
-    configuration.put("ia.aic.criteria.indexed", TRUE);
+    configuration.put("ia.aic.criteria.indexed", Boolean.TRUE.toString());
 
     configuration.put("ia.query.name", "Query");
     configuration.put("ia.query.Query.namespace.prefix", "n");
     configuration.put("ia.query.Query.namespace.uri", NAMESPACE);
     configuration.put("ia.query.Query.result.root.element", "messages");
-    configuration.put("ia.query.Query.result.root.ns.enabled", TRUE);
+    configuration.put("ia.query.Query.result.root.ns.enabled", Boolean.TRUE.toString());
     configuration.put("ia.query.Query.result.schema", NAMESPACE);
 
     configuration.put("ia.query.Query.xdbpdi.entity.path", "/n:object/n:objects");
@@ -306,7 +304,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put(queryPrefix + NAMESPACE + "].operand.name", "name");
     configuration.put(queryPrefix + NAMESPACE + "].operand.path", "n:name");
     configuration.put(queryPrefix + NAMESPACE + "].operand.type", "STRING");
-    configuration.put(queryPrefix + NAMESPACE + "].operand.index", TRUE);
+    configuration.put(queryPrefix + NAMESPACE + "].operand.index", Boolean.TRUE.toString());
 
     configuration.put("ia.quota.name", "Quota");
     configuration.put("ia.quota.aiu", "0");
@@ -326,7 +324,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.exportpipeline.ExportPipeline.content", "<pipeline></pipeline>");
     configuration.put("ia.exportpipeline.ExportPipeline.description", "gzip envelope for xsl csv export");
     configuration.put("ia.exportpipeline.ExportPipeline.envelopeformat", "gzip");
-    configuration.put("ia.exportpipeline.ExportPipeline.includescontent", TRUE);
+    configuration.put("ia.exportpipeline.ExportPipeline.includescontent", Boolean.TRUE.toString());
     configuration.put("ia.exportpipeline.ExportPipeline.outputformat", "csv");
     configuration.put("ia.exportpipeline.ExportPipeline.inputformat", "ROW_COLUMN");
     configuration.put("ia.exportpipeline.ExportPipeline.type", "NONE");
@@ -398,11 +396,19 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     assertEquals(archiveClient.ingestDirect(sip), "sip002");
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void shouldIngestWithoutIngestDirect() throws IOException {
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
-    archiveClient.ingestDirect(sip);
+
+    IngestionResponse ingestionResponse = mock(IngestionResponse.class);
+    when(restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
+      .thenReturn(new ReceptionResponse());
+    when(restClient.put(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
+    when(ingestionResponse.getAipId()).thenReturn("sip003");
+
+    assertEquals(archiveClient.ingestDirect(sip), "sip003");
   }
 
   @Test(expected = RuntimeException.class)
@@ -634,29 +640,22 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
 
     LinkContainer result = null;
-    File notFile = mock(File.class);
-    when(notFile.getName()).thenReturn(randomString());
+    File txtFile = File.createTempFile("csv_stylesheet", ".txt");
+    txtFile.deleteOnExit();
     try {
-      result = archiveClient.uploadTransformationFile(exportTransformation, notFile);
+      result = archiveClient.uploadTransformationFile(exportTransformation, txtFile);
     } catch (Exception e) {
-      assertEquals(NullPointerException.class, e.getClass());
+      assertEquals(IllegalArgumentException.class, e.getClass());
     }
     assertNull(result);
 
-    File zipFile = File.createTempFile("csv_stylesheet", ".txt");
-    zipFile.deleteOnExit();
-    try {
-      archiveClient.uploadTransformationFile(exportTransformation, zipFile);
-    } catch (Exception e) {
-      assertEquals(IllegalArgumentException.class, e.getClass());
-    }
-
-    File extFile = File.createTempFile("csv_stylesheet", "");
-    extFile.deleteOnExit();
-    try {
-      archiveClient.uploadTransformationFile(exportTransformation, extFile);
-    } catch (Exception e) {
-      assertEquals(IllegalArgumentException.class, e.getClass());
+    File noFile = File.createTempFile("csv_stylesheet", ".zip");
+    if (noFile.delete()) {
+      try {
+        archiveClient.uploadTransformationFile(exportTransformation, noFile);
+      } catch (Exception e) {
+        assertEquals(IOException.class, e.getClass());
+      }
     }
   }
 

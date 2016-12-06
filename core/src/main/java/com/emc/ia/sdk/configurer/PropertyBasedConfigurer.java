@@ -570,9 +570,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     String rawPipelineNames = configuration.get(EXPORT_PIPELINE_NAME);
     if (rawPipelineNames != null && !rawPipelineNames.isEmpty()) {
       String[] pipelineNames = rawPipelineNames.split(",");
+      ExportPipelines pipelines =
+        restClient.follow(configurationState.getApplication(), LINK_EXPORT_PIPELINE, ExportPipelines.class);
       for (String pipelineName : pipelineNames) {
-        ExportPipelines pipelines =
-            restClient.follow(configurationState.getApplication(), LINK_EXPORT_PIPELINE, ExportPipelines.class);
         ExportPipeline pipeline = pipelines.byName(pipelineName);
         if (pipeline == null) {
           createItem(pipelines, createExportPipeline(pipelineName));
@@ -589,9 +589,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     String rawConfigurationNames = configuration.get(EXPORT_CONFIG_NAME);
     if (rawConfigurationNames != null && !rawConfigurationNames.isEmpty()) {
       String[] configurationNames = rawConfigurationNames.split(",");
+      ExportConfigurations configurations =
+        restClient.follow(configurationState.getApplication(), LINK_EXPORT_CONFIG, ExportConfigurations.class);
       for (String configurationName : configurationNames) {
-        ExportConfigurations configurations =
-            restClient.follow(configurationState.getApplication(), LINK_EXPORT_CONFIG, ExportConfigurations.class);
         ExportConfiguration exportConfiguration = configurations.byName(configurationName);
         if (exportConfiguration == null) {
           createItem(configurations, createExportConfiguration(configurationName));
@@ -608,9 +608,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     String rawTransformationNames = configuration.get(EXPORT_TRANSFORMATION_NAME);
     if (rawTransformationNames != null && !rawTransformationNames.isEmpty()) {
       String[] transformationNames = rawTransformationNames.split(",");
+      ExportTransformations transformations =
+        restClient.follow(configurationState.getApplication(), LINK_EXPORT_TRANSFORMATION, ExportTransformations.class);
       for (String transformationName : transformationNames) {
-        ExportTransformations transformations =
-          restClient.follow(configurationState.getApplication(), LINK_EXPORT_TRANSFORMATION, ExportTransformations.class);
         ExportTransformation exportTransformation = transformations.byName(transformationName);
         if (exportTransformation == null) {
           createItem(transformations, createExportTransformation(transformationName));

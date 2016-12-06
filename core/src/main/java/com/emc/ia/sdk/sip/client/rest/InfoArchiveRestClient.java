@@ -225,18 +225,12 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     }
   }
 
-  private void checkZipFile(File zipFile) throws FileNotFoundException {
+  private void checkZipFile(File zipFile) {
     if (!zipFile.isFile()) {
       throw new IllegalArgumentException("Expected file, but passed directory");
     }
-    String ext;
-    try {
-      ext = zipFile.getName().substring(zipFile.getName().lastIndexOf("."));
-    } catch (StringIndexOutOfBoundsException e) {
-      throw new IllegalArgumentException("Expected file, but passed file without extension", e);
-    }
-    if (!".zip".equals(ext)) {
-      throw new IllegalArgumentException("Expected 'zip' file, but passed file with extension: " + ext);
+    if (!zipFile.getName().endsWith(".zip")) {
+      throw new IllegalArgumentException("Expected 'zip' file, but passed file with incorrect extension");
     }
   }
 
