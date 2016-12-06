@@ -151,6 +151,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       ensureFileSystemRoot();
       ensureTenantLevelExportPipelines();
       ensureTenantLevelExportConfigurations();
+      ensureTenantLevelExportTransformations();
       ensureApplication();
       ensureSpace();
       ensureSpaceRootLibrary();
@@ -564,6 +565,25 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     }
     configurationState.setObjectUri("export-configuration", defaultName, exportConfiguration.getSelfUri());
 
+  }
+
+  private void ensureTenantLevelExportTransformations() throws IOException {
+    String defaultName = "csv_xsl";
+    ExportTransformations transformations =
+      restClient.follow(configurationState.getTenant(), LINK_EXPORT_TRANSFORMATION, ExportTransformations.class);
+    ExportTransformation exportTransformation = transformations.byName(defaultName);
+    if (exportTransformation == null) {
+      exportTransformation = new ExportTransformation();
+      exportTransformation.setName(defaultName);
+      exportTransformation.setDescription("csv xsl transformation");
+      exportTransformation.setType("XSLT");
+      exportTransformation.setMainPath("search-results-csv.xsl");
+      createItem(transformations, exportTransformation);
+      exportTransformation = restClient.refresh(transformations)
+        .byName(defaultName);
+      Objects.requireNonNull(exportTransformation, "Could not create export transformation");
+    }
+    configurationState.setObjectUri("export-transformation", defaultName, exportTransformation.getSelfUri());
   }
 
   private void ensureExportPipelines() throws IOException {

@@ -92,6 +92,7 @@ import com.emc.ia.sdk.sip.client.dto.export.ExportConfigurations;
 import com.emc.ia.sdk.sip.client.dto.export.ExportPipeline;
 import com.emc.ia.sdk.sip.client.dto.export.ExportPipelines;
 import com.emc.ia.sdk.sip.client.dto.export.ExportTransformation;
+import com.emc.ia.sdk.sip.client.dto.export.ExportTransformations;
 import com.emc.ia.sdk.sip.client.dto.query.Comparison;
 import com.emc.ia.sdk.sip.client.dto.query.Item;
 import com.emc.ia.sdk.sip.client.dto.query.Operator;
@@ -146,6 +147,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     applications = mock(Applications.class);
     ExportConfigurations exportConfigurations = mock(ExportConfigurations.class);
     ExportPipelines exportPipelines = mock(ExportPipelines.class);
+    ExportTransformations exportTransformations = mock(ExportTransformations.class);
     federations = mock(Federations.class);
     Spaces spaces = mock(Spaces.class);
     Databases databases = mock(Databases.class);
@@ -194,6 +196,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(link.getHref()).thenReturn(BILLBOARD_URI);
     mockCollection(ExportConfigurations.class, exportConfigurations);
     mockCollection(ExportPipelines.class, exportPipelines);
+    mockCollection(ExportTransformations.class, exportTransformations);
     when(restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class)).thenReturn(aips);
     aips.setLinks(links);
 
@@ -227,6 +230,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(databases, new Database());
     mockByName(exportConfigurations, new ExportConfiguration());
     mockByName(exportPipelines, new ExportPipeline());
+    mockByName(exportTransformations, new ExportTransformation());
     mockByName(applications, application);
     mockByName(spaces, new Space());
     mockByName(spaceRootLibraries, new SpaceRootLibrary());
