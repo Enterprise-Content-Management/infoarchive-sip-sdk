@@ -5,7 +5,6 @@ package com.emc.ia.sdk.support.rest;
 
 import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -23,7 +22,6 @@ import org.junit.Test;
 import com.emc.ia.sdk.support.http.Header;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.http.MediaTypes;
-import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.UriBuilder;
 import com.emc.ia.sdk.support.http.apache.WhenMakingHttpCallsUsingApache.Foo;
 import com.emc.ia.sdk.support.test.TestCase;
@@ -46,7 +44,6 @@ public class WhenMakingRestCalls extends TestCase {
     Class<?> type = String.class;
     Collection<Header> authorizationHeader = new ArrayList<>();
     authorizationHeader.add(new Header("Authorization", "Bearer " + token));
-    Collection<Part> parts = new ArrayList<>();
 
     Collection<Header> contentAndAuthorizationHeaders = new ArrayList<>();
     contentAndAuthorizationHeaders.add(new Header("Accept", MediaTypes.HAL));
@@ -58,8 +55,8 @@ public class WhenMakingRestCalls extends TestCase {
     restClient.put(uri, type);
     verify(httpClient).put(eq(uri), eq(contentAndAuthorizationHeaders), eq(type));
 
-    restClient.post(uri, type, parts);
-    verify(httpClient).post(eq(uri), eq(contentAndAuthorizationHeaders), eq(type), anyCollectionOf(Part.class));
+    restClient.post(uri, type);
+    verify(httpClient).post(eq(uri), eq(contentAndAuthorizationHeaders), eq(type));
 
     restClient.delete(uri);
     verify(httpClient).delete(eq(uri), eq(authorizationHeader));

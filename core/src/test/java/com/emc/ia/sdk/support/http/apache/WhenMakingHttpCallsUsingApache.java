@@ -14,9 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 
 import org.apache.http.HttpEntity;
@@ -36,7 +34,6 @@ import org.junit.Test;
 import com.emc.ia.sdk.support.http.BinaryPart;
 import com.emc.ia.sdk.support.http.Header;
 import com.emc.ia.sdk.support.http.HttpException;
-import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.test.TestCase;
 
@@ -151,10 +148,8 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
     String uri = randomString();
     String data = randomString();
     try (InputStream stream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8))) {
-      List<Part> parts = new ArrayList<>();
-      parts.add(new TextPart(randomString(), randomString()));
-      parts.add(new BinaryPart(randomString(), stream, randomString()));
-      httpClient.post(uri, Collections.emptyList(), null, parts);
+      httpClient.post(uri, Collections.emptyList(), null, new TextPart(randomString(), randomString()),
+          new BinaryPart(randomString(), stream, randomString()));
     }
 
     HttpEntity entity = assertRequest(uri, HttpPost.class).getEntity();

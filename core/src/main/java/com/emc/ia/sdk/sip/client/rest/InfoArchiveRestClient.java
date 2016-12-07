@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +35,6 @@ import com.emc.ia.sdk.sip.client.dto.query.QueryFormatter;
 import com.emc.ia.sdk.sip.client.dto.query.SearchQuery;
 import com.emc.ia.sdk.support.http.BinaryPart;
 import com.emc.ia.sdk.support.http.MediaTypes;
-import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.ResponseFactory;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.rest.LinkContainer;
@@ -67,10 +65,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   @Override
   public String ingest(InputStream sip) throws IOException {
-    List<Part> parts = new ArrayList<>();
-    parts.add(new TextPart("format", "sip_zip"));
-    parts.add(new BinaryPart("sip", sip, "IASIP.zip"));
-    ReceptionResponse response = restClient.post(resourceCache.getAipResourceUri(), ReceptionResponse.class, parts);
+    ReceptionResponse response = restClient.post(resourceCache.getAipResourceUri(), ReceptionResponse.class,
+        new TextPart("format", "sip_zip"), new BinaryPart("sip", sip, "IASIP.zip"));
     return restClient.put(response.getUri(LINK_INGEST), IngestionResponse.class).getAipId();
   }
 
@@ -80,10 +76,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     if (ingestDirectUri == null) {
       return ingest(sip);
     } else {
-      List<Part> parts = new ArrayList<>();
-      parts.add(new TextPart("format", "sip_zip"));
-      parts.add(new BinaryPart("sip", sip, "IASIP.zip"));
-      return restClient.post(ingestDirectUri, IngestionResponse.class, parts).getAipId();
+      return restClient.post(ingestDirectUri, IngestionResponse.class, new TextPart("format", "sip_zip"),
+          new BinaryPart("sip", sip, "IASIP.zip")).getAipId();
     }
   }
 
@@ -223,9 +217,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     String uri = exportTransformation.getUri(LINK_EXPORT_TRANSFORMATION_ZIP);
     try (InputStream transformationZipStream = new FileInputStream(zipFile)) {
       checkZipFile(zipFile);
-      List<Part> parts = new ArrayList<>();
-      parts.add(new BinaryPart("file", transformationZipStream, zipFile.getName()));
-      return restClient.post(uri, LinkContainer.class, parts);
+      return restClient.post(uri, LinkContainer.class, new BinaryPart("file", transformationZipStream, zipFile.getName()));
     } catch (FileNotFoundException e) {
       throw new IOException("Zip file with stylesheet doesn't exist", e);
     }

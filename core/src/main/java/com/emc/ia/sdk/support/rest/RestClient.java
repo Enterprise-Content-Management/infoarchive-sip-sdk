@@ -65,14 +65,18 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   public <S, T> T post(String uri, Class<T> type, S payload) throws IOException {
-    return post(uri, type, toJson(payload));
+    if (payload instanceof Part) {
+      return httpClient.post(uri, withAuthorization(headers), type, (Part)payload);
+    } else {
+      return post(uri, type, toJson(payload));
+    }
   }
 
   public <T> T post(String uri, Class<T> type, String data) throws IOException {
     return post(uri, type, data, MediaTypes.HAL);
   }
 
-  public <T> T post(String uri, Class<T> type, Collection<Part> parts) throws IOException {
+  public <T> T post(String uri, Class<T> type, Part... parts) throws IOException {
     return httpClient.post(uri, withAuthorization(headers), type, parts);
   }
 

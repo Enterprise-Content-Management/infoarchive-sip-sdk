@@ -29,7 +29,7 @@ public interface HttpClient {
     return post(uri, headers, type, payload);
   }
 
-  <T> T post(String uri, Collection<Header> headers, Class<T> type, Collection<Part> parts) throws IOException;
+  <T> T post(String uri, Collection<Header> headers, Class<T> type, Part... parts) throws IOException;
 
   default void delete(String uri, Collection<Header> headers) throws IOException {
     delete(uri, headers, null);

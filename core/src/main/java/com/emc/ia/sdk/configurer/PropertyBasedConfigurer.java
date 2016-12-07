@@ -96,7 +96,6 @@ import com.emc.ia.sdk.support.http.BinaryPart;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.http.HttpException;
 import com.emc.ia.sdk.support.http.MediaTypes;
-import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.TextPart;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
@@ -745,10 +744,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     }
     String content = configured(configurationName);
     try (InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
-      List<Part> parts = new ArrayList<>();
-      parts.add(new TextPart("content", MediaTypes.HAL, "{ \"format\": \"" + format + "\" }"));
-      parts.add(new BinaryPart("file", stream, configurationName));
-      perform(() -> restClient.post(state.getUri(LINK_CONTENTS), null, parts));
+      perform(() -> restClient.post(state.getUri(LINK_CONTENTS), null,
+            new TextPart("content", MediaTypes.HAL, "{ \"format\": \"" + format + "\" }"),
+            new BinaryPart("file", stream, configurationName)));
     }
   }
 
