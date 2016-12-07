@@ -29,10 +29,8 @@ import com.sun.net.httpserver.HttpServer;
 
 public class WhenWorkingWithHttp extends TestCase {
 
-  private static final int PORT = 8000;
   private static final String PATH = "/echo";
-  private static final String URI = "http://localhost:" + PORT + PATH;
-
+  private String uri;
   private final HttpClient client = new ApacheHttpClient();
   private final Collection<Header> headers = Collections.emptyList();
   private HttpServer server;
@@ -40,7 +38,9 @@ public class WhenWorkingWithHttp extends TestCase {
 
   @Before
   public void init() throws IOException {
-    server = HttpServer.create(new InetSocketAddress(PORT), 0);
+    server = HttpServer.create(new InetSocketAddress(0), 0);
+    int port = server.getAddress().getPort();
+    uri = "http://localhost:" + port + PATH;
     server.createContext(PATH, httpExchange -> {
       ByteArrayInputOutputStream content = new ByteArrayInputOutputStream();
       long size = IOUtils.copy(httpExchange.getRequestBody(), content);
@@ -65,19 +65,19 @@ public class WhenWorkingWithHttp extends TestCase {
   @Test
   public void shouldHandleTextData() throws Exception {
     String expected = randomString(8);
-    assertNull("GET", client.get(URI, headers, String.class));
-    assertEquals("PUT",  expected, client.put(URI,  headers, String.class, expected));
-    assertEquals("POST", expected, client.post(URI, headers, String.class, expected));
+    assertNull("GET", client.get(uri, headers, String.class));
+    assertEquals("PUT",  expected, client.put(uri,  headers, String.class, expected));
+    assertEquals("POST", expected, client.post(uri, headers, String.class, expected));
   }
 
   @Test
   public void shouldHandleBinaryData() throws Exception {
     byte[] expected = randomBytes();
 
-    assertResponse("GET", new byte[0], client.get(URI, headers, InputStream.class));
-    assertResponse("PUT", expected, client.put(URI, headers, InputStream.class,
+    assertResponse("GET", new byte[0], client.get(uri, headers, InputStream.class));
+    assertResponse("PUT", expected, client.put(uri, headers, InputStream.class,
         new ByteArrayInputStream(expected)));
-    assertResponse("POST", expected, client.post(URI, headers, InputStream.class,
+    assertResponse("POST", expected, client.post(uri, headers, InputStream.class,
         new ByteArrayInputStream(expected)));
   }
 

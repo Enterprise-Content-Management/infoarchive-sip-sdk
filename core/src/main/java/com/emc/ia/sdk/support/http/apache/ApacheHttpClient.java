@@ -22,7 +22,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
@@ -48,17 +47,24 @@ import com.emc.ia.sdk.support.io.ByteArrayInputOutputStream;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 public class ApacheHttpClient implements HttpClient {
 
   private static final int STATUS_CODE_RANGE_MIN = 200;
   private static final int STATUS_CODE_RANGE_MAX = 300;
+  private static final int MAX_HTTP_CONNECTIONS = 50;
+  private static final int DEFAULT_CONNECTIONS_PER_ROUTE = 50;
 
   private final CloseableHttpClient client;
   private final ObjectMapper mapper;
 
   public ApacheHttpClient() {
-    HttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
+    this(MAX_HTTP_CONNECTIONS, DEFAULT_CONNECTIONS_PER_ROUTE);
+  }
+
+  public ApacheHttpClient(int maxHttpConnections, int maxConnectionsPerRoute) {
+    PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
+    manager.setMaxTotal(maxHttpConnections);
+    manager.setDefaultMaxPerRoute(maxConnectionsPerRoute);
     client = HttpClients.custom()
       .setConnectionManager(manager)
       .build();
@@ -92,7 +98,8 @@ public class ApacheHttpClient implements HttpClient {
   protected <T> T execute(HttpUriRequest request, Class<T> type) throws IOException {
     Objects.requireNonNull(request, "Missing request");
     try {
-      return client.execute(request, getResponseHandler(request.getMethod(), request.getURI().toString(), type));
+      return client.execute(request, getResponseHandler(request.getMethod(), request.getURI()
+        .toString(), type));
     } catch (HttpResponseException e) {
       throw new HttpException(e.getStatusCode(), e);
     }
@@ -179,7 +186,9 @@ public class ApacheHttpClient implements HttpClient {
   @Override
   public <T> T put(String uri, Collection<Header> headers, Class<T> type, String payload) throws IOException {
     HttpPut request = newPut(uri, headers);
-    request.setEntity(new StringEntity(payload));
+    if (payload != null) {
+      request.setEntity(new StringEntity(payload));
+    }
     return execute(request, type);
   }
 
@@ -193,21 +202,27 @@ public class ApacheHttpClient implements HttpClient {
   @Override
   public <T> T put(String uri, Collection<Header> headers, Class<T> type, InputStream payload) throws IOException {
     HttpPut request = newPut(uri, headers);
-    request.setEntity(new InputStreamEntity(payload));
+    if (payload != null) {
+      request.setEntity(new InputStreamEntity(payload));
+    }
     return execute(request, type);
   }
 
   @Override
   public <T> T post(String uri, Collection<Header> headers, Class<T> type, InputStream payload) throws IOException {
     HttpPost request = newPost(uri, headers);
-    request.setEntity(new InputStreamEntity(payload));
+    if (payload != null) {
+      request.setEntity(new InputStreamEntity(payload));
+    }
     return execute(request, type);
   }
 
   @Override
   public <T> T post(String uri, Collection<Header> headers, Class<T> type, String payload) throws IOException {
     HttpPost request = newPost(uri, headers);
-    request.setEntity(new StringEntity(payload));
+    if (payload != null) {
+      request.setEntity(new StringEntity(payload));
+    }
     return execute(request, type);
   }
 
@@ -239,14 +254,15 @@ public class ApacheHttpClient implements HttpClient {
       BinaryPart binaryPart = (BinaryPart)part;
       return new InputStreamBody(binaryPart.getData(), contentType, binaryPart.getDownloadName());
     }
-    throw new IllegalArgumentException("Unhandled part type: " + part.getClass().getName());
+    throw new IllegalArgumentException("Unhandled part type: " + part.getClass()
+      .getName());
   }
 
   @Override
-  public void delete(String uri, Collection<Header> headers) throws IOException {
+  public <T> T delete(String uri, Collection<Header> headers, Class<T> type) throws IOException {
     HttpDelete request = new HttpDelete(uri);
     setHeaders(request, headers);
-    execute(request, Void.class);
+    return execute(request, type);
   }
 
   @Override
