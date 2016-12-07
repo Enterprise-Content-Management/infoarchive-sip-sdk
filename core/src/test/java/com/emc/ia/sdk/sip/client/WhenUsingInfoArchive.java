@@ -375,7 +375,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     ReceptionResponse receptionResponse = new ReceptionResponse();
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
     receptionResponse.setLinks(links);
-    when(restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
+    when(restClient.post(anyString(), eq(ReceptionResponse.class), anyCollectionOf(Part.class)))
       .thenReturn(receptionResponse);
     when(restClient.put(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip001");
@@ -393,7 +393,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
-    when(restClient.post(anyString(), eq(IngestionResponse.class), any(Part.class), any(Part.class)))
+    when(restClient.post(anyString(), eq(IngestionResponse.class), anyCollectionOf(Part.class)))
         .thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip002");
 
@@ -407,7 +407,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
-    when(restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
+    when(restClient.post(anyString(), eq(ReceptionResponse.class), anyCollectionOf(Part.class)))
       .thenReturn(new ReceptionResponse());
     when(restClient.put(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip003");
@@ -672,7 +672,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
     LinkContainer linkContainer = mock(LinkContainer.class);
     when(linkContainer.getUri(anyString())).thenReturn(randomString());
-    when(restClient.post(anyString(), eq(LinkContainer.class), any(Part.class), any(Part.class))).thenReturn(linkContainer);
+    when(restClient.post(anyString(), eq(LinkContainer.class), anyCollectionOf(Part.class))).thenReturn(linkContainer);
 
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
     LinkContainer result = archiveClient.uploadTransformationFile(exportTransformation, zipFile);

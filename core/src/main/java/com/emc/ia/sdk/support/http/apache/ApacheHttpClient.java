@@ -226,7 +226,7 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   @Override
-  public <T> T post(String uri, Collection<Header> headers, Class<T> type, Part... parts) throws IOException {
+  public <T> T post(String uri, Collection<Header> headers, Class<T> type, Collection<Part> parts) throws IOException {
     HttpPost request = newPost(uri, headers);
     MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
     for (Part part : parts) {

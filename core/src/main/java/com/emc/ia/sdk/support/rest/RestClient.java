@@ -72,7 +72,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return post(uri, type, data, MediaTypes.HAL);
   }
 
-  public <T> T post(String uri, Class<T> type, Part... parts) throws IOException {
+  public <T> T post(String uri, Class<T> type, Collection<Part> parts) throws IOException {
     return httpClient.post(uri, withAuthorization(headers), type, parts);
   }
 
