@@ -559,11 +559,11 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       exportConfiguration.setDescription("configurations");
       exportConfiguration.setExportType("ASYNCHRONOUS");
       exportConfiguration.setPipeline(configurationState.getObjectUri(TYPE_EXPORT_PIPELINE, "search-results-csv-gzip"));
-      ExportConfiguration.Transformations transformations = new ExportConfiguration.Transformations();
-      transformations.setPortName("stylesheet");
-      transformations.setTransformation(
+      ExportConfiguration.Transformation transformation = new ExportConfiguration.Transformation();
+      transformation.setPortName("stylesheet");
+      transformation.setTransformation(
           configurationState.getObjectUri(TYPE_EXPORT_TRANSFORMATION, "csv_xsl"));
-      exportConfiguration.setTransformations(transformations);
+      exportConfiguration.setTransformations(new ExportConfiguration.Transformation[] { transformation });
       ExportConfiguration.Options options = new ExportConfiguration.Options();
       options.setXslResultFormat("csv");
       options.setXqueryResultFormat(null);
@@ -659,11 +659,11 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     conf.setExportType(getString(EXPORT_CONFIG_TYPE_TEMPLATE, name));
     conf.setPipeline(
         configurationState.getObjectUri(TYPE_EXPORT_PIPELINE, getString(EXPORT_CONFIG_PIPELINE_TEMPLATE, name)));
-    ExportConfiguration.Transformations transformations = new ExportConfiguration.Transformations();
-    transformations.setPortName(getString(EXPORT_CONFIG_TRANSFORMATIONS_PORTNAME_TEMPLATE, name));
-    transformations.setTransformation(
+    ExportConfiguration.Transformation transformation = new ExportConfiguration.Transformation();
+    transformation.setPortName(getString(EXPORT_CONFIG_TRANSFORMATIONS_PORTNAME_TEMPLATE, name));
+    transformation.setTransformation(
         configurationState.getObjectUri(TYPE_EXPORT_TRANSFORMATION, getString(EXPORT_CONFIG_TRANSFORMATIONS_TRANSFORMATION_TEMPLATE, name)));
-    conf.setTransformations(transformations);
+    conf.setTransformations(new ExportConfiguration.Transformation[] { transformation });
     ExportConfiguration.Options options = new ExportConfiguration.Options();
     options.setXslResultFormat(getString(EXPORT_CONFIG_OPTIONS_XSL_RESULTFORMAT_TEMPLATE, name));
     options.setXqueryResultFormat(getString(EXPORT_CONFIG_OPTIONS_XQUERY_RESULTFORMAT_TEMPLATE, name));
