@@ -15,6 +15,7 @@ import com.emc.ia.sdk.sip.client.dto.Tenant;
 public class WhenCachingArtifacts {
 
   private IACache cache;
+  private static final String TEST_NAME = "test";
 
   @Before
   public void creatCache() {
@@ -24,28 +25,28 @@ public class WhenCachingArtifacts {
   @Test
   public void shouldGetCachedTenantAsFirst() {
     Tenant tenant = new Tenant();
-    tenant.setName("test");
+    tenant.setName(TEST_NAME);
     cache.cacheOne(tenant);
 
-    assertEquals("test", cache.getFirst(Tenant.class).getName());
+    assertEquals(TEST_NAME, cache.getFirst(Tenant.class).getName());
   }
 
   @Test
   public void shouldGetCachedTenantByName() {
     Tenant tenant = new Tenant();
-    tenant.setName("test");
+    tenant.setName(TEST_NAME);
     cache.cacheOne(tenant);
 
-    assertEquals("test", cache.getByClassWithName(Tenant.class, "test").getName());
+    assertEquals(TEST_NAME, cache.getByClassWithName(Tenant.class, TEST_NAME).getName());
   }
 
   @Test
   public void shouldGetCachedSpaceAsFirst() {
     Space space = new Space();
-    space.setName("test");
+    space.setName(TEST_NAME);
     cache.cacheOne(space);
 
-    assertEquals("test", cache.getFirst(Space.class).getName());
+    assertEquals(TEST_NAME, cache.getFirst(Space.class).getName());
   }
 
   @Test

@@ -33,7 +33,7 @@ public final class SnakeYamlConfigurationReader implements ConfigurationReader {
     try (InputStream input = new BufferedInputStream(new FileInputStream(yamlConfiguration))) {
       return new SnakeYamlConfigurationReader(input);
     } catch (IOException ex) {
-      throw new RuntimeException("Supplied file is not found");
+      throw new RuntimeException("Supplied file is not found", ex);
     }
   }
 

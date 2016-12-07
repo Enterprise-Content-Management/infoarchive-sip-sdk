@@ -57,13 +57,8 @@ public final class ApplicationIaHandler extends BaseIAArtifact {
 
   @Override
   public int hashCode() {
-    int result = 7;
-    result = 37 * result + (application.getName() == null ? 0 : application.getName().hashCode());
-    result = 37 * result + (application.getArchiveType() == null ? 0 : application.getArchiveType().hashCode());
-    result = 37 * result + (application.getType() == null ? 0 : application.getType().hashCode());
-    result = 37 * result + (application.getCategory() == null ? 0 : application.getCategory().hashCode());
-    result = 37 * result + (application.getDescription() == null ? 0 : application.getDescription().hashCode());
-    return result;
+    return Objects.hash(application.getName(), application.getArchiveType(), application.getType(),
+        application.getCategory(), application.getDescription());
   }
 
   private static final class ApplicationExtractor extends ArtifactExtractor {

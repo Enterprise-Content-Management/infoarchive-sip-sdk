@@ -27,25 +27,27 @@ import com.emc.ia.sdk.support.rest.RestClient;
 
 public class TenantIaHandlerTest {
 
+  private static final String TEN_NAME = "MY_COMPANY";
+
   @Test
   public void whenExtractingTenantFromConfiguration() {
     ArtifactExtractor tenantExtractor = TenantIaHandler.extractor();
-    BaseIAArtifact tenantArtifact = tenantExtractor.extract("MY_COMPANY");
-    BaseIAArtifact expectedArtifact = new TenantIaHandler("MY_COMPANY");
+    BaseIAArtifact tenantArtifact = tenantExtractor.extract(TEN_NAME);
+    BaseIAArtifact expectedArtifact = new TenantIaHandler(TEN_NAME);
     assertEquals("Extracted artifact should be equal to expected", expectedArtifact, tenantArtifact);
   }
 
   @Test
   public void whenInstallingArtifact() throws IOException {
-    BaseIAArtifact tenantArtifact = new TenantIaHandler("MY_COMPANY");
+    BaseIAArtifact tenantArtifact = new TenantIaHandler(TEN_NAME);
     IACache cache = new IACache();
     cache.cacheOne(new Services());
     RestClient client = mock(RestClient.class);
     Tenants retTenants = mock(Tenants.class);
     Tenant resultTenant = new Tenant();
-    resultTenant.setName("MY_COMPANY");
+    resultTenant.setName(TEN_NAME);
     when(client.follow(any(), any(), eq(Tenants.class))).thenReturn(retTenants);
-    when(retTenants.byName("MY_COMPANY")).thenReturn(null);
+    when(retTenants.byName(TEN_NAME)).thenReturn(null);
     when(client.createCollectionItem(any(), any(), eq(LINK_ADD), eq(LINK_SELF))).thenReturn(resultTenant);
 
     tenantArtifact.install(client, cache);

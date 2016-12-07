@@ -22,12 +22,10 @@ public final class FileSystemFolderIaHandler extends BaseIAArtifact {
   }
 
   private final FileSystemFolder fsFolder;
-  private final String parentSpaceRootFolderName;
   private final String parentFileSystemFolderName;
 
-  public FileSystemFolderIaHandler(FileSystemFolder source, String parentSrFolderName, String parentFsFolderName) {
+  public FileSystemFolderIaHandler(FileSystemFolder source, String parentFsFolderName) {
     this.fsFolder = source;
-    this.parentSpaceRootFolderName = parentSrFolderName;
     this.parentFileSystemFolderName = parentFsFolderName;
   }
 
@@ -54,9 +52,8 @@ public final class FileSystemFolderIaHandler extends BaseIAArtifact {
       FileSystemFolder fsFolder = new FileSystemFolder();
       fsFolder.setName(extractString(fsFolderRepresentation, "name"));
       fsFolder.setSubPath(extractString(fsFolderRepresentation, "subPath"));
-      String parentSrFolderName = extractString(fsFolderRepresentation, "spaceRootFolder");
       String parentFsFolderName = extractString(fsFolderRepresentation, "fileSystemFolder");
-      return new FileSystemFolderIaHandler(fsFolder, parentSrFolderName, parentFsFolderName);
+      return new FileSystemFolderIaHandler(fsFolder, parentFsFolderName);
     }
 
     @Override

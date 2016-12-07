@@ -6,6 +6,7 @@ package com.emc.ia.sdk.configuration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.emc.ia.sdk.sip.client.dto.Application;
 import com.emc.ia.sdk.sip.client.dto.Federation;
@@ -21,8 +22,8 @@ import com.emc.ia.sdk.sip.client.dto.Tenant;
 
 public final class IACache {
 
-  private HashMap<Class<?>, List> collections = new HashMap<>();
-  private HashMap<Class<?>, Object> singles = new HashMap<>();
+  private final Map<Class<?>, List> collections = new HashMap<>();
+  private final Map<Class<?>, Object> singles = new HashMap<>();
 
   public IACache() {
     singles.put(Services.class, null);

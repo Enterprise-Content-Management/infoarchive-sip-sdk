@@ -29,6 +29,8 @@ import com.emc.ia.sdk.support.rest.RestClient;
 
 public class ApplicationIaHandlerTest {
 
+  private static final String APP_NAME = "PhoneCalls";
+
   @Test
   public void whenExtractingApplication() {
     ArtifactExtractor appExtractor = ApplicationIaHandler.extractor();
@@ -45,9 +47,9 @@ public class ApplicationIaHandlerTest {
     RestClient client = mock(RestClient.class);
     Applications applications = mock(Applications.class);
     Application resultApp = new Application();
-    resultApp.setName("PhoneCalls");
+    resultApp.setName(APP_NAME);
     when(client.follow(any(), any(), eq(Applications.class))).thenReturn(applications);
-    when(applications.byName("PhoneCalls")).thenReturn(null);
+    when(applications.byName(APP_NAME)).thenReturn(null);
     when(client.createCollectionItem(any(), any(), eq(LINK_ADD), eq(LINK_SELF))).thenReturn(resultApp);
 
     appArtifact.install(client, cache);
@@ -57,7 +59,7 @@ public class ApplicationIaHandlerTest {
 
   private ApplicationIaHandler getApplicationArtifact() {
     Application resultApplication = new Application();
-    resultApplication.setName("PhoneCalls");
+    resultApplication.setName(APP_NAME);
     resultApplication.setArchiveType("SIP");
     resultApplication.setType("ACTIVE_ARCHIVING");
     resultApplication.setCategory("Customer Support");
@@ -66,7 +68,7 @@ public class ApplicationIaHandlerTest {
 
   private Map<String, String> getAppRepresentation() {
     Map<String, String> appMap = new HashMap<>();
-    appMap.put("name", "PhoneCalls");
+    appMap.put("name", APP_NAME);
     appMap.put("archiveType", "SIP");
     appMap.put("type", "ACTIVE_ARCHIVING");
     appMap.put("category", "Customer Support");

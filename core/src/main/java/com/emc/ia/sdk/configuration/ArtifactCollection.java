@@ -12,7 +12,7 @@ import java.util.List;
  */
 public final class ArtifactCollection implements Iterable<Installable> {
 
-  private List<Installable> artifactInstallationOrder;
+  private final List<Installable> artifactInstallationOrder;
 
   public ArtifactCollection(List<Installable> source) {
     this.artifactInstallationOrder = source;

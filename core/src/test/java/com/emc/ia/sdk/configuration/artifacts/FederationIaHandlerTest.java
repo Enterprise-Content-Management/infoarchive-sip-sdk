@@ -29,6 +29,8 @@ import com.emc.ia.sdk.support.rest.RestClient;
 
 public class FederationIaHandlerTest {
 
+  private static final String FED_NAME = "mainFederation";
+
   @Test
   public void whenExtractingFederation() {
     ArtifactExtractor federationExtractor = FederationIaHandler.extractor();
@@ -45,9 +47,9 @@ public class FederationIaHandlerTest {
     RestClient client = mock(RestClient.class);
     Federations federations = mock(Federations.class);
     Federation resultFederation = new Federation();
-    resultFederation.setName("mainFederation");
+    resultFederation.setName(FED_NAME);
     when(client.follow(any(), any(), eq(Federations.class))).thenReturn(federations);
-    when(federations.byName("mainFederation")).thenReturn(null);
+    when(federations.byName(FED_NAME)).thenReturn(null);
     when(client.createCollectionItem(any(), any(), eq(LINK_ADD), eq(LINK_SELF))).thenReturn(resultFederation);
 
     federationArtifact.install(client, cache);
@@ -57,7 +59,7 @@ public class FederationIaHandlerTest {
 
   private FederationIaHandler getFederationSample() {
     Federation federation = new Federation();
-    federation.setName("mainFederation");
+    federation.setName(FED_NAME);
     federation.setSuperUserPassword("test");
     federation.setBootstrap("xhive://127.0.0.1:2910");
     return new FederationIaHandler(federation);
@@ -65,7 +67,7 @@ public class FederationIaHandlerTest {
 
   private Map<String, String> getAppRepresentation() {
     Map<String, String> federationMap = new HashMap<>();
-    federationMap.put("name", "mainFederation");
+    federationMap.put("name", FED_NAME);
     federationMap.put("bootstrap", "xhive://127.0.0.1:2910");
     federationMap.put("superUserPassword", "test");
     return federationMap;

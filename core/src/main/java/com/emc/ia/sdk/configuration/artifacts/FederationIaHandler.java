@@ -35,22 +35,35 @@ public final class FederationIaHandler extends BaseIAArtifact {
     Federations federations = client.follow(cache.getFirst(Services.class), LINK_FEDERATIONS, Federations.class);
     Federation createdFederation = federations.byName(federation.getName());
     if (createdFederation == null) {
-      if (federation.getBootstrap() == null) {
-        federation.setBootstrap("xhive://127.0.0.1:2910");
-      }
-      if (federation.getSuperUserPassword() == null) {
-        federation.setSuperUserPassword("test");
-      }
-      createdFederation = client.createCollectionItem(federations, federation, LINK_ADD, LINK_SELF);
+      createdFederation = createFederation(client, federations);
     } else {
-      if (federation.getBootstrap() != null) {
-        createdFederation.setBootstrap(federation.getBootstrap());
-      }
-      if (federation.getSuperUserPassword() != null) {
-        createdFederation.setSuperUserPassword(federation.getSuperUserPassword());
-      }
+      createdFederation = updateFederation(client, createdFederation);
     }
     cache.cacheOne(createdFederation);
+  }
+
+  private Federation createFederation(RestClient client, Federations container) throws IOException {
+    fillDefaults();
+    return client.createCollectionItem(container, federation, LINK_ADD, LINK_SELF);
+  }
+
+  private Federation updateFederation(RestClient client, Federation currentFederation) throws IOException {
+    if (federation.getBootstrap() != null) {
+      currentFederation.setBootstrap(federation.getBootstrap());
+    }
+    if (federation.getSuperUserPassword() != null) {
+      currentFederation.setSuperUserPassword(federation.getSuperUserPassword());
+    }
+    return client.put(currentFederation.getSelfUri(), Federation.class, currentFederation);
+  }
+
+  private void fillDefaults() {
+    if (federation.getBootstrap() == null) {
+      federation.setBootstrap("xhive://127.0.0.1:2910");
+    }
+    if (federation.getSuperUserPassword() == null) {
+      federation.setSuperUserPassword("test");
+    }
   }
 
   public boolean equals(Object other) {
@@ -64,12 +77,7 @@ public final class FederationIaHandler extends BaseIAArtifact {
   }
 
   public int hashCode() {
-    int result = 7;
-    result = 31 * result + (federation.getName() == null ? 0 : federation.getName().hashCode());
-    result = 31 * result + (federation.getBootstrap() == null ? 0 : federation.getBootstrap().hashCode());
-    result = 31 * result
-                 + (federation.getSuperUserPassword() == null ? 0 : federation.getSuperUserPassword().hashCode());
-    return result;
+    return Objects.hash(federation.getName(), federation.getBootstrap(), federation.getSuperUserPassword());
   }
 
   private static final class FederationExtractor extends ArtifactExtractor {
