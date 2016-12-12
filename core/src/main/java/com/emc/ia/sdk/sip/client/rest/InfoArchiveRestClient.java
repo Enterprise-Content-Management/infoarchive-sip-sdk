@@ -25,6 +25,7 @@ import com.emc.ia.sdk.sip.client.dto.SearchDataBuilder;
 import com.emc.ia.sdk.sip.client.dto.SearchResult;
 import com.emc.ia.sdk.sip.client.dto.SearchResults;
 import com.emc.ia.sdk.sip.client.dto.export.ExportConfiguration;
+import com.emc.ia.sdk.sip.client.dto.export.ExportTransformation;
 import com.emc.ia.sdk.sip.client.dto.query.Comparison;
 import com.emc.ia.sdk.sip.client.dto.query.Item;
 import com.emc.ia.sdk.sip.client.dto.query.QueryFormatter;
@@ -33,6 +34,7 @@ import com.emc.ia.sdk.support.http.BinaryPart;
 import com.emc.ia.sdk.support.http.MediaTypes;
 import com.emc.ia.sdk.support.http.ResponseFactory;
 import com.emc.ia.sdk.support.http.TextPart;
+import com.emc.ia.sdk.support.rest.LinkContainer;
 import com.emc.ia.sdk.support.rest.RestClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -205,6 +207,12 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     root.set("exportConfiguration", exportConfiguration);
     root.set("includedRows", includedRows);
     return root.toString();
+  }
+
+  @Override
+  public LinkContainer uploadTransformation(ExportTransformation exportTransformation, InputStream zip) throws IOException {
+    String uri = exportTransformation.getUri(LINK_EXPORT_TRANSFORMATION_ZIP);
+    return restClient.post(uri, LinkContainer.class, new BinaryPart("file", zip, "stylesheet.zip"));
   }
 
 }

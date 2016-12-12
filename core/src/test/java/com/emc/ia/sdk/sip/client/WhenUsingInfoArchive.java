@@ -7,8 +7,10 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,6 +90,8 @@ import com.emc.ia.sdk.sip.client.dto.export.ExportConfiguration;
 import com.emc.ia.sdk.sip.client.dto.export.ExportConfigurations;
 import com.emc.ia.sdk.sip.client.dto.export.ExportPipeline;
 import com.emc.ia.sdk.sip.client.dto.export.ExportPipelines;
+import com.emc.ia.sdk.sip.client.dto.export.ExportTransformation;
+import com.emc.ia.sdk.sip.client.dto.export.ExportTransformations;
 import com.emc.ia.sdk.sip.client.dto.query.Comparison;
 import com.emc.ia.sdk.sip.client.dto.query.Item;
 import com.emc.ia.sdk.sip.client.dto.query.Operator;
@@ -119,6 +123,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private static final String TENANT_NAME = "TeNaNt";
   private static final String NAMESPACE = "urn:SoMeNaMeSpAcE";
 
+  private static final String SOURCE = "This is the source of my input stream";
+
   private final Map<String, Link> links = new HashMap<>();
   private final Map<String, String> configuration = new HashMap<>();
   private final RestClient restClient = mock(RestClient.class);
@@ -140,6 +146,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     applications = mock(Applications.class);
     ExportConfigurations exportConfigurations = mock(ExportConfigurations.class);
     ExportPipelines exportPipelines = mock(ExportPipelines.class);
+    ExportTransformations exportTransformations = mock(ExportTransformations.class);
     federations = mock(Federations.class);
     Spaces spaces = mock(Spaces.class);
     Databases databases = mock(Databases.class);
@@ -188,6 +195,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(link.getHref()).thenReturn(BILLBOARD_URI);
     mockCollection(ExportConfigurations.class, exportConfigurations);
     mockCollection(ExportPipelines.class, exportPipelines);
+    mockCollection(ExportTransformations.class, exportTransformations);
     when(restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class)).thenReturn(aips);
     aips.setLinks(links);
 
@@ -221,6 +229,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(databases, new Database());
     mockByName(exportConfigurations, new ExportConfiguration());
     mockByName(exportPipelines, new ExportPipeline());
+    mockByName(exportTransformations, new ExportTransformation());
     mockByName(applications, application);
     mockByName(spaces, new Space());
     mockByName(spaceRootLibraries, new SpaceRootLibrary());
@@ -265,10 +274,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put(InfoArchiveConfiguration.PDI_SCHEMA, "");
     configuration.put(InfoArchiveConfiguration.INGEST_XML, "");
     configuration.put(InfoArchiveConfiguration.SEARCH_DESCRIPTION, "Default emails search");
-    configuration.put(InfoArchiveConfiguration.SEARCH_NESTED, "false");
+    configuration.put(InfoArchiveConfiguration.SEARCH_NESTED, Boolean.FALSE.toString());
     configuration.put(InfoArchiveConfiguration.SEARCH_NAME, "emailsSearch");
     configuration.put(InfoArchiveConfiguration.SEARCH_STATE, "DRAFT");
-    configuration.put(InfoArchiveConfiguration.SEARCH_INUSE, "false");
+    configuration.put(InfoArchiveConfiguration.SEARCH_INUSE, Boolean.FALSE.toString());
     configuration.put(InfoArchiveConfiguration.SEARCH_COMPOSITION_NAME, "DefaultSearchComposition");
     configuration.put(InfoArchiveConfiguration.SEARCH_COMPOSITION_XFORM_NAME, "Test Search Form");
     configuration.put(InfoArchiveConfiguration.SEARCH_DEFAULT_RESULT_MASTER, "");
@@ -281,13 +290,13 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.aic.criteria.pkeyminattr", "");
     configuration.put("ia.aic.criteria.pkeymaxattr", "");
     configuration.put("ia.aic.criteria.pkeyvaluesattr", "");
-    configuration.put("ia.aic.criteria.indexed", "true");
+    configuration.put("ia.aic.criteria.indexed", Boolean.TRUE.toString());
 
     configuration.put("ia.query.name", "Query");
     configuration.put("ia.query.Query.namespace.prefix", "n");
     configuration.put("ia.query.Query.namespace.uri", NAMESPACE);
     configuration.put("ia.query.Query.result.root.element", "messages");
-    configuration.put("ia.query.Query.result.root.ns.enabled", "true");
+    configuration.put("ia.query.Query.result.root.ns.enabled", Boolean.TRUE.toString());
     configuration.put("ia.query.Query.result.schema", NAMESPACE);
 
     configuration.put("ia.query.Query.xdbpdi.entity.path", "/n:object/n:objects");
@@ -298,7 +307,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put(queryPrefix + NAMESPACE + "].operand.name", "name");
     configuration.put(queryPrefix + NAMESPACE + "].operand.path", "n:name");
     configuration.put(queryPrefix + NAMESPACE + "].operand.type", "STRING");
-    configuration.put(queryPrefix + NAMESPACE + "].operand.index", "true");
+    configuration.put(queryPrefix + NAMESPACE + "].operand.index", Boolean.TRUE.toString());
 
     configuration.put("ia.quota.name", "Quota");
     configuration.put("ia.quota.aiu", "0");
@@ -312,6 +321,26 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.path", "n:sender/n:email");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.type", "STRING");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.sort", "NONE");
+
+    configuration.put("ia.exportpipeline.names", "ExportPipeline");
+    configuration.put("ia.exportpipeline.ExportPipeline.composite", "NONE");
+    configuration.put("ia.exportpipeline.ExportPipeline.content", "<pipeline></pipeline>");
+    configuration.put("ia.exportpipeline.ExportPipeline.description", "gzip envelope for xsl csv export");
+    configuration.put("ia.exportpipeline.ExportPipeline.envelopeformat", "gzip");
+    configuration.put("ia.exportpipeline.ExportPipeline.includescontent", Boolean.TRUE.toString());
+    configuration.put("ia.exportpipeline.ExportPipeline.outputformat", "csv");
+    configuration.put("ia.exportpipeline.ExportPipeline.inputformat", "ROW_COLUMN");
+    configuration.put("ia.exportpipeline.ExportPipeline.type", "NONE");
+    configuration.put("ia.exportpipeline.ExportPipeline.collectionbased", Boolean.FALSE.toString());
+
+    configuration.put("ia.exportconfig.names", "ExportConfiguration");
+    configuration.put("ia.exportconfig.ExportConfiguration.type", "ASYNCHRONOUS");
+    configuration.put("ia.exportconfig.ExportConfiguration.pipeline", "ExportPipeline");
+
+    configuration.put("ia.exporttransformation.names", "ExportTransformation");
+    configuration.put("ia.exporttransformation.ExportTransformation.description", "csv xsl transformation");
+    configuration.put("ia.exporttransformation.ExportTransformation.type", "XSLT");
+    configuration.put("ia.exporttransformation.ExportTransformation.mainpath", "search-results-csv.xsl");
   }
 
   private <T> OngoingStubbing<T> mockCollection(Class<T> type, T object) throws IOException {
@@ -341,8 +370,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   public void shouldIngestSuccessfully() throws IOException {
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
 
-    String source = "This is the source of my input stream";
-    InputStream sip = IOUtils.toInputStream(source, "UTF-8");
+    InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
     ReceptionResponse receptionResponse = new ReceptionResponse();
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
@@ -362,8 +390,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     links.put(InfoArchiveLinkRelations.LINK_INGEST_DIRECT, link);
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
 
-    String source = "This is the source of my input stream";
-    InputStream sip = IOUtils.toInputStream(source, "UTF-8");
+    InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
     when(restClient.post(anyString(), eq(IngestionResponse.class), any(Part.class), any(Part.class)))
@@ -373,10 +400,24 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     assertEquals(archiveClient.ingestDirect(sip), "sip002");
   }
 
+  @Test
+  public void shouldIngestWithoutIngestDirect() throws IOException {
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+
+    InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
+
+    IngestionResponse ingestionResponse = mock(IngestionResponse.class);
+    when(restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
+      .thenReturn(new ReceptionResponse());
+    when(restClient.put(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
+    when(ingestionResponse.getAipId()).thenReturn("sip003");
+
+    assertEquals(archiveClient.ingestDirect(sip), "sip003");
+  }
+
   @Test(expected = RuntimeException.class)
   public void ingestShouldThrowRuntimeExceptionWhenConfigureIsNotInvoked() throws IOException {
-    String source = "This is the source of my input stream";
-    InputStream sip = IOUtils.toInputStream(source, "UTF-8");
+    InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
     archiveClient.ingest(sip);
   }
 
@@ -479,8 +520,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     dates.add("2014-04-27");
     dates.add("2016-10-11");
     items.add(new Comparison("sentDate", Operator.BETWEEN, dates));
-    items.add(new Comparison("fromCountry", Operator.EQUAL, ""));
-    items.add(new Comparison("toCountry", Operator.EQUAL, ""));
+    items.add(new Comparison("fromCountry", Operator.STARTS_WITH, ""));
+    items.add(new Comparison("toCountry", Operator.NOT_EQUAL, ""));
     searchQuery.setItems(items);
 
     SearchComposition searchComparison = new SearchComposition();
@@ -540,9 +581,37 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(exportConfiguration.getSelfUri()).thenReturn(uri);
 
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
-    OrderItem result = archiveClient.exportAndWait(searchResults, exportConfiguration, randomString(), randomInt(6000));
+    OrderItem result = archiveClient.exportAndWait(searchResults, exportConfiguration, randomString(), 6000);
 
     assertEquals(orderItem, result);
+  }
+
+  @Test
+  public void shouldExportAndWaitUnsuccessfully() throws IOException {
+    UriBuilder uriBuilder = mock(UriBuilder.class);
+    String uri = randomString();
+    when(uriBuilder.build()).thenReturn(uri);
+    when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
+    when(restClient.uri(anyString())).thenReturn(uriBuilder);
+    OrderItem orderItem = mock(OrderItem.class);
+    when(orderItem.getUri(anyString())).thenReturn(null);
+    when(restClient.post(eq(uri), eq(OrderItem.class), anyString())).thenReturn(orderItem);
+    when(restClient.get(anyString(), eq(OrderItem.class))).thenReturn(orderItem);
+
+    SearchResults searchResults = new SearchResults();
+    ExportConfiguration exportConfiguration = mock(ExportConfiguration.class);
+    when(exportConfiguration.getSelfUri()).thenReturn(uri);
+
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    OrderItem result = archiveClient.exportAndWait(searchResults, exportConfiguration, randomString(), randomInt(3000));
+
+    assertEquals(orderItem, result);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void shouldFetchContentUnsuccessfully() throws IOException {
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    archiveClient.fetchContent(randomString());
   }
 
   @Test
@@ -562,6 +631,22 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     ContentResult result = archiveClient.fetchOrderContent(orderItem);
 
     assertEquals(contentResult, result);
+  }
+
+  @Test
+  public void shouldUploadTransformationFileSuccessfully() throws IOException {
+    ExportTransformation exportTransformation = mock(ExportTransformation.class);
+    when(exportTransformation.getUri(anyString())).thenReturn(randomString());
+    InputStream zip = new ByteArrayInputStream(SOURCE.getBytes(StandardCharsets.UTF_8));
+
+    LinkContainer linkContainer = mock(LinkContainer.class);
+    when(linkContainer.getUri(anyString())).thenReturn(randomString());
+    when(restClient.post(anyString(), eq(LinkContainer.class), any(Part.class))).thenReturn(linkContainer);
+
+    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    LinkContainer result = archiveClient.uploadTransformation(exportTransformation, zip);
+
+    assertEquals(linkContainer, result);
   }
 
 }
