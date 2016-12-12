@@ -10,7 +10,7 @@ public class ExportConfiguration extends NamedLinkContainer {
   private String description;
   private String exportType;
   private String pipeline;
-  private Transformations transformations;
+  private Transformation[] transformations;
   private Options options;
 
   public String getDescription() {
@@ -37,12 +37,12 @@ public class ExportConfiguration extends NamedLinkContainer {
     this.pipeline = pipeline;
   }
 
-  public Transformations getTransformations() {
-    return transformations;
+  public Transformation[] getTransformations() {
+    return transformations == null ? null : this.transformations.clone();
   }
 
-  public void setTransformations(Transformations transformations) {
-    this.transformations = transformations;
+  public void setTransformations(Transformation[] transformations) {
+    this.transformations = transformations.clone();
   }
 
   public Options getOptions() {
@@ -53,7 +53,8 @@ public class ExportConfiguration extends NamedLinkContainer {
     this.options = options;
   }
 
-  public static class Transformations {
+  @SuppressWarnings("PMD.AvoidFieldNameMatchingTypeName")
+  public static class Transformation {
 
     private String portName;
     private String transformation;
