@@ -634,7 +634,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void shouldUploadTransformationFileSuccessfully() throws IOException {
+  public void shouldUploadTransformationSuccessfully() throws IOException {
     ExportTransformation exportTransformation = mock(ExportTransformation.class);
     when(exportTransformation.getUri(anyString())).thenReturn(randomString());
     InputStream zip = new ByteArrayInputStream(SOURCE.getBytes(StandardCharsets.UTF_8));

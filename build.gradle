@@ -70,7 +70,7 @@ subprojects {
     }
     doLast {
       logging.removeStandardOutputListener(listener)
-      if (events.find { it.toString() =~ " warning: " } != null) {
+      if (events.find { it.toString() =~ /warning/ }) {
         throw new GradleException("Warnings in Javadoc, see output above");
       }
     }

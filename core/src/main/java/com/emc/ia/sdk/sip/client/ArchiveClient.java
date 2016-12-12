@@ -101,6 +101,7 @@ public interface ArchiveClient {
    * @param exportTransformation The export transformation.
    * @param zip The input stream of zip with stylesheet.
    * @throws IOException When an I/O error occurs
+   * @return The uploaded transformation
    */
   LinkContainer uploadTransformation(ExportTransformation exportTransformation, InputStream zip) throws IOException;
 
