@@ -22,6 +22,7 @@ import com.emc.ia.sdk.sip.client.dto.Tenant;
 
 public final class IACache {
 
+  @SuppressWarnings("rawtypes")
   private final Map<Class<?>, List> collections = new HashMap<>();
   private final Map<Class<?>, Object> singles = new HashMap<>();
 
@@ -33,7 +34,7 @@ public final class IACache {
     singles.put(FileSystemRoot.class, null);
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "rawtypes"})
   public <T extends NamedLinkContainer> void cacheOne(T object) {
     if (singles.containsKey(object.getClass())) {
       singles.put(object.getClass(), object);

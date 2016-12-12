@@ -72,6 +72,7 @@ public final class XdbDatabaseIaHandler extends BaseIAArtifact {
 
   private static final class XdbDatabaseExtractor extends ArtifactExtractor {
     @Override
+    @SuppressWarnings("rawtypes")
     public XdbDatabaseIaHandler extract(Object representation) {
       Map databaseRepresentation = asMap(representation);
       String name = extractName(databaseRepresentation);

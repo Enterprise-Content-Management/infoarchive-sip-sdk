@@ -28,6 +28,7 @@ public final class ListExtractor implements Extractor {
    * @return ArifactGroup that contains all the artifacts from the list
    */
   @Override
+  @SuppressWarnings("rawtypes")
   public ArtifactGroup extract(Object representation) {
     List listRepresentation = (List)representation;
     List<BaseIAArtifact> baseArtifacts = new ArrayList<>();
@@ -43,7 +44,7 @@ public final class ListExtractor implements Extractor {
     return fieldName;
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "rawtypes"})
   private Map transformToArtifact(Object artifactEntity) {
     Map mapObject = (Map)artifactEntity;
     if (mapObject.size() == 1) {

@@ -79,6 +79,7 @@ public final class FileSystemRootIaHandler extends BaseIAArtifact {
 
   private static final class FileSystemRootExtractor extends ArtifactExtractor {
     @Override
+    @SuppressWarnings("rawtypes")
     public FileSystemRootIaHandler extract(Object representation) {
       Map fsRootRepresentation = asMap(representation);
       String name = extractString(fsRootRepresentation, "name");
