@@ -79,6 +79,7 @@ public interface SipSegmentationStrategy<D> {
    * @return A {@linkplain SipSegmentationStrategy} that combines a number of partial strategies
    */
   @SafeVarargs
+  @SuppressWarnings("varargs")
   static <D> SipSegmentationStrategy<D> combining(SipSegmentationStrategy<D>... partialStrategies) {
     return (domainObject, metrics) -> Arrays.stream(partialStrategies)
       .filter(s -> s.shouldStartNewSip(domainObject, metrics))

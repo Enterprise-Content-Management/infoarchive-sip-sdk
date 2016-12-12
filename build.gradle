@@ -58,7 +58,10 @@ subprojects {
     xmlunit "org.xmlunit:xmlunit-core:$xmlunitVersion"
   }
 
-
+  tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:all" << "-Xlint:-processing" << "-Xlint:-serial" << "-Werror"
+  }
+  
   javadoc {
     def events = []
     StandardOutputListener listener = { event -> events << event }
