@@ -537,6 +537,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       pipeline.setEnvelopeFormat("gz");
       pipeline.setType("XPROC");
       pipeline.setComposite(true);
+      pipeline.setCollectionBasedExport(false);
       pipeline.setContent(
           "<p:declare-step version=\"2.0\" xmlns:p=\"http://www.w3.org/ns/xproc\" xmlns:ia=\"http://infoarchive.emc.com/xproc\">\n    <p:input port=\"source\" sequence=\"true\"/>\n    <ia:search-results-csv/>\n    <ia:gzip/>\n    <ia:store-export-result format=\"csv\"/>\n</p:declare-step>");
 
@@ -682,6 +683,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     pipeline.setInputFormat(getString(EXPORT_PIPELINE_INPUT_FORMAT_TEMPLATE, name));
     pipeline.setOutputFormat(getString(EXPORT_PIPELINE_OUTPUT_FORMAT_TEMPLATE, name));
     pipeline.setType(getString(EXPORT_PIPELINE_TYPE_TEMPLATE, name));
+    pipeline.setCollectionBasedExport(getBoolean(EXPORT_PIPELINE_COLLECTION_BASED_TEMPLATE, name));
     return pipeline;
   }
 

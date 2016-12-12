@@ -3,9 +3,6 @@
  */
 package com.emc.ia.sdk.sip.client.rest;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -213,23 +210,9 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   @Override
-  public LinkContainer uploadTransformationFile(ExportTransformation exportTransformation, File zipFile) throws IOException {
+  public LinkContainer uploadTransformationFile(ExportTransformation exportTransformation, InputStream zip) throws IOException {
     String uri = exportTransformation.getUri(LINK_EXPORT_TRANSFORMATION_ZIP);
-    try (InputStream transformationZipStream = new FileInputStream(zipFile)) {
-      checkZipFile(zipFile);
-      return restClient.post(uri, LinkContainer.class, new BinaryPart("file", transformationZipStream, zipFile.getName()));
-    } catch (FileNotFoundException e) {
-      throw new IOException("Zip file with stylesheet doesn't exist", e);
-    }
-  }
-
-  private void checkZipFile(File zipFile) {
-    if (!zipFile.isFile()) {
-      throw new IllegalArgumentException("Expected file, but passed directory");
-    }
-    if (!zipFile.getName().endsWith(".zip")) {
-      throw new IllegalArgumentException("Expected 'zip' file, but passed file with incorrect extension");
-    }
+    return restClient.post(uri, LinkContainer.class, new BinaryPart("file", zip, "stylesheet.zip"));
   }
 
 }

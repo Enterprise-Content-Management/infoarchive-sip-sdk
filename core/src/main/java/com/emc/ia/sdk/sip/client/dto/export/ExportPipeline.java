@@ -15,6 +15,7 @@ public class ExportPipeline extends NamedLinkContainer {
   private String content;
   private boolean includesContent;
   private boolean composite;
+  private boolean collectionBasedExport;
 
   public String getDescription() {
     return description;
@@ -80,4 +81,11 @@ public class ExportPipeline extends NamedLinkContainer {
     this.inputFormat = inputFormat;
   }
 
+  public boolean isCollectionBasedExport() {
+    return collectionBasedExport;
+  }
+
+  public void setCollectionBasedExport(boolean collectionBasedExport) {
+    this.collectionBasedExport = collectionBasedExport;
+  }
 }

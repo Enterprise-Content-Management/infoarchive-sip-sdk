@@ -3,7 +3,6 @@
  */
 package com.emc.ia.sdk.sip.client;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -100,9 +99,9 @@ public interface ArchiveClient {
   /**
    * Upload the transformation zip file with the stylesheet.
    * @param exportTransformation The export transformation.
-   * @param zipFile The zip file with stylesheet.
+   * @param zip The input stream of zip file with stylesheet.
    * @throws IOException When an I/O error occurs
    */
-  LinkContainer uploadTransformationFile(ExportTransformation exportTransformation, File zipFile) throws IOException;
+  LinkContainer uploadTransformationFile(ExportTransformation exportTransformation, InputStream zip) throws IOException;
 
 }

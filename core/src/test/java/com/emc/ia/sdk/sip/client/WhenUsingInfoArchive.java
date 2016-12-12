@@ -4,11 +4,10 @@
 package com.emc.ia.sdk.sip.client;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -332,6 +331,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.exportpipeline.ExportPipeline.outputformat", "csv");
     configuration.put("ia.exportpipeline.ExportPipeline.inputformat", "ROW_COLUMN");
     configuration.put("ia.exportpipeline.ExportPipeline.type", "NONE");
+    configuration.put("ia.exportpipeline.ExportPipeline.collectionbased", Boolean.FALSE.toString());
 
     configuration.put("ia.exportconfig.names", "ExportConfiguration");
     configuration.put("ia.exportconfig.ExportConfiguration.type", "ASYNCHRONOUS");
@@ -634,48 +634,17 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void shouldUploadTransformationFileUnsuccessfully() throws IOException {
-    ExportTransformation exportTransformation = mock(ExportTransformation.class);
-    when(exportTransformation.getUri(anyString())).thenReturn(randomString());
-    LinkContainer linkContainer = mock(LinkContainer.class);
-    when(linkContainer.getUri(anyString())).thenReturn(randomString());
-    when(restClient.post(anyString(), eq(LinkContainer.class), any(Part.class))).thenReturn(linkContainer);
-
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
-
-    LinkContainer result = null;
-    File txtFile = File.createTempFile("csv_stylesheet", ".txt");
-    txtFile.deleteOnExit();
-    try {
-      result = archiveClient.uploadTransformationFile(exportTransformation, txtFile);
-    } catch (Exception e) {
-      assertEquals(IllegalArgumentException.class, e.getClass());
-    }
-    assertNull(result);
-
-    File noFile = File.createTempFile("csv_stylesheet", ".zip");
-    if (noFile.delete()) {
-      try {
-        archiveClient.uploadTransformationFile(exportTransformation, noFile);
-      } catch (Exception e) {
-        assertEquals(IOException.class, e.getClass());
-      }
-    }
-  }
-
-  @Test
   public void shouldUploadTransformationFileSuccessfully() throws IOException {
     ExportTransformation exportTransformation = mock(ExportTransformation.class);
     when(exportTransformation.getUri(anyString())).thenReturn(randomString());
-    File zipFile = File.createTempFile("csv_stylesheet", ".zip");
-    zipFile.deleteOnExit();
+    InputStream zip = new ByteArrayInputStream(SOURCE.getBytes(StandardCharsets.UTF_8));
 
     LinkContainer linkContainer = mock(LinkContainer.class);
     when(linkContainer.getUri(anyString())).thenReturn(randomString());
     when(restClient.post(anyString(), eq(LinkContainer.class), any(Part.class))).thenReturn(linkContainer);
 
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
-    LinkContainer result = archiveClient.uploadTransformationFile(exportTransformation, zipFile);
+    LinkContainer result = archiveClient.uploadTransformationFile(exportTransformation, zip);
 
     assertEquals(linkContainer, result);
   }
