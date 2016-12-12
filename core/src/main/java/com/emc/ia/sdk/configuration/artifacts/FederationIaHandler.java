@@ -6,6 +6,7 @@ package com.emc.ia.sdk.configuration.artifacts;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
@@ -21,48 +22,40 @@ public final class FederationIaHandler extends BaseIAArtifact {
     return new FederationExtractor();
   }
 
-  private final Federation federation;
+  private final String name;
+  private final String bootstrap;
+  private final String superUserPassword;
 
-  public FederationIaHandler(Federation source) {
-    this.federation = new Federation();
-    federation.setName(source.getName());
-    federation.setBootstrap(source.getBootstrap());
-    federation.setSuperUserPassword(source.getSuperUserPassword());
+  public FederationIaHandler(String name, String bootstrap, String superUserPassword) {
+    this.name = Optional.ofNullable(name).orElse("mainFederation");
+    this.bootstrap = Optional.ofNullable(bootstrap).orElse("xhive://127.0.0.1:2910");
+    this.superUserPassword = Optional.ofNullable(superUserPassword).orElse("test");
   }
 
   @Override
   protected void installArtifact(RestClient client, IACache cache) throws IOException {
     Federations federations = client.follow(cache.getFirst(Services.class), LINK_FEDERATIONS, Federations.class);
-    Federation createdFederation = federations.byName(federation.getName());
+    Federation createdFederation = federations.byName(name);
     if (createdFederation == null) {
-      createdFederation = createFederation(client, federations);
+      createdFederation = client.createCollectionItem(federations, buildFederation(), LINK_ADD, LINK_SELF);
     } else {
-      createdFederation = updateFederation(client, createdFederation);
+      ensureFederation(createdFederation);
     }
     cache.cacheOne(createdFederation);
   }
 
-  private Federation createFederation(RestClient client, Federations container) throws IOException {
-    fillDefaults();
-    return client.createCollectionItem(container, federation, LINK_ADD, LINK_SELF);
+  private Federation buildFederation() {
+    Federation federation = new Federation();
+    federation.setName(name);
+    federation.setBootstrap(bootstrap);
+    federation.setSuperUserPassword(superUserPassword);
+    return federation;
   }
 
-  private Federation updateFederation(RestClient client, Federation currentFederation) throws IOException {
-    if (federation.getBootstrap() != null) {
-      currentFederation.setBootstrap(federation.getBootstrap());
-    }
-    if (federation.getSuperUserPassword() != null) {
-      currentFederation.setSuperUserPassword(federation.getSuperUserPassword());
-    }
-    return client.put(currentFederation.getSelfUri(), Federation.class, currentFederation);
-  }
-
-  private void fillDefaults() {
-    if (federation.getBootstrap() == null) {
-      federation.setBootstrap("xhive://127.0.0.1:2910");
-    }
-    if (federation.getSuperUserPassword() == null) {
-      federation.setSuperUserPassword("test");
+  private void ensureFederation(Federation currentFederation) throws IOException {
+    if (!bootstrap.equals(currentFederation.getBootstrap())
+            || !superUserPassword.equals(currentFederation.getSuperUserPassword())) {
+      throw new IllegalStateException("Current federation is different from configured.");
     }
   }
 
@@ -71,24 +64,23 @@ public final class FederationIaHandler extends BaseIAArtifact {
       return false;
     }
     FederationIaHandler handler = (FederationIaHandler)other;
-    return Objects.equals(federation.getName(), handler.federation.getName())
-        && Objects.equals(federation.getBootstrap(), handler.federation.getBootstrap())
-        && Objects.equals(federation.getSuperUserPassword(), handler.federation.getSuperUserPassword());
+    return Objects.equals(name, handler.name)
+        && Objects.equals(bootstrap, handler.bootstrap)
+        && Objects.equals(superUserPassword, handler.superUserPassword);
   }
 
   public int hashCode() {
-    return Objects.hash(federation.getName(), federation.getBootstrap(), federation.getSuperUserPassword());
+    return Objects.hash(name, bootstrap, superUserPassword);
   }
 
   private static final class FederationExtractor extends ArtifactExtractor {
     @Override
     public FederationIaHandler extract(Object representation) {
       Map federationRepresentation = asMap(representation);
-      Federation federation = new Federation();
-      federation.setName(extractName(federationRepresentation));
-      federation.setBootstrap(extractString(federationRepresentation, "bootstrap"));
-      federation.setSuperUserPassword(extractString(federationRepresentation, "superUserPassword"));
-      return new FederationIaHandler(federation);
+      String name = extractName(federationRepresentation);
+      String bootstrap = extractString(federationRepresentation, "bootstrap");
+      String superUserPassword = extractString(federationRepresentation, "superUserPassword");
+      return new FederationIaHandler(name, bootstrap, superUserPassword);
     }
 
     @Override

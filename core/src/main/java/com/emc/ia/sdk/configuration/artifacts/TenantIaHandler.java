@@ -22,8 +22,12 @@ public final class TenantIaHandler extends BaseIAArtifact {
 
   private final String tenantName;
 
+  public TenantIaHandler() {
+    this.tenantName = null;
+  }
+
   public TenantIaHandler(String tenantName) {
-    this.tenantName = tenantName;
+    this.tenantName = Objects.requireNonNull(tenantName);
   }
 
   @Override
@@ -54,7 +58,7 @@ public final class TenantIaHandler extends BaseIAArtifact {
 
   @Override
   public int hashCode() {
-    return tenantName == null ? 0 : tenantName.hashCode();
+    return Objects.hashCode(tenantName);
   }
 
   private static final class TenantExtractor extends ArtifactExtractor {

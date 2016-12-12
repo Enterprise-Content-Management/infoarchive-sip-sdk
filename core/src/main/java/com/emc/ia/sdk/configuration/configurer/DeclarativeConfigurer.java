@@ -1,10 +1,13 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.configuration;
+package com.emc.ia.sdk.configuration.configurer;
 
 import java.io.IOException;
 
+import com.emc.ia.sdk.configuration.ArtifactCollection;
+import com.emc.ia.sdk.configuration.IACache;
+import com.emc.ia.sdk.configuration.IAConfigurer;
 import com.emc.ia.sdk.sip.client.ArchiveClient;
 import com.emc.ia.sdk.sip.client.dto.Services;
 import com.emc.ia.sdk.support.rest.RestClient;

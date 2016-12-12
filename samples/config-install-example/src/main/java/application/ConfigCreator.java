@@ -7,9 +7,9 @@ import java.io.File;
 import java.io.IOException;
 
 import com.emc.ia.sdk.configuration.ConfigurationReader;
-import com.emc.ia.sdk.configuration.DeclarativeConfigurer;
 import com.emc.ia.sdk.configuration.IAConfigurer;
-import com.emc.ia.sdk.configuration.SnakeYamlConfigurationReader;
+import com.emc.ia.sdk.configuration.configurer.DeclarativeConfigurer;
+import com.emc.ia.sdk.configuration.configurer.SnakeYamlConfigurationReader;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.rest.NonExpiringTokenAuthentication;
 import com.emc.ia.sdk.support.rest.RestClient;

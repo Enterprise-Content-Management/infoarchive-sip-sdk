@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 EMC Corporation. All Rights Reserved.
  */
-package com.emc.ia.sdk.configuration;
+package com.emc.ia.sdk.configuration.configurer;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -15,13 +15,12 @@ import java.util.stream.Stream;
 
 import org.yaml.snakeyaml.Yaml;
 
+import com.emc.ia.sdk.configuration.ArtifactCollection;
+import com.emc.ia.sdk.configuration.ConfigurationReader;
+import com.emc.ia.sdk.configuration.Extractor;
+import com.emc.ia.sdk.configuration.Installable;
 import com.emc.ia.sdk.configuration.artifacts.ApplicationIaHandler;
 import com.emc.ia.sdk.configuration.artifacts.FederationIaHandler;
-import com.emc.ia.sdk.configuration.artifacts.FileSystemFolderIaHandler;
-import com.emc.ia.sdk.configuration.artifacts.FileSystemRootIaHandler;
-import com.emc.ia.sdk.configuration.artifacts.SpaceIaHandler;
-import com.emc.ia.sdk.configuration.artifacts.SpaceRootFolderIaHandler;
-import com.emc.ia.sdk.configuration.artifacts.SpaceRootLibraryIaHandler;
 import com.emc.ia.sdk.configuration.artifacts.TenantIaHandler;
 import com.emc.ia.sdk.configuration.artifacts.XdbDatabaseIaHandler;
 
@@ -48,12 +47,7 @@ public final class SnakeYamlConfigurationReader implements ConfigurationReader {
         TenantIaHandler.extractor(),
         ApplicationIaHandler.extractor(),
         FederationIaHandler.extractor(),
-        XdbDatabaseIaHandler.extractor(),
-        FileSystemRootIaHandler.extractor(),
-        SpaceIaHandler.extractor(),
-        SpaceRootLibraryIaHandler.extractor(),
-        SpaceRootFolderIaHandler.extractor(),
-        FileSystemFolderIaHandler.extractor().fromList()
+        XdbDatabaseIaHandler.extractor()
     ).flatMap(this::extractWith).collect(Collectors.toList());
     return new ArtifactCollection(artifacts);
   }

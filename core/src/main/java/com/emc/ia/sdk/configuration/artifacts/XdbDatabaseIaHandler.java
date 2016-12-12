@@ -5,6 +5,8 @@ package com.emc.ia.sdk.configuration.artifacts;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import com.emc.ia.sdk.configuration.ArtifactExtractor;
 import com.emc.ia.sdk.configuration.BaseIAArtifact;
@@ -20,31 +22,61 @@ public final class XdbDatabaseIaHandler extends BaseIAArtifact {
     return new XdbDatabaseExtractor();
   }
 
-  private final Database xdbDatabase;
+  private final String name;
+  private final String adminPassword;
 
-  public XdbDatabaseIaHandler(Database source) {
-    this.xdbDatabase = source;
+  public XdbDatabaseIaHandler(String name, String adminPassword) {
+    this.name = Optional.ofNullable(name).orElse("AIP-xdb");
+    this.adminPassword = Optional.ofNullable(adminPassword).orElse("secret");
   }
 
   @Override
   protected void installArtifact(RestClient client, IACache cache) throws IOException {
     Databases databases = client.follow(cache.getFirst(Federation.class), LINK_DATABASES, Databases.class);
-    Database createdDb = databases.byName(xdbDatabase.getName());
+    Database createdDb = databases.byName(name);
     if (createdDb == null) {
-      createdDb = client.createCollectionItem(databases, xdbDatabase, LINK_ADD, LINK_SELF);
+      createdDb = client.createCollectionItem(databases, buildDatabase(), LINK_ADD, LINK_SELF);
+    } else {
+      ensureDatabase(createdDb);
     }
     cache.cacheOne(createdDb);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof XdbDatabaseIaHandler)) {
+      return false;
+    }
+    XdbDatabaseIaHandler handler = (XdbDatabaseIaHandler)other;
+    return name.equals(handler.name)
+        && adminPassword.equals(handler.adminPassword);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, adminPassword);
+  }
+
+  private Database buildDatabase() {
+    Database xdbDatabase = new Database();
+    xdbDatabase.setName(name);
+    xdbDatabase.setAdminPassword(adminPassword);
+    return xdbDatabase;
+  }
+
+  private void ensureDatabase(Database database) {
+    if (!adminPassword.equals(database.getAdminPassword())) {
+      throw new IllegalStateException("Current xdbDatabase has different admin password than configured");
+    }
   }
 
   private static final class XdbDatabaseExtractor extends ArtifactExtractor {
     @Override
     public XdbDatabaseIaHandler extract(Object representation) {
       Map databaseRepresentation = asMap(representation);
-      Database db = new Database();
-      db.setName(extractName(databaseRepresentation));
-      db.setAdminPassword(extractString(databaseRepresentation, "adminPassword"));
-      return new XdbDatabaseIaHandler(db);
-
+      String name = extractName(databaseRepresentation);
+      String adminPassword = extractString(databaseRepresentation, "adminPassword");
+      return new XdbDatabaseIaHandler(name, adminPassword);
     }
 
     @Override

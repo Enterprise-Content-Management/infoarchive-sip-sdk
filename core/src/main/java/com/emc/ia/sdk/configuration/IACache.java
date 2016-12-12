@@ -47,6 +47,9 @@ public final class IACache {
   public <T extends NamedLinkContainer> T getByClassWithName(Class<T> token, String name) {
     if (singles.containsKey(token)) {
       T object = (T)singles.get(token);
+      if (object == null) {
+        return null;
+      }
       if (object.getName().equals(name)) {
         return object;
       }
