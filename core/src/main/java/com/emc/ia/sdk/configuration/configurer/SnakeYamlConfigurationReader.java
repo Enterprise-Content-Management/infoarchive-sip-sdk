@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.emc.ia.sdk.configuration.artifacts.FileSystemRootIaHandler;
+import com.emc.ia.sdk.configuration.artifacts.SpaceIaHandler;
 import org.yaml.snakeyaml.Yaml;
 
 import com.emc.ia.sdk.configuration.ArtifactCollection;
@@ -47,7 +49,9 @@ public final class SnakeYamlConfigurationReader implements ConfigurationReader {
         TenantIaHandler.extractor(),
         ApplicationIaHandler.extractor(),
         FederationIaHandler.extractor(),
-        XdbDatabaseIaHandler.extractor()
+        XdbDatabaseIaHandler.extractor(),
+        SpaceIaHandler.extractor(),
+        FileSystemRootIaHandler.extractor()
     ).flatMap(this::extractWith).collect(Collectors.toList());
     return new ArtifactCollection(artifacts);
   }

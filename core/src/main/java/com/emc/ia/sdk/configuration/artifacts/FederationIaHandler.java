@@ -26,8 +26,12 @@ public final class FederationIaHandler extends BaseIAArtifact {
   private final String bootstrap;
   private final String superUserPassword;
 
+  public FederationIaHandler() {
+    this("mainFederation", null, null);
+  }
+
   public FederationIaHandler(String name, String bootstrap, String superUserPassword) {
-    this.name = Optional.ofNullable(name).orElse("mainFederation");
+    this.name = Objects.requireNonNull(name);
     this.bootstrap = Optional.ofNullable(bootstrap).orElse("xhive://127.0.0.1:2910");
     this.superUserPassword = Optional.ofNullable(superUserPassword).orElse("test");
   }
