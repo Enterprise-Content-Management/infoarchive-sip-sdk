@@ -24,6 +24,7 @@ public interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_EXPORT_CONFIG = LINK_PREFIX + "export-configurations";
   String LINK_EXPORT_PIPELINE = LINK_PREFIX + "export-pipelines";
   String LINK_EXPORT_TRANSFORMATION = LINK_PREFIX + "export-transformations";
+  String LINK_EXPORT_TRANSFORMATION_ZIP = LINK_PREFIX + "zip";
   String LINK_FEDERATIONS = LINK_PREFIX + "federations";
   String LINK_FILE_SYSTEM_FOLDERS = LINK_PREFIX + "file-system-folders";
   String LINK_FILE_SYSTEM_ROOTS = LINK_PREFIX + "file-system-roots";

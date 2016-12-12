@@ -72,7 +72,7 @@ public class WhenMakingRestCalls extends TestCase {
     link.setHref(uri);
     state.getLinks()
       .put(relation, link);
-    Class<?> type = String.class;
+    Class<String> type = String.class;
 
     restClient.follow(state, relation, type);
 
@@ -91,7 +91,7 @@ public class WhenMakingRestCalls extends TestCase {
 
     restClient.refresh(state);
 
-    verify(httpClient).get(eq(uri), any(List.class), eq(state.getClass()));
+    verify(httpClient).get(eq(uri), any(List.class), eq(LinkContainer.class));
   }
 
   @Test

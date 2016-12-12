@@ -10,7 +10,7 @@ buildscript {
 import org.gradle.api.logging.StandardOutputListener
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '3.2'
+  gradleVersion = '3.2.1'
 }
 
 apply plugin: 'eclipse'
@@ -60,7 +60,10 @@ subprojects {
     snakeYaml "org.yaml:snakeyaml:1.17"
   }
 
-
+  tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:all" << "-Xlint:-processing" << "-Xlint:-serial" << "-Werror"
+  }
+  
   javadoc {
     def events = []
     StandardOutputListener listener = { event -> events << event }
@@ -69,7 +72,7 @@ subprojects {
     }
     doLast {
       logging.removeStandardOutputListener(listener)
-      if (events.find { it.toString() =~ " warning: " } != null) {
+      if (events.find { it.toString() =~ /warning/ }) {
         throw new GradleException("Warnings in Javadoc, see output above");
       }
     }

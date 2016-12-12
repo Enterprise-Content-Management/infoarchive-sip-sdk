@@ -79,6 +79,8 @@ import com.emc.ia.sdk.sip.client.dto.export.ExportConfiguration;
 import com.emc.ia.sdk.sip.client.dto.export.ExportConfigurations;
 import com.emc.ia.sdk.sip.client.dto.export.ExportPipeline;
 import com.emc.ia.sdk.sip.client.dto.export.ExportPipelines;
+import com.emc.ia.sdk.sip.client.dto.export.ExportTransformation;
+import com.emc.ia.sdk.sip.client.dto.export.ExportTransformations;
 import com.emc.ia.sdk.sip.client.dto.result.Column;
 import com.emc.ia.sdk.sip.client.dto.result.Column.DataType;
 import com.emc.ia.sdk.sip.client.dto.result.Column.DefaultSort;
@@ -107,6 +109,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     InfoArchiveConfiguration {
 
   private static final String TYPE_EXPORT_PIPELINE = "export-pipeline";
+  private static final String TYPE_EXPORT_TRANSFORMATION = "export-transformation";
   private static final int MAX_RETRIES = 5;
   private static final int RETRY_MS = 500;
   private static final int WAIT_RACE_CONDITION_MS = 2000;
@@ -148,6 +151,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       ensureDatabase();
       ensureFileSystemRoot();
       ensureTenantLevelExportPipelines();
+      ensureTenantLevelExportTransformations();
       ensureTenantLevelExportConfigurations();
       ensureApplication();
       ensureSpace();
@@ -170,6 +174,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       ensureQuery();
       ensureResultConfigurationHelper();
       ensureExportPipelines();
+      ensureExportTransformations();
       ensureExportConfigurations();
       ensureSearch();
     } catch (IOException e) {
@@ -532,6 +537,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       pipeline.setEnvelopeFormat("gz");
       pipeline.setType("XPROC");
       pipeline.setComposite(true);
+      pipeline.setCollectionBasedExport(false);
       pipeline.setContent(
           "<p:declare-step version=\"2.0\" xmlns:p=\"http://www.w3.org/ns/xproc\" xmlns:ia=\"http://infoarchive.emc.com/xproc\">\n    <p:input port=\"source\" sequence=\"true\"/>\n    <ia:search-results-csv/>\n    <ia:gzip/>\n    <ia:store-export-result format=\"csv\"/>\n</p:declare-step>");
 
@@ -554,6 +560,15 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       exportConfiguration.setDescription("configurations");
       exportConfiguration.setExportType("ASYNCHRONOUS");
       exportConfiguration.setPipeline(configurationState.getObjectUri(TYPE_EXPORT_PIPELINE, "search-results-csv-gzip"));
+      ExportConfiguration.Transformation transformation = new ExportConfiguration.Transformation();
+      transformation.setPortName("stylesheet");
+      transformation.setTransformation(
+          configurationState.getObjectUri(TYPE_EXPORT_TRANSFORMATION, "csv_xsl"));
+      exportConfiguration.setTransformations(new ExportConfiguration.Transformation[] { transformation });
+      ExportConfiguration.Options options = new ExportConfiguration.Options();
+      options.setXslResultFormat("csv");
+      options.setXqueryResultFormat(null);
+      exportConfiguration.setOptions(options);
       createItem(configurations, exportConfiguration);
       exportConfiguration = restClient.refresh(configurations)
         .byName(defaultName);
@@ -563,13 +578,32 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
 
   }
 
+  private void ensureTenantLevelExportTransformations() throws IOException {
+    String defaultName = "csv_xsl";
+    ExportTransformations transformations =
+      restClient.follow(configurationState.getTenant(), LINK_EXPORT_TRANSFORMATION, ExportTransformations.class);
+    ExportTransformation exportTransformation = transformations.byName(defaultName);
+    if (exportTransformation == null) {
+      exportTransformation = new ExportTransformation();
+      exportTransformation.setName(defaultName);
+      exportTransformation.setDescription("csv xsl transformation");
+      exportTransformation.setType("XSLT");
+      exportTransformation.setMainPath("search-results-csv.xsl");
+      createItem(transformations, exportTransformation);
+      exportTransformation = restClient.refresh(transformations)
+        .byName(defaultName);
+      Objects.requireNonNull(exportTransformation, "Could not create export transformation");
+    }
+    configurationState.setObjectUri(TYPE_EXPORT_TRANSFORMATION, defaultName, exportTransformation.getSelfUri());
+  }
+
   private void ensureExportPipelines() throws IOException {
     String rawPipelineNames = configuration.get(EXPORT_PIPELINE_NAME);
     if (rawPipelineNames != null && !rawPipelineNames.isEmpty()) {
       String[] pipelineNames = rawPipelineNames.split(",");
+      ExportPipelines pipelines =
+        restClient.follow(configurationState.getApplication(), LINK_EXPORT_PIPELINE, ExportPipelines.class);
       for (String pipelineName : pipelineNames) {
-        ExportPipelines pipelines =
-            restClient.follow(configurationState.getApplication(), LINK_EXPORT_PIPELINE, ExportPipelines.class);
         ExportPipeline pipeline = pipelines.byName(pipelineName);
         if (pipeline == null) {
           createItem(pipelines, createExportPipeline(pipelineName));
@@ -586,9 +620,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     String rawConfigurationNames = configuration.get(EXPORT_CONFIG_NAME);
     if (rawConfigurationNames != null && !rawConfigurationNames.isEmpty()) {
       String[] configurationNames = rawConfigurationNames.split(",");
+      ExportConfigurations configurations =
+        restClient.follow(configurationState.getApplication(), LINK_EXPORT_CONFIG, ExportConfigurations.class);
       for (String configurationName : configurationNames) {
-        ExportConfigurations configurations =
-            restClient.follow(configurationState.getApplication(), LINK_EXPORT_CONFIG, ExportConfigurations.class);
         ExportConfiguration exportConfiguration = configurations.byName(configurationName);
         if (exportConfiguration == null) {
           createItem(configurations, createExportConfiguration(configurationName));
@@ -601,12 +635,40 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     }
   }
 
+  private void ensureExportTransformations() throws IOException {
+    String rawTransformationNames = configuration.get(EXPORT_TRANSFORMATION_NAME);
+    if (rawTransformationNames != null && !rawTransformationNames.isEmpty()) {
+      String[] transformationNames = rawTransformationNames.split(",");
+      ExportTransformations transformations =
+        restClient.follow(configurationState.getApplication(), LINK_EXPORT_TRANSFORMATION, ExportTransformations.class);
+      for (String transformationName : transformationNames) {
+        ExportTransformation exportTransformation = transformations.byName(transformationName);
+        if (exportTransformation == null) {
+          createItem(transformations, createExportTransformation(transformationName));
+          exportTransformation = restClient.refresh(transformations)
+                                  .byName(transformationName);
+          Objects.requireNonNull(configuration, "Could not create export transformation");
+        }
+        configurationState.setObjectUri(TYPE_EXPORT_TRANSFORMATION, transformationName, exportTransformation.getSelfUri());
+      }
+    }
+  }
+
   private ExportConfiguration createExportConfiguration(String name) {
     ExportConfiguration conf = new ExportConfiguration();
     conf.setName(name);
     conf.setExportType(getString(EXPORT_CONFIG_TYPE_TEMPLATE, name));
     conf.setPipeline(
         configurationState.getObjectUri(TYPE_EXPORT_PIPELINE, getString(EXPORT_CONFIG_PIPELINE_TEMPLATE, name)));
+    ExportConfiguration.Transformation transformation = new ExportConfiguration.Transformation();
+    transformation.setPortName(getString(EXPORT_CONFIG_TRANSFORMATIONS_PORTNAME_TEMPLATE, name));
+    transformation.setTransformation(
+        configurationState.getObjectUri(TYPE_EXPORT_TRANSFORMATION, getString(EXPORT_CONFIG_TRANSFORMATIONS_TRANSFORMATION_TEMPLATE, name)));
+    conf.setTransformations(new ExportConfiguration.Transformation[] { transformation });
+    ExportConfiguration.Options options = new ExportConfiguration.Options();
+    options.setXslResultFormat(getString(EXPORT_CONFIG_OPTIONS_XSL_RESULTFORMAT_TEMPLATE, name));
+    options.setXqueryResultFormat(getString(EXPORT_CONFIG_OPTIONS_XQUERY_RESULTFORMAT_TEMPLATE, name));
+    conf.setOptions(options);
     return conf;
   }
 
@@ -621,7 +683,17 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     pipeline.setInputFormat(getString(EXPORT_PIPELINE_INPUT_FORMAT_TEMPLATE, name));
     pipeline.setOutputFormat(getString(EXPORT_PIPELINE_OUTPUT_FORMAT_TEMPLATE, name));
     pipeline.setType(getString(EXPORT_PIPELINE_TYPE_TEMPLATE, name));
+    pipeline.setCollectionBasedExport(getBoolean(EXPORT_PIPELINE_COLLECTION_BASED_TEMPLATE, name));
     return pipeline;
+  }
+
+  private ExportTransformation createExportTransformation(String name) {
+    ExportTransformation transformation = new ExportTransformation();
+    transformation.setName(name);
+    transformation.setDescription(getString(EXPORT_TRANSFORMATION_DESCRIPTION_TEMPLATE, name));
+    transformation.setType(getString(EXPORT_TRANSFORMATION_TYPE_TEMPLATE, name));
+    transformation.setMainPath(getString(EXPORT_TRANSFORMATION_MAIN_PATH_TEMPLATE, name));
+    return transformation;
   }
 
   private boolean getBoolean(String key, String name) {
