@@ -210,7 +210,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   @Override
-  public LinkContainer uploadTransformationFile(ExportTransformation exportTransformation, InputStream zip) throws IOException {
+  public LinkContainer uploadTransformation(ExportTransformation exportTransformation, InputStream zip) throws IOException {
     String uri = exportTransformation.getUri(LINK_EXPORT_TRANSFORMATION_ZIP);
     return restClient.post(uri, LinkContainer.class, new BinaryPart("file", zip, "stylesheet.zip"));
   }

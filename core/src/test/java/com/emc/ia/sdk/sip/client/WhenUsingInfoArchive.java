@@ -644,7 +644,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.post(anyString(), eq(LinkContainer.class), any(Part.class))).thenReturn(linkContainer);
 
     archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
-    LinkContainer result = archiveClient.uploadTransformationFile(exportTransformation, zip);
+    LinkContainer result = archiveClient.uploadTransformation(exportTransformation, zip);
 
     assertEquals(linkContainer, result);
   }

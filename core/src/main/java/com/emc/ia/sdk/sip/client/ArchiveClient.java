@@ -97,11 +97,11 @@ public interface ArchiveClient {
   OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName, long timeOutInMillis) throws IOException;
 
   /**
-   * Upload the transformation zip file with the stylesheet.
+   * Upload the transformation zip with the stylesheet into the Archive.
    * @param exportTransformation The export transformation.
-   * @param zip The input stream of zip file with stylesheet.
+   * @param zip The input stream of zip with stylesheet.
    * @throws IOException When an I/O error occurs
    */
-  LinkContainer uploadTransformationFile(ExportTransformation exportTransformation, InputStream zip) throws IOException;
+  LinkContainer uploadTransformation(ExportTransformation exportTransformation, InputStream zip) throws IOException;
 
 }
