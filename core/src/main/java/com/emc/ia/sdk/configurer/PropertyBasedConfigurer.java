@@ -564,11 +564,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       transformation.setPortName("stylesheet");
       transformation.setTransformation(
           configurationState.getObjectUri(TYPE_EXPORT_TRANSFORMATION, "csv_xsl"));
-      exportConfiguration.setTransformations(new ExportConfiguration.Transformation[] { transformation });
-      ExportConfiguration.Options options = new ExportConfiguration.Options();
-      options.setXslResultFormat("csv");
-      options.setXqueryResultFormat(null);
-      exportConfiguration.setOptions(options);
+      exportConfiguration.addTransformation(transformation);
+      exportConfiguration.addOption(ExportConfiguration.DefaultOptions.XSL_RESULT_FORMAT, "csv");
       createItem(configurations, exportConfiguration);
       exportConfiguration = restClient.refresh(configurations)
         .byName(defaultName);
@@ -658,17 +655,31 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     ExportConfiguration conf = new ExportConfiguration();
     conf.setName(name);
     conf.setExportType(getString(EXPORT_CONFIG_TYPE_TEMPLATE, name));
-    conf.setPipeline(
-        configurationState.getObjectUri(TYPE_EXPORT_PIPELINE, getString(EXPORT_CONFIG_PIPELINE_TEMPLATE, name)));
-    ExportConfiguration.Transformation transformation = new ExportConfiguration.Transformation();
-    transformation.setPortName(getString(EXPORT_CONFIG_TRANSFORMATIONS_PORTNAME_TEMPLATE, name));
-    transformation.setTransformation(
-        configurationState.getObjectUri(TYPE_EXPORT_TRANSFORMATION, getString(EXPORT_CONFIG_TRANSFORMATIONS_TRANSFORMATION_TEMPLATE, name)));
-    conf.setTransformations(new ExportConfiguration.Transformation[] { transformation });
-    ExportConfiguration.Options options = new ExportConfiguration.Options();
-    options.setXslResultFormat(getString(EXPORT_CONFIG_OPTIONS_XSL_RESULTFORMAT_TEMPLATE, name));
-    options.setXqueryResultFormat(getString(EXPORT_CONFIG_OPTIONS_XQUERY_RESULTFORMAT_TEMPLATE, name));
-    conf.setOptions(options);
+    conf.setPipeline(configurationState.getObjectUri(TYPE_EXPORT_PIPELINE,
+        getString(EXPORT_CONFIG_PIPELINE_TEMPLATE, name)));
+    String rawConfigTransformationNames = configuration.get(EXPORT_CONFIG_TRANSFORMATIONS_NAME);
+    if (rawConfigTransformationNames != null && !rawConfigTransformationNames.isEmpty()) {
+      for (String configTransformationName : rawConfigTransformationNames.split(",")) {
+        ExportConfiguration.Transformation transformation = new ExportConfiguration.Transformation();
+        transformation.setPortName(configuration.get(
+            resolveTemplatedKey(EXPORT_CONFIG_TRANSFORMATIONS_PORTNAME_TEMPLATE, name, configTransformationName)));
+        transformation.setTransformation(configurationState.getObjectUri(TYPE_EXPORT_TRANSFORMATION,
+            configuration.get(resolveTemplatedKey(
+                EXPORT_CONFIG_TRANSFORMATIONS_TRANSFORMATION_TEMPLATE, name, configTransformationName))));
+        conf.addTransformation(transformation);
+      }
+    }
+    conf.addOption(ExportConfiguration.DefaultOptions.XSL_RESULT_FORMAT,
+        getString(EXPORT_CONFIG_OPTIONS_XSL_RESULTFORMAT_TEMPLATE, name));
+    conf.addOption(ExportConfiguration.DefaultOptions.XQUERY_RESULT_FORMAT,
+        getString(EXPORT_CONFIG_OPTIONS_XQUERY_RESULTFORMAT_TEMPLATE, name));
+    String rawConfigOptionNames = configuration.get(EXPORT_CONFIG_OPTIONS_NAME);
+    if (rawConfigOptionNames != null && !rawConfigOptionNames.isEmpty()) {
+      for (String configOptionName : rawConfigOptionNames.split(",")) {
+        conf.addOption(configOptionName,
+            configuration.get(resolveTemplatedKey(EXPORT_CONFIG_OPTIONS_VALUE_TEMPLATE, name, configOptionName)));
+      }
+    }
     return conf;
   }
 
