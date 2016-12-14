@@ -76,9 +76,8 @@ public final class ApplicationIaHandler extends BaseIAArtifact {
 
   private static final class ApplicationExtractor extends ArtifactExtractor {
     @Override
-    @SuppressWarnings("rawtypes")
     public ApplicationIaHandler extract(Object representation) {
-      Map appRepresentation = asMap(representation);
+      Map<String, Object> appRepresentation = asMap(representation);
       String name = extractName(appRepresentation);
       String archiveType = extractString(appRepresentation, "archiveType");
       String type = extractString(appRepresentation, "type");

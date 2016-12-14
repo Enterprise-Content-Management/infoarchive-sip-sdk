@@ -22,8 +22,7 @@ import com.emc.ia.sdk.sip.client.dto.Tenant;
 
 public final class IACache {
 
-  @SuppressWarnings("rawtypes")
-  private final Map<Class<?>, List> collections = new HashMap<>();
+  private final Map<Class<?>, List<? extends NamedLinkContainer>> collections = new HashMap<>();
   private final Map<Class<?>, Object> singles = new HashMap<>();
 
   public IACache() {
@@ -34,12 +33,12 @@ public final class IACache {
     singles.put(FileSystemRoot.class, null);
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
+  @SuppressWarnings("unchecked")
   public <T extends NamedLinkContainer> void cacheOne(T object) {
     if (singles.containsKey(object.getClass())) {
       singles.put(object.getClass(), object);
     } else {
-      List<T> collection = collections.computeIfAbsent(object.getClass(), token -> new ArrayList());
+      List<T> collection = (List<T>)collections.computeIfAbsent(object.getClass(), token -> new ArrayList<>());
       collection.add(object);
     }
   }
@@ -55,7 +54,7 @@ public final class IACache {
         return object;
       }
     } else if (collections.containsKey(token)) {
-      List<T> collection = collections.get(token);
+      List<T> collection = (List<T>)collections.get(token);
       for (T object : collection) {
         if (object.getName().equals(name)) {
           return object;
@@ -70,7 +69,7 @@ public final class IACache {
     if (singles.containsKey(token)) {
       return (T)singles.get(token);
     } else if (collections.containsKey(token)) {
-      List<T> collection = collections.get(token);
+      List<T> collection = (List<T>)collections.get(token);
       return collection.get(0);
     }
     return null;

@@ -79,9 +79,8 @@ public final class FederationIaHandler extends BaseIAArtifact {
 
   private static final class FederationExtractor extends ArtifactExtractor {
     @Override
-    @SuppressWarnings("rawtypes")
     public FederationIaHandler extract(Object representation) {
-      Map federationRepresentation = asMap(representation);
+      Map<String, Object> federationRepresentation = asMap(representation);
       String name = extractName(federationRepresentation);
       String bootstrap = extractString(federationRepresentation, "bootstrap");
       String superUserPassword = extractString(federationRepresentation, "superUserPassword");

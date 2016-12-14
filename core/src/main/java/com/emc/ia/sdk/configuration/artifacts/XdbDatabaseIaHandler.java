@@ -72,9 +72,8 @@ public final class XdbDatabaseIaHandler extends BaseIAArtifact {
 
   private static final class XdbDatabaseExtractor extends ArtifactExtractor {
     @Override
-    @SuppressWarnings("rawtypes")
     public XdbDatabaseIaHandler extract(Object representation) {
-      Map databaseRepresentation = asMap(representation);
+      Map<String, Object> databaseRepresentation = asMap(representation);
       String name = extractName(databaseRepresentation);
       String adminPassword = extractString(databaseRepresentation, "adminPassword");
       return new XdbDatabaseIaHandler(name, adminPassword);

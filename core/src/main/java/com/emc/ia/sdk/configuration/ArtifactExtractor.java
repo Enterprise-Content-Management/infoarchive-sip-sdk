@@ -14,19 +14,17 @@ public abstract class ArtifactExtractor implements Extractor {
 
   public abstract BaseIAArtifact extract(Object representation);
 
-  @SuppressWarnings("rawtypes")
-  protected final String extractString(Map configuration, String key) {
+  protected final String extractString(Map<String, Object> configuration, String key) {
     return (String)configuration.get(key);
   }
 
-  @SuppressWarnings("rawtypes")
-  protected final String extractName(Map configuration) {
+  protected final String extractName(Map<String, Object> configuration) {
     return extractString(configuration, "name");
   }
 
-  @SuppressWarnings("rawtypes")
-  protected final Map asMap(Object representation) {
-    return (Map)representation;
+  @SuppressWarnings("unchecked")
+  protected final Map<String, Object> asMap(Object representation) {
+    return (Map<String, Object>)representation;
   }
 
   protected final String asString(Object representation) {

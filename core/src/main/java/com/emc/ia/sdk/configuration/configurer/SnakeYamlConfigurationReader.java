@@ -28,8 +28,7 @@ import com.emc.ia.sdk.configuration.artifacts.XdbDatabaseIaHandler;
 
 public final class SnakeYamlConfigurationReader implements ConfigurationReader {
 
-  @SuppressWarnings("rawtypes")
-  private final Map configuration;
+  private final Map<String, Object> configuration;
 
   public static SnakeYamlConfigurationReader fromFile(File yamlConfiguration) {
     try (InputStream input = new BufferedInputStream(new FileInputStream(yamlConfiguration))) {
@@ -39,9 +38,10 @@ public final class SnakeYamlConfigurationReader implements ConfigurationReader {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public SnakeYamlConfigurationReader(InputStream input) {
     Yaml yaml = new Yaml();
-    configuration = (Map)yaml.load(input);
+    configuration = (Map<String, Object>)yaml.load(input);
   }
 
   @Override

@@ -28,12 +28,12 @@ public final class ListExtractor implements Extractor {
    * @return ArifactGroup that contains all the artifacts from the list
    */
   @Override
-  @SuppressWarnings("rawtypes")
+  @SuppressWarnings("unchecked")
   public ArtifactGroup extract(Object representation) {
-    List listRepresentation = (List)representation;
+    List<Map<String, Map<String, Object>>> listRepresentation = (List<Map<String, Map<String, Object>>>)representation;
     List<BaseIAArtifact> baseArtifacts = new ArrayList<>();
-    for (Object artifact : listRepresentation) {
-      Map artifactRepresentation = transformToArtifact(artifact);
+    for (Map<String, Map<String, Object>> artifact : listRepresentation) {
+      Map<String, Object> artifactRepresentation = transformToArtifact(artifact);
       baseArtifacts.add(original.extract(artifactRepresentation));
     }
     return new ArtifactGroup(baseArtifacts);
@@ -44,13 +44,13 @@ public final class ListExtractor implements Extractor {
     return fieldName;
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  private Map transformToArtifact(Object artifactEntity) {
-    Map mapObject = (Map)artifactEntity;
+  @SuppressWarnings("unchecked")
+  private Map<String, Object> transformToArtifact(Object artifactEntity) {
+    Map<String, Map<String, Object>> mapObject = (Map<String, Map<String, Object>>)artifactEntity;
     if (mapObject.size() == 1) {
-      Map.Entry objectEntry = (Map.Entry)mapObject.entrySet().iterator().next();
-      Object name = objectEntry.getKey();
-      Map artifactRepresentation = (Map)objectEntry.getValue();
+      Map.Entry<String, Map<String, Object>> objectEntry = mapObject.entrySet().iterator().next();
+      String name = objectEntry.getKey();
+      Map<String, Object> artifactRepresentation = objectEntry.getValue();
       artifactRepresentation.put("name", name);
       return artifactRepresentation;
     } else {
