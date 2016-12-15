@@ -336,6 +336,13 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.exportconfig.names", "ExportConfiguration");
     configuration.put("ia.exportconfig.ExportConfiguration.type", "ASYNCHRONOUS");
     configuration.put("ia.exportconfig.ExportConfiguration.pipeline", "ExportPipeline");
+    configuration.put("ia.exportconfig.ExportConfiguration.transformations.names", "CsvXsl");
+    configuration.put("ia.exportconfig.ExportConfiguration.transformations.CsvXsl.portname", "stylesheet");
+    configuration.put("ia.exportconfig.ExportConfiguration.transformations.CsvXsl.transformation", "ExportTransformation");
+    configuration.put("ia.exportconfig.ExportConfiguration.options.xslresultformat.value", "csv");
+    configuration.put("ia.exportconfig.ExportConfiguration.options.names", "FtpHost,FtpPort");
+    configuration.put("ia.exportconfig.ExportConfiguration.options.FtpHost.value", "localhost");
+    configuration.put("ia.exportconfig.ExportConfiguration.options.FtpPort.value", "21");
 
     configuration.put("ia.exporttransformation.names", "ExportTransformation");
     configuration.put("ia.exporttransformation.ExportTransformation.description", "csv xsl transformation");
