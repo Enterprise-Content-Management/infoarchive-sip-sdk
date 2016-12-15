@@ -657,27 +657,29 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     conf.setExportType(getString(EXPORT_CONFIG_TYPE_TEMPLATE, name));
     conf.setPipeline(configurationState.getObjectUri(TYPE_EXPORT_PIPELINE,
         getString(EXPORT_CONFIG_PIPELINE_TEMPLATE, name)));
-    String rawConfigTransformationNames = configuration.get(EXPORT_CONFIG_TRANSFORMATIONS_NAME);
+    String rawConfigTransformationNames = configuration.get(resolveTemplatedKey(EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_NAME, name));
     if (rawConfigTransformationNames != null && !rawConfigTransformationNames.isEmpty()) {
-      for (String configTransformationName : rawConfigTransformationNames.split(",")) {
+      String[] configTransformationNames = rawConfigTransformationNames.split(",");
+      for (String configTransformationName : configTransformationNames) {
         ExportConfiguration.Transformation transformation = new ExportConfiguration.Transformation();
         transformation.setPortName(configuration.get(
-            resolveTemplatedKey(EXPORT_CONFIG_TRANSFORMATIONS_PORTNAME_TEMPLATE, name, configTransformationName)));
+            resolveTemplatedKey(EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_PORTNAME_TEMPLATE, name, configTransformationName)));
         transformation.setTransformation(configurationState.getObjectUri(TYPE_EXPORT_TRANSFORMATION,
             configuration.get(resolveTemplatedKey(
-                EXPORT_CONFIG_TRANSFORMATIONS_TRANSFORMATION_TEMPLATE, name, configTransformationName))));
+                EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_TRANSFORMATION_TEMPLATE, name, configTransformationName))));
         conf.addTransformation(transformation);
       }
     }
     conf.addOption(ExportConfiguration.DefaultOptions.XSL_RESULT_FORMAT,
-        getString(EXPORT_CONFIG_OPTIONS_XSL_RESULTFORMAT_TEMPLATE, name));
+        getString(EXPORT_CONFIG_OPTIONS_TEMPLATE_XSL_RESULTFORMAT_TEMPLATE, name));
     conf.addOption(ExportConfiguration.DefaultOptions.XQUERY_RESULT_FORMAT,
-        getString(EXPORT_CONFIG_OPTIONS_XQUERY_RESULTFORMAT_TEMPLATE, name));
-    String rawConfigOptionNames = configuration.get(EXPORT_CONFIG_OPTIONS_NAME);
+        getString(EXPORT_CONFIG_OPTIONS_TEMPLATE_XQUERY_RESULTFORMAT_TEMPLATE, name));
+    String rawConfigOptionNames = configuration.get(resolveTemplatedKey(EXPORT_CONFIG_OPTIONS_TEMPLATE_NAME, name));
     if (rawConfigOptionNames != null && !rawConfigOptionNames.isEmpty()) {
-      for (String configOptionName : rawConfigOptionNames.split(",")) {
+      String[] configOptionNames = rawConfigOptionNames.split(",");
+      for (String configOptionName : configOptionNames) {
         conf.addOption(configOptionName,
-            configuration.get(resolveTemplatedKey(EXPORT_CONFIG_OPTIONS_VALUE_TEMPLATE, name, configOptionName)));
+            configuration.get(resolveTemplatedKey(EXPORT_CONFIG_OPTIONS_TEMPLATE_VALUE_TEMPLATE, name, configOptionName)));
       }
     }
     return conf;
