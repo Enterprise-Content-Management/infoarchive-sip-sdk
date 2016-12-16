@@ -3,6 +3,11 @@
  */
 package com.emc.ia.sdk.sip.client.dto.export;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.emc.ia.sdk.sip.client.dto.NamedLinkContainer;
 
 public class ExportConfiguration extends NamedLinkContainer {
@@ -10,8 +15,9 @@ public class ExportConfiguration extends NamedLinkContainer {
   private String description;
   private String exportType;
   private String pipeline;
-  private Transformation[] transformations;
-  private Options options;
+  private List<Transformation> transformations = new ArrayList<>();
+  private Map<String, String> options = new HashMap<>();
+  private Map<String, String> encryptedOptions = new HashMap<>();
 
   public String getDescription() {
     return description;
@@ -37,20 +43,51 @@ public class ExportConfiguration extends NamedLinkContainer {
     this.pipeline = pipeline;
   }
 
-  public Transformation[] getTransformations() {
-    return transformations == null ? null : this.transformations.clone();
+  public List<Transformation> getTransformations() {
+    return transformations;
   }
 
-  public void setTransformations(Transformation[] transformations) {
-    this.transformations = transformations.clone();
+  public void setTransformations(List<Transformation> transformations) {
+    this.transformations = transformations;
   }
 
-  public Options getOptions() {
+  public void addTransformation(Transformation transformation) {
+    if (transformation != null && transformation.getPortName() != null && transformation.getTransformation() != null) {
+      this.transformations.add(transformation);
+    }
+  }
+
+  public Map<String, String> getOptions() {
     return options;
   }
 
-  public void setOptions(Options options) {
+  public void setOptions(Map<String, String> options) {
     this.options = options;
+  }
+
+  public void addOption(String key, String value) {
+    if (key != null && value != null) {
+      this.options.put(key, value);
+    }
+  }
+
+  public Map<String, String> getEncryptedOptions() {
+    return encryptedOptions;
+  }
+
+  public void setEncryptedOptions(Map<String, String> encryptedOptions) {
+    this.encryptedOptions = encryptedOptions;
+  }
+
+  public void addEncryptedOption(String key, String value) {
+    if (key != null && value != null) {
+      this.encryptedOptions.put(key, value);
+    }
+  }
+
+  public interface DefaultOptions {
+    String XSL_RESULT_FORMAT = "xslResultFormat";
+    String XQUERY_RESULT_FORMAT = "xqueryResultFormat";
   }
 
   @SuppressWarnings("PMD.AvoidFieldNameMatchingTypeName")
@@ -73,28 +110,6 @@ public class ExportConfiguration extends NamedLinkContainer {
 
     public void setTransformation(String transformation) {
       this.transformation = transformation;
-    }
-  }
-
-  public static class Options {
-
-    private String xslResultFormat;
-    private String xqueryResultFormat;
-
-    public String getXslResultFormat() {
-      return xslResultFormat;
-    }
-
-    public void setXslResultFormat(String xslResultFormat) {
-      this.xslResultFormat = xslResultFormat;
-    }
-
-    public String getXqueryResultFormat() {
-      return xqueryResultFormat;
-    }
-
-    public void setXqueryResultFormat(String xqueryResultFormat) {
-      this.xqueryResultFormat = xqueryResultFormat;
     }
   }
 }
