@@ -343,6 +343,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.exportconfig.ExportConfiguration.options.names", "FtpHost,FtpPort");
     configuration.put("ia.exportconfig.ExportConfiguration.options.FtpHost.value", "localhost");
     configuration.put("ia.exportconfig.ExportConfiguration.options.FtpPort.value", "21");
+    configuration.put("ia.exportconfig.ExportConfiguration.encryptedoptions.names", "FtpLogin,FtpPass");
+    configuration.put("ia.exportconfig.ExportConfiguration.encryptedoptions.FtpLogin.value", "login");
+    configuration.put("ia.exportconfig.ExportConfiguration.encryptedoptions.FtpPass.value", "password");
 
     configuration.put("ia.exporttransformation.names", "ExportTransformation");
     configuration.put("ia.exporttransformation.ExportTransformation.description", "csv xsl transformation");

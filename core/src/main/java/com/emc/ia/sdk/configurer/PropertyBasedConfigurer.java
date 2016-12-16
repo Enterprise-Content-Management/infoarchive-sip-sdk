@@ -657,6 +657,13 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     conf.setExportType(getString(EXPORT_CONFIG_TYPE_TEMPLATE, name));
     conf.setPipeline(configurationState.getObjectUri(TYPE_EXPORT_PIPELINE,
         getString(EXPORT_CONFIG_PIPELINE_TEMPLATE, name)));
+    fillExportConfigurationTransformations(name, conf);
+    fillExportConfigurationOptions(name, conf);
+    fillExportConfigurationEncryptedOptions(name, conf);
+    return conf;
+  }
+
+  private void fillExportConfigurationTransformations(String name, ExportConfiguration conf) {
     String rawConfigTransformationNames = configuration.get(resolveTemplatedKey(EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_NAME, name));
     if (rawConfigTransformationNames != null && !rawConfigTransformationNames.isEmpty()) {
       String[] configTransformationNames = rawConfigTransformationNames.split(",");
@@ -670,6 +677,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
         conf.addTransformation(transformation);
       }
     }
+  }
+
+  private void fillExportConfigurationOptions(String name, ExportConfiguration conf) {
     conf.addOption(ExportConfiguration.DefaultOptions.XSL_RESULT_FORMAT,
         getString(EXPORT_CONFIG_OPTIONS_TEMPLATE_XSL_RESULTFORMAT_TEMPLATE, name));
     conf.addOption(ExportConfiguration.DefaultOptions.XQUERY_RESULT_FORMAT,
@@ -682,7 +692,18 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
             configuration.get(resolveTemplatedKey(EXPORT_CONFIG_OPTIONS_TEMPLATE_VALUE_TEMPLATE, name, configOptionName)));
       }
     }
-    return conf;
+  }
+
+  private void fillExportConfigurationEncryptedOptions(String name, ExportConfiguration conf) {
+    String rawConfigEncryptedOptionNames = configuration.get(resolveTemplatedKey(EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_NAME, name));
+    if (rawConfigEncryptedOptionNames != null && !rawConfigEncryptedOptionNames.isEmpty()) {
+      String[] configEncryptedOptionNames = rawConfigEncryptedOptionNames.split(",");
+      for (String configEncryptedOptionName : configEncryptedOptionNames) {
+        conf.addEncryptedOption(configEncryptedOptionName,
+            configuration.get(resolveTemplatedKey(
+                EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_VALUE_TEMPLATE, name, configEncryptedOptionName)));
+      }
+    }
   }
 
   private ExportPipeline createExportPipeline(String name) {

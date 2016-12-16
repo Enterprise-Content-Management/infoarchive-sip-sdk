@@ -17,6 +17,7 @@ public class ExportConfiguration extends NamedLinkContainer {
   private String pipeline;
   private List<Transformation> transformations = new ArrayList<>();
   private Map<String, String> options = new HashMap<>();
+  private Map<String, String> encryptedOptions = new HashMap<>();
 
   public String getDescription() {
     return description;
@@ -67,6 +68,20 @@ public class ExportConfiguration extends NamedLinkContainer {
   public void addOption(String key, String value) {
     if (key != null && value != null) {
       this.options.put(key, value);
+    }
+  }
+
+  public Map<String, String> getEncryptedOptions() {
+    return encryptedOptions;
+  }
+
+  public void setEncryptedOptions(Map<String, String> encryptedOptions) {
+    this.encryptedOptions = encryptedOptions;
+  }
+
+  public void addEncryptedOption(String key, String value) {
+    if (key != null && value != null) {
+      this.encryptedOptions.put(key, value);
     }
   }
 
