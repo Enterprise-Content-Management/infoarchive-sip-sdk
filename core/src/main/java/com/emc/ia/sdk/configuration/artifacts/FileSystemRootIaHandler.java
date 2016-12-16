@@ -51,6 +51,11 @@ public final class FileSystemRootIaHandler extends BaseIAArtifact {
   }
 
   @Override
+  public int getInstallationOrderKey() {
+    return 5;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof FileSystemRootIaHandler)) {
       return false;

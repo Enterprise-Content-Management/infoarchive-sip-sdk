@@ -47,6 +47,11 @@ public final class ApplicationIaHandler extends BaseIAArtifact {
   }
 
   @Override
+  public int getInstallationOrderKey() {
+    return 2;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof ApplicationIaHandler)) {
       return false;

@@ -48,6 +48,11 @@ public final class FederationIaHandler extends BaseIAArtifact {
     cache.cacheOne(createdFederation);
   }
 
+  @Override
+  public int getInstallationOrderKey() {
+    return 3;
+  }
+
   private Federation buildFederation() {
     Federation federation = new Federation();
     federation.setName(name);
@@ -63,6 +68,7 @@ public final class FederationIaHandler extends BaseIAArtifact {
     }
   }
 
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof FederationIaHandler)) {
       return false;
@@ -73,6 +79,7 @@ public final class FederationIaHandler extends BaseIAArtifact {
         && Objects.equals(superUserPassword, handler.superUserPassword);
   }
 
+  @Override
   public int hashCode() {
     return Objects.hash(name, bootstrap, superUserPassword);
   }

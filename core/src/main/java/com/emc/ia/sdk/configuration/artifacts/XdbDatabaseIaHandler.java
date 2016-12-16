@@ -43,6 +43,11 @@ public final class XdbDatabaseIaHandler extends BaseIAArtifact {
   }
 
   @Override
+  public int getInstallationOrderKey() {
+    return 4;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof XdbDatabaseIaHandler)) {
       return false;

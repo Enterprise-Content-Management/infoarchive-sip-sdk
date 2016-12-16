@@ -19,4 +19,11 @@ public interface Installable {
    *              artifact
    */
   void install(RestClient client, IACache cache);
+
+  /**
+   * This method is required to manage the installation order of artifacts.
+   * Lesser returned key means higher priority.
+   * @return the key of the installation order.
+   */
+  int getInstallationOrderKey();
 }

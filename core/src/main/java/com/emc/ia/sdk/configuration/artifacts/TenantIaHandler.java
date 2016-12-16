@@ -48,6 +48,11 @@ public final class TenantIaHandler extends BaseIAArtifact {
   }
 
   @Override
+  public int getInstallationOrderKey() {
+    return 1;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof TenantIaHandler)) {
       return false;

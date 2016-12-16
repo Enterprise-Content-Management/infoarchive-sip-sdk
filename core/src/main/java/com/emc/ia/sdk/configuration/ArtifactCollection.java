@@ -3,6 +3,8 @@
  */
 package com.emc.ia.sdk.configuration;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,7 +17,8 @@ public final class ArtifactCollection implements Iterable<Installable> {
   private final List<Installable> artifactInstallationOrder;
 
   public ArtifactCollection(List<Installable> source) {
-    this.artifactInstallationOrder = source;
+    source.sort(Comparator.comparingInt(Installable::getInstallationOrderKey));
+    artifactInstallationOrder = new ArrayList<>(source);
   }
 
   @Override

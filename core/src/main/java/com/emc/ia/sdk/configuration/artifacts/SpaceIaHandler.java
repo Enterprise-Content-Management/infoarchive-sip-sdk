@@ -45,6 +45,11 @@ public final class SpaceIaHandler extends BaseIAArtifact {
     cache.cacheOne(createdSpace);
   }
 
+  @Override
+  public int getInstallationOrderKey() {
+    return 6;
+  }
+
   private String fillName(String applicationName) {
     if (name == null) {
       return applicationName + "-space";

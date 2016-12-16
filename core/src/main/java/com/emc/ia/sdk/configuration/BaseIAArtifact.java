@@ -13,7 +13,6 @@ import com.emc.ia.sdk.support.rest.RestClient;
  * Implements Installable artifact. Represents single artifact that can be installed.
  * The class handles exception rethrowing and provides additional utility methods for installation
  */
-
 public abstract class BaseIAArtifact implements Installable, InfoArchiveLinkRelations {
 
   /** Handles exception rethrowing and delegates the method logic to the abstract method.
