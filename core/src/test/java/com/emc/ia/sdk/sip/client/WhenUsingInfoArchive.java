@@ -144,9 +144,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Tenant tenant = new Tenant();
     application = new Application();
     applications = mock(Applications.class);
-    ExportConfigurations exportConfigurations = mock(ExportConfigurations.class);
-    ExportPipelines exportPipelines = mock(ExportPipelines.class);
-    ExportTransformations exportTransformations = mock(ExportTransformations.class);
     federations = mock(Federations.class);
     Spaces spaces = mock(Spaces.class);
     Databases databases = mock(Databases.class);
@@ -171,6 +168,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Queries queries = mock(Queries.class);
     Quotas quotas = mock(Quotas.class);
     ResultConfigurationHelpers helpers = mock(ResultConfigurationHelpers.class);
+    ExportConfigurations exportConfigurations = mock(ExportConfigurations.class);
+    ExportPipelines exportPipelines = mock(ExportPipelines.class);
+    ExportTransformations exportTransformations = mock(ExportTransformations.class);
     Searches searches = mock(Searches.class);
     SearchCompositions compositions = mock(SearchCompositions.class);
     XForms xForms = mock(XForms.class);
@@ -193,9 +193,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.get(BILLBOARD_URI, Services.class)).thenReturn(resource);
     when(restClient.follow(resource, LINK_TENANT, Tenant.class)).thenReturn(tenant);
     when(link.getHref()).thenReturn(BILLBOARD_URI);
-    mockCollection(ExportConfigurations.class, exportConfigurations);
-    mockCollection(ExportPipelines.class, exportPipelines);
-    mockCollection(ExportTransformations.class, exportTransformations);
     when(restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class)).thenReturn(aips);
     aips.setLinks(links);
 
@@ -220,6 +217,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(Quotas.class, quotas);
     mockCollection(Queries.class, queries);
     mockCollection(ResultConfigurationHelpers.class, helpers);
+    mockCollection(ExportConfigurations.class, exportConfigurations);
+    mockCollection(ExportPipelines.class, exportPipelines);
+    mockCollection(ExportTransformations.class, exportTransformations);
     mockCollection(Searches.class, searches);
     mockCollection(SearchCompositions.class, compositions);
     mockCollection(XForms.class, xForms);
@@ -227,9 +227,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
     mockByName(federations, new Federation());
     mockByName(databases, new Database());
-    mockByName(exportConfigurations, new ExportConfiguration());
-    mockByName(exportPipelines, new ExportPipeline());
-    mockByName(exportTransformations, new ExportTransformation());
     mockByName(applications, application);
     mockByName(spaces, new Space());
     mockByName(spaceRootLibraries, new SpaceRootLibrary());
@@ -249,6 +246,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(quotas, new Quota());
     mockByName(queries, new Query());
     mockByName(helpers, new ResultConfigurationHelper());
+    mockByName(exportConfigurations, new ExportConfiguration());
+    mockByName(exportPipelines, new ExportPipeline());
+    mockByName(exportTransformations, new ExportTransformation());
     mockByName(searches, new Search());
     mockByName(compositions, new SearchComposition());
     mockByName(xForms, new XForm());
@@ -336,6 +336,16 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.exportconfig.names", "ExportConfiguration");
     configuration.put("ia.exportconfig.ExportConfiguration.type", "ASYNCHRONOUS");
     configuration.put("ia.exportconfig.ExportConfiguration.pipeline", "ExportPipeline");
+    configuration.put("ia.exportconfig.ExportConfiguration.transformations.names", "CsvXsl");
+    configuration.put("ia.exportconfig.ExportConfiguration.transformations.CsvXsl.portname", "stylesheet");
+    configuration.put("ia.exportconfig.ExportConfiguration.transformations.CsvXsl.transformation", "ExportTransformation");
+    configuration.put("ia.exportconfig.ExportConfiguration.options.xslresultformat.value", "csv");
+    configuration.put("ia.exportconfig.ExportConfiguration.options.names", "FtpHost,FtpPort");
+    configuration.put("ia.exportconfig.ExportConfiguration.options.FtpHost.value", "localhost");
+    configuration.put("ia.exportconfig.ExportConfiguration.options.FtpPort.value", "21");
+    configuration.put("ia.exportconfig.ExportConfiguration.encryptedoptions.names", "FtpLogin,FtpPass");
+    configuration.put("ia.exportconfig.ExportConfiguration.encryptedoptions.FtpLogin.value", "login");
+    configuration.put("ia.exportconfig.ExportConfiguration.encryptedoptions.FtpPass.value", "password");
 
     configuration.put("ia.exporttransformation.names", "ExportTransformation");
     configuration.put("ia.exporttransformation.ExportTransformation.description", "csv xsl transformation");
@@ -353,6 +363,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
       if (first.get()) {
         first.set(false);
         return null;
+      }
+      if (!(item instanceof Application)) {
+        first.set(true);
       }
       return item;
     });
