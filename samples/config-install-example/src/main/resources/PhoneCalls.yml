@@ -1,0 +1,39 @@
+tenant: MyCompany
+
+application:
+  name: PhoneCalls
+  type: ACTIVE_ARCHIVING
+  archiveType: SIP
+  description: "The application has customer support phone calls history"
+  category: "Customer Support"
+
+federation:
+  name: mainFederation
+  bootstrap: "xhive://127.0.0.1:2910"
+  superUserPassword: test
+
+xdbDatabase:
+  name: AIP-xdb
+  adminPassword: secret
+
+fileSystemRoot: defaultFileSystemRoot
+
+space: PhoneCalls-space
+
+spaceRootLibrary:
+  name: PhoneCalls-space-root-library
+  space: PhoneCalls-space
+  xdbDatabase: AIP-xdb
+
+spaceRootFolder:
+  name: PhoneCalls-space-root-folder
+  space: PhoneCalls-space
+  fileSystemRoot: defaultFileSystemRoot
+
+fileSystemFolders:
+  - PhoneCalls-folder:
+      subPath: "stores/file_store_01"
+  - PhoneCalls-result-folder:
+      subPath: "stores/result_store"
+  - PhoneCalls-confirmation-folder:
+      subPath: "stores/confirmation_store_01"

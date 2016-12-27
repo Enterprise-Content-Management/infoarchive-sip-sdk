@@ -51,6 +51,7 @@ public interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_SPACES = LINK_PREFIX + "spaces";
   String LINK_STORES = LINK_PREFIX + "stores";
   String LINK_TENANT = LINK_PREFIX + "tenant";
+  String LINK_TENANTS = LINK_PREFIX + "tenants";
   String LINK_XFORMS = LINK_PREFIX + "xforms";
 
 }
