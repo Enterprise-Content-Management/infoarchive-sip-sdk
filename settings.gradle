@@ -11,3 +11,6 @@ project(':velocity').name = 'infoarchive-sip-sdk-velocity'
 
 include 'samples/hello-sip'
 project(':samples/hello-sip').name ='hello-sip'
+
+include 'samples/assemble-sips'
+project(':samples/assemble-sips').name ='assemble-sips'
