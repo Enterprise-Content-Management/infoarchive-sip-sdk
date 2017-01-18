@@ -30,4 +30,8 @@
     <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
     <Class name="~com\.emc\.ia\.sdk\.sip\.assembly\.(DataSubmissionSession|PackagingInformation)(\$.*)?" />
   </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP2" />
+    <Class name="~com\.emc\.ia\.sdk\.sip\.sample\..*" />
+  </Match>
 </FindBugsFilter>
