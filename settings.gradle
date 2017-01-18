@@ -9,8 +9,7 @@ project(':stringtemplate').name = 'infoarchive-sip-sdk-stringtemplate'
 include 'velocity'
 project(':velocity').name = 'infoarchive-sip-sdk-velocity'
 
-include 'samples/hello-sip'
-project(':samples/hello-sip').name ='hello-sip'
-
-include 'samples/assemble-sips'
-project(':samples/assemble-sips').name ='assemble-sips'
+new File('samples').listFiles().each { dir ->
+  include "samples/$dir.name"
+  project (":samples/$dir.name").name = dir.name
+} 
