@@ -1,3 +1,38 @@
 dependencies {
   compile project(':infoarchive-sip-sdk-core')
 }
+
+ext {
+  sampleDir = new File(buildDir, 'sample')
+  sipFile = new File(buildDir, 'sip.zip')
+}
+
+task prepareSampleDirectory(type: Copy) {
+  from sourceSets.main.resources
+  into sampleDir
+}
+
+task assembleSampleSip(type: JavaExec) {
+  dependsOn prepareSampleDirectory
+  
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'com.emc.ia.sdk.sip.sample.assemble.FileArchiver'
+  args sampleDir.path, sipFile.path
+}
+
+task runSample {
+  dependsOn assembleSampleSip
+  doLast {
+    def zip = zipTree(sipFile)
+    logger.quiet '\nSIP contents:'
+    zip.visit { details ->
+      logger.quiet "$details.relativePath"
+    }
+    logger.quiet '\nPDI contents:'
+    zip.matching { filterable ->
+      filterable.include 'eas_pdi.xml'
+    }.visit { element ->
+      logger.quiet element.file.text
+    }
+  } 
+}
