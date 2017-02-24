@@ -224,18 +224,7 @@ public class ApacheHttpClient implements HttpClient {
     }
     return execute(request, type);
   }
-
-//  public <T> T post(String uri, Collection<Header> headers, Class<T> type, String payload, ContentType contentType) throws IOException {
-//    if (Objects.isNull(contentType)) {
-//      return post(uri, headers, type, payload);
-//    }
-//    HttpPost request = newPost(uri, headers);
-//    if (payload != null) {
-//        request.setEntity(new StringEntity(payload, contentType));
-//    }
-//    return execute(request, type);
-//  }
-
+  
   private HttpPost newPost(String uri, Collection<Header> headers) {
     Objects.requireNonNull(uri, "Missing URI");
     HttpPost result = new HttpPost(uri);
