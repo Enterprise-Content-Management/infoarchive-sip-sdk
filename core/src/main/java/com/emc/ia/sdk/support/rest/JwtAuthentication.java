@@ -3,19 +3,20 @@
  */
 package com.emc.ia.sdk.support.rest;
 
-import com.emc.ia.sdk.support.datetime.Clock;
-import com.emc.ia.sdk.support.datetime.Timer;
-import com.emc.ia.sdk.support.http.Header;
-import com.emc.ia.sdk.support.http.HttpClient;
-import com.emc.ia.sdk.support.io.RuntimeIoException;
-
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
+import com.emc.ia.sdk.support.datetime.Clock;
+import com.emc.ia.sdk.support.datetime.Timer;
+import com.emc.ia.sdk.support.http.Header;
+import com.emc.ia.sdk.support.http.HttpClient;
+import com.emc.ia.sdk.support.io.RuntimeIoException;
 
 public final class JwtAuthentication implements AuthenticationStrategy {
 

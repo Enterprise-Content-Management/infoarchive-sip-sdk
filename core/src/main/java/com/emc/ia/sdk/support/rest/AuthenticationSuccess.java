@@ -3,6 +3,7 @@
  */
 package com.emc.ia.sdk.support.rest;
 
+@SuppressWarnings({"PMD.VariableNamingConventions", "PMD.MethodNamingConventions"})
 public class AuthenticationSuccess {
   private String access_token;
   private String token_type;

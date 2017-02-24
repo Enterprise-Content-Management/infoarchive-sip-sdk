@@ -3,17 +3,13 @@
  */
 package com.emc.ia.sdk.support.http.apache;
 
-import com.emc.ia.sdk.support.http.BinaryPart;
-import com.emc.ia.sdk.support.http.Header;
-import com.emc.ia.sdk.support.http.HttpClient;
-import com.emc.ia.sdk.support.http.HttpException;
-import com.emc.ia.sdk.support.http.Part;
-import com.emc.ia.sdk.support.http.ResponseFactory;
-import com.emc.ia.sdk.support.http.TextPart;
-import com.emc.ia.sdk.support.http.UriBuilder;
-import com.emc.ia.sdk.support.io.ByteArrayInputOutputStream;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Objects;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
@@ -39,12 +35,20 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.Collection;
-import java.util.Objects;
+import com.emc.ia.sdk.support.http.BinaryPart;
+import com.emc.ia.sdk.support.http.Header;
+import com.emc.ia.sdk.support.http.HttpClient;
+import com.emc.ia.sdk.support.http.HttpException;
+import com.emc.ia.sdk.support.http.Part;
+import com.emc.ia.sdk.support.http.ResponseFactory;
+import com.emc.ia.sdk.support.http.TextPart;
+import com.emc.ia.sdk.support.http.UriBuilder;
+import com.emc.ia.sdk.support.io.ByteArrayInputOutputStream;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+
 
 public class ApacheHttpClient implements HttpClient {
 
