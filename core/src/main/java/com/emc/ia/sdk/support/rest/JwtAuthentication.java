@@ -3,18 +3,18 @@
  */
 package com.emc.ia.sdk.support.rest;
 
+import com.emc.ia.sdk.support.datetime.Clock;
+import com.emc.ia.sdk.support.datetime.Timer;
+import com.emc.ia.sdk.support.http.Header;
+import com.emc.ia.sdk.support.http.HttpClient;
+import com.emc.ia.sdk.support.io.RuntimeIoException;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-
-import com.emc.ia.sdk.support.datetime.Clock;
-import com.emc.ia.sdk.support.datetime.Timer;
-import com.emc.ia.sdk.support.http.Header;
-import com.emc.ia.sdk.support.http.HttpClient;
-import com.emc.ia.sdk.support.io.RuntimeIoException;
 
 public final class JwtAuthentication implements AuthenticationStrategy {
 
@@ -60,13 +60,13 @@ public final class JwtAuthentication implements AuthenticationStrategy {
   @Override
   public Header issueAuthHeader() {
     authResult = issueAuthentication();
-    return new Header("Authorization", authResult.getTokenType() + " " + authResult.getAccessToken());
+    return new Header("Authorization", authResult.getToken_type() + " " + authResult.getAccess_token());
   }
 
   private AuthenticationSuccess issueAuthentication() {
     if (authResult == null) {
       AuthenticationSuccess firstResult = fetchAuthentication();
-      startRefreshingTimer(TimeUnit.MILLISECONDS.convert(firstResult.getExpiresIn(), TimeUnit.SECONDS));
+      startRefreshingTimer(TimeUnit.MILLISECONDS.convert(firstResult.getExpires_in(), TimeUnit.SECONDS));
       return firstResult;
     } else {
       return authResult;
@@ -87,7 +87,7 @@ public final class JwtAuthentication implements AuthenticationStrategy {
   }
 
   private void refreshAuthentication() {
-    String payload = "grant_type=refresh_token&refresh_token=" + authResult.getRefreshToken();
+    String payload = "grant_type=refresh_token&refresh_token=" + authResult.getRefresh_token();
     authResult = postToGateway(payload);
   }
 

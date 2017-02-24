@@ -47,13 +47,13 @@ public class WhenMakingJwtAuthentication extends TestCase {
 
   @Before
   public void init() throws IOException {
-    authResult.setAccessToken(accessToken);
-    authResult.setRefreshToken(refreshToken);
-    authResult.setTokenType("Bearer");
-    authResult.setExpiresIn(25);
-    authRefresh.setAccessToken(secondAccessToken);
-    authRefresh.setTokenType("Bearer");
-    authRefresh.setExpiresIn(25);
+    authResult.setAccess_token(accessToken);
+    authResult.setRefresh_token(refreshToken);
+    authResult.setToken_type("Bearer");
+    authResult.setExpires_in(25);
+    authRefresh.setAccess_token(secondAccessToken);
+    authRefresh.setToken_type("Bearer");
+    authRefresh.setExpires_in(25);
     when(httpClient.post(anyString(), any(), eq(AuthenticationSuccess.class), anyString()))
         .thenReturn(authResult)
         .thenReturn(authRefresh);
@@ -120,7 +120,7 @@ public class WhenMakingJwtAuthentication extends TestCase {
 
   @Test
   public void shouldCorrectlySetLittleRefreshingTime() throws IOException {
-    authResult.setExpiresIn(18);
+    authResult.setExpires_in(18);
     authentication.issueAuthHeader();
     verify(clock)
         .schedule(any(), eq(TimeUnit.MILLISECONDS.convert(9, TimeUnit.SECONDS)), eq(TimeUnit.MILLISECONDS), any());
@@ -147,7 +147,7 @@ public class WhenMakingJwtAuthentication extends TestCase {
 
   @Test
   public void shouldNotRefreshTokenIfNotExpiring() throws IOException {
-    authResult.setExpiresIn(20);
+    authResult.setExpires_in(20);
     authentication.issueAuthHeader();
     assertEquals("Should not be refreshed", authorizationHeader, authentication.issueAuthHeader());
   }

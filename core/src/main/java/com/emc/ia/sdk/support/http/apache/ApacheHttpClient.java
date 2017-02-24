@@ -3,13 +3,17 @@
  */
 package com.emc.ia.sdk.support.http.apache;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.Collection;
-import java.util.Objects;
-
+import com.emc.ia.sdk.support.http.BinaryPart;
+import com.emc.ia.sdk.support.http.Header;
+import com.emc.ia.sdk.support.http.HttpClient;
+import com.emc.ia.sdk.support.http.HttpException;
+import com.emc.ia.sdk.support.http.Part;
+import com.emc.ia.sdk.support.http.ResponseFactory;
+import com.emc.ia.sdk.support.http.TextPart;
+import com.emc.ia.sdk.support.http.UriBuilder;
+import com.emc.ia.sdk.support.io.ByteArrayInputOutputStream;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
@@ -35,17 +39,12 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 
-import com.emc.ia.sdk.support.http.BinaryPart;
-import com.emc.ia.sdk.support.http.Header;
-import com.emc.ia.sdk.support.http.HttpClient;
-import com.emc.ia.sdk.support.http.HttpException;
-import com.emc.ia.sdk.support.http.Part;
-import com.emc.ia.sdk.support.http.ResponseFactory;
-import com.emc.ia.sdk.support.http.TextPart;
-import com.emc.ia.sdk.support.http.UriBuilder;
-import com.emc.ia.sdk.support.io.ByteArrayInputOutputStream;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Objects;
 
 public class ApacheHttpClient implements HttpClient {
 
@@ -221,10 +220,21 @@ public class ApacheHttpClient implements HttpClient {
   public <T> T post(String uri, Collection<Header> headers, Class<T> type, String payload) throws IOException {
     HttpPost request = newPost(uri, headers);
     if (payload != null) {
-      request.setEntity(new StringEntity(payload));
+      request.setEntity(new StringEntity(payload, ContentType.APPLICATION_FORM_URLENCODED));
     }
     return execute(request, type);
   }
+
+//  public <T> T post(String uri, Collection<Header> headers, Class<T> type, String payload, ContentType contentType) throws IOException {
+//    if (Objects.isNull(contentType)) {
+//      return post(uri, headers, type, payload);
+//    }
+//    HttpPost request = newPost(uri, headers);
+//    if (payload != null) {
+//        request.setEntity(new StringEntity(payload, contentType));
+//    }
+//    return execute(request, type);
+//  }
 
   private HttpPost newPost(String uri, Collection<Header> headers) {
     Objects.requireNonNull(uri, "Missing URI");
