@@ -3,11 +3,12 @@
  */
 package com.emc.ia.sdk.support.rest;
 
+import com.emc.ia.sdk.support.http.Header;
+import org.apache.http.entity.ContentType;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
-
-import com.emc.ia.sdk.support.http.Header;
 
 public final class GatewayInfo {
   private final String gatewayUrl;
@@ -44,6 +45,10 @@ public final class GatewayInfo {
     String basicAuthToken = "Basic "
         + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8));
     return new Header("Authorization", basicAuthToken);
+  }
+
+  public Header getContentTypeHeader() {
+    return new Header("Content-Type", ContentType.APPLICATION_FORM_URLENCODED.toString());
   }
 
   public String getGatewayUrl() {

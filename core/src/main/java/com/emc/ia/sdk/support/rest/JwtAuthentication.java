@@ -10,8 +10,9 @@ import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -93,7 +94,8 @@ public final class JwtAuthentication implements AuthenticationStrategy {
 
   private AuthenticationSuccess postToGateway(String payload) {
     String gatewayUrl = gatewayInfo.getGatewayUrl();
-    Collection<Header> headers = Collections.singletonList(gatewayInfo.getAuthorizationHeader());
+    Collection<Header> headers =
+        new ArrayList<>(Arrays.asList(gatewayInfo.getAuthorizationHeader(), gatewayInfo.getContentTypeHeader()));
     AuthenticationSuccess authSuccess;
     try {
       authSuccess = httpClient.post(gatewayUrl, headers, AuthenticationSuccess.class, payload);

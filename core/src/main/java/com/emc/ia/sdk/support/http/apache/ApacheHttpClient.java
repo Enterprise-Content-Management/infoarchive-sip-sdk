@@ -220,11 +220,11 @@ public class ApacheHttpClient implements HttpClient {
   public <T> T post(String uri, Collection<Header> headers, Class<T> type, String payload) throws IOException {
     HttpPost request = newPost(uri, headers);
     if (payload != null) {
-      request.setEntity(new StringEntity(payload, ContentType.APPLICATION_FORM_URLENCODED));
+      request.setEntity(new StringEntity(payload));
     }
     return execute(request, type);
   }
-  
+
   private HttpPost newPost(String uri, Collection<Header> headers) {
     Objects.requireNonNull(uri, "Missing URI");
     HttpPost result = new HttpPost(uri);
