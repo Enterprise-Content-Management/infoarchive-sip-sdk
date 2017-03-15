@@ -5,7 +5,7 @@
 
 # InfoArchive SIP SDK
 
-The [EMC InfoArchive](http://www.emc.com/enterprise-content-management/infoarchive/) SIP SDK is a Java library that 
+The [OpenText InfoArchive](http://documentum.opentext.com/infoarchive/) SIP SDK is a Java library that 
 makes it quick and easy to create SIPs regardless of what type of data it contains or where that data originates
 from. A SIP (Submission Information Package) is a package consisting of packaging information, metadata (structured
 data in the form of XML) and optionally a collection of unstructured data files.
@@ -30,7 +30,7 @@ them is through a dependency management system like [Gradle](http://gradle.org/)
 **Gradle**
 
     dependencies { 
-      compile 'com.emc.ia:infoarchive-sip-sdk-core:5.2.1'
+      compile 'com.emc.ia:infoarchive-sip-sdk-core:5.5.1'
     }
     
 **Maven**
@@ -39,7 +39,7 @@ them is through a dependency management system like [Gradle](http://gradle.org/)
       <dependency>
         <groupId>com.emc.ia</groupId>
         <artifactId>infoarchive-sip-sdk-core</artifactId>
-        <version>5.2.1</version>
+        <version>5.5.1</version>
       </dependency>
     </dependencies>
     
