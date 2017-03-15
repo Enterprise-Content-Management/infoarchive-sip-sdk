@@ -17,6 +17,7 @@ import com.emc.ia.sdk.support.test.TestCase;
 
 public class WhenHashing extends TestCase {
 
+  private static final String EXPECTED_HASH_FUNCTION = "SHA-256";
   private final HashAssembler hashAssembler = new SingleHashAssembler();
 
   @Test
@@ -30,9 +31,9 @@ public class WhenHashing extends TestCase {
     assertEquals("# hashes", 1, actual.size());
     EncodedHash encodedHash = actual.iterator()
       .next();
-    assertEquals("Algorithm", "SHA-1", encodedHash.getHashFunction());
+    assertEquals("Algorithm", EXPECTED_HASH_FUNCTION, encodedHash.getHashFunction());
     assertEquals("Encoding", "base64", encodedHash.getEncoding());
-    assertArrayEquals("Digest", MessageDigest.getInstance("SHA-1")
+    assertArrayEquals("Digest", MessageDigest.getInstance(EXPECTED_HASH_FUNCTION)
       .digest(content), Base64.decodeBase64(encodedHash.getValue()));
   }
 
