@@ -112,8 +112,6 @@ public class ApacheHttpClient implements HttpClient {
       httpResponse = client.execute(request);
     } catch (HttpResponseException e) {
       throw new HttpException(e.getStatusCode(), e);
-    } finally {
-      request.releaseConnection();
     }
     boolean cleanUp = true;
     try {
@@ -135,6 +133,7 @@ public class ApacheHttpClient implements HttpClient {
     } finally {
       if (cleanUp) {
         IOUtils.closeQuietly(httpResponse);
+        request.releaseConnection();
       }
     }
   }
