@@ -101,7 +101,7 @@ public class ApacheHttpClient implements HttpClient {
         .toString(), type));
     } catch (HttpResponseException e) {
       throw new HttpException(e.getStatusCode(), e);
-    } catch (HttpException e) {
+    } catch (HttpException e) { // NOPMD AvoidRethrowingException
       throw e;
     } catch (IOException e) {
       throw new HttpException(500, e);
@@ -116,7 +116,7 @@ public class ApacheHttpClient implements HttpClient {
       httpResponse = client.execute(request);
     } catch (HttpResponseException e) {
       throw new HttpException(e.getStatusCode(), e);
-    } catch (HttpException e) {
+    } catch (HttpException e) { // NOPMD AvoidRethrowingException
       throw e;
     } catch (IOException e) {
       throw new HttpException(500, e);
