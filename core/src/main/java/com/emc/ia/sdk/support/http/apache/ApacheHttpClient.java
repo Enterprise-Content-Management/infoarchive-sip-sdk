@@ -21,7 +21,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
@@ -95,7 +94,7 @@ public class ApacheHttpClient implements HttpClient {
     }
   }
 
-  protected <T> T execute(HttpUriRequest request, Class<T> type) throws IOException {
+  protected <T> T execute(HttpRequestBase request, Class<T> type) throws IOException {
     Objects.requireNonNull(request, "Missing request");
     try {
       return client.execute(request, getResponseHandler(request.getMethod(), request.getURI()
@@ -104,10 +103,12 @@ public class ApacheHttpClient implements HttpClient {
       throw new HttpException(e.getStatusCode(), e);
     } catch (IOException e) {
       throw new HttpException(500, e);
+    } finally {
+      request.releaseConnection();
     }
   }
 
-  protected <T> T execute(HttpUriRequest request, ResponseFactory<T> factory) throws IOException {
+  protected <T> T execute(HttpRequestBase request, ResponseFactory<T> factory) throws IOException {
     CloseableHttpResponse httpResponse;
     try {
       httpResponse = client.execute(request);
@@ -136,6 +137,7 @@ public class ApacheHttpClient implements HttpClient {
     } finally {
       if (cleanUp) {
         IOUtils.closeQuietly(httpResponse);
+        request.releaseConnection();
       }
     }
   }

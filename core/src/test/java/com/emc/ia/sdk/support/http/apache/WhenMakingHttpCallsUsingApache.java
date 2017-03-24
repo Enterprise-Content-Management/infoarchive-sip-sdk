@@ -3,11 +3,8 @@
  */
 package com.emc.ia.sdk.support.http.apache;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -24,6 +21,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
@@ -204,7 +202,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
     }
 
     @Override
-    protected <T> T execute(HttpUriRequest request, Class<T> type) throws IOException {
+    protected <T> T execute(HttpRequestBase request, Class<T> type) throws IOException {
       executedRequest = request;
       return type == null ? null : type.cast(preparedResponse);
     }
