@@ -121,27 +121,31 @@ public class ApacheHttpClient implements HttpClient {
     } catch (IOException e) {
       throw new HttpException(500, e);
     }
-    boolean cleanUp = true;
+    Runnable closeResponse = () -> {
+      IOUtils.closeQuietly(httpResponse);
+      request.releaseConnection();
+    };
+    boolean shouldCloseResponse = true;
     try {
       StatusLine statusLine = httpResponse.getStatusLine();
-      int status = statusLine.getStatusCode();
-      if (!isOk(status)) {
+      int statusCode = statusLine.getStatusCode();
+      if (!isOk(statusCode)) {
         HttpEntity entity = httpResponse.getEntity();
         String body = entity == null ? "" : EntityUtils.toString(entity);
         String method = request.getMethod();
         URI uri = request.getURI();
-        throw new HttpException(status,
-            String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
+        String reasonPhrase = statusLine.getReasonPhrase();
+        throw new HttpException(statusCode, String.format("%n%s %s%n==> %d %s%n%s", method, uri, statusCode,
+            reasonPhrase, body));
       }
-      T result = factory.create(new ApacheResponse(httpResponse));
-      cleanUp = false;
+      T result = factory.create(new ApacheResponse(httpResponse), closeResponse);
+      shouldCloseResponse = false;
       return result;
     } catch (Exception e) {
       throw new RuntimeException(e);
     } finally {
-      if (cleanUp) {
-        IOUtils.closeQuietly(httpResponse);
-        request.releaseConnection();
+      if (shouldCloseResponse) {
+        closeResponse.run();
       }
     }
   }

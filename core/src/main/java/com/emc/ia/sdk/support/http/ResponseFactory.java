@@ -3,8 +3,9 @@
  */
 package com.emc.ia.sdk.support.http;
 
+
 public interface ResponseFactory<T> {
 
-  T create(Response response);
+  T create(Response response, Runnable closeResponse);
 
 }

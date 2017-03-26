@@ -3,29 +3,27 @@
  */
 package com.emc.ia.sdk.sip.client.rest;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
-
 import com.emc.ia.sdk.sip.client.ContentResult;
+
 
 public class DefaultContentResult implements ContentResult {
 
   private final InputStream stream;
   private final long length;
   private final String mimetype;
-  private final Closeable dependentResource;
   private final String name;
+  private final Runnable closer;
 
   public DefaultContentResult(String name, long length, String mimetype, InputStream stream,
-      Closeable dependentResource) {
+      Runnable closer) {
     this.name = name;
     this.length = length;
     this.mimetype = mimetype;
     this.stream = stream;
-    this.dependentResource = dependentResource;
+    this.closer = closer;
   }
 
   @Override
@@ -40,8 +38,7 @@ public class DefaultContentResult implements ContentResult {
 
   @Override
   public void close() throws IOException {
-    IOUtils.closeQuietly(stream);
-    IOUtils.closeQuietly(dependentResource);
+    closer.run();
   }
 
   @Override
