@@ -152,16 +152,22 @@ public class ApacheHttpClient implements HttpClient {
 
   <T> ResponseHandler<T> getResponseHandler(String method, String uri, Class<T> type) {
     return response -> {
-      StatusLine statusLine = response.getStatusLine();
-      int status = statusLine.getStatusCode();
-      HttpEntity entity = response.getEntity();
-      boolean isBinary = InputStream.class.equals(type);
-      String body = isBinary ? "<binary>" : entity == null ? "" : EntityUtils.toString(entity);
-      if (!isOk(status)) {
-        throw new HttpException(status,
-            String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
+      try {
+        StatusLine statusLine = response.getStatusLine();
+        int status = statusLine.getStatusCode();
+        HttpEntity entity = response.getEntity();
+        boolean isBinary = InputStream.class.equals(type);
+        String body = isBinary ? "<binary>" : entity == null ? "" : EntityUtils.toString(entity);
+        if (!isOk(status)) {
+          throw new HttpException(status,
+              String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
+        }
+        return isBinary ? binaryResponse(entity, type) : textResponse(body, type);
+      } finally {
+        if (response instanceof CloseableHttpResponse) {
+          IOUtils.closeQuietly((CloseableHttpResponse)response);
+        }
       }
-      return isBinary ? binaryResponse(entity, type) : textResponse(body, type);
     };
   }
 
@@ -170,9 +176,12 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   private <T> T binaryResponse(HttpEntity entity, Class<T> type) throws IOException {
-    ByteArrayInputOutputStream result = new ByteArrayInputOutputStream();
-    IOUtils.copy(entity.getContent(), result);
-    return type.cast(result.getInputStream());
+    try (ByteArrayInputOutputStream output = new ByteArrayInputOutputStream()) {
+      try (InputStream input = entity.getContent()) {
+        IOUtils.copy(input, output);
+      }
+      return type.cast(output.getInputStream());
+    }
   }
 
   private <T> T textResponse(String body, Class<T> type) {
