@@ -1,0 +1,267 @@
+<processors>
+    <processor>
+        <name>SIP downloader processor</name>
+        <class>com.emc.ia.ingestion.processor.downloader.SipContentDownloader</class>
+    </processor>
+    <processor>
+        <transaction/>
+        <name>XDB Library creator processor</name>
+        <class>com.emc.ia.ingestion.processor.library.LibraryCreatorProcessor</class>
+    </processor>
+    <processor>
+        <name>SIP Decrypter processor</name>
+        <class>com.emc.ia.ingestion.processor.crypto.SipDecryptProcessor</class>
+        <id>sip.decrypt</id>
+    </processor>
+    <processor>
+        <name>SIP extractor processor</name>
+        <class>com.emc.ia.ingestion.processor.extractor.SipExtractor</class>
+        <id>sip.extractor</id>
+        <data>
+            <pdi.name>eas_pdi.xml</pdi.name>
+            <sip.name>eas_sip.xml</sip.name>
+        </data>
+    </processor>
+    <processor>
+        <name>PDI hash validation processor</name>
+        <class>com.emc.ia.ingestion.processor.hash.PdiHashValidatorProcessor</class>
+    </processor>
+    <processor>
+        <name>PDI schema validator processor</name>
+        <class>com.emc.ia.ingestion.processor.validator.PdiSchemaValidator</class>
+        <data>
+            <id>pdi.validation</id>
+            <parameter>
+                <are.whiteSpaces.ignored>false</are.whiteSpaces.ignored>
+            </parameter>
+        </data>
+    </processor>
+    <processor>
+        <name>PDI data encryption</name>
+        <class>com.emc.ia.ingestion.processor.crypto.PdiDataEncryptProcessor</class>
+        <id>pdi.data.encrypt</id>
+    </processor>
+    <processor>
+        <name>XDB SIP importer processor</name>
+        <class>com.emc.ia.ingestion.processor.importer.SipImporterProcessor</class>
+    </processor>
+    <processor>
+        <name>XDB PDI importer processor</name>
+        <class>com.emc.ia.ingestion.processor.importer.PdiImporterProcessor</class>
+        <id>pdi.xdb.importer</id>
+    </processor>
+    <processor>
+        <name>XDB PDI index processor</name>
+        <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>
+        <id>pdi.index.creator</id>
+        <data>
+            <key.document.name>xdb.pdi.name</key.document.name>
+            <indexes/>
+        </data>
+    </processor>
+    <processor>
+        <name>PDI AIU count processor</name>
+        <class>com.emc.ia.ingestion.processor.aiu.PdiAiuCountProcessor</class>
+        <id>pdi.aiu.cnt</id>
+    </processor>
+    <processor>
+        <name>PDI Partition Keys processor</name>
+        <class>com.emc.ia.ingestion.processor.partition.PartitionValuesProcessor</class>
+        <id>pdi.pkeys</id>
+    </processor>
+    <processor>
+        <name>PDI XML compression processor</name>
+        <class>com.emc.ia.ingestion.processor.compress.PdiCompressionProcessor</class>
+    </processor>
+    <processor>
+        <name>PDI XML encryption processor</name>
+        <class>com.emc.ia.ingestion.processor.crypto.PdiFileEncryptProcessor</class>
+        <id>pdi.encrypt</id>
+    </processor>
+    <processor>
+        <name>RI creation</name>
+        <class>com.emc.ia.ingestion.processor.content.InitRiProcessor</class>
+        <id>ri.init</id>
+        <data>
+            <select.query>
+                <![CDATA[
+                        return
+                    ]]>
+            </select.query>
+        </data>
+    </processor>
+    <processor>
+        <name>RI XDB indexes</name>
+        <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>
+        <id>ri.index</id>
+        <data>
+            <key.document.name>xdb.ri.name</key.document.name>
+            <indexes>
+                <path.value.index>
+                    <name>key</name>
+                    <path>/{urn:x-emc:ia:schema:ri}ris/{urn:x-emc:ia:schema:ri}ri[@key&lt;STRING>]</path>
+                    <compressed>false</compressed>
+                    <unique.keys>true</unique.keys>
+                    <concurrent>false</concurrent>
+                    <build.without.logging>false</build.without.logging>
+                </path.value.index>
+                <path.value.index>
+                    <name>seqno</name>
+                    <path>/{urn:x-emc:ia:schema:ri}ris/{urn:x-emc:ia:schema:ri}ri[@seqno&lt;LONG>]
+                    </path>
+                    <compressed>false</compressed>
+                    <unique.keys>true</unique.keys>
+                    <concurrent>false</concurrent>
+                    <build.without.logging>false</build.without.logging>
+                </path.value.index>
+            </indexes>
+        </data>
+    </processor>
+    <processor>
+        <name>CI hash generator and validator</name>
+        <class>com.emc.ia.ingestion.processor.content.CiHashProcessor</class>
+        <id>ci.hash</id>
+        <data>
+            <select.query>
+                <![CDATA[
+                    declare namespace ri = "urn:x-emc:ia:schema:ri";
+                    let $uri := replace(document-uri(.), '\.pdi$', '.ri')
+                    for $c in doc($uri)/ri:ris/ri:ri
+                    return <content filename="{ $c/@key }">
+                    <hash encoding="hex" algorithm="SHA-1" provided="false" />
+                    </content>
+                ]]>
+            </select.query>
+        </data>
+    </processor>
+    <processor>
+        <name>CI compression</name>
+        <class>com.emc.ia.ingestion.processor.content.CiCompressProcessor</class>
+        <id>ci.compress</id>
+        <data>
+            <select.query>
+                <![CDATA[
+                       return
+                ]]>
+            </select.query>
+        </data>
+    </processor>
+    <processor>
+        <name>CI encryptor</name>
+        <class>com.emc.ia.ingestion.processor.crypto.CiEncryptProcessor</class>
+        <id>ci.encrypt</id>
+        <data>
+            <select.query>
+                declare namespace ri = "urn:x-emc:ia:schema:ri";
+                let $toc as document-node(element(ri:ris))
+                := doc(concat('aip_', xhive:metadata(., 'aip_id'), '.ri'))
+                return
+                $toc/ri:ris/ri:ri/@key/string(.)
+            </select.query>
+        </data>
+    </processor>
+    <processor>
+        <name>CI aggregator</name>
+        <class>com.emc.ia.ingestion.processor.content.CiAggregateProcessor</class>
+        <id>ci.aggregate</id>
+        <data>
+            <select.query>
+                <![CDATA[
+                        declare namespace ri = "urn:x-emc:ia:schema:ri";
+                        let $toc as document-node(element(ri:ris))
+                        := doc(concat("aip_",xhive:metadata(., 'aip_id'),'.ri'))
+                        return $toc/ri:ris/ri:ri/string(@key)
+                ]]>
+            </select.query>
+        </data>
+    </processor>
+    <processor>
+        <name>RiContentProcessor</name>
+        <class>com.emc.ia.ingestion.processor.content.RiContentProcessor</class>
+        <id>ri.content</id>
+    </processor>
+    <processor>
+        <transaction/>
+        <name>Aggregate Updator processor</name>
+        <class>com.emc.ia.ingestion.processor.library.AggregateUpdaterProcessor</class>
+    </processor>
+    <processor>
+        <name>Add CI IDs in PDI</name>
+        <class>com.emc.ia.ingestion.processor.content.PdiContentIdProcessor</class>
+        <id>xdb.pdi.ci.id</id>
+        <data/>
+    </processor>
+    <processor>
+        <name>PDI CI indexes</name>
+        <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>
+        <id>xdb.pdi.ci.index</id>
+        <data>
+            <key.document.name>xdb.pdi.name</key.document.name>
+            <indexes>
+                <value.index>
+                    <name>pdi.ci.id</name>
+                    <compressed>false</compressed>
+                    <unique.keys>false</unique.keys>
+                    <concurrent>false</concurrent>
+                    <value.index.type>STRING</value.index.type>
+                    <element.uri/>
+                    <element.name/>
+                    <attribute.uri>urn:x-emc:ia:schema:pdi</attribute.uri>
+                    <attribute.name>cid</attribute.name>
+                </value.index>
+            </indexes>
+        </data>
+    </processor>
+    <processor>
+        <name>PDI AIU Ids processor</name>
+        <class>com.emc.ia.ingestion.processor.aiu.PdiAiuIdProcessor</class>
+        <id>pdi.aiu.id</id>
+    </processor>
+    <processor>
+        <name>XDB AIU index processor</name>
+        <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>
+        <id>xdb.pdi.aiu.index</id>
+        <data>
+            <key.document.name>xdb.pdi.name</key.document.name>
+            <indexes>
+                <value.index>
+                    <name>pdi.aiu.id</name>
+                    <compressed>false</compressed>
+                    <unique.keys>true</unique.keys>
+                    <concurrent>false</concurrent>
+                    <value.index.type>STRING</value.index.type>
+                    <element.uri/>
+                    <element.name/>
+                    <attribute.uri>urn:x-emc:ia:schema:pdi</attribute.uri>
+                    <attribute.name>id</attribute.name>
+                </value.index>
+            </indexes>
+        </data>
+    </processor>
+    <processor>
+        <name>Contents uploader</name>
+        <class>com.emc.ia.ingestion.processor.uploader.ContentsUploader</class>
+    </processor>
+    <processor>
+        <transaction/>
+        <name>XDB library backup</name>
+        <class>com.emc.ia.ingestion.processor.backup.BackupProcessor</class>
+    </processor>
+    <processor>
+        <name>PDI Transformer</name>
+        <class>com.emc.ia.ingestion.processor.transformer.PdiTransformerProcessor</class>
+        <id>pdi.transformer</id>
+        <data>
+            <resultSchema></resultSchema>
+        </data>
+    </processor>
+    <processor>
+        <name>Apply retention at AIU level processor</name>
+        <class>com.emc.ia.ingestion.processor.retention.AiuRetentionProcessor</class>
+        <id>xdb.pdi.aiu.apply.retention</id>
+    </processor>
+    <processor>
+        <name>Synchronous commit</name>
+        <class>com.emc.ia.ingestion.processor.commit.CommitProcessor</class>
+    </processor>
+</processors>

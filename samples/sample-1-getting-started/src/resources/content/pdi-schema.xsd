@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF=8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:com.emc.ia.sip.sample.greeting:1.0"
+           version="1.0" elementFormDefault="qualified">
+    <xs:element name="Greetings">
+        <xs:complexType>
+            <xs:sequence maxOccurs="unbounded">
+                <xs:element name="Greeting">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="Message" type="xs:string"/>
+                                <xs:element name="Content" type="xs:string"/>
+                                <xs:element name="File" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
