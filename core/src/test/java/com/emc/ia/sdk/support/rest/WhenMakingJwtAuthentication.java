@@ -9,11 +9,13 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.entity.ContentType;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -99,7 +101,9 @@ public class WhenMakingJwtAuthentication extends TestCase {
   public void shouldCorrectlyFormAuthorizationHeader() throws IOException {
     String authToken = Base64.getEncoder()
                            .encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8));
-    Collection<Header> headers = Collections.singletonList(new Header("Authorization", "Basic " + authToken));
+    Header authHeader = new Header("Authorization", "Basic " + authToken);
+    Header contentTypeHeader = new Header("Content-Type", ContentType.APPLICATION_FORM_URLENCODED.toString());
+    Collection<Header> headers = new ArrayList<>(Arrays.asList(authHeader, contentTypeHeader));
     authentication.issueAuthHeader();
     verify(httpClient).post(any(), eq(headers), eq(AuthenticationSuccess.class), anyString());
   }

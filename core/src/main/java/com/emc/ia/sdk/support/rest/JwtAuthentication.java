@@ -4,17 +4,16 @@
 package com.emc.ia.sdk.support.rest;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import com.emc.ia.sdk.support.datetime.Clock;
+import com.emc.ia.sdk.support.datetime.DefaultClock;
 import com.emc.ia.sdk.support.datetime.Timer;
 import com.emc.ia.sdk.support.http.Header;
 import com.emc.ia.sdk.support.http.HttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
+
 
 public final class JwtAuthentication implements AuthenticationStrategy {
 
@@ -22,87 +21,88 @@ public final class JwtAuthentication implements AuthenticationStrategy {
   private static final long REFRESHING_TIME_BORDER = 20000;
 
   private final GatewayInfo gatewayInfo;
-  private final String username;
+  private final String userName;
   private final String password;
   private final HttpClient httpClient;
-  private volatile AuthenticationSuccess authResult;
   private final Clock clock;
+  private volatile AuthenticationSuccess authenticationResult;
   private Timer timer;
 
   public static Optional<AuthenticationStrategy> optional(String username, String password, GatewayInfo gatewayInfo,
-                                                          HttpClient httpClient, Clock clock) {
-    if ((username == null) || (password == null) || (gatewayInfo == null) || (httpClient == null)) {
+      HttpClient httpClient, Clock clock) {
+    if (username == null || password == null || gatewayInfo == null || httpClient == null) {
       return Optional.empty();
     } else {
-      return Optional.of(new JwtAuthentication(
-          username, password, gatewayInfo, httpClient, clock));
+      return Optional.of(new JwtAuthentication(username, password, gatewayInfo, httpClient, clock));
     }
   }
 
-  public JwtAuthentication(String username, String password, GatewayInfo gatewayInfo,
-                           HttpClient httpClient, Clock clock) {
-    if (username.isEmpty()) {
-      throw new IllegalArgumentException("Username is empty");
-    } else {
-      this.username = username;
-    }
-    if (password.isEmpty()) {
-      throw new IllegalArgumentException("Password is empty");
-    } else {
-      this.password = password;
-    }
-    this.clock = Objects.requireNonNull(clock, "Missing clock");
+  public JwtAuthentication(String userName, String password, GatewayInfo gatewayInfo, HttpClient httpClient,
+      Clock clock) {
+    this.userName = requireNonEmpty(userName, "Missing user name");
+    this.password = requireNonEmpty(password, "Missing password");
     this.gatewayInfo = Objects.requireNonNull(gatewayInfo, "Missing gateway information");
     this.httpClient = Objects.requireNonNull(httpClient, "Missing HttpClient");
-    this.authResult = null;
+    this.clock = Objects.requireNonNull(clock, "Missing clock");
+    this.authenticationResult = null;
+  }
+
+  public JwtAuthentication(String userName, String password, GatewayInfo gatewayInfo, HttpClient httpClient) {
+    this(userName, password, gatewayInfo, httpClient, new DefaultClock());
+  }
+
+  private String requireNonEmpty(String value, String message) {
+    if (value == null || value.trim().isEmpty()) {
+      throw new IllegalArgumentException(message);
+    }
+    return value;
   }
 
   @Override
   public Header issueAuthHeader() {
-    authResult = issueAuthentication();
-    return new Header("Authorization", authResult.getTokenType() + " " + authResult.getAccessToken());
+    authenticationResult = issueAuthentication();
+    return new Header("Authorization", authenticationResult.getTokenType() + " "
+        + authenticationResult.getAccessToken());
   }
 
   private AuthenticationSuccess issueAuthentication() {
-    if (authResult == null) {
+    if (authenticationResult == null) {
       AuthenticationSuccess firstResult = fetchAuthentication();
       startRefreshingTimer(TimeUnit.MILLISECONDS.convert(firstResult.getExpiresIn(), TimeUnit.SECONDS));
       return firstResult;
-    } else {
-      return authResult;
     }
+    return authenticationResult;
   }
 
   private AuthenticationSuccess fetchAuthentication() {
-    String payload = "grant_type=password&username=" + username + "&password=" + password;
-    return postToGateway(payload);
+    return postToGateway("grant_type=password&username=" + userName + "&password=" + password);
   }
 
   private void startRefreshingTimer(long expiresInMilliseconds) {
-    if (expiresInMilliseconds > REFRESHING_TIME_BORDER) {
-      timer = new Timer(expiresInMilliseconds - RESERVE_TIME, this::refreshAuthentication, clock);
-    } else {
-      timer = new Timer(expiresInMilliseconds / 2, this::refreshAuthentication, clock);
-    }
+    long time = expiresInMilliseconds > REFRESHING_TIME_BORDER ? expiresInMilliseconds - RESERVE_TIME
+        : expiresInMilliseconds / 2;
+    timer = new Timer(time, this::refreshAuthentication, clock);
   }
 
   private void refreshAuthentication() {
-    String payload = "grant_type=refresh_token&refresh_token=" + authResult.getRefreshToken();
-    authResult = postToGateway(payload);
+    authenticationResult = postToGateway("grant_type=refresh_token&refresh_token="
+        + authenticationResult.getRefreshToken());
   }
 
   private AuthenticationSuccess postToGateway(String payload) {
+    AuthenticationSuccess result;
     String gatewayUrl = gatewayInfo.getGatewayUrl();
-    Collection<Header> headers = Collections.singletonList(gatewayInfo.getAuthorizationHeader());
-    AuthenticationSuccess authSuccess;
+    Collection<Header> headers = new ArrayList<>(Arrays.asList(gatewayInfo.getAuthorizationHeader(),
+        gatewayInfo.getContentTypeHeader()));
     try {
-      authSuccess = httpClient.post(gatewayUrl, headers, AuthenticationSuccess.class, payload);
+      result = httpClient.post(gatewayUrl, headers, AuthenticationSuccess.class, payload);
     } catch (IOException ex) {
       if (timer != null) {
         timer.stop();
       }
       throw new RuntimeIoException(ex);
     }
-    return authSuccess;
+    return result;
   }
+
 }

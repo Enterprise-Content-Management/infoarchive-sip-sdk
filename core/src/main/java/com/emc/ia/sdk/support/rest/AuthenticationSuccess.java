@@ -3,7 +3,11 @@
  */
 package com.emc.ia.sdk.support.rest;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 public class AuthenticationSuccess {
+
   private String accessToken;
   private String tokenType;
   private String refreshToken;
@@ -23,6 +27,7 @@ public class AuthenticationSuccess {
     return accessToken;
   }
 
+  @JsonProperty("access_token")
   public void setAccessToken(String accessToken) {
     this.accessToken = accessToken;
   }
@@ -31,6 +36,7 @@ public class AuthenticationSuccess {
     return tokenType;
   }
 
+  @JsonProperty("token_type")
   public void setTokenType(String tokenType) {
     this.tokenType = tokenType;
   }
@@ -39,6 +45,7 @@ public class AuthenticationSuccess {
     return refreshToken;
   }
 
+  @JsonProperty("refresh_token")
   public void setRefreshToken(String refreshToken) {
     this.refreshToken = refreshToken;
   }
@@ -47,6 +54,7 @@ public class AuthenticationSuccess {
     return expiresIn;
   }
 
+  @JsonProperty("expires_in")
   public void setExpiresIn(long expiresIn) {
     this.expiresIn = expiresIn;
   }
@@ -66,4 +74,5 @@ public class AuthenticationSuccess {
   public void setJti(String jti) {
     this.jti = jti;
   }
+
 }
