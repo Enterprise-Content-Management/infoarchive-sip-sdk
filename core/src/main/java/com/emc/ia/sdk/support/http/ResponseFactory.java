@@ -4,6 +4,7 @@
 package com.emc.ia.sdk.support.http;
 
 
+@FunctionalInterface
 public interface ResponseFactory<T> {
 
   T create(Response response, Runnable closeResponse);

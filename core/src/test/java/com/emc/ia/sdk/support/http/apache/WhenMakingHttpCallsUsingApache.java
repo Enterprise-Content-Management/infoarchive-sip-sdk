@@ -17,22 +17,14 @@ import java.util.Locale;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.emc.ia.sdk.support.http.BinaryPart;
-import com.emc.ia.sdk.support.http.Header;
-import com.emc.ia.sdk.support.http.HttpException;
-import com.emc.ia.sdk.support.http.TextPart;
+import com.emc.ia.sdk.support.http.*;
 import com.emc.ia.sdk.support.test.TestCase;
 
 
@@ -73,8 +65,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   private <T extends HttpUriRequest> T assertRequest(String expectedUri, Class<T> expectedClass) {
     HttpUriRequest request = httpClient.getExecutedRequest();
     assertEquals("Request", expectedClass, request.getClass());
-    assertEquals("Request URI", expectedUri, request.getURI()
-      .toString());
+    assertEquals("Request URI", expectedUri, request.getURI().toString());
     return expectedClass.cast(request);
   }
 
@@ -86,8 +77,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   private <T> T getResponse(Class<T> type) throws IOException {
-    return httpClient.getResponseHandler(randomString(), randomString(), type)
-      .handleResponse(response);
+    return httpClient.getResponseHandler(randomString(), randomString(), type).handleResponse(response);
   }
 
   @Test
@@ -122,6 +112,19 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
+  public void shouldAllowCustomProcessingOfResponse() throws IOException {
+    String uri = "http://google.com";
+    String expected = randomString();
+    ResponseFactory<String> responseFactory = (resp, closer) -> {
+      return expected;
+    };
+
+    String actual = httpClient.get(uri, Collections.emptyList(), responseFactory);
+
+    assertEquals("Response", expected, actual);
+  }
+
+  @Test
   public void shouldPut() throws IOException {
     String uri = randomString();
 
@@ -151,17 +154,13 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
     }
 
     HttpEntity entity = assertRequest(uri, HttpPost.class).getEntity();
-    assertTrue("Is multi part", entity.getClass()
-      .getSimpleName()
-      .toLowerCase(Locale.ENGLISH)
-      .contains("multipart"));
+    assertTrue("Is multi part", entity.getClass().getSimpleName().toLowerCase(Locale.ENGLISH).contains("multipart"));
   }
 
   @Test
   public void shouldBuildUris() {
-    assertEquals("URI", "http://google.com?q=foo+bar", httpClient.uri("http://google.com")
-      .addParameter("q", "foo bar")
-      .build());
+    assertEquals("URI", "http://google.com?q=foo+bar",
+        httpClient.uri("http://google.com").addParameter("q", "foo bar").build());
   }
 
   @Test
@@ -187,6 +186,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
     }
 
   }
+
 
   private static class TestApacheHttpClient extends ApacheHttpClient {
 
