@@ -3,53 +3,60 @@
  */
 package com.emc.ia.sdk.support.rest;
 
-@SuppressWarnings({"PMD.VariableNamingConventions", "PMD.MethodNamingConventions"})
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 public class AuthenticationSuccess {
-  private String access_token;
-  private String token_type;
-  private String refresh_token;
-  private long expires_in;
+
+  private String accessToken;
+  private String tokenType;
+  private String refreshToken;
+  private long expiresIn;
   private String scope;
   private String jti;
 
   public AuthenticationSuccess() {
-    setAccess_token("");
-    setToken_type("");
-    setRefresh_token("");
+    setAccessToken("");
+    setTokenType("");
+    setRefreshToken("");
     setScope("");
     setJti("");
   }
 
-  public String getAccess_token() {
-    return access_token;
+  public String getAccessToken() {
+    return accessToken;
   }
 
-  public void setAccess_token(String access_token) {
-    this.access_token = access_token;
+  @JsonProperty("access_token")
+  public void setAccessToken(String accessToken) {
+    this.accessToken = accessToken;
   }
 
-  public String getToken_type() {
-    return token_type;
+  public String getTokenType() {
+    return tokenType;
   }
 
-  public void setToken_type(String token_type) {
-    this.token_type = token_type;
+  @JsonProperty("token_type")
+  public void setTokenType(String tokenType) {
+    this.tokenType = tokenType;
   }
 
-  public String getRefresh_token() {
-    return refresh_token;
+  public String getRefreshToken() {
+    return refreshToken;
   }
 
-  public void setRefresh_token(String refresh_token) {
-    this.refresh_token = refresh_token;
+  @JsonProperty("refresh_token")
+  public void setRefreshToken(String refreshToken) {
+    this.refreshToken = refreshToken;
   }
 
-  public long getExpires_in() {
-    return expires_in;
+  public long getExpiresIn() {
+    return expiresIn;
   }
 
-  public void setExpires_in(long expires_in) {
-    this.expires_in = expires_in;
+  @JsonProperty("expires_in")
+  public void setExpiresIn(long expiresIn) {
+    this.expiresIn = expiresIn;
   }
 
   public String getScope() {
@@ -67,4 +74,5 @@ public class AuthenticationSuccess {
   public void setJti(String jti) {
     this.jti = jti;
   }
+
 }
