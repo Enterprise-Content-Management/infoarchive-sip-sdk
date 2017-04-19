@@ -30,7 +30,7 @@ them is through a dependency management system like [Gradle](http://gradle.org/)
 **Gradle**
 
     dependencies { 
-      compile 'com.emc.ia:infoarchive-sip-sdk-core:5.5.1'
+      compile 'com.emc.ia:infoarchive-sip-sdk-core:5.5.8'
     }
     
 **Maven**
@@ -39,7 +39,7 @@ them is through a dependency management system like [Gradle](http://gradle.org/)
       <dependency>
         <groupId>com.emc.ia</groupId>
         <artifactId>infoarchive-sip-sdk-core</artifactId>
-        <version>5.5.1</version>
+        <version>5.5.8</version>
       </dependency>
     </dependencies>
     
