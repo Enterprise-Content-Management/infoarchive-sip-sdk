@@ -21,7 +21,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
@@ -98,59 +97,80 @@ public class ApacheHttpClient implements HttpClient {
     }
   }
 
-  protected <T> T execute(HttpUriRequest request, Class<T> type) throws IOException {
+  protected <T> T execute(HttpRequestBase request, Class<T> type) throws IOException {
     Objects.requireNonNull(request, "Missing request");
     try {
       return client.execute(request, getResponseHandler(request.getMethod(), request.getURI()
         .toString(), type));
     } catch (HttpResponseException e) {
       throw new HttpException(e.getStatusCode(), e);
+    } catch (HttpException e) { // NOPMD AvoidRethrowingException
+      throw e;
+    } catch (IOException e) {
+      throw new HttpException(500, e);
+    } finally {
+      request.releaseConnection();
     }
   }
 
-  protected <T> T execute(HttpUriRequest request, ResponseFactory<T> factory) throws IOException {
+  protected <T> T execute(HttpRequestBase request, ResponseFactory<T> factory) throws IOException {
     CloseableHttpResponse httpResponse;
     try {
       httpResponse = client.execute(request);
     } catch (HttpResponseException e) {
       throw new HttpException(e.getStatusCode(), e);
+    } catch (HttpException e) { // NOPMD AvoidRethrowingException
+      throw e;
+    } catch (IOException e) {
+      throw new HttpException(500, e);
     }
-    boolean cleanUp = true;
+    Runnable closeResponse = () -> {
+      IOUtils.closeQuietly(httpResponse);
+      request.releaseConnection();
+    };
+    boolean shouldCloseResponse = true;
     try {
       StatusLine statusLine = httpResponse.getStatusLine();
-      int status = statusLine.getStatusCode();
-      if (!isOk(status)) {
+      int statusCode = statusLine.getStatusCode();
+      if (!isOk(statusCode)) {
         HttpEntity entity = httpResponse.getEntity();
         String body = entity == null ? "" : EntityUtils.toString(entity);
         String method = request.getMethod();
         URI uri = request.getURI();
-        throw new HttpException(status,
-            String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
+        String reasonPhrase = statusLine.getReasonPhrase();
+        throw new HttpException(statusCode, String.format("%n%s %s%n==> %d %s%n%s", method, uri, statusCode,
+            reasonPhrase, body));
       }
-      T result = factory.create(new ApacheResponse(httpResponse));
-      cleanUp = false;
+      T result = factory.create(new ApacheResponse(httpResponse), closeResponse);
+      shouldCloseResponse = false;
       return result;
     } catch (Exception e) {
       throw new RuntimeException(e);
     } finally {
-      if (cleanUp) {
-        IOUtils.closeQuietly(httpResponse);
+      if (shouldCloseResponse) {
+        closeResponse.run();
       }
     }
   }
 
   <T> ResponseHandler<T> getResponseHandler(String method, String uri, Class<T> type) {
     return response -> {
-      StatusLine statusLine = response.getStatusLine();
-      int status = statusLine.getStatusCode();
-      HttpEntity entity = response.getEntity();
-      boolean isBinary = InputStream.class.equals(type);
-      String body = isBinary ? "<binary>" : entity == null ? "" : EntityUtils.toString(entity);
-      if (!isOk(status)) {
-        throw new HttpException(status,
-            String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
+      try {
+        StatusLine statusLine = response.getStatusLine();
+        int status = statusLine.getStatusCode();
+        HttpEntity entity = response.getEntity();
+        boolean isBinary = InputStream.class.equals(type);
+        String body = isBinary ? "<binary>" : entity == null ? "" : EntityUtils.toString(entity);
+        if (!isOk(status)) {
+          throw new HttpException(status,
+              String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
+        }
+        return isBinary ? binaryResponse(entity, type) : textResponse(body, type);
+      } finally {
+        if (response instanceof CloseableHttpResponse) {
+          IOUtils.closeQuietly((CloseableHttpResponse)response);
+        }
       }
-      return isBinary ? binaryResponse(entity, type) : textResponse(body, type);
     };
   }
 
@@ -159,9 +179,12 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   private <T> T binaryResponse(HttpEntity entity, Class<T> type) throws IOException {
-    ByteArrayInputOutputStream result = new ByteArrayInputOutputStream();
-    IOUtils.copy(entity.getContent(), result);
-    return type.cast(result.getInputStream());
+    try (ByteArrayInputOutputStream output = new ByteArrayInputOutputStream()) {
+      try (InputStream input = entity.getContent()) {
+        IOUtils.copy(input, output);
+      }
+      return type.cast(output.getInputStream());
+    }
   }
 
   private <T> T textResponse(String body, Class<T> type) {

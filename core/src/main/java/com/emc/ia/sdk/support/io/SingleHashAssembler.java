@@ -20,7 +20,7 @@ public class SingleHashAssembler extends NoHashAssembler {
    * Assemble hashes using the default hash function and encoding.
    */
   public SingleHashAssembler() {
-    this(HashFunction.SHA1, Encoding.BASE64);
+    this(HashFunction.SHA256, Encoding.BASE64);
   }
 
   /**

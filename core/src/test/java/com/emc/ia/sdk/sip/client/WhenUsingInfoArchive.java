@@ -4,8 +4,13 @@
 package com.emc.ia.sdk.sip.client;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -107,6 +112,7 @@ import com.emc.ia.sdk.support.http.HttpException;
 import com.emc.ia.sdk.support.http.MediaTypes;
 import com.emc.ia.sdk.support.http.Part;
 import com.emc.ia.sdk.support.http.Response;
+import com.emc.ia.sdk.support.http.ResponseFactory;
 import com.emc.ia.sdk.support.http.UriBuilder;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.Link;
@@ -483,7 +489,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.uri(anyString())).thenReturn(uriBuilder);
     QueryResultFactory queryResultFactory = mock(QueryResultFactory.class);
     DefaultQueryResult queryResult = mock(DefaultQueryResult.class);
-    when(queryResultFactory.create(any(Response.class))).thenReturn(queryResult);
+    when(queryResultFactory.create(any(Response.class), any(Runnable.class))).thenReturn(queryResult);
     when(restClient.get(eq(uri), any(QueryResultFactory.class))).thenReturn(queryResult);
 
     SearchQuery query = new SearchQuery();
@@ -628,15 +634,16 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
+  @SuppressWarnings("rawtypes")
   public void shouldFetchOrderContentSuccessfully() throws IOException {
     UriBuilder uriBuilder = mock(UriBuilder.class);
     String uri = randomString();
     when(uriBuilder.build()).thenReturn(uri);
     when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
     when(restClient.uri(anyString())).thenReturn(uriBuilder);
-    ContentResultFactory contentResultFactory = mock(ContentResultFactory.class);
+    ResponseFactory contentResultFactory = mock(ContentResultFactory.class);
     DefaultContentResult contentResult = mock(DefaultContentResult.class);
-    when(contentResultFactory.create(any(Response.class))).thenReturn(contentResult);
+    when(contentResultFactory.create(any(Response.class), any(Runnable.class))).thenReturn(contentResult);
     when(restClient.get(eq(uri), any(ContentResultFactory.class))).thenReturn(contentResult);
     OrderItem orderItem = new OrderItem();
 

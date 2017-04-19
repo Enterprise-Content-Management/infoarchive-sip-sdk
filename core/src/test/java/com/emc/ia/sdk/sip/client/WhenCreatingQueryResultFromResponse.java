@@ -34,8 +34,9 @@ public class WhenCreatingQueryResultFromResponse {
   @Test
   public void shouldReturnNullIfResponseBodyIsNull() throws IOException {
     Response response = mock(Response.class);
-    assertNull(factory.create(response));
-    verify(response).close();
+    Runnable closer = mock(Runnable.class);
+    assertNull(factory.create(response, closer));
+    verify(closer).run();
   }
 
   @Test
@@ -55,7 +56,7 @@ public class WhenCreatingQueryResultFromResponse {
     when(response.getHeaderValue("aiuQuota", 0)).thenReturn(aiuQuota);
     when(response.getHeaderValue("resultSetQuota", 0)).thenReturn(resultSetQuota);
 
-    try (QueryResult result = factory.create(response)) {
+    try (QueryResult result = factory.create(response, () -> { })) {
 
       assertEquals(cacheOutAipIgnored, result.isCacheOutAipIgnored());
       assertEquals(aipQuota, result.getAipQuota());
