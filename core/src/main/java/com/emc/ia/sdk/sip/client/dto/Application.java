@@ -3,10 +3,13 @@
  */
 package com.emc.ia.sdk.sip.client.dto;
 
+
 public class Application extends NamedLinkContainer {
 
   private String type;
   private String archiveType;
+  private String description;
+  private String category;
 
   public Application() {
     setType("ACTIVE_ARCHIVING");
@@ -27,6 +30,22 @@ public class Application extends NamedLinkContainer {
 
   public final void setArchiveType(String archiveType) {
     this.archiveType = archiveType;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getCategory() {
+    return category;
+  }
+
+  public void setCategory(String category) {
+    this.category = category;
   }
 
 }
