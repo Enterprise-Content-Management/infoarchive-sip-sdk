@@ -80,35 +80,32 @@ uploadArchives {
               developer {
                 id = 'ray'
                 name = 'Remon Sinnema'
-                organization = 'Dell Technologies'
-                email = 'remon.sinnema@dell.com'
+                organization = 'OpenText'
+                email = 'rsinnema@opentext.com'
                 timezone = 'Europe/Amsterdam'
-              }
-              developer {
-                id = 'tord'
-                name = 'Tord Svensson'
-                organization = 'Dell Technologies'
-                email = 'tord.svensson@dell.com'
-                timezone = 'Europe/Stockholm'
               }
             }
             
             contributors {
               contributor {
                 name = 'Chandramouli Addaguduru'
-                organization = 'Dell Technologies'
+                organization = 'OpenText'
               }
               contributor {
                 name = 'Roman Kochkar'
-                organization = 'Dell Technologies'
+                organization = 'Saint Petersburg State University'
               }
               contributor {
                 name = 'Artem Kovalev'
-                organization = 'Dell Technologies'
+                organization = 'OpenText'
               }
               contributor {
                 name = 'Erik Silkensen'
                 organization = 'Flatirons Solutions'
+              }
+              contributor {
+                name = 'Tord Svensson'
+                organization = 'Dell Technologies'
               }
             }
           }
