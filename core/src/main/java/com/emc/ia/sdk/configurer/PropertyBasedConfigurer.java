@@ -7,80 +7,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.emc.ia.sdk.sip.client.dto.Aic;
-import com.emc.ia.sdk.sip.client.dto.Aics;
-import com.emc.ia.sdk.sip.client.dto.Application;
-import com.emc.ia.sdk.sip.client.dto.Applications;
-import com.emc.ia.sdk.sip.client.dto.Contents;
-import com.emc.ia.sdk.sip.client.dto.Criterion;
-import com.emc.ia.sdk.sip.client.dto.Database;
-import com.emc.ia.sdk.sip.client.dto.Databases;
-import com.emc.ia.sdk.sip.client.dto.Federation;
-import com.emc.ia.sdk.sip.client.dto.Federations;
-import com.emc.ia.sdk.sip.client.dto.FileSystemFolder;
-import com.emc.ia.sdk.sip.client.dto.FileSystemFolders;
-import com.emc.ia.sdk.sip.client.dto.FileSystemRoots;
-import com.emc.ia.sdk.sip.client.dto.Holding;
-import com.emc.ia.sdk.sip.client.dto.Holdings;
-import com.emc.ia.sdk.sip.client.dto.Ingest;
-import com.emc.ia.sdk.sip.client.dto.IngestConfig;
-import com.emc.ia.sdk.sip.client.dto.IngestNode;
-import com.emc.ia.sdk.sip.client.dto.IngestNodes;
-import com.emc.ia.sdk.sip.client.dto.Ingests;
-import com.emc.ia.sdk.sip.client.dto.Libraries;
-import com.emc.ia.sdk.sip.client.dto.Library;
-import com.emc.ia.sdk.sip.client.dto.Namespace;
-import com.emc.ia.sdk.sip.client.dto.Operand;
-import com.emc.ia.sdk.sip.client.dto.Pdi;
-import com.emc.ia.sdk.sip.client.dto.PdiConfig;
-import com.emc.ia.sdk.sip.client.dto.PdiSchema;
-import com.emc.ia.sdk.sip.client.dto.PdiSchemas;
-import com.emc.ia.sdk.sip.client.dto.Pdis;
-import com.emc.ia.sdk.sip.client.dto.Queries;
-import com.emc.ia.sdk.sip.client.dto.Query;
-import com.emc.ia.sdk.sip.client.dto.Quota;
-import com.emc.ia.sdk.sip.client.dto.Quotas;
-import com.emc.ia.sdk.sip.client.dto.ReceiverNode;
-import com.emc.ia.sdk.sip.client.dto.ReceiverNodes;
-import com.emc.ia.sdk.sip.client.dto.ResultConfigurationHelper;
-import com.emc.ia.sdk.sip.client.dto.ResultConfigurationHelpers;
-import com.emc.ia.sdk.sip.client.dto.RetentionClass;
-import com.emc.ia.sdk.sip.client.dto.RetentionPolicies;
-import com.emc.ia.sdk.sip.client.dto.RetentionPolicy;
-import com.emc.ia.sdk.sip.client.dto.Search;
-import com.emc.ia.sdk.sip.client.dto.SearchComposition;
-import com.emc.ia.sdk.sip.client.dto.SearchCompositions;
-import com.emc.ia.sdk.sip.client.dto.Searches;
-import com.emc.ia.sdk.sip.client.dto.Services;
-import com.emc.ia.sdk.sip.client.dto.Sip;
-import com.emc.ia.sdk.sip.client.dto.Space;
-import com.emc.ia.sdk.sip.client.dto.SpaceRootFolder;
-import com.emc.ia.sdk.sip.client.dto.SpaceRootFolders;
-import com.emc.ia.sdk.sip.client.dto.SpaceRootLibraries;
-import com.emc.ia.sdk.sip.client.dto.SpaceRootLibrary;
-import com.emc.ia.sdk.sip.client.dto.Spaces;
-import com.emc.ia.sdk.sip.client.dto.Store;
-import com.emc.ia.sdk.sip.client.dto.Stores;
-import com.emc.ia.sdk.sip.client.dto.SubPriority;
-import com.emc.ia.sdk.sip.client.dto.Tenant;
-import com.emc.ia.sdk.sip.client.dto.XForm;
-import com.emc.ia.sdk.sip.client.dto.XdbPdiConfig;
-import com.emc.ia.sdk.sip.client.dto.export.ExportConfiguration;
-import com.emc.ia.sdk.sip.client.dto.export.ExportConfigurations;
-import com.emc.ia.sdk.sip.client.dto.export.ExportPipeline;
-import com.emc.ia.sdk.sip.client.dto.export.ExportPipelines;
-import com.emc.ia.sdk.sip.client.dto.export.ExportTransformation;
-import com.emc.ia.sdk.sip.client.dto.export.ExportTransformations;
+import com.emc.ia.sdk.sip.client.dto.*;
+import com.emc.ia.sdk.sip.client.dto.export.*;
 import com.emc.ia.sdk.sip.client.dto.result.Column;
 import com.emc.ia.sdk.sip.client.dto.result.Column.DataType;
 import com.emc.ia.sdk.sip.client.dto.result.Column.DefaultSort;
@@ -92,11 +24,7 @@ import com.emc.ia.sdk.support.NewInstance;
 import com.emc.ia.sdk.support.RepeatingConfigReader;
 import com.emc.ia.sdk.support.datetime.Clock;
 import com.emc.ia.sdk.support.datetime.DefaultClock;
-import com.emc.ia.sdk.support.http.BinaryPart;
-import com.emc.ia.sdk.support.http.HttpClient;
-import com.emc.ia.sdk.support.http.HttpException;
-import com.emc.ia.sdk.support.http.MediaTypes;
-import com.emc.ia.sdk.support.http.TextPart;
+import com.emc.ia.sdk.support.http.*;
 import com.emc.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.emc.ia.sdk.support.io.RuntimeIoException;
 import com.emc.ia.sdk.support.rest.AuthenticationStrategy;
@@ -299,7 +227,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   protected void ensureApplication() throws IOException {
-    String applicationName = configured(APPLICATION_NAME);
+    String applicationName = getApplicationName();
     Applications applications = restClient.follow(configurationState.getTenant(), LINK_APPLICATIONS,
         Applications.class);
     Objects.requireNonNull(applications, "Missing applications");
@@ -309,6 +237,16 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       configurationState.setApplication(restClient.refresh(applications).byName(applicationName));
       Objects.requireNonNull(configurationState.getApplication(), "Could not create application");
     }
+  }
+
+  private String getApplicationName() {
+    String result = configuration.get(APPLICATION_NAME);
+    if (result == null) {
+      // Backwards compatibility
+      result = configuration.get(OLD_APPLICATION_NAME);
+    }
+    Objects.requireNonNull(result, "Missing " + APPLICATION_NAME);
+    return result;
   }
 
   private Application createApplication(String applicationName) {
@@ -841,7 +779,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   private Library createLibrary(String name) {
     Library result = new Library();
     result.setName(name);
-    result.setSubPath("aips/" + configured(APPLICATION_NAME).replace(' ', '-'));
+    result.setSubPath("aips/" + getApplicationName().replace(' ', '-'));
     return result;
   }
 

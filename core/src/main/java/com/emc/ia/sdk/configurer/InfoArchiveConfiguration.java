@@ -33,6 +33,7 @@ public interface InfoArchiveConfiguration {
   String DATABASE_ADMIN_PASSWORD = DATABASE + "admin.password";
 
   String APPLICATION_PREFIX = PREFIX + "application.";
+  String OLD_APPLICATION_NAME = PREFIX + "applicaton." + NAME;
   String APPLICATION_NAME = APPLICATION_PREFIX + NAME;
   String APPLICATION_DESCRIPTION = APPLICATION_PREFIX + DESCRIPTION;
   String APPLICATION_CATEGORY = APPLICATION_PREFIX + "category";
