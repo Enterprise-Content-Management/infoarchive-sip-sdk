@@ -7,19 +7,11 @@ import static com.emc.ia.sdk.configurer.InfoArchiveConfiguration.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 import com.emc.ia.sdk.sip.client.ArchiveClient;
 import com.emc.ia.sdk.sip.client.ClientConfigurationFinder;
-import com.emc.ia.sdk.sip.client.dto.Aics;
-import com.emc.ia.sdk.sip.client.dto.Application;
-import com.emc.ia.sdk.sip.client.dto.Applications;
-import com.emc.ia.sdk.sip.client.dto.Services;
-import com.emc.ia.sdk.sip.client.dto.Tenant;
+import com.emc.ia.sdk.sip.client.dto.*;
 import com.emc.ia.sdk.sip.client.rest.ArchiveOperationsByApplicationResourceCache;
 import com.emc.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
 import com.emc.ia.sdk.sip.client.rest.InfoArchiveRestClient;
@@ -207,7 +199,12 @@ public final class ArchiveClients {
   }
 
   private static String getApplicationName(Map<String, String> configuration) {
-    return Objects.requireNonNull(configuration.get(APPLICATION_NAME),
+    String result = configuration.get(APPLICATION_NAME);
+    if (result == null) {
+      // Backwards compatibility
+      result = configuration.get(OLD_APPLICATION_NAME);
+    }
+    return Objects.requireNonNull(result,
         "The property " + APPLICATION_NAME + " cannot be null or empty.");
   }
 
