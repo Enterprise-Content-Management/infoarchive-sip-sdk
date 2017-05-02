@@ -32,11 +32,13 @@ import org.xml.sax.SAXParseException;
  */
 public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplexity
 
+  private static final String NL = System.getProperty("line.separator");
+
   /**
    * The <a href="http://www.w3.org/TR/2008/REC-xml-20081126/#sec-prolog-dtd">XML declaration</a> to be used in the
    * prolog of an XML document.
    */
-  public static final String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+  public static final String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + NL;
 
   private XmlUtil() {
     // Utility class
@@ -163,19 +165,19 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     Node previousSibling = node.getPreviousSibling();
     if (previousSibling != null && previousSibling.getNodeType() == Node.TEXT_NODE
         && !previousSibling.getNodeValue().trim().isEmpty()) {
-      builder.append('\n');
+      builder.append(NL);
     }
     Element element = (Element)node;
     openElement(indentation, builder, namespaces, element);
     appendAttributes(indentation, element, namespaces, builder);
     if (node.getFirstChild() == null) {
-      builder.append("/>\n");
+      builder.append("/>").append(NL);
     } else if (startsWithNonWhitespaceText(node)) {
       builder.append('>');
       appendChildren(node, indentation, namespaces, builder);
       closeElement(builder, element);
     } else {
-      builder.append(">\n");
+      builder.append('>').append(NL);
       appendChildren(node, indentation, namespaces, builder);
       builder.append(indentation);
       closeElement(builder, element);
@@ -264,7 +266,7 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
   private static StringBuilder closeElement(StringBuilder builder, Element element) {
     return builder.append("</")
       .append(element.getTagName())
-      .append(">\n");
+      .append('>').append(NL);
   }
 
   private static void appendAttribute(Node node, Namespaces namespaces, StringBuilder builder) {
@@ -317,7 +319,7 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     builder.append(indentation)
       .append("<!-- ")
       .append(valueOf(node))
-      .append(" -->\n");
+      .append(" -->").append(NL);
   }
 
   private static void appendProcessingInstruction(Node node, String indentation, StringBuilder builder) {
@@ -326,14 +328,14 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
       .append(node.getNodeName())
       .append(' ')
       .append(valueOf(node))
-      .append("?>\n");
+      .append("?>").append(NL);
   }
 
   private static void appendCdataSection(Node node, String indentation, StringBuilder builder) {
     builder.append(indentation)
       .append("<![CDATA[")
       .append(valueOf(node))
-      .append("]]>\n");
+      .append("]]>").append(NL);
   }
 
   /**

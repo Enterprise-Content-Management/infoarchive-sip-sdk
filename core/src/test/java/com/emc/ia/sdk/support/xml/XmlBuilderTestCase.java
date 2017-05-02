@@ -17,8 +17,12 @@ import com.emc.ia.sdk.support.test.TestCase;
 
 public abstract class XmlBuilderTestCase<T> extends TestCase {
 
+  private static final String NL = System.getProperty("line.separator");
   private static final char OPEN_ELEMENT = '<';
-  private static final String CLOSE_ELEMENT_END = ">\n";
+  private static final char CLOSE_ELEMENT = '>';
+  private static final String CLOSE_ELEMENT_NL = CLOSE_ELEMENT + NL;
+  private static final String OPEN_CHILD_ELEMENT = "  " + OPEN_ELEMENT;
+  private static final String CLOSE_ELEMENT_BEGIN = "</";
 
   protected abstract XmlBuilder<T> newBuilder();
 
@@ -39,7 +43,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   @Test
   public void shouldPrintElementName() {
     String name = aName();
-    result.append(OPEN_ELEMENT).append(name).append("/>\n");
+    result.append(OPEN_ELEMENT).append(name).append("/>").append(NL);
 
     getBuilder().element(name)
     .end();
@@ -59,8 +63,9 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   public void shouldPrintNestedElements() {
     String parent = aName();
     String child = aName();
-    result.append(OPEN_ELEMENT).append(parent).append(">\n  <").append(child).append("/>\n</")
-        .append(parent).append(CLOSE_ELEMENT_END);
+    result.append(OPEN_ELEMENT).append(parent).append(CLOSE_ELEMENT_NL)
+        .append(OPEN_CHILD_ELEMENT).append(child).append("/>").append(NL)
+        .append(CLOSE_ELEMENT_BEGIN).append(parent).append(CLOSE_ELEMENT_NL);
 
     getBuilder().element(parent)
         .element(child)
@@ -77,9 +82,9 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
     String parent = aName();
     String child1 = aName();
     String child2 = aName();
-    result.append(OPEN_ELEMENT).append(parent).append(" xmlns=\"").append(ns1).append("\">\n  <")
-        .append(child1).append(" xmlns=\"").append(ns2).append("\"/>\n  <").append(child2).append("/>\n</")
-        .append(parent).append(CLOSE_ELEMENT_END);
+    result.append(OPEN_ELEMENT).append(parent).append(" xmlns=\"").append(ns1).append("\">").append(NL).append(OPEN_CHILD_ELEMENT)
+        .append(child1).append(" xmlns=\"").append(ns2).append("\"/>").append(NL).append(OPEN_CHILD_ELEMENT).append(child2)
+        .append("/>").append(NL).append(CLOSE_ELEMENT_BEGIN).append(parent).append(CLOSE_ELEMENT_NL);
 
     getBuilder().namespace(URI.create(ns1))
         .element(parent)
@@ -111,8 +116,9 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
     String value3 = aName();
     result.append('<').append(parent).append(' ')
         .append(name1).append("=\"").append(value1).append("\" xmlns:ns1=\"").append(namespace).append("\" ns1:")
-        .append(name2).append("=\"").append(value2).append("\">\n  <").append(child)
-        .append(" ns1:").append(name3).append("=\"").append(value3).append("\"/>\n</").append(parent).append(">\n");
+        .append(name2).append("=\"").append(value2).append("\">").append(NL).append(OPEN_CHILD_ELEMENT).append(child)
+        .append(" ns1:").append(name3).append("=\"").append(value3).append("\"/>").append(NL).append(CLOSE_ELEMENT_BEGIN)
+        .append(parent).append(CLOSE_ELEMENT_NL);
 
     getBuilder().element(parent)
         .attribute(name1, value1)
@@ -130,7 +136,8 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
     String root = aName();
     String name = aName();
     String text = "<'\"&>";
-    result.append(OPEN_ELEMENT).append(root).append(' ').append(name).append("=\"&lt;&apos;&quot;&amp;&gt;\"/>\n");
+    result.append(OPEN_ELEMENT).append(root)
+        .append(' ').append(name).append("=\"&lt;&apos;&quot;&amp;&gt;\"/>").append(NL);
 
     getBuilder().element(root)
         .attribute(name, text)
@@ -145,9 +152,10 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
     String text1 = aName();
     String child = aName();
     String text2 = aName();
-    result.append(OPEN_ELEMENT).append(parent).append('>').append(text1).append("\n  <")
-        .append(child).append('>').append(text2).append("</").append(child).append(">\n</")
-        .append(parent).append(CLOSE_ELEMENT_END);
+    result.append(OPEN_ELEMENT).append(parent).append(CLOSE_ELEMENT).append(text1).append(NL).append(OPEN_CHILD_ELEMENT)
+        .append(child).append(CLOSE_ELEMENT).append(text2).append(CLOSE_ELEMENT_BEGIN)
+        .append(child).append(CLOSE_ELEMENT_NL).append(CLOSE_ELEMENT_BEGIN)
+        .append(parent).append(CLOSE_ELEMENT_NL);
 
     getBuilder().element(parent)
         .text(text1)
@@ -160,7 +168,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   @Test
   public void shouldIgnoreMissingText() {
     String root = aName();
-    result.append(OPEN_ELEMENT).append(root).append("/>\n");
+    result.append(OPEN_ELEMENT).append(root).append("/>").append(NL);
 
     getBuilder().element(root)
         .element(aName(), null)
@@ -173,7 +181,8 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   public void shouldEscapeReservedCharactersInText() {
     String root = aName();
     String text = "<'\"&>";
-    result.append(OPEN_ELEMENT).append(root).append(">&lt;&apos;&quot;&amp;&gt;</").append(root).append(">\n");
+    result.append(OPEN_ELEMENT).append(root)
+        .append(">&lt;&apos;&quot;&amp;&gt;</").append(root).append(CLOSE_ELEMENT_NL);
 
     getBuilder().element(root, text);
 
@@ -183,7 +192,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   @Test
   public void shouldIgnoreEmptyCollection() {
     String root = aName();
-    result.append(OPEN_ELEMENT).append(root).append("/>\n");
+    result.append(OPEN_ELEMENT).append(root).append("/>").append(NL);
 
     getBuilder().element(root)
         .elements(randomString(), randomString(), Collections.emptyList(), null)
@@ -198,14 +207,14 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
     String parent = aName();
     String child1 = aName();
     String child2 = aName();
-    result.append(OPEN_ELEMENT).append(root).append(">\n  <")
-        .append(parent).append(">\n    <")
-        .append(child1).append("/>\n  </")
-        .append(parent).append(">\n  <")
-        .append(parent).append(">\n    <")
-        .append(child2).append("/>\n  </")
-        .append(parent).append(">\n</")
-        .append(root).append(CLOSE_ELEMENT_END);
+    result.append(OPEN_ELEMENT).append(root).append(CLOSE_ELEMENT_NL).append(OPEN_CHILD_ELEMENT)
+        .append(parent).append(CLOSE_ELEMENT_NL).append("    <")
+        .append(child1).append("/>").append(NL).append("  </")
+        .append(parent).append(CLOSE_ELEMENT_NL).append(OPEN_CHILD_ELEMENT)
+        .append(parent).append(CLOSE_ELEMENT_NL).append("    <")
+        .append(child2).append("/>").append(NL).append("  </")
+        .append(parent).append(CLOSE_ELEMENT_NL).append(CLOSE_ELEMENT_BEGIN)
+        .append(root).append(CLOSE_ELEMENT_NL);
 
     getBuilder().elements(root, parent, Arrays.asList(child1, child2), (item, b) -> b.element(item).end());
 
