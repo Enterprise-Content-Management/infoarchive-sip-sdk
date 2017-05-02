@@ -52,20 +52,36 @@ public class SipIngester {
     .build();
 
     // Define a mapping from our domain object to the PDI XML
-    XmlPdiAssembler<String> pdiAssembler;
+    XmlPdiAssembler<Animal> pdiAssembler;
     try (InputStream schema = getClass().getResourceAsStream('/' + SAMPLE_SCHEMA)) {
-      pdiAssembler = new XmlPdiAssembler<String>(entityUri, entityName, schema) {
+      pdiAssembler = new XmlPdiAssembler<Animal>(entityUri, entityName, schema) {
         @Override
-        protected void doAdd(String value, Map<String, ContentInfo> ignored) {
-          getBuilder().text(value);
+        protected void doAdd(Animal value, Map<String, ContentInfo> ignored) {
+          getBuilder()
+              .element("animal_name", value.getAnimalName())
+              .element("file_name", value.getFileName());
         }
       };
     }
 
     // Assemble the SIP
-    SipAssembler<String> sipAssembler = SipAssembler.forPdi(prototype, pdiAssembler);
-    FileGenerator<String> generator = new FileGenerator<>(sipAssembler, FileSupplier.fromTemporaryDirectory());
-    FileGenerationMetrics metrics = generator.generate(Arrays.asList("ape", "bear", "cobra"));
+    SipAssembler<Animal> sipAssembler = SipAssembler.forPdi(prototype, pdiAssembler);
+    FileGenerator<Animal> generator = new FileGenerator<>(sipAssembler, FileSupplier.fromTemporaryDirectory());
+
+    Animal a1 = new Animal();
+    Animal a2 = new Animal();
+    Animal a3 = new Animal();
+
+    a1.setAnimalName("ape");
+    a1.setFileName("ape.dat");
+
+    a2.setAnimalName("bear");
+    a2.setFileName("bear.dat");
+
+    a3.setAnimalName("cobra");
+    a3.setFileName("cobra.dat");
+
+    FileGenerationMetrics metrics = generator.generate(Arrays.asList(a1, a2, a3));
     File assembledSip = metrics.getFile();
 
     // Get an ArchiveClient instance to interact with InfoArchive.

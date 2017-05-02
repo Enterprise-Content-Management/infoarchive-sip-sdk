@@ -1,12 +1,22 @@
-<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0"
-    xmlns:message="urn:emc:ia:schema:sample:animal:1.0" targetNamespace="urn:emc:ia:schema:sample:animal:1.0">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+           targetNamespace="urn:emc:ia:schema:sample:animal:1.0" xmlns:ns1="urn:emc:ia:schema:sample:animal:1.0">
   <xs:element name="animals">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="animal" minOccurs="1" maxOccurs="unbounded" type="xs:string"/>
+        <xs:element maxOccurs="unbounded" ref="ns1:animal"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-
+  <xs:element name="animal">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ns1:animal_name"/>
+        <xs:element ref="ns1:file_name"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="animal_name" type="xs:string"/>
+  <xs:element name="file_name" type="xs:string"/>
 </xs:schema>
+
