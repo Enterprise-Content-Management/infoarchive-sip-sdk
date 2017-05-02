@@ -8,7 +8,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -23,11 +22,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.io.IOUtils;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -109,18 +104,22 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
   }
 
   public static String toString(Node node, String indentation) {
+    return toString(node, indentation, true);
+  }
+
+  public static String toString(Node node, boolean writeRootNamespace) {
+    return toString(node, "", writeRootNamespace);
+  }
+
+  public static String toString(Node node, String indentation, boolean writeRootNamespace) {
     StringBuilder result = new StringBuilder();
     if (node != null) {
-      Map<String, String> namespaces = new HashMap<>();
-      namespaces.put("http://www.w3.org/2001/XMLSchema-instance", "xsi");
-      namespaces.put("http://www.w3.org/XML/1998/namespace", "xml");
-      append(node, indentation, namespaces, result);
+      append(node, indentation, new Namespaces(writeRootNamespace), result);
     }
     return result.toString();
   }
 
-  private static void append(Node node, String indentation, Map<String, String> namespaces, // NOPMD
-                                                                                            // CyclomaticComplexity
+  private static void append(Node node, String indentation, Namespaces namespaces, // NOPMD CyclomaticComplexity
       StringBuilder builder) {
     switch (node.getNodeType()) {
       case Node.ELEMENT_NODE:
@@ -151,7 +150,7 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     }
   }
 
-  private static void appendDocument(Node node, String indentation, Map<String, String> namespaces,
+  private static void appendDocument(Node node, String indentation, Namespaces namespaces,
       StringBuilder builder) {
     builder.append(XML_DECLARATION);
     for (Node child = node.getFirstChild(); child != null; child = child.getNextSibling()) {
@@ -159,10 +158,15 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     }
   }
 
-  private static void appendElement(Node node, String indentation, Map<String, String> namespaces,
+  private static void appendElement(Node node, String indentation, Namespaces namespaces,
       StringBuilder builder) {
+    Node previousSibling = node.getPreviousSibling();
+    if (previousSibling != null && previousSibling.getNodeType() == Node.TEXT_NODE
+        && !previousSibling.getNodeValue().trim().isEmpty()) {
+      builder.append('\n');
+    }
     Element element = (Element)node;
-    openElement(indentation, builder, element);
+    openElement(indentation, builder, namespaces, element);
     appendAttributes(indentation, element, namespaces, builder);
     if (node.getFirstChild() == null) {
       builder.append("/>\n");
@@ -178,12 +182,13 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     }
   }
 
-  private static StringBuilder openElement(String indentation, StringBuilder builder, Element element) {
+  private static StringBuilder openElement(String indentation, StringBuilder builder, Namespaces namespaces,
+      Element element) {
     String tag = element.getTagName();
     builder.append(indentation)
       .append('<');
     builder.append(tag);
-    if (hasDifferentNamespaceThanParent(element)) {
+    if (hasDifferentNamespaceThanParent(element, namespaces)) {
       int index = tag.indexOf(':');
       if (index < 0) {
         builder.append(" xmlns=\"")
@@ -200,7 +205,7 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     return builder;
   }
 
-  private static boolean hasDifferentNamespaceThanParent(Node node) {
+  private static boolean hasDifferentNamespaceThanParent(Node node, Namespaces namespaces) {
     if (node.getNamespaceURI() == null || isNamespaceNode(node)) {
       return false;
     }
@@ -213,8 +218,10 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     if (parent == null) {
       return true;
     }
-    return !node.getNamespaceURI()
-      .equals(parent.getNamespaceURI());
+    if (parent instanceof Document) {
+      return namespaces.isIncludeRootNamespace();
+    }
+    return !node.getNamespaceURI().equals(parent.getNamespaceURI());
   }
 
   private static boolean isNamespaceNode(Node node) {
@@ -222,7 +229,7 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
       .startsWith("xmlns") && "http://www.w3.org/2000/xmlns/".equals(node.getNamespaceURI());
   }
 
-  private static void appendAttributes(String indentation, Element element, Map<String, String> namespaces,
+  private static void appendAttributes(String indentation, Element element, Namespaces namespaces,
       StringBuilder builder) {
     NamedNodeMap attributes = element.getAttributes();
     for (int i = 0; i < attributes.getLength(); i++) {
@@ -245,7 +252,7 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
       .isEmpty();
   }
 
-  private static void appendChildren(Node node, String indentation, Map<String, String> namespaces,
+  private static void appendChildren(Node node, String indentation, Namespaces namespaces,
       StringBuilder builder) {
     for (Node child = node.getFirstChild(); child != null; child = child.getNextSibling()) {
       if (child.getNodeType() != Node.ATTRIBUTE_NODE) {
@@ -260,28 +267,24 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
       .append(">\n");
   }
 
-  private static void appendAttribute(Node node, Map<String, String> namespaces, StringBuilder builder) {
+  private static void appendAttribute(Node node, Namespaces namespaces, StringBuilder builder) {
     if (isNamespaceNode(node)) {
       return;
     }
     builder.append(' ');
-    if (hasDifferentNamespaceThanParent(node)) {
+    if (hasDifferentNamespaceThanParent(node, namespaces)) {
       String uri = node.getNamespaceURI();
-      String prefix = getPrefix(uri, namespaces);
-      if (!"xml".equals(prefix)) {
+      Prefix prefix = getPrefix(uri, namespaces);
+      if (!prefix.existing && !namespaces.isXmlNamespace(uri)) {
         builder.append("xmlns:")
           .append(prefix)
           .append("=\"")
           .append(uri)
           .append("\" ");
       }
-      builder.append(prefix)
-        .append(':');
+      builder.append(prefix).append(':');
     }
-    builder.append(getAttributeName(node))
-      .append("=\"")
-      .append(valueOf(node))
-      .append('\"');
+    builder.append(getAttributeName(node)).append("=\"").append(XmlUtil.escape(valueOf(node))).append('\"');
   }
 
   private static String getAttributeName(Node node) {
@@ -293,13 +296,13 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     return result;
   }
 
-  private static String getPrefix(String uri, Map<String, String> namespaces) {
+  private static Prefix getPrefix(String uri, Namespaces namespaces) {
     String result = namespaces.get(uri);
-    if (result == null) {
-      result = "ns" + (namespaces.size() + 1);
-      namespaces.put(uri, result);
+    boolean existing = result != null;
+    if (!existing) {
+      result = namespaces.add(uri);
     }
-    return result;
+    return new Prefix(result, existing);
   }
 
   private static void appendText(Node node, StringBuilder builder) {
@@ -307,8 +310,7 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
   }
 
   private static String valueOf(Node node) {
-    return node.getNodeValue()
-      .trim();
+    return node.getNodeValue().trim();
   }
 
   private static void appendComment(Node node, String indentation, StringBuilder builder) {
@@ -492,6 +494,54 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
       .replace(">", "&gt;")
       .replace("'", "&apos;")
       .replace("\"", "&quot;");
+  }
+
+
+  @SuppressWarnings("serial")
+  public static class Namespaces extends HashMap<String, String> {
+
+    private static final String XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
+
+    private final boolean includeRootNamespace;
+    private int counter;
+
+    public Namespaces(boolean includeRootNamespace) {
+      this.includeRootNamespace = includeRootNamespace;
+      put("http://www.w3.org/2001/XMLSchema-instance", "xsi");
+      put(XML_NAMESPACE, "xml");
+    }
+
+    public String add(String uri) {
+      String result = "ns" + ++counter;
+      put(uri, result);
+      return result;
+    }
+
+    public boolean isIncludeRootNamespace() {
+      return includeRootNamespace;
+    }
+
+    public boolean isXmlNamespace(String uri) {
+      return XML_NAMESPACE.equals(uri);
+    }
+  }
+
+
+  private static class Prefix {
+
+    private final String name;
+    private final boolean existing;
+
+    Prefix(String name, boolean existing) {
+      this.name = name;
+      this.existing = existing;
+    }
+
+    @Override
+    public String toString() {
+      return name;
+    }
+
   }
 
 }

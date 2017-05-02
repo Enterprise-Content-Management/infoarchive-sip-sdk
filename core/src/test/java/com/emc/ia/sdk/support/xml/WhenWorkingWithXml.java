@@ -20,6 +20,7 @@ import org.w3c.dom.Document;
 
 import com.emc.ia.sdk.support.test.TestCase;
 
+
 public class WhenWorkingWithXml extends TestCase {
 
   @Rule
@@ -43,6 +44,20 @@ public class WhenWorkingWithXml extends TestCase {
 
   private InputStream toStream(String text) {
     return new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+  }
+
+  @Test
+  public void shouldSuppressPrintingRootNamespace() {
+    String elementName = randomString(5);
+    Document document = XmlBuilder.newDocument()
+        .namespace(randomString())
+        .element(elementName)
+        .end()
+    .build();
+
+    String actual = XmlUtil.toString(document.getDocumentElement(), false);
+
+    assertEquals("Formatted XML", '<' + elementName + "/>\n", actual);
   }
 
   @Test

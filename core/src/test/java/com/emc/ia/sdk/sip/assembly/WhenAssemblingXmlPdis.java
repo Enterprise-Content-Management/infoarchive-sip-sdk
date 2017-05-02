@@ -40,11 +40,13 @@ public class WhenAssemblingXmlPdis extends TestCase {
 
   private InputStream testSchema() {
     return new ByteArrayInputStream(XmlUtil.toString(XmlBuilder.newDocument()
-      .namespace(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-      .element("schema")
-      .element("element")
-      .attribute("name", randomString())
-      .attribute("type", "string")
+        .namespace(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+        .element("schema")
+            .element("element")
+                .attribute("name", randomString())
+                .attribute("type", "string")
+            .end()
+        .end()
       .build())
       .getBytes(StandardCharsets.UTF_8));
   }
@@ -53,6 +55,7 @@ public class WhenAssemblingXmlPdis extends TestCase {
   public void shouldNotValidateWhenNoSchemaIsProvided() throws IOException {
     assemblePdi(null);
   }
+
 
   private class TestPdiAssembler extends XmlPdiAssembler<String> {
 

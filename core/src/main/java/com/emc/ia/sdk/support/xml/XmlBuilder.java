@@ -3,71 +3,48 @@
  */
 package com.emc.ia.sdk.support.xml;
 
+import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
-/**
- * Fluent API for building XML documents. Example usage:
- * 
- * <pre>
- * 
- * Document document = XmlBuilder.newDocument()
- *   .namespace("http://company.com/ns/example")
- *   .element("parent")
- *   .attribute("name", "value")
- *   .element("child")
- *   .element("grandChild")
- *   .end()
- *   .end()
- *   .element("child", "text")
- *   .end()
- *   .build();
- * </pre>
- */
-public class XmlBuilder {
+
+public interface XmlBuilder<T> {
 
   /**
-   * Start building a new empty XML document.
+   * Start building an XML document as a DOM.
    * @return A builder for an empty document
    */
-  public static XmlBuilder newDocument() {
-    return new XmlBuilder(XmlUtil.newDocument());
+  static XmlBuilder<Document> newDocument() {
+    return new DomXmlBuilder(XmlUtil.newDocument());
   }
 
-  private final Document document;
-  private Node current;
-  private String namespaceUri;
+  /**
+   * Start building an XML document as text.
+   * @param writer The writer to print the XML document to
+   * @return A builder for an empty document
+   */
+  static XmlBuilder<Void> newDocument(PrintWriter writer) {
+    return newDocument(writer, "");
+  }
 
   /**
-   * Start building an existing XML document at the given node.
-   * @param node The node at which to start building the XML document
+   * Start building an XML document (fragment) as text.
+   * @param writer The writer to print the XML document to
+   * @param indent The indentation for the document (fragment)
+   * @return A builder for an empty document
    */
-  public XmlBuilder(Node node) {
-    if (node instanceof Document) {
-      this.document = (Document)node;
-      this.current = document;
-    } else if (node instanceof Element) {
-      this.document = node.getOwnerDocument();
-      this.current = node;
-    } else {
-      throw new IllegalArgumentException("Unhandled node type: " + Objects.requireNonNull(node)
-        .getNodeType());
-    }
+  static XmlBuilder<Void> newDocument(PrintWriter writer, String indent) {
+  return new PrintingXmlBuilder(writer, indent);
   }
 
   /**
    * Return the XML document that was built.
    * @return The XML document that was built
    */
-  public Document build() {
-    return document;
-  }
+  T build();
 
   /**
    * Set the <a href="http://www.w3.org/TR/REC-xml-names/">XML namespace</a> to the provided namespace URI for all
@@ -75,10 +52,7 @@ public class XmlBuilder {
    * @param uri The namespace URI
    * @return This builder
    */
-  public XmlBuilder namespace(String uri) {
-    namespaceUri = uri;
-    return this;
-  }
+  XmlBuilder<T> namespace(String uri);
 
   /**
    * Set the <a href="http://www.w3.org/TR/REC-xml-names/">XML namespace</a> to the provided namespace URI for all
@@ -86,7 +60,7 @@ public class XmlBuilder {
    * @param uri The namespace URI
    * @return This builder
    */
-  public XmlBuilder namespace(URI uri) {
+  default XmlBuilder<T> namespace(URI uri) {
     return namespace(uri.toString());
   }
 
@@ -95,23 +69,13 @@ public class XmlBuilder {
    * @param name The name (tag) of the element to add
    * @return This builder
    */
-  public XmlBuilder element(String name) {
-    return element(document.createElementNS(namespaceUri, name));
-  }
-
-  private XmlBuilder element(Element element) {
-    current = current.appendChild(element);
-    return this;
-  }
+  XmlBuilder<T> element(String name);
 
   /**
    * End the current element in the XML document.
    * @return This builder
    */
-  public XmlBuilder end() {
-    current = current.getParentNode();
-    return this;
-  }
+  XmlBuilder<T> end();
 
   /**
    * Add an attribute to the current element in the XML document.
@@ -119,7 +83,7 @@ public class XmlBuilder {
    * @param value The value of the attribute
    * @return This builder
    */
-  public XmlBuilder attribute(String name, String value) {
+  default XmlBuilder<T> attribute(String name, String value) {
     return attribute(name, value, null);
   }
 
@@ -131,66 +95,57 @@ public class XmlBuilder {
    * @param namespace The URI of the XML namespace in which to add the attribute
    * @return This builder
    */
-  public XmlBuilder attribute(String name, String value, String namespace) {
-    ((Element)current).setAttributeNS(namespace, name, value);
-    return this;
-  }
+  XmlBuilder<T> attribute(String name, String value, String namespace);
 
   /**
    * Add some text to the current element in the XML document.
    * @param text The text to add
    * @return This builder
    */
-  public XmlBuilder text(String text) {
-    if (text != null) {
-      current.appendChild(document.createTextNode(XmlUtil.escape(text)));
-    }
-    return this;
-  }
+  XmlBuilder<T> text(String text);
 
   /**
    * Add an element containing the given text to the current location in the XML document. The element is automatically
    * closed. Note that this is a shorthand notation for
-   * 
+   *
    * <pre>
    * element(name).text(text)
    *   .end()
    * </pre>
-   * 
+   *
    * @param name The name/tag of the element to add
    * @param text The text to add to the element
    * @return This builder
    */
-  public XmlBuilder element(String name, String text) {
-    return text == null ? this : element(name).text(text)
-      .end();
+  default XmlBuilder<T> element(String name, String text) {
+    return text == null ? this : element(name).text(text).end();
   }
 
   /**
    * Add elements for a collection.
-   * @param <T> The type of items in the collection
+   * @param <I> The type of items in the collection
    * @param collectionName The name/tag for the collection
    * @param itemName The name/tag for an item in the collection
    * @param items The collection
    * @param itemBuilder A builder for an item in the collection
    * @return This builder
    */
-  public <T> XmlBuilder elements(String collectionName, String itemName, Iterable<T> items,
-      BiConsumer<T, XmlBuilder> itemBuilder) {
+  default <I> XmlBuilder<T> elements(String collectionName, String itemName, Iterable<I> items,
+      BiConsumer<I, XmlBuilder<T>> itemBuilder) {
     return elements(collectionName, itemName, items.iterator(), itemBuilder);
   }
 
   /**
    * Add elements for a collection.
-   * @param <T> The type of items in the collection
+   * @param <I> The type of items in the collection
    * @param collectionName The name/tag for the collection
    * @param itemName The name/tag for an item in the collection
    * @param items The collection
    * @param itemBuilder A builder for an item in the collection
    * @return This builder
    */
-  public <T> XmlBuilder elements(String collectionName, String itemName, Iterator<T> items,
-      BiConsumer<T, XmlBuilder> itemBuilder) {
+  default <I> XmlBuilder<T> elements(String collectionName, String itemName, Iterator<I> items,
+      BiConsumer<I, XmlBuilder<T>> itemBuilder) {
     if (!items.hasNext()) {
       return this;
     }
@@ -202,11 +157,6 @@ public class XmlBuilder {
     }
     end();
     return this;
-  }
-
-  @Override
-  public String toString() {
-    return XmlUtil.toString(build());
   }
 
 }

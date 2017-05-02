@@ -3,16 +3,19 @@
  */
 package com.emc.ia.sdk.sip.client.dto;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import com.emc.ia.sdk.support.xml.XmlBuilder;
 
 
 public final class SearchDataBuilder {
 
-  private final XmlBuilder builder;
+  private final StringWriter output = new StringWriter();
+  private final XmlBuilder<?> builder;
 
   private SearchDataBuilder() {
-    builder = XmlBuilder.newDocument()
-      .element("data");
+    builder = XmlBuilder.newDocument(new PrintWriter(output)).element("data");
   }
 
   public static SearchDataBuilder builder() {
@@ -34,7 +37,7 @@ public final class SearchDataBuilder {
         .element("operator", operator)
         .element("value", value1)
         .element("value", value2)
-        .end();
+    .end();
     return this;
   }
 
@@ -63,7 +66,8 @@ public final class SearchDataBuilder {
   }
 
   public String build() {
-    return builder.end().toString();
+    builder.build();
+    return output.toString();
   }
 
 }
