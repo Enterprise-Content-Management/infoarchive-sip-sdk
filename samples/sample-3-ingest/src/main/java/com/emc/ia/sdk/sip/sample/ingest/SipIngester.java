@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -28,16 +29,18 @@ public class SipIngester {
   private static final String SAMPLE_HOLDING = "Animals";
   private static final String SAMPLE_SCHEMA = "pdi-schema.xsd";
   private static final String SAMPLE_NAMESPACE = "urn:emc:ia:schema:sample:animal:1.0";
+  private static final String SAMPLE_FILES_PATH = "src/main/resources";
 
   public static void main(String[] args) {
     try {
-      new SipIngester().run();
+      String rootPath = new File(".").getCanonicalPath();
+      new SipIngester().run(rootPath);
     } catch (IOException e) {
       e.printStackTrace(); // NOPMD
     }
   }
 
-  private void run() throws IOException {
+  private void run(String rootPath) throws IOException {
     // Tell InfoArchive where and how to archive the data
     URI entityUri = URI.create(SAMPLE_NAMESPACE);
     String entityName = "animal";
@@ -52,36 +55,31 @@ public class SipIngester {
     .build();
 
     // Define a mapping from our domain object to the PDI XML
-    XmlPdiAssembler<Animal> pdiAssembler;
+    XmlPdiAssembler<File> pdiAssembler;
     try (InputStream schema = getClass().getResourceAsStream('/' + SAMPLE_SCHEMA)) {
-      pdiAssembler = new XmlPdiAssembler<Animal>(entityUri, entityName, schema) {
+      pdiAssembler = new XmlPdiAssembler<File>(entityUri, entityName, schema) {
         @Override
-        protected void doAdd(Animal value, Map<String, ContentInfo> ignored) {
+        protected void doAdd(File value, Map<String, ContentInfo> ignored) {
           getBuilder()
-              .element("animal_name", value.getAnimalName())
-              .element("file_name", value.getFileName());
+              .element("animal_name", value.getName().substring(0, value.getName().lastIndexOf(".")))
+              .element("file_name", relativePath(value, rootPath));
         }
       };
     }
 
+    DigitalObjectsExtraction<File> contentAssembler = file -> Collections.singleton(
+        DigitalObject.fromFile(relativePath(file, rootPath), file)
+    ).iterator();
+
     // Assemble the SIP
-    SipAssembler<Animal> sipAssembler = SipAssembler.forPdi(prototype, pdiAssembler);
-    FileGenerator<Animal> generator = new FileGenerator<>(sipAssembler, FileSupplier.fromTemporaryDirectory());
+    SipAssembler<File> sipAssembler = SipAssembler.forPdiAndContent(prototype, pdiAssembler, contentAssembler);
+    FileGenerator<File> generator = new FileGenerator<>(sipAssembler, FileSupplier.fromTemporaryDirectory());
 
-    Animal a1 = new Animal();
-    Animal a2 = new Animal();
-    Animal a3 = new Animal();
+    File f1 = new File(SAMPLE_FILES_PATH, "ape.dat");
+    File f2 = new File(SAMPLE_FILES_PATH, "bear.dat");
+    File f3 = new File(SAMPLE_FILES_PATH, "cobra.dat");
 
-    a1.setAnimalName("ape");
-    a1.setFileName("ape.dat");
-
-    a2.setAnimalName("bear");
-    a2.setFileName("bear.dat");
-
-    a3.setAnimalName("cobra");
-    a3.setFileName("cobra.dat");
-
-    FileGenerationMetrics metrics = generator.generate(Arrays.asList(a1, a2, a3));
+    FileGenerationMetrics metrics = generator.generate(Arrays.asList(f1, f2, f3));
     File assembledSip = metrics.getFile();
 
     // Get an ArchiveClient instance to interact with InfoArchive.
@@ -95,6 +93,10 @@ public class SipIngester {
       String aipId = archiveClient.ingestDirect(sip);
       System.out.println("SIP ingested as AIP " + aipId); // NOPMD
     }
+  }
+
+  private String relativePath(File file, String rootPath) {
+    return file.getAbsolutePath().substring(rootPath.length() + 1);
   }
 
   @SuppressWarnings("unchecked")
