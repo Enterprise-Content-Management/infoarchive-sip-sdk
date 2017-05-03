@@ -4,18 +4,9 @@
     <id>pdi.index.creator</id>
     <key.document.name>xdb.pdi.name</key.document.name>
     <indexes>
-      <!--<path.value.index>
-        <name>animal</name>
-        <path>/{urn:emc:ia:schema:sample:animal:1.0}animals/{urn:emc:ia:schema:sample:animal:1.0}animal&lt;STRING>
-        </path>
-        <compressed>false</compressed>
-        <unique.keys>false</unique.keys>
-        <concurrent>false</concurrent>
-        <build.without.logging>true</build.without.logging>
-      </path.value.index>-->
       <path.value.index>
-        <name>animal</name>
-        <path>/{urn:emc:ia:schema:sample:animal:1.0}animals/{urn:emc:ia:schema:sample:animal:1.0}animal/{urn:emc:ia:schema:sample:animal:1.0}animal_name&lt;STRING>
+        <name>animal_name</name>
+        <path>/{urn:emc:ia:schema:sample:animal:1.0}animals/{urn:emc:ia:schema:sample:animal:1.0}animal/animal_name&lt;STRING>
         </path>
         <compressed>false</compressed>
         <unique.keys>false</unique.keys>
@@ -23,8 +14,8 @@
         <build.without.logging>true</build.without.logging>
       </path.value.index>
       <path.value.index>
-        <name>animal</name>
-        <path>/{urn:emc:ia:schema:sample:animal:1.0}animals/{urn:emc:ia:schema:sample:animal:1.0}animal/{urn:emc:ia:schema:sample:animal:1.0}file_name&lt;STRING>
+        <name>file_name</name>
+        <path>/{urn:emc:ia:schema:sample:animal:1.0}animals/{urn:emc:ia:schema:sample:animal:1.0}animal/file_name&lt;STRING>
         </path>
         <compressed>false</compressed>
         <unique.keys>false</unique.keys>
