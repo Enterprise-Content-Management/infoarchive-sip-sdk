@@ -5,43 +5,43 @@
       <xforms:instance xmlns="">
         <data>
           <animalName />
-          <fileName />
+          <filePath />
         </data>
       </xforms:instance>
       <xforms:instance xmlns="" id="labels">
         <labels>
           <animalName>Animal Name</animalName>
-          <fileName>File Name</fileName>
+          <filePath>File Path</filePath>
         </labels>
       </xforms:instance>
       <xforms:instance xmlns="" id="hints">
         <hints>
           <animalName />
-          <fileName />
+          <filePath />
         </hints>
       </xforms:instance>
       <xforms:instance xmlns="" id="prompts">
         <prompts>
           <animalName />
-          <fileName />
+          <filePath />
         </prompts>
       </xforms:instance>
       <xforms:instance xmlns="" id="alerts">
         <alerts>
           <animalName />
-          <fileName />
+          <filePath />
         </alerts>
       </xforms:instance>
       <xforms:instance xmlns="" id="range-messages">
         <rangemessages>
           <animalName />
-          <fileName />
+          <filePath />
         </rangemessages>
       </xforms:instance>
       <xforms:instance xmlns="" id="pattern-messages">
         <patternmessages>
           <animalName />
-          <fileName />
+          <filePath />
         </patternmessages>
       </xforms:instance>
       <xforms:submission id="submit01" method="post" serialization="application/xml" />
@@ -49,17 +49,17 @@
                   targetNamespace="http://www.w3.org/2002/xforms" elementFormDefault="qualified">
       </xsd:schema>
       <bind xmlns="http://www.w3.org/2002/xforms" ref="/data/animalName" />
-      <bind xmlns="http://www.w3.org/2002/xforms" ref="/data/fileName" />
+      <bind xmlns="http://www.w3.org/2002/xforms" ref="/data/filePath" />
     </xforms:model>
   </xhtml:head>
   <xhtml:body>
-    <input xmlns="http://www.w3.org/2002/xforms" ref="fileName">
-      <label ref="instance('labels')/fileName" />
-      <hint ref="instance('hints')/fileName" />
-      <hint appearance="minimal" ref="instance('prompts')/fileName" />
-      <alert ref="instance('alerts')/fileName" />
-      <message class="range" ref="instance('range-messages')/fileName" />
-      <message class="pattern" ref="instance('pattern-messages')/fileName" />
+    <input xmlns="http://www.w3.org/2002/xforms" ref="filePath">
+      <label ref="instance('labels')/filePath" />
+      <hint ref="instance('hints')/filePath" />
+      <hint appearance="minimal" ref="instance('prompts')/filePath" />
+      <alert ref="instance('alerts')/filePath" />
+      <message class="range" ref="instance('range-messages')/filePath" />
+      <message class="pattern" ref="instance('pattern-messages')/filePath" />
     </input>
     <input xmlns="http://www.w3.org/2002/xforms" ref="animalName">
       <label ref="instance('labels')/animalName" />

@@ -14,8 +14,8 @@
         <build.without.logging>true</build.without.logging>
       </path.value.index>
       <path.value.index>
-        <name>file_name</name>
-        <path>/{urn:emc:ia:schema:sample:animal:1.0}animals/{urn:emc:ia:schema:sample:animal:1.0}animal/file_name&lt;STRING>
+        <name>file_path</name>
+        <path>/{urn:emc:ia:schema:sample:animal:1.0}animals/{urn:emc:ia:schema:sample:animal:1.0}animal/file_path&lt;STRING>
         </path>
         <compressed>false</compressed>
         <unique.keys>false</unique.keys>

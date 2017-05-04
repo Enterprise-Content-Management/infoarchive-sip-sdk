@@ -63,7 +63,7 @@ public class SipIngester {
         protected void doAdd(File value, Map<String, ContentInfo> ignored) {
           getBuilder()
               .element("animal_name", value.getName().substring(0, value.getName().lastIndexOf(".")))
-              .element("file_name", relativePath(value, rootPath));
+              .element("file_path", relativePath(value, rootPath));
         }
       };
     }
@@ -118,7 +118,7 @@ public class SipIngester {
     result.put(AIC_NAME, SAMPLE_HOLDING);
 
     addCriteria(result, "animalName", "Animal Name", DATATYPE_STRING);
-    addCriteria(result, "fileName", "File Name", DATATYPE_STRING);
+    addCriteria(result, "filePath", "File Path", DATATYPE_STRING);
 
     String name = "DefaultQuery";
     append(result, QUERY_NAME, name);
@@ -132,7 +132,7 @@ public class SipIngester {
     result.put(String.format(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name), "return $aiu");
     String schema = SAMPLE_NAMESPACE;
     addOperand(result, name, schema, "animalName", "n:animal_name", DATATYPE_STRING, Boolean.TRUE.toString());
-    addOperand(result, name, schema, "fileName", "n:file_name", DATATYPE_STRING, Boolean.TRUE.toString());
+    addOperand(result, name, schema, "filePath", "n:file_path", DATATYPE_STRING, Boolean.TRUE.toString());
 
     result.put(String.format(RESULT_HELPER_SCHEMA_TEMPLATE, "result_helper"), SAMPLE_NAMESPACE);
     result.put(String.format(RESULT_HELPER_XML, "result_helper"), getResource("DefaultResultHelper.xml"));
@@ -143,7 +143,7 @@ public class SipIngester {
         .formXml(getResource("FindAnimals.form.xml"))
         .result()
         .mainColumn("animalName", "Animal Name", "n:animal_name", DATATYPE_STRING)
-        .mainColumn("fileName", "File Name", "n:file_name", DATATYPE_STRING)
+        .mainColumn("filePath", "File Path", "n:file_path", DATATYPE_STRING)
         .end()
         .build(result);
 
