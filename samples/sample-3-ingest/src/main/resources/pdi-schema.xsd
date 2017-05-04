@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
-           targetNamespace="urn:emc:ia:schema:sample:animal:1.0" xmlns:ns1="urn:emc:ia:schema:sample:animal:1.0">
+    targetNamespace="urn:emc:ia:schema:sample:animal:1.0" xmlns:animal="urn:emc:ia:schema:sample:animal:1.0">
   <xs:element name="animals">
     <xs:complexType>
       <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="ns1:animal"/>
+        <xs:element maxOccurs="unbounded" ref="animal:animal"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="animal">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="ns1:animal_name"/>
-        <xs:element ref="ns1:file_path"/>
+        <xs:element ref="animal:animal_name"/>
+        <xs:element ref="animal:file_path"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="animal_name" type="xs:string"/>
   <xs:element name="file_path" type="xs:string"/>
 </xs:schema>
-
