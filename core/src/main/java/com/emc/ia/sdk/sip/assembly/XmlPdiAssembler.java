@@ -12,11 +12,12 @@ import java.util.Optional;
 
 import org.atteo.evo.inflector.English;
 
+import com.emc.ia.sdk.support.xml.DomXmlBuilder;
 import com.emc.ia.sdk.support.xml.XmlBuilder;
 import com.emc.ia.sdk.support.xml.XmlUtil;
 
 /**
- * Base class for assembling XML documents from domain objects using an {@linkplain XmlBuilder}.
+ * Base class for assembling XML documents from domain objects using an {@linkplain DomXmlBuilder}.
  * @param <D> The type of domain objects to assemble the XML document from
  */
 public abstract class XmlPdiAssembler<D> extends PdiAssembler<D> {
@@ -24,7 +25,7 @@ public abstract class XmlPdiAssembler<D> extends PdiAssembler<D> {
   private final Optional<URI> namespace;
   private final Optional<String> documentElementName;
   private final String domainObjectName;
-  private XmlBuilder builder;
+  private XmlBuilder<?> builder;
 
   /**
    * Create an instance.
@@ -88,7 +89,7 @@ public abstract class XmlPdiAssembler<D> extends PdiAssembler<D> {
    * Return the XML document builder for capturing a domain object.
    * @return The XML document builder for capturing a domain object
    */
-  protected XmlBuilder getBuilder() {
+  protected XmlBuilder<?> getBuilder() {
     return builder;
   }
 
@@ -102,7 +103,7 @@ public abstract class XmlPdiAssembler<D> extends PdiAssembler<D> {
 
   @Override
   public void start(PrintWriter writer) {
-    writer.println(XmlUtil.XML_DECLARATION);
+    writer.print(XmlUtil.XML_DECLARATION);
     documentElementName.ifPresent(tag -> {
       writer.format("<%s", tag);
       namespace.ifPresent(uri -> writer.format(" xmlns=\"%s\"", uri));
@@ -112,14 +113,12 @@ public abstract class XmlPdiAssembler<D> extends PdiAssembler<D> {
 
   @Override
   public final void add(D domainObject, Map<String, ContentInfo> contentInfo, PrintWriter writer) {
-    builder = XmlBuilder.newDocument();
+    builder = XmlBuilder.newDocument(writer, "  ");
     try {
-      namespace.ifPresent(uri -> builder.namespace(uri));
       builder.element(domainObjectName);
       doAdd(domainObject, contentInfo);
-      writer.println(XmlUtil.toString(builder.build()
-        .getDocumentElement(), "  "));
     } finally {
+      builder.build();
       builder = null;
     }
   }
