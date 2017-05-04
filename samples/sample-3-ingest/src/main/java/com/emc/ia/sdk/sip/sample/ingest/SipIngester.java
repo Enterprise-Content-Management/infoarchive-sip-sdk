@@ -30,6 +30,7 @@ public class SipIngester {
   private static final String SAMPLE_SCHEMA = "pdi-schema.xsd";
   private static final String SAMPLE_NAMESPACE = "urn:emc:ia:schema:sample:animal:1.0";
   private static final String SAMPLE_FILES_PATH = "src/main/resources";
+  private static final String DATATYPE_STRING = "STRING";
 
   public static void main(String[] args) {
     try {
@@ -113,6 +114,39 @@ public class SipIngester {
     result.put(PDI_SCHEMA, getResource(SAMPLE_SCHEMA));
     result.put(PDI_XML, getResource("pdi.xml"));
     result.put(INGEST_XML, getResource("ingest.xml"));
+
+    result.put(AIC_NAME, SAMPLE_HOLDING);
+
+    addCriteria(result, "animalName", "Animal Name", DATATYPE_STRING);
+    addCriteria(result, "fileName", "File Name", DATATYPE_STRING);
+
+    String name = "DefaultQuery";
+    append(result, QUERY_NAME, name);
+    result.put(String.format(QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, name), "result");
+    result.put(String.format(QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, name), Boolean.TRUE.toString());
+    result.put(String.format(QUERY_RESULT_SCHEMA_TEMPLATE, name), SAMPLE_NAMESPACE);
+    result.put(String.format(QUERY_NAMESPACE_PREFIX_TEMPLATE, name), "n");
+    result.put(String.format(QUERY_NAMESPACE_URI_TEMPLATE, name), SAMPLE_NAMESPACE);
+    result.put(String.format(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name), "/n:animals/n:animal");
+    result.put(String.format(QUERY_XDBPDI_SCHEMA_TEMPLATE, name), SAMPLE_NAMESPACE);
+    result.put(String.format(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name), "return $aiu");
+    String schema = SAMPLE_NAMESPACE;
+    addOperand(result, name, schema, "animalName", "n:animal_name", DATATYPE_STRING, Boolean.TRUE.toString());
+    addOperand(result, name, schema, "fileName", "n:file_name", DATATYPE_STRING, Boolean.TRUE.toString());
+
+    result.put(String.format(RESULT_HELPER_SCHEMA_TEMPLATE, "result_helper"), SAMPLE_NAMESPACE);
+    result.put(String.format(RESULT_HELPER_XML, "result_helper"), getResource("DefaultResultHelper.xml"));
+
+    new SearchConfigBuilder().name("Find animals")
+        .aic(SAMPLE_HOLDING)
+        .query("DefaultQuery")
+        .formXml(getResource("FindAnimals.form.xml"))
+        .result()
+        .mainColumn("animalName", "Animal Name", "n:animal_name", DATATYPE_STRING)
+        .mainColumn("fileName", "File Name", "n:file_name", DATATYPE_STRING)
+        .end()
+        .build(result);
+
     return result;
   }
 
@@ -120,6 +154,38 @@ public class SipIngester {
     try (InputStream input = getClass().getResourceAsStream("/" + name)) {
       return IOUtils.toString(input);
     }
+  }
+
+  private static void addOperand(Map<String, String> result, String query, String schema, String name, String path,
+      String type, String indexed) {
+    append(result, String.format(QUERY_XDBPDI_OPERAND_NAME, query, schema), name);
+    append(result, String.format(QUERY_XDBPDI_OPERAND_PATH, query, schema), path);
+    append(result, String.format(QUERY_XDBPDI_OPERAND_TYPE, query, schema), type);
+    append(result, String.format(QUERY_XDBPDI_OPERAND_INDEX, query, schema), indexed);
+  }
+
+  private static void append(Map<String, String> result, String name, String newValue) {
+    String value = result.get(name);
+    if (value == null) {
+      result.put(name, newValue);
+    } else {
+      result.put(name, value + "," + newValue);
+    }
+  }
+
+  private static void addCriteria(Map<String, String> result, String name, String label, String type) {
+    addCriteria(result, name, label, type, "", "", "");
+  }
+
+  private static void addCriteria(Map<String, String> result, String name, String label, String type,
+      String pkeyValuesAttr, String pkeyMinAttr, String pkeyMaxAttr) {
+    append(result, CRITERIA_NAME, name);
+    append(result, CRITERIA_LABEL, label);
+    append(result, CRITERIA_TYPE, type);
+    append(result, CRITERIA_PKEYVALUESATTR, pkeyValuesAttr);
+    append(result, CRITERIA_PKEYMINATTR, pkeyMinAttr);
+    append(result, CRITERIA_PKEYMAXATTR, pkeyMaxAttr);
+    append(result, CRITERIA_INDEXED, Boolean.TRUE.toString());
   }
 
 }
