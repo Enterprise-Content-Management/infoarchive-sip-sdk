@@ -7,13 +7,16 @@
 
 The [OpenText InfoArchive](http://documentum.opentext.com/infoarchive/) SIP SDK is a Java library that 
 makes it quick and easy to create SIPs regardless of what type of data it contains or where that data originates
-from. A SIP (Submission Information Package) is a package consisting of packaging information, metadata (structured
+from. A SIP (_Submission Information Package_) is a package consisting of packaging information, metadata (structured
 data in the form of XML) and optionally a collection of unstructured data files.
 
-It has long been perceived by partners and customers that creating SIPs is difficult. The IA SIP SDK aims to make
-the process simpler by allowing a developer to easily and dynamically assembly both the XML file containing the
-structured data as well as the entire SIP itself. This makes it possible to quickly create SIPs from any collection or
-stream of Plain Old Java Objects regardless of if they represent files, SQL query result sets, emails, tweets, etc.
+The IA SIP SDK aims to make the process of creating SIPs simpler by allowing a developer to dynamically assemble both
+the XML file containing the structured data as well as the entire SIP itself. It's especially easy to create SIPs from
+any collection or stream of Plain Old Java Objects regardless of if they represent files, SQL query result sets, emails, 
+tweets, etc.
+
+While the focus of the SIP SDK is on assembling SIPs, you can also use it to ingest those SIPs into InfoArchive and
+even to configure an InfoArchive holding.
 
 
 ## Quick Start
@@ -25,12 +28,13 @@ The SDK consists of the following jars:
 - `infoarchive-sip-sdk-velocity` contains code for working with the [Velocity](http://velocity.apache.org/) template engine
 
 All jars can be found in the [Central Repository](https://repo1.maven.org/maven2/com/emc/ia/). The easiest way to get
-them is through a dependency management system like [Gradle](http://gradle.org/) or [Maven](https://maven.apache.org/). For the latest version, see the `maven-central` button at the top of this page.
+them is through a dependency management system like [Gradle](http://gradle.org/) or [Maven](https://maven.apache.org/).
+For the latest version, see the `maven-central` button at the top of this page.
 
 **Gradle**
 
     dependencies { 
-      compile 'com.emc.ia:infoarchive-sip-sdk-core:5.6.1'
+      compile 'com.emc.ia:infoarchive-sip-sdk-core:5.6.2'
     }
     
 **Maven**
@@ -39,7 +43,7 @@ them is through a dependency management system like [Gradle](http://gradle.org/)
       <dependency>
         <groupId>com.emc.ia</groupId>
         <artifactId>infoarchive-sip-sdk-core</artifactId>
-        <version>5.6.1</version>
+        <version>5.6.2</version>
       </dependency>
     </dependencies>
     
