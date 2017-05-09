@@ -35,7 +35,6 @@ public class DefaultClock implements Clock {
   @Override
   public void schedule(String name, long time, TimeUnit unit, Runnable task) {
     Timer timer = new Timer();
-    timers.put(name, timer);
     timer.schedule(new TimerTask() {
       @Override
       public void run() {
@@ -46,6 +45,7 @@ public class DefaultClock implements Clock {
         }
       }
     }, unit.toMillis(time));
+    timers.put(name, timer);
   }
 
   @Override

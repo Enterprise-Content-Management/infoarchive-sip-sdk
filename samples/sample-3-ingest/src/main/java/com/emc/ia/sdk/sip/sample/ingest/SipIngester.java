@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -28,16 +29,19 @@ public class SipIngester {
   private static final String SAMPLE_HOLDING = "Animals";
   private static final String SAMPLE_SCHEMA = "pdi-schema.xsd";
   private static final String SAMPLE_NAMESPACE = "urn:emc:ia:schema:sample:animal:1.0";
+  private static final String SAMPLE_FILES_PATH = "src/main/resources";
+  private static final String DATATYPE_STRING = "STRING";
 
   public static void main(String[] args) {
     try {
-      new SipIngester().run();
+      String rootPath = new File(".").getCanonicalPath();
+      new SipIngester().run(rootPath);
     } catch (IOException e) {
       e.printStackTrace(); // NOPMD
     }
   }
 
-  private void run() throws IOException {
+  private void run(String rootPath) throws IOException {
     // Tell InfoArchive where and how to archive the data
     URI entityUri = URI.create(SAMPLE_NAMESPACE);
     String entityName = "animal";
@@ -52,20 +56,31 @@ public class SipIngester {
     .build();
 
     // Define a mapping from our domain object to the PDI XML
-    XmlPdiAssembler<String> pdiAssembler;
+    XmlPdiAssembler<File> pdiAssembler;
     try (InputStream schema = getClass().getResourceAsStream('/' + SAMPLE_SCHEMA)) {
-      pdiAssembler = new XmlPdiAssembler<String>(entityUri, entityName, schema) {
+      pdiAssembler = new XmlPdiAssembler<File>(entityUri, entityName, schema) {
         @Override
-        protected void doAdd(String value, Map<String, ContentInfo> ignored) {
-          getBuilder().text(value);
+        protected void doAdd(File value, Map<String, ContentInfo> ignored) {
+          getBuilder()
+              .element("animal_name", value.getName().substring(0, value.getName().lastIndexOf(".")))
+              .element("file_path", relativePath(value, rootPath));
         }
       };
     }
 
+    DigitalObjectsExtraction<File> contentAssembler = file -> Collections.singleton(
+        DigitalObject.fromFile(relativePath(file, rootPath), file)
+    ).iterator();
+
     // Assemble the SIP
-    SipAssembler<String> sipAssembler = SipAssembler.forPdi(prototype, pdiAssembler);
-    FileGenerator<String> generator = new FileGenerator<>(sipAssembler, FileSupplier.fromTemporaryDirectory());
-    FileGenerationMetrics metrics = generator.generate(Arrays.asList("ape", "bear", "cobra"));
+    SipAssembler<File> sipAssembler = SipAssembler.forPdiAndContent(prototype, pdiAssembler, contentAssembler);
+    FileGenerator<File> generator = new FileGenerator<>(sipAssembler, FileSupplier.fromTemporaryDirectory());
+
+    File f1 = new File(SAMPLE_FILES_PATH, "ape.dat");
+    File f2 = new File(SAMPLE_FILES_PATH, "bear.dat");
+    File f3 = new File(SAMPLE_FILES_PATH, "cobra.dat");
+
+    FileGenerationMetrics metrics = generator.generate(Arrays.asList(f1, f2, f3));
     File assembledSip = metrics.getFile();
 
     // Get an ArchiveClient instance to interact with InfoArchive.
@@ -79,6 +94,10 @@ public class SipIngester {
       String aipId = archiveClient.ingestDirect(sip);
       System.out.println("SIP ingested as AIP " + aipId); // NOPMD
     }
+  }
+
+  private String relativePath(File file, String rootPath) {
+    return file.getAbsolutePath().substring(rootPath.length() + 1);
   }
 
   @SuppressWarnings("unchecked")
@@ -95,6 +114,39 @@ public class SipIngester {
     result.put(PDI_SCHEMA, getResource(SAMPLE_SCHEMA));
     result.put(PDI_XML, getResource("pdi.xml"));
     result.put(INGEST_XML, getResource("ingest.xml"));
+
+    result.put(AIC_NAME, SAMPLE_HOLDING);
+
+    addCriteria(result, "animalName", "Animal Name", DATATYPE_STRING);
+    addCriteria(result, "filePath", "File Path", DATATYPE_STRING);
+
+    String name = "DefaultQuery";
+    append(result, QUERY_NAME, name);
+    result.put(String.format(QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, name), "result");
+    result.put(String.format(QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, name), Boolean.TRUE.toString());
+    result.put(String.format(QUERY_RESULT_SCHEMA_TEMPLATE, name), SAMPLE_NAMESPACE);
+    result.put(String.format(QUERY_NAMESPACE_PREFIX_TEMPLATE, name), "n");
+    result.put(String.format(QUERY_NAMESPACE_URI_TEMPLATE, name), SAMPLE_NAMESPACE);
+    result.put(String.format(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name), "/n:animals/n:animal");
+    result.put(String.format(QUERY_XDBPDI_SCHEMA_TEMPLATE, name), SAMPLE_NAMESPACE);
+    result.put(String.format(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name), "return $aiu");
+    String schema = SAMPLE_NAMESPACE;
+    addOperand(result, name, schema, "animalName", "n:animal_name", DATATYPE_STRING, Boolean.TRUE.toString());
+    addOperand(result, name, schema, "filePath", "n:file_path", DATATYPE_STRING, Boolean.TRUE.toString());
+
+    result.put(String.format(RESULT_HELPER_SCHEMA_TEMPLATE, "result_helper"), SAMPLE_NAMESPACE);
+    result.put(String.format(RESULT_HELPER_XML, "result_helper"), getResource("DefaultResultHelper.xml"));
+
+    new SearchConfigBuilder().name("Find animals")
+        .aic(SAMPLE_HOLDING)
+        .query("DefaultQuery")
+        .formXml(getResource("FindAnimals.form.xml"))
+        .result()
+        .mainColumn("animalName", "Animal Name", "n:animal_name", DATATYPE_STRING)
+        .mainColumn("filePath", "File Path", "n:file_path", DATATYPE_STRING)
+        .end()
+        .build(result);
+
     return result;
   }
 
@@ -102,6 +154,38 @@ public class SipIngester {
     try (InputStream input = getClass().getResourceAsStream("/" + name)) {
       return IOUtils.toString(input);
     }
+  }
+
+  private static void addOperand(Map<String, String> result, String query, String schema, String name, String path,
+      String type, String indexed) {
+    append(result, String.format(QUERY_XDBPDI_OPERAND_NAME, query, schema), name);
+    append(result, String.format(QUERY_XDBPDI_OPERAND_PATH, query, schema), path);
+    append(result, String.format(QUERY_XDBPDI_OPERAND_TYPE, query, schema), type);
+    append(result, String.format(QUERY_XDBPDI_OPERAND_INDEX, query, schema), indexed);
+  }
+
+  private static void append(Map<String, String> result, String name, String newValue) {
+    String value = result.get(name);
+    if (value == null) {
+      result.put(name, newValue);
+    } else {
+      result.put(name, value + "," + newValue);
+    }
+  }
+
+  private static void addCriteria(Map<String, String> result, String name, String label, String type) {
+    addCriteria(result, name, label, type, "", "", "");
+  }
+
+  private static void addCriteria(Map<String, String> result, String name, String label, String type,
+      String pkeyValuesAttr, String pkeyMinAttr, String pkeyMaxAttr) {
+    append(result, CRITERIA_NAME, name);
+    append(result, CRITERIA_LABEL, label);
+    append(result, CRITERIA_TYPE, type);
+    append(result, CRITERIA_PKEYVALUESATTR, pkeyValuesAttr);
+    append(result, CRITERIA_PKEYMINATTR, pkeyMinAttr);
+    append(result, CRITERIA_PKEYMAXATTR, pkeyMaxAttr);
+    append(result, CRITERIA_INDEXED, Boolean.TRUE.toString());
   }
 
 }
