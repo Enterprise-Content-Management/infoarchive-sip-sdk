@@ -50,7 +50,7 @@ For the latest version, see the `maven-central` button at the top of this page.
 
 ## Additional Information
 
-For an [introduction](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.1/presentation.pdf)
-to the SDK and some [lab exercises](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.1/lab.pdf),
+For an [introduction](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.2/presentation.pdf)
+to the SDK and some [lab exercises](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.2/lab.pdf),
 see the related [lab](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab) project.
 For examples on how to use the SDK, see the [sample programs](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/samples).
