@@ -396,7 +396,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     receptionResponse.setLinks(links);
     when(restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
       .thenReturn(receptionResponse);
-    when(restClient.put(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
+    when(restClient.post(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip001");
 
     assertEquals(archiveClient.ingest(sip), "sip001");
@@ -428,7 +428,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
     when(restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
       .thenReturn(new ReceptionResponse());
-    when(restClient.put(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
+    when(restClient.post(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip003");
 
     assertEquals(archiveClient.ingestDirect(sip), "sip003");
