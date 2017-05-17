@@ -1166,8 +1166,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     CryptoObject result = new CryptoObject();
     result.setName(name);
     result.setSecurityProvider(configuration.get(CRYPTO_OBJECT_SECURITY_PROVIDER));
-    result.setKeySize(Integer.valueOf(configuration.get(CRYPTO_OBJECT_KEY_SIZE)));
-    result.setInUse(Boolean.valueOf(configuration.get(CRYPTO_OBJECT_IN_USE)));
+    result.setKeySize(Integer.parseInt(configuration.get(CRYPTO_OBJECT_KEY_SIZE)));
+    result.setInUse(Boolean.parseBoolean(configuration.get(CRYPTO_OBJECT_IN_USE)));
     result.setEncryptionMode(configuration.get(CRYPTO_OBJECT_ENCRYPTION_MODE));
     result.setPaddingScheme(configuration.get(CRYPTO_OBJECT_PADDING_SCHEME));
     result.setEncryptionAlgorithm(configuration.get(CRYPTO_OBJECT_ENCRYPTION_ALGORITHM));
