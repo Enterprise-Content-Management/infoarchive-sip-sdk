@@ -1153,6 +1153,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
 
   private void ensureCryptoObject() throws IOException {
     String name = configuration.get(CRYPTO_OBJECT_NAME);
+    if (name == null) {
+      return;
+    }
     CryptoObjects cryptoObjects = restClient.follow(configurationState.getServices(), LINK_CRYPTO_OBJECTS, CryptoObjects.class);
     configurationState.setCryptoObject(cryptoObjects.byName(name));
     if (configurationState.getCryptoObject() == null) {
