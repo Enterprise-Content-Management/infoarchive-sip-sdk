@@ -105,6 +105,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       ensureExportTransformations();
       ensureExportConfigurations();
       ensureSearch();
+      ensureCryptoObject();
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
@@ -1147,6 +1148,29 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       Column column = Column.fromSchema(name, label, path, dataType, sortOrder);
       columns.add(column);
     }
+    return result;
+  }
+
+  private void ensureCryptoObject() throws IOException {
+    String name = configuration.get(CRYPTO_OBJECT_NAME);
+    CryptoObjects cryptoObjects = restClient.follow(configurationState.getServices(), LINK_CRYPTO_OBJECTS, CryptoObjects.class);
+    configurationState.setCryptoObject(cryptoObjects.byName(name));
+    if (configurationState.getCryptoObject() == null) {
+      createItem(cryptoObjects, createCryptoObject(name));
+      configurationState.setCryptoObject(restClient.refresh(cryptoObjects).byName(name));
+      Objects.requireNonNull(configurationState.getCryptoObject(), "Could not create crypto object");
+    }
+  }
+
+  private CryptoObject createCryptoObject(String name) {
+    CryptoObject result = new CryptoObject();
+    result.setName(name);
+    result.setSecurityProvider(configuration.get(CRYPTO_OBJECT_SECURITY_PROVIDER));
+    result.setKeySize(Integer.valueOf(configuration.get(CRYPTO_OBJECT_KEY_SIZE)));
+    result.setInUse(Boolean.valueOf(configuration.get(CRYPTO_OBJECT_IN_USE)));
+    result.setEncryptionMode(configuration.get(CRYPTO_OBJECT_ENCRYPTION_MODE));
+    result.setPaddingScheme(configuration.get(CRYPTO_OBJECT_PADDING_SCHEME));
+    result.setEncryptionAlgorithm(configuration.get(CRYPTO_OBJECT_ENCRYPTION_ALGORITHM));
     return result;
   }
 
