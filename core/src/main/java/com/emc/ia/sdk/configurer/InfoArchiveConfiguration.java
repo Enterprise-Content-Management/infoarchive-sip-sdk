@@ -179,4 +179,13 @@ public interface InfoArchiveConfiguration {
   String CRYPTO_OBJECT_PADDING_SCHEME = CRYPTO_OBJECT_PREFIX + "padding.scheme";
   String CRYPTO_OBJECT_ENCRYPTION_ALGORITHM = CRYPTO_OBJECT_PREFIX + "encryption.algorithm";
 
+  String PDI_CRYPTO_PREFIX = PREFIX + "pdi.crypto.";
+  String PDI_CRYPTO_NAME = PDI_CRYPTO_PREFIX + NAME;
+
+  String HOLDING_CRYPTO_PREFIX = PREFIX + "holding.crypto.";
+  String HOLDING_CRYPTO_NAME = HOLDING_CRYPTO_PREFIX + NAME;
+
+  String HOLDING_CRYPTO_ENCODING = HOLDING_CRYPTO_PREFIX + "encoding";
+  String HOLDING_CRYPTO_ENABLED = HOLDING_CRYPTO_PREFIX + "enabled";
+
 }
