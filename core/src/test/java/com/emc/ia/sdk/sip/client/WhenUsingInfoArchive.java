@@ -37,6 +37,8 @@ import com.emc.ia.sdk.sip.client.dto.Aics;
 import com.emc.ia.sdk.sip.client.dto.Application;
 import com.emc.ia.sdk.sip.client.dto.Applications;
 import com.emc.ia.sdk.sip.client.dto.Contents;
+import com.emc.ia.sdk.sip.client.dto.CryptoObject;
+import com.emc.ia.sdk.sip.client.dto.CryptoObjects;
 import com.emc.ia.sdk.sip.client.dto.Database;
 import com.emc.ia.sdk.sip.client.dto.Databases;
 import com.emc.ia.sdk.sip.client.dto.Federation;
@@ -181,6 +183,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     SearchCompositions compositions = mock(SearchCompositions.class);
     XForms xForms = mock(XForms.class);
     XForm xForm = mock(XForm.class);
+    CryptoObjects cryptoObjects = mock(CryptoObjects.class);
 
     aic = new Aic();
 
@@ -229,6 +232,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(Searches.class, searches);
     mockCollection(SearchCompositions.class, compositions);
     mockCollection(XForms.class, xForms);
+    mockCollection(CryptoObjects.class, cryptoObjects);
     when(restClient.createCollectionItem(any(LinkContainer.class), any(XForm.class), eq(LINK_SELF))).thenReturn(xForm);
 
     mockByName(federations, new Federation());
@@ -258,6 +262,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(searches, new Search());
     mockByName(compositions, new SearchComposition());
     mockByName(xForms, new XForm());
+    mockByName(cryptoObjects, new CryptoObject());
 
     when(restClient.put(anyString(), eq(SearchComposition.class), any(AllSearchComponents.class)))
         .thenReturn(new SearchComposition());
@@ -357,6 +362,14 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.exporttransformation.ExportTransformation.description", "csv xsl transformation");
     configuration.put("ia.exporttransformation.ExportTransformation.type", "XSLT");
     configuration.put("ia.exporttransformation.ExportTransformation.mainpath", "search-results-csv.xsl");
+
+    configuration.put("ia.crypto.object.name", "MyCryptoObject");
+    configuration.put("ia.crypto.object.security.provider", "Bouncy Castle");
+    configuration.put("ia.crypto.object.key.size", "256");
+    configuration.put("ia.crypto.object.in.use", Boolean.TRUE.toString());
+    configuration.put("ia.crypto.object.encryption.mode", "CBC");
+    configuration.put("ia.crypto.object.padding.scheme", "PKCS7PADDING");
+    configuration.put("ia.crypto.object.encryption.algorithm", "AES");
   }
 
   private <T> OngoingStubbing<T> mockCollection(Class<T> type, T object) throws IOException {

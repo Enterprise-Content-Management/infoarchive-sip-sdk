@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.emc.ia.sdk.sip.client.dto.Application;
+import com.emc.ia.sdk.sip.client.dto.CryptoObject;
 import com.emc.ia.sdk.sip.client.dto.Federation;
 import com.emc.ia.sdk.sip.client.dto.JobDefinition;
 import com.emc.ia.sdk.sip.client.dto.Search;
@@ -46,6 +47,7 @@ public class RestCache { // NOPMD TooManyFields
   private SearchComposition searchComposition;
   private XForm xForm;
   private String holdingUri;
+  private CryptoObject cryptoObject;
 
   private final Map<String, String> aicUriByName = new HashMap<>();
   private final Map<String, String> queryUriByName = new HashMap<>();
@@ -277,6 +279,14 @@ public class RestCache { // NOPMD TooManyFields
 
   public String getContentUri() {
     return application.getUri(InfoArchiveLinkRelations.LINK_CI);
+  }
+
+  public CryptoObject getCryptoObject() {
+    return cryptoObject;
+  }
+
+  public void setCryptoObject(CryptoObject cryptoObject) {
+    this.cryptoObject = cryptoObject;
   }
 
 }
