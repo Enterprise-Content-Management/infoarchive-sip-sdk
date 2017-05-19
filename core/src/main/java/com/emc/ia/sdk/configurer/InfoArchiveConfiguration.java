@@ -184,7 +184,6 @@ public interface InfoArchiveConfiguration {
 
   String HOLDING_CRYPTO_PREFIX = PREFIX + "holding.crypto.";
   String HOLDING_CRYPTO_NAME = HOLDING_CRYPTO_PREFIX + NAME;
-
   String HOLDING_CRYPTO_ENCODING = HOLDING_CRYPTO_PREFIX + "encoding";
   String HOLDING_CRYPTO_ENABLED = HOLDING_CRYPTO_PREFIX + "enabled";
 
