@@ -53,5 +53,7 @@ public interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_TENANT = LINK_PREFIX + "tenant";
   String LINK_XFORMS = LINK_PREFIX + "xforms";
   String LINK_CRYPTO_OBJECTS = LINK_PREFIX + "crypto-objects";
+  String LINK_PDI_CRYPTOS = LINK_PREFIX + "pdi-cryptos";
+  String LINK_HOLDING_CRYPTOS = LINK_PREFIX + "holding-cryptos";
 
 }

@@ -11,6 +11,7 @@ import com.emc.ia.sdk.sip.client.dto.Application;
 import com.emc.ia.sdk.sip.client.dto.CryptoObject;
 import com.emc.ia.sdk.sip.client.dto.Federation;
 import com.emc.ia.sdk.sip.client.dto.JobDefinition;
+import com.emc.ia.sdk.sip.client.dto.PdiSchema;
 import com.emc.ia.sdk.sip.client.dto.Search;
 import com.emc.ia.sdk.sip.client.dto.SearchComposition;
 import com.emc.ia.sdk.sip.client.dto.Services;
@@ -48,6 +49,8 @@ public class RestCache { // NOPMD TooManyFields
   private XForm xForm;
   private String holdingUri;
   private CryptoObject cryptoObject;
+  private String pdiCryptoUri;
+  private PdiSchema pdiSchema;
 
   private final Map<String, String> aicUriByName = new HashMap<>();
   private final Map<String, String> queryUriByName = new HashMap<>();
@@ -287,6 +290,22 @@ public class RestCache { // NOPMD TooManyFields
 
   public void setCryptoObject(CryptoObject cryptoObject) {
     this.cryptoObject = cryptoObject;
+  }
+
+  public String getPdiCryptoUri() {
+    return pdiCryptoUri;
+  }
+
+  public void setPdiCryptoUri(String pdiCryptoUri) {
+    this.pdiCryptoUri = pdiCryptoUri;
+  }
+
+  public PdiSchema getPdiSchema() {
+    return pdiSchema;
+  }
+
+  public void setPdiSchema(PdiSchema pdiSchema) {
+    this.pdiSchema = pdiSchema;
   }
 
 }

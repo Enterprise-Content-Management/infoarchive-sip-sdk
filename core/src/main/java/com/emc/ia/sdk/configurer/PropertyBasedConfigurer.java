@@ -78,6 +78,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       ensureFederation();
       ensureDatabase();
       ensureFileSystemRoot();
+      ensureCryptoObject();
       ensureTenantLevelExportPipelines();
       ensureTenantLevelExportTransformations();
       ensureTenantLevelExportConfigurations();
@@ -105,7 +106,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       ensureExportTransformations();
       ensureExportConfigurations();
       ensureSearch();
-      ensureCryptoObject();
+      ensurePdiCrypto();
+      ensureHoldingCrypto();
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
@@ -737,6 +739,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       pdiSchema = restClient.refresh(pdiSchemas).byName(name);
       Objects.requireNonNull(pdiSchema, "Could not create PDI schema");
     }
+    configurationState.setPdiSchema(pdiSchema);
     ensureContents(pdiSchema, PDI_SCHEMA, FORMAT_XSD);
   }
 
@@ -1170,10 +1173,65 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     result.setName(name);
     result.setSecurityProvider(configuration.get(CRYPTO_OBJECT_SECURITY_PROVIDER));
     result.setKeySize(Integer.parseInt(configuration.get(CRYPTO_OBJECT_KEY_SIZE)));
-    result.setInUse(Boolean.parseBoolean(configuration.get(CRYPTO_OBJECT_IN_USE)));
+    result.setInUse(Boolean.parseBoolean(configuration.getOrDefault(CRYPTO_OBJECT_IN_USE, Boolean.TRUE.toString())));
     result.setEncryptionMode(configuration.get(CRYPTO_OBJECT_ENCRYPTION_MODE));
     result.setPaddingScheme(configuration.get(CRYPTO_OBJECT_PADDING_SCHEME));
     result.setEncryptionAlgorithm(configuration.get(CRYPTO_OBJECT_ENCRYPTION_ALGORITHM));
+    return result;
+  }
+
+  private void ensurePdiCrypto() throws IOException {
+    String name = configuration.get(PDI_CRYPTO_NAME);
+    if (name == null) {
+      return;
+    }
+    PdiCryptos pdiCryptos = restClient.follow(configurationState.getApplication(), LINK_PDI_CRYPTOS, PdiCryptos.class);
+    PdiCrypto pdiCrypto = pdiCryptos.byName(name);
+    if (pdiCrypto == null) {
+      createItem(pdiCryptos, createPdiCrypto(name));
+      pdiCrypto = restClient.refresh(pdiCryptos).byName(name);
+      Objects.requireNonNull(pdiCrypto, "Could not create pdi crypto");
+    }
+    configurationState.setPdiCryptoUri(pdiCrypto.getSelfUri());
+  }
+
+  private PdiCrypto createPdiCrypto(String name) {
+    PdiCrypto result = new PdiCrypto();
+    result.setName(name);
+    result.setApplication(configurationState.getApplication().getSelfUri());
+    return result;
+  }
+
+  private void ensureHoldingCrypto() throws IOException {
+    String name = configuration.get(HOLDING_CRYPTO_NAME);
+    if (name == null) {
+      return;
+    }
+    HoldingCryptos holdingCryptos = restClient.follow(configurationState.getApplication(), LINK_HOLDING_CRYPTOS, HoldingCryptos.class);
+    HoldingCrypto holdingCrypto = holdingCryptos.byName(name);
+    if (holdingCrypto == null) {
+      createItem(holdingCryptos, createHoldingCrypto(name));
+      holdingCrypto = restClient.refresh(holdingCryptos).byName(name);
+      Objects.requireNonNull(holdingCrypto, "Could not create holding crypto");
+    }
+  }
+
+  private HoldingCrypto createHoldingCrypto(String name) {
+    HoldingCrypto result = new HoldingCrypto();
+    result.setName(name);
+    result.setApplication(configurationState.getApplication().getSelfUri());
+    result.setHolding(configurationState.getHoldingUri());
+    HoldingCrypto.PdiCryptoConfig pdiCryptoConfig = new HoldingCrypto.PdiCryptoConfig();
+    pdiCryptoConfig.setSchema(configurationState.getPdiSchema().getName());
+    pdiCryptoConfig.setPdiCrypto(configurationState.getPdiCryptoUri());
+    result.setPdis(Collections.singletonList(pdiCryptoConfig));
+    result.setCryptoEncoding(configuration.getOrDefault(HOLDING_CRYPTO_ENCODING, "base64"));
+    HoldingCrypto.ObjectCryptoConfig objectCryptoConfig = new HoldingCrypto.ObjectCryptoConfig();
+    objectCryptoConfig.setCryptoEnabled(Boolean.parseBoolean(configuration.getOrDefault(HOLDING_CRYPTO_ENABLED, Boolean.TRUE.toString())));
+    objectCryptoConfig.setCryptoObject(configurationState.getCryptoObject().getSelfUri());
+    result.setSip(objectCryptoConfig);
+    result.setPdi(objectCryptoConfig);
+    result.setCi(objectCryptoConfig);
     return result;
   }
 

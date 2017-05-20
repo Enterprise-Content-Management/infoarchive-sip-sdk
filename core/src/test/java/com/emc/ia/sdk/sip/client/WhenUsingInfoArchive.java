@@ -48,6 +48,8 @@ import com.emc.ia.sdk.sip.client.dto.FileSystemFolders;
 import com.emc.ia.sdk.sip.client.dto.FileSystemRoot;
 import com.emc.ia.sdk.sip.client.dto.FileSystemRoots;
 import com.emc.ia.sdk.sip.client.dto.Holding;
+import com.emc.ia.sdk.sip.client.dto.HoldingCrypto;
+import com.emc.ia.sdk.sip.client.dto.HoldingCryptos;
 import com.emc.ia.sdk.sip.client.dto.Holdings;
 import com.emc.ia.sdk.sip.client.dto.Ingest;
 import com.emc.ia.sdk.sip.client.dto.IngestNode;
@@ -60,6 +62,8 @@ import com.emc.ia.sdk.sip.client.dto.Library;
 import com.emc.ia.sdk.sip.client.dto.NamedLinkContainer;
 import com.emc.ia.sdk.sip.client.dto.OrderItem;
 import com.emc.ia.sdk.sip.client.dto.Pdi;
+import com.emc.ia.sdk.sip.client.dto.PdiCrypto;
+import com.emc.ia.sdk.sip.client.dto.PdiCryptos;
 import com.emc.ia.sdk.sip.client.dto.PdiSchema;
 import com.emc.ia.sdk.sip.client.dto.PdiSchemas;
 import com.emc.ia.sdk.sip.client.dto.Pdis;
@@ -184,6 +188,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     XForms xForms = mock(XForms.class);
     XForm xForm = mock(XForm.class);
     CryptoObjects cryptoObjects = mock(CryptoObjects.class);
+    PdiCryptos pdiCryptos = mock(PdiCryptos.class);
+    HoldingCryptos holdingCryptos = mock(HoldingCryptos.class);
 
     aic = new Aic();
 
@@ -233,6 +239,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(SearchCompositions.class, compositions);
     mockCollection(XForms.class, xForms);
     mockCollection(CryptoObjects.class, cryptoObjects);
+    mockCollection(PdiCryptos.class, pdiCryptos);
+    mockCollection(HoldingCryptos.class, holdingCryptos);
     when(restClient.createCollectionItem(any(LinkContainer.class), any(XForm.class), eq(LINK_SELF))).thenReturn(xForm);
 
     mockByName(federations, new Federation());
@@ -263,6 +271,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(compositions, new SearchComposition());
     mockByName(xForms, new XForm());
     mockByName(cryptoObjects, new CryptoObject());
+    mockByName(pdiCryptos, new PdiCrypto());
+    mockByName(holdingCryptos, new HoldingCrypto());
 
     when(restClient.put(anyString(), eq(SearchComposition.class), any(AllSearchComponents.class)))
         .thenReturn(new SearchComposition());
@@ -370,6 +380,12 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.crypto.object.encryption.mode", "CBC");
     configuration.put("ia.crypto.object.padding.scheme", "PKCS7PADDING");
     configuration.put("ia.crypto.object.encryption.algorithm", "AES");
+
+    configuration.put("ia.pdi.crypto.name", "MyPdiCrypto");
+
+    configuration.put("ia.holding.crypto.name", "MyHoldingCrypto");
+    configuration.put("ia.holding.crypto.encoding", "base64");
+    configuration.put("ia.holding.crypto.enabled", Boolean.TRUE.toString());
   }
 
   private <T> OngoingStubbing<T> mockCollection(Class<T> type, T object) throws IOException {
