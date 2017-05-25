@@ -78,6 +78,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       ensureFederation();
       ensureDatabase();
       ensureFileSystemRoot();
+      ensureStorageEndPoint();
+      ensureContentAddressedStorage();
+      ensureCustomStorage();
       ensureCryptoObject();
       ensureTenantLevelExportPipelines();
       ensureTenantLevelExportTransformations();
@@ -352,24 +355,30 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureStore() throws IOException {
-    Store defaultStore = ensureStore(DEFAULT_STORE_NAME, null, configurationState.getFileSystemFolderUri());
+    Store defaultStore = ensureStore(DEFAULT_STORE_NAME, null, configurationState.getFileSystemFolderUri(), null);
     configurationState.setStoreUri(defaultStore.getSelfUri());
 
     RepeatingConfigReader reader = new RepeatingConfigReader("stores", Arrays.asList(STORE_NAME, STORE_FOLDER,
-        STORE_STORETYPE));
+        STORE_STORETYPE, STORE_TYPE));
 
     List<Map<String, String>> storeConfigurations = reader.read(configuration);
     for (Map<String, String> cfg : storeConfigurations) {
-      ensureStore(cfg.get(STORE_NAME), cfg.get(STORE_STORETYPE), configurationState.getObjectUri("filesystemfolder",
-          cfg.get(STORE_FOLDER)));
+      String type = cfg.get(STORE_TYPE);
+      if (type != null && !type.isEmpty()) {
+        ensureStore(cfg.get(STORE_NAME), cfg.get(STORE_STORETYPE), configurationState.getObjectUri("filesystemfolder",
+            cfg.get(STORE_FOLDER)), type);
+      } else {
+        ensureStore(cfg.get(STORE_NAME), cfg.get(STORE_STORETYPE), configurationState.getObjectUri("filesystemfolder",
+            cfg.get(STORE_FOLDER)), null);
+      }
     }
   }
 
-  private Store ensureStore(String name, String storeType, String fileSystemFolderUri) throws IOException {
+  private Store ensureStore(String name, String storeType, String fileSystemFolderUri, String type) throws IOException {
     Stores stores = restClient.follow(configurationState.getApplication(), LINK_STORES, Stores.class);
     Store result = stores.byName(name);
     if (result == null) {
-      createItem(stores, createStore(name, storeType, fileSystemFolderUri));
+      createItem(stores, createStore(name, storeType, fileSystemFolderUri, type));
       result = restClient.refresh(stores).byName(name);
       Objects.requireNonNull(result, "Could not create store");
     }
@@ -377,13 +386,16 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     return result;
   }
 
-  private Store createStore(String storeName, String storeType, String fileSystemFolderUri) {
+  private Store createStore(String storeName, String storeType, String fileSystemFolderUri, String type) {
     Store result = new Store();
     result.setName(storeName);
     if (storeType != null && !storeType.isEmpty()) {
       result.setStoreType(storeType);
     }
     result.setFileSystemFolder(fileSystemFolderUri);
+    if (type != null && !type.isEmpty()) {
+      result.setType(type);
+    }
     return result;
   }
 
@@ -1232,6 +1244,45 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     result.setSip(objectCryptoConfig);
     result.setPdi(objectCryptoConfig);
     result.setCi(objectCryptoConfig);
+    return result;
+  }
+
+  private void ensureStorageEndPoint() throws IOException {
+
+  }
+
+  private StorageEndPoint createStorageEndPoint(String name) {
+    StorageEndPoint result = new StorageEndPoint();
+    result.setName(name);
+    result.setType(configuration.get(STORAGE_END_POINT_TYPE));
+    result.setDescription(configuration.get(STORAGE_END_POINT_DESCRIPTION));
+    result.setUrl(configuration.get(STORAGE_END_POINT_URL));
+    result.setProxyUrl(configuration.get(STORAGE_END_POINT_PROXY_URL));
+    return result;
+  }
+
+  private void ensureCustomStorage() throws IOException {
+
+  }
+
+  private CustomStorage createCustomStorage(String name) {
+    CustomStorage result = new CustomStorage();
+    result.setName(name);
+    result.setDescription(configuration.get(CUSTOM_STORAGE_DESCRIPTION));
+    result.setFactoryServiceName(configuration.get(CUSTOM_STORAGE_FACTORY_SERVICE_NAME));
+    result.addProperty(configuration.get(CUSTOM_STORAGE_PROPERTY_NAME), configuration.get(CUSTOM_STORAGE_PROPERTY_VALUE));
+    return result;
+  }
+
+  private void ensureContentAddressedStorage() throws IOException {
+
+  }
+
+  private ContentAddressedStorage createContentAddressedStorage(String name) {
+    ContentAddressedStorage result = new ContentAddressedStorage();
+    result.setName(name);
+    result.setConnexionString(configuration.get(CONTENT_ADDRESSED_STORAGE_CONNEXION_STRING));
+    result.addPea(configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_NAME), configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_VALUE));
     return result;
   }
 
