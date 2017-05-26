@@ -363,14 +363,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
 
     List<Map<String, String>> storeConfigurations = reader.read(configuration);
     for (Map<String, String> cfg : storeConfigurations) {
-      String type = cfg.get(STORE_TYPE);
-      if (type != null && !type.isEmpty()) {
-        ensureStore(cfg.get(STORE_NAME), cfg.get(STORE_STORETYPE), configurationState.getObjectUri("filesystemfolder",
-            cfg.get(STORE_FOLDER)), type);
-      } else {
-        ensureStore(cfg.get(STORE_NAME), cfg.get(STORE_STORETYPE), configurationState.getObjectUri("filesystemfolder",
-            cfg.get(STORE_FOLDER)), null);
-      }
+      ensureStore(cfg.get(STORE_NAME), cfg.get(STORE_STORETYPE), configurationState.getObjectUri("filesystemfolder",
+          cfg.get(STORE_FOLDER)), cfg.get(STORE_TYPE));
     }
   }
 
@@ -1248,7 +1242,17 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureStorageEndPoint() throws IOException {
-
+    String name = configuration.get(STORAGE_END_POINT_NAME);
+    if (name == null) {
+      return;
+    }
+    StorageEndPoints storageEndPoints = restClient.follow(configurationState.getServices(), LINK_STORAGE_END_POINTS, StorageEndPoints.class);
+    StorageEndPoint storageEndPoint = storageEndPoints.byName(name);
+    if (storageEndPoint == null) {
+      createItem(storageEndPoints, createStorageEndPoint(name));
+      storageEndPoint = restClient.refresh(storageEndPoints).byName(name);
+      Objects.requireNonNull(storageEndPoint, "Could not create storage end point");
+    }
   }
 
   private StorageEndPoint createStorageEndPoint(String name) {
@@ -1262,7 +1266,17 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureCustomStorage() throws IOException {
-
+    String name = configuration.get(CUSTOM_STORAGE_NAME);
+    if (name == null) {
+      return;
+    }
+    CustomStorages customStorages = restClient.follow(configurationState.getServices(), LINK_CUSTOM_STORAGES, CustomStorages.class);
+    CustomStorage customStorage = customStorages.byName(name);
+    if (customStorage == null) {
+      createItem(customStorages, createCustomStorage(name));
+      customStorage = restClient.refresh(customStorages).byName(name);
+      Objects.requireNonNull(customStorage, "Could not create custom storage");
+    }
   }
 
   private CustomStorage createCustomStorage(String name) {
@@ -1275,7 +1289,17 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureContentAddressedStorage() throws IOException {
-
+    String name = configuration.get(CONTENT_ADDRESSED_STORAGE_NAME);
+    if (name == null) {
+      return;
+    }
+    ContentAddressedStorages contentAddressedStorages = restClient.follow(configurationState.getServices(), LINK_CONTENT_ADDRESSED_STORAGES, ContentAddressedStorages.class);
+    ContentAddressedStorage contentAddressedStorage = contentAddressedStorages.byName(name);
+    if (contentAddressedStorage == null) {
+      createItem(contentAddressedStorages, createContentAddressedStorage(name));
+      contentAddressedStorage = restClient.refresh(contentAddressedStorages).byName(name);
+      Objects.requireNonNull(contentAddressedStorage, "Could not create content addressed storage");
+    }
   }
 
   private ContentAddressedStorage createContentAddressedStorage(String name) {
