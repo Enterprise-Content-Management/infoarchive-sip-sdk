@@ -29,12 +29,6 @@ public class CustomStorage extends NamedLinkContainer {
     this.properties = properties;
   }
 
-  public void addProperty(String key, String value) {
-    if (key != null && value != null) {
-      this.properties.put(key, value);
-    }
-  }
-
   public String getFactoryServiceName() {
     return factoryServiceName;
   }

@@ -28,10 +28,4 @@ public class ContentAddressedStorage extends NamedLinkContainer {
     this.peas = peas;
   }
 
-  public void addPea(String key, String value) {
-    if (key != null && value != null) {
-      this.peas.put(key, value);
-    }
-  }
-
 }

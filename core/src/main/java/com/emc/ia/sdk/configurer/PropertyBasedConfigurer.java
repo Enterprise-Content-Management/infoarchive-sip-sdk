@@ -1284,7 +1284,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     result.setName(name);
     result.setDescription(configuration.get(CUSTOM_STORAGE_DESCRIPTION));
     result.setFactoryServiceName(configuration.get(CUSTOM_STORAGE_FACTORY_SERVICE_NAME));
-    result.addProperty(configuration.get(CUSTOM_STORAGE_PROPERTY_NAME), configuration.get(CUSTOM_STORAGE_PROPERTY_VALUE));
+    Map<String, String> properties = new HashMap<>();
+    properties.put(configuration.get(CUSTOM_STORAGE_PROPERTY_NAME), configuration.get(CUSTOM_STORAGE_PROPERTY_VALUE));
+    result.setProperties(properties);
     return result;
   }
 
@@ -1306,7 +1308,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     ContentAddressedStorage result = new ContentAddressedStorage();
     result.setName(name);
     result.setConnexionString(configuration.get(CONTENT_ADDRESSED_STORAGE_CONNEXION_STRING));
-    result.addPea(configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_NAME), configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_VALUE));
+    Map<String, String> peas = new HashMap<>();
+    peas.put(configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_NAME), configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_VALUE));
+    result.setPeas(peas);
     return result;
   }
 

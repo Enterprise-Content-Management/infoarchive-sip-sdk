@@ -357,6 +357,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.path", "n:sender/n:email");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.type", "STRING");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.sort", "NONE");
+    configuration.put("ia.search.emailsSearch.composition.exportconfigs", "exportConfig1,exportconfig2");
 
     configuration.put("ia.exportpipeline.names", "ExportPipeline");
     configuration.put("ia.exportpipeline.ExportPipeline.composite", "NONE");
