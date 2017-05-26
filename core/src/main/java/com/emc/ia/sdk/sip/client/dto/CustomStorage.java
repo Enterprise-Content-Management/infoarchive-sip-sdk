@@ -3,13 +3,14 @@
  */
 package com.emc.ia.sdk.sip.client.dto;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
 public class CustomStorage extends NamedLinkContainer {
 
   private String description;
-  private Map<String, String> properties;
+  private Map<String, String> properties = new HashMap<>();
   private String factoryServiceName;
 
   public String getDescription() {

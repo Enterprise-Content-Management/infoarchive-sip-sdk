@@ -3,13 +3,14 @@
  */
 package com.emc.ia.sdk.sip.client.dto;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
 public class ContentAddressedStorage extends NamedLinkContainer {
 
   private String connexionString;
-  private Map<String, String> peas;
+  private Map<String, String> peas = new HashMap<>();
 
   public String getConnexionString() {
     return connexionString;
