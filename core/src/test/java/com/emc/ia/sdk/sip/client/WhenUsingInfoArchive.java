@@ -358,7 +358,13 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.type", "STRING");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.sort", "NONE");
     configuration.put("ia.search.emailsSearch.composition.exportconfigs", "exportConfig1,exportconfig2");
+    
+    prepareExport();
+    prepareCrypto();
+    prepareStorages();
+  }
 
+  private void prepareExport() {
     configuration.put("ia.exportpipeline.names", "ExportPipeline");
     configuration.put("ia.exportpipeline.ExportPipeline.composite", "NONE");
     configuration.put("ia.exportpipeline.ExportPipeline.content", "<pipeline></pipeline>");
@@ -388,7 +394,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.exporttransformation.ExportTransformation.description", "csv xsl transformation");
     configuration.put("ia.exporttransformation.ExportTransformation.type", "XSLT");
     configuration.put("ia.exporttransformation.ExportTransformation.mainpath", "search-results-csv.xsl");
+  }
 
+  private void prepareCrypto() {
     configuration.put("ia.crypto.object.name", "MyCryptoObject");
     configuration.put("ia.crypto.object.security.provider", "Bouncy Castle");
     configuration.put("ia.crypto.object.key.size", "256");
@@ -402,7 +410,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.holding.crypto.name", "MyHoldingCrypto");
     configuration.put("ia.holding.crypto.encoding", "base64");
     configuration.put("ia.holding.crypto.enabled", Boolean.TRUE.toString());
+  }
 
+  private void prepareStorages() {
     configuration.put("ia.storage.end.point.name", "MyStorageEndPoint");
     configuration.put("ia.storage.end.point.type", "ECS");
     configuration.put("ia.storage.end.point.description", "MyStorageEndPointDescription");
