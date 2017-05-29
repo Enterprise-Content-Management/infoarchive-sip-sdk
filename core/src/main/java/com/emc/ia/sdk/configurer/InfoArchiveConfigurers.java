@@ -28,7 +28,7 @@ public final class InfoArchiveConfigurers {
 
   public static InfoArchiveConfigurer propertyBased(Map<String, String> configuration, RestClient restClient,
       Clock clock) {
-    return new PropertyBasedConfigurer(restClient, clock, configuration);
+    return new PropertiesBasedConfigurer(restClient, clock, configuration);
   }
 
 }
