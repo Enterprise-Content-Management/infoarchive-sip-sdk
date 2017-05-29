@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.emc.ia.sdk.sip.client.dto.*;
@@ -50,9 +52,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   private static final String DEFAULT_STORE_NAME = "filestore_01";
   private static final String DEFAULT_RESULT_HELPER_NAME = "result_helper";
 
-  private final RestCache configurationState = new RestCache();
-
-  private Map<String, String> configuration;
+  private final RestCache cache = new RestCache();
+  private final Map<String, String> configuration;
   private RestClient restClient;
   private final Clock clock;
 
@@ -90,7 +91,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       ensureSpaceRootLibrary();
       ensureSpaceRootFolder();
       ensureFileSystemFolder();
-      ensureStore();
+      ensureStores();
       ensureReceptionFolder();
       ensureIngestionFolder();
       ensureReceiverNode();
@@ -103,25 +104,17 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       ensureHolding();
       ensureAic();
       ensureQuota();
-      ensureQuery();
+      ensureQueries();
       ensureResultConfigurationHelper();
       ensureExportPipelines();
       ensureExportTransformations();
       ensureExportConfigurations();
-      ensureSearch();
+      ensureSearches();
       ensurePdiCrypto();
       ensureHoldingCrypto();
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
-  }
-
-  protected RestCache getConfigurationState() {
-    return configurationState;
-  }
-
-  protected Map<String, String> setConfiguration(Map<String, String> config) {
-    return configuration = config;
   }
 
   private void initRestClient() throws IOException {
@@ -133,7 +126,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       restClient = new RestClient(httpClient);
       restClient.init(authentication);
     }
-    configurationState.setServices(restClient.get(configured(SERVER_URI), Services.class));
+    cache.setServices(restClient.get(configured(SERVER_URI), Services.class));
   }
 
   public String configured(String name) {
@@ -143,20 +136,47 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureTenant() throws IOException {
-    Tenant tenant = restClient.follow(configurationState.getServices(), LINK_TENANT, Tenant.class);
-    Objects.requireNonNull(tenant, "Missing tenant");
-    configurationState.setTenant(tenant);
+    cache.setTenant(Objects.requireNonNull(
+        restClient.follow(cache.getServices(), LINK_TENANT, Tenant.class), "Missing tenant"));
   }
 
   private void ensureFederation() throws IOException {
-    String name = configuration.get(FEDERATION_NAME);
-    Federations federations = restClient.follow(configurationState.getServices(), LINK_FEDERATIONS, Federations.class);
-    configurationState.setFederation(federations.byName(name));
-    if (configurationState.getFederation() == null) {
-      createItem(federations, createFederation(name));
-      configurationState.setFederation(restClient.refresh(federations).byName(name));
-      Objects.requireNonNull(configurationState.getFederation(), "Could not create federation");
+    cache.setFederation(ensureItem(cache.getServices(), LINK_FEDERATIONS, Federations.class, FEDERATION_NAME,
+        this::createFederation));
+  }
+
+  private <T extends NamedLinkContainer> T ensureItem(LinkContainer collectionOwner,
+      String collectionLinkRelation, Class<? extends ItemContainer<T>> collectionType, String objectName,
+          Function<String, ? extends T> objectCreator) throws IOException {
+    return ensureItem(collectionOwner, collectionLinkRelation, collectionType, objectName, objectCreator, false);
+  }
+
+  private <T extends NamedLinkContainer> T ensureItem(LinkContainer collectionOwner,
+      String collectionLinkRelation, Class<? extends ItemContainer<T>> collectionType, String objectName,
+          Function<String, ? extends T> objectCreator, boolean optional) throws IOException {
+    String name = configuration.get(objectName);
+    if (optional && name == null) {
+      return null;
     }
+    return ensureNamedItem(collectionOwner, collectionLinkRelation, collectionType, name, objectCreator);
+  }
+
+  private <T extends NamedLinkContainer> T ensureNamedItem(LinkContainer collectionOwner,
+      String collectionLinkRelation, Class<? extends ItemContainer<T>> collectionType, String name,
+      Function<String, ? extends T> objectCreator) throws IOException {
+    ItemContainer<T> collection = restClient.follow(collectionOwner, collectionLinkRelation, collectionType);
+    Objects.requireNonNull(collection, "Missing " + nameOf(collectionType));
+    T result = collection.byName(name);
+    if (result == null) {
+      createItem(collection, name, objectCreator);
+      result = restClient.refresh(collection).byName(name);
+      Objects.requireNonNull(result, "Could not create item in " + nameOf(collectionType));
+    }
+    return result;
+  }
+
+  private String nameOf(Class<?> type) {
+    return type.getSimpleName().toLowerCase(Locale.ENGLISH);
   }
 
   private Federation createFederation(String name) {
@@ -167,8 +187,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     return result;
   }
 
-  private <T> T createItem(LinkContainer collection, T item) throws IOException {
-    return createItem(collection, item, LINK_ADD, LINK_SELF);
+  private <T> T createItem(LinkContainer collection, String name, Function<String, T> newItem) throws IOException {
+    return createItem(collection, newItem.apply(name), LINK_ADD, LINK_SELF);
   }
 
   public <T> T createItem(LinkContainer collection, T item, String... linkRelations) throws IOException {
@@ -208,15 +228,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureDatabase() throws IOException {
-    String name = configuration.get(DATABASE_NAME);
-    Databases databases = restClient.follow(configurationState.getFederation(), LINK_DATABASES, Databases.class);
-    Database database = databases.byName(name);
-    if (database == null) {
-      createItem(databases, createDatabase(name));
-      database = restClient.refresh(databases).byName(name);
-      Objects.requireNonNull(database, "Could not create database");
-    }
-    configurationState.setDatabaseUri(database.getSelfUri());
+    cache.setDatabaseUri(ensureItem(cache.getFederation(), LINK_DATABASES, Databases.class,
+        DATABASE_NAME, this::createDatabase).getSelfUri());
   }
 
   private Database createDatabase(String name) {
@@ -227,32 +240,18 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureFileSystemRoot() throws IOException {
-    FileSystemRoots fileSystemRoots = restClient.follow(configurationState.getServices(), LINK_FILE_SYSTEM_ROOTS,
-        FileSystemRoots.class);
-    configurationState.setFileSystemRootUri(fileSystemRoots.first().getSelfUri());
+    cache.setFileSystemRootUri(Objects.requireNonNull(restClient.follow(cache.getServices(), LINK_FILE_SYSTEM_ROOTS,
+        FileSystemRoots.class), "Missing file system roots").first().getSelfUri());
   }
 
-  protected void ensureApplication() throws IOException {
-    String applicationName = getApplicationName();
-    Applications applications = restClient.follow(configurationState.getTenant(), LINK_APPLICATIONS,
-        Applications.class);
-    Objects.requireNonNull(applications, "Missing applications");
-    configurationState.setApplication(applications.byName(applicationName));
-    if (configurationState.getApplication() == null) {
-      createItem(applications, createApplication(applicationName));
-      configurationState.setApplication(restClient.refresh(applications).byName(applicationName));
-      Objects.requireNonNull(configurationState.getApplication(), "Could not create application");
-    }
+  private void ensureApplication() throws IOException {
+    cache.setApplication(ensureNamedItem(cache.getTenant(), LINK_APPLICATIONS, Applications.class,
+        getApplicationName(), this::createApplication));
   }
 
   private String getApplicationName() {
-    String result = configuration.get(APPLICATION_NAME);
-    if (result == null) {
-      // Backwards compatibility
-      result = configuration.get(OLD_APPLICATION_NAME);
-    }
-    Objects.requireNonNull(result, "Missing " + APPLICATION_NAME);
-    return result;
+    return Objects.requireNonNull(configuration.getOrDefault(APPLICATION_NAME,
+        configuration.get(OLD_APPLICATION_NAME)), "Missing " + APPLICATION_NAME);
   }
 
   private Application createApplication(String applicationName) {
@@ -264,14 +263,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureSpace() throws IOException {
-    String spaceName = configurationState.getApplication().getName();
-    Spaces spaces = restClient.follow(configurationState.getApplication(), LINK_SPACES, Spaces.class);
-    configurationState.setSpace(spaces.byName(spaceName));
-    if (configurationState.getSpace() == null) {
-      createItem(spaces, createSpace(spaceName));
-      configurationState.setSpace(restClient.refresh(spaces).byName(spaceName));
-      Objects.requireNonNull(configurationState.getSpace(), "Could not create space");
-    }
+    cache.setSpace(ensureNamedItem(cache.getApplication(), LINK_SPACES, Spaces.class, cache.getApplication().getName(),
+        this::createSpace));
   }
 
   private Space createSpace(String name) {
@@ -281,421 +274,335 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureSpaceRootLibrary() throws IOException {
-    String name = configured(HOLDING_NAME);
-    SpaceRootLibraries spaceRootLibraries =
-        restClient.follow(configurationState.getSpace(), LINK_SPACE_ROOT_LIBRARIES, SpaceRootLibraries.class);
-    configurationState.setSpaceRootLibrary(spaceRootLibraries.byName(name));
-    if (configurationState.getSpaceRootLibrary() == null) {
-      createItem(spaceRootLibraries, createSpaceRootLibrary(name));
-      configurationState.setSpaceRootLibrary(restClient.refresh(spaceRootLibraries).byName(name));
-      Objects.requireNonNull(configurationState.getSpaceRootLibrary(), "Could not create space root library");
-    }
+    cache.setSpaceRootLibrary(ensureItem(cache.getSpace(), LINK_SPACE_ROOT_LIBRARIES, SpaceRootLibraries.class,
+        HOLDING_NAME, this::createSpaceRootLibrary));
   }
 
   private SpaceRootLibrary createSpaceRootLibrary(String name) {
     SpaceRootLibrary result = new SpaceRootLibrary();
     result.setName(name);
-    result.setXdbDatabase(configurationState.getDatabaseUri());
+    result.setXdbDatabase(cache.getDatabaseUri());
     return result;
   }
 
   private void ensureSpaceRootFolder() throws IOException {
-    String name = configurationState.getSpace().getName();
-    SpaceRootFolders spaceRootFolders = restClient.follow(configurationState.getSpace(), LINK_SPACE_ROOT_FOLDERS,
-        SpaceRootFolders.class);
-    configurationState.setSpaceRootFolder(spaceRootFolders.byName(name));
-    if (configurationState.getSpaceRootFolder() == null) {
-      createItem(spaceRootFolders, createSpaceRootFolder(name));
-      configurationState.setSpaceRootFolder(restClient.refresh(spaceRootFolders).byName(name));
-      Objects.requireNonNull(configurationState.getSpaceRootFolder(), "Could not create space root folder");
-    }
+    cache.setSpaceRootFolder(ensureNamedItem(cache.getSpace(), LINK_SPACE_ROOT_FOLDERS, SpaceRootFolders.class,
+        cache.getSpace().getName(), this::createSpaceRootFolder));
   }
 
   private SpaceRootFolder createSpaceRootFolder(String name) {
     SpaceRootFolder result = new SpaceRootFolder();
     result.setName(name);
-    result.setFileSystemRoot(configurationState.getFileSystemRootUri());
+    result.setFileSystemRoot(cache.getFileSystemRootUri());
     return result;
   }
 
   private void ensureFileSystemFolder() throws IOException {
     // Create the default file system folder.
     FileSystemFolder defaultFolder = ensureFileSystemFolder(configured(HOLDING_NAME));
-    configurationState.setFileSystemFolderUri(defaultFolder.getSelfUri());
+    cache.setFileSystemFolderUri(defaultFolder.getSelfUri());
 
     // Any extra folders
-    String rawFolderNames = configuration.get(FILE_SYSTEM_FOLDER);
-    if (rawFolderNames != null && !rawFolderNames.isEmpty()) {
-      String[] folderNames = rawFolderNames.split(",");
-      for (String folderName : folderNames) {
-        ensureFileSystemFolder(folderName.trim());
-      }
+    processConfiguredItems(FILE_SYSTEM_FOLDER, (Processor)this::ensureFileSystemFolder);
+  }
+
+  private void processConfiguredItems(String configurationName, Processor processor) throws IOException {
+    processItems(configuration.get(configurationName), processor);
+  }
+
+  private void processItems(String items, Processor processor) throws IOException {
+    for (String item : commaSeparatedItems(items)) {
+      processor.accept(item);
     }
   }
 
+  private Collection<String> commaSeparatedItems(String items) {
+    return isBlank(items) ? Collections.emptyList() : Arrays.stream(items.split("\\s*,\\s*"))
+        .filter(this::isNotBlank)
+        .collect(Collectors.toList());
+  }
+
+  private boolean isNotBlank(String text) {
+    return !isBlank(text);
+  }
+
+  private boolean isBlank(String value) {
+    return value == null || value.trim().isEmpty();
+  }
+
   private FileSystemFolder ensureFileSystemFolder(String name) throws IOException {
-    FileSystemFolders fileSystemFolders = restClient.follow(configurationState.getSpaceRootFolder(),
-        LINK_FILE_SYSTEM_FOLDERS, FileSystemFolders.class);
-    FileSystemFolder result = fileSystemFolders.byName(name);
-    if (result == null) {
-      createItem(fileSystemFolders, createFileSystemFolder(name));
-      result = restClient.refresh(fileSystemFolders).byName(name);
-      Objects.requireNonNull(result, "Could not create file system folder " + name);
-    }
-    configurationState.setObjectUri("filesystemfolder", name, result.getSelfUri());
-    return result;
+    return cacheObject("filesystemfolder", ensureNamedItem(cache.getSpaceRootFolder(), LINK_FILE_SYSTEM_FOLDERS,
+        FileSystemFolders.class, name, this::createFileSystemFolder));
   }
 
   private FileSystemFolder createFileSystemFolder(String name) {
     FileSystemFolder result = new FileSystemFolder();
     result.setName(name);
-    result.setParentSpaceRootFolder(configurationState.getSpaceRootFolder().getSelfUri());
+    result.setParentSpaceRootFolder(cache.getSpaceRootFolder().getSelfUri());
     result.setSubPath("stores/" + DEFAULT_STORE_NAME);
     return result;
   }
 
-  private void ensureStore() throws IOException {
-    Store defaultStore = ensureStore(DEFAULT_STORE_NAME, null, configurationState.getFileSystemFolderUri(), null);
-    configurationState.setStoreUri(defaultStore.getSelfUri());
+  private <T extends NamedLinkContainer> T cacheObject(String type, T object) {
+    cache.setObjectUri(type, object.getName(), object.getSelfUri());
+    return object;
+  }
 
-    RepeatingConfigReader reader = new RepeatingConfigReader("stores", Arrays.asList(STORE_NAME, STORE_FOLDER,
-        STORE_STORETYPE, STORE_TYPE));
-
-    List<Map<String, String>> storeConfigurations = reader.read(configuration);
-    for (Map<String, String> cfg : storeConfigurations) {
-      ensureStore(cfg.get(STORE_NAME), cfg.get(STORE_STORETYPE), configurationState.getObjectUri("filesystemfolder",
+  private void ensureStores() throws IOException {
+    cache.setStoreUri(ensureStore(DEFAULT_STORE_NAME, null, cache.getFileSystemFolderUri(), null).getSelfUri());
+    for (Map<String, String> cfg : getStoreConfigurations()) {
+      ensureStore(cfg.get(STORE_NAME), cfg.get(STORE_STORETYPE), cache.getObjectUri("filesystemfolder",
           cfg.get(STORE_FOLDER)), cfg.get(STORE_TYPE));
     }
   }
 
-  private Store ensureStore(String name, String storeType, String fileSystemFolderUri, String type) throws IOException {
-    Stores stores = restClient.follow(configurationState.getApplication(), LINK_STORES, Stores.class);
-    Store result = stores.byName(name);
-    if (result == null) {
-      createItem(stores, createStore(name, storeType, fileSystemFolderUri, type));
-      result = restClient.refresh(stores).byName(name);
-      Objects.requireNonNull(result, "Could not create store");
-    }
-    configurationState.setObjectUri("store", name, result.getSelfUri());
-    return result;
+  private Store ensureStore(String name, String storeType, String fileSystemFolderUri, String type)
+      throws IOException {
+    return cacheObject("store", ensureNamedItem(cache.getApplication(), LINK_STORES, Stores.class, name,
+        storeName -> createStore(storeName, storeType, fileSystemFolderUri, type)));
   }
 
   private Store createStore(String storeName, String storeType, String fileSystemFolderUri, String type) {
     Store result = new Store();
     result.setName(storeName);
-    if (storeType != null && !storeType.isEmpty()) {
+    if (isNotBlank(storeType)) {
       result.setStoreType(storeType);
     }
     result.setFileSystemFolder(fileSystemFolderUri);
-    if (type != null && !type.isEmpty()) {
+    if (isNotBlank(type)) {
       result.setType(type);
     }
     return result;
   }
 
+  private Iterable<Map<String, String>> getStoreConfigurations() {
+    return new RepeatingConfigReader("stores", Arrays.asList(STORE_NAME, STORE_FOLDER, STORE_STORETYPE, STORE_TYPE))
+        .read(configuration);
+  }
+
   private void ensureReceptionFolder() throws IOException {
-    String name = "reception-folder";
-    FileSystemFolders receptionFolders = restClient.follow(configurationState.getSpaceRootFolder(),
-        LINK_FILE_SYSTEM_FOLDERS, FileSystemFolders.class);
-    FileSystemFolder receptionFolder = receptionFolders.byName(name);
-    if (receptionFolder == null) {
-      createItem(receptionFolders, createReceptionFolder(name));
-      receptionFolder = restClient.refresh(receptionFolders).byName(name);
-      Objects.requireNonNull(receptionFolder, "Could not create reception folder");
-    }
-    configurationState.setReceptionFolderUri(receptionFolder.getSelfUri());
+    cache.setReceptionFolderUri(ensureNamedItem(cache.getSpaceRootFolder(), LINK_FILE_SYSTEM_FOLDERS,
+        FileSystemFolders.class, "reception-folder", this::createReceptionFolder).getSelfUri());
   }
 
   private FileSystemFolder createReceptionFolder(String name) {
     FileSystemFolder result = new FileSystemFolder();
     result.setName(name);
-    result.setParentSpaceRootFolder(configurationState.getSpaceRootFolder().getSelfUri());
+    result.setParentSpaceRootFolder(cache.getSpaceRootFolder().getSelfUri());
     result.setSubPath(WORKING_FOLDER_NAME + RECEIVER_NODE_NAME);
     return result;
   }
 
   private void ensureIngestionFolder() throws IOException {
-    String name = "ingestion-folder";
-    FileSystemFolders fileSystemFolders = restClient.follow(configurationState.getSpaceRootFolder(),
-        LINK_FILE_SYSTEM_FOLDERS, FileSystemFolders.class);
-    FileSystemFolder fileSystemFolder = fileSystemFolders.byName(name);
-    if (fileSystemFolder == null) {
-      createItem(fileSystemFolders, createIngestionFolder(name));
-      fileSystemFolder = restClient.refresh(fileSystemFolders).byName(name);
-      Objects.requireNonNull(fileSystemFolder, "Could not create ingestion folder");
-    }
+    ensureNamedItem(cache.getSpaceRootFolder(), LINK_FILE_SYSTEM_FOLDERS, FileSystemFolders.class, "ingestion-folder",
+        this::createIngestionFolder);
   }
 
   private FileSystemFolder createIngestionFolder(String name) {
     FileSystemFolder result = new FileSystemFolder();
     result.setName(name);
-    result.setParentSpaceRootFolder(configurationState.getSpaceRootFolder().getSelfUri());
+    result.setParentSpaceRootFolder(cache.getSpaceRootFolder().getSelfUri());
     result.setSubPath(WORKING_FOLDER_NAME + INGEST_NODE_NAME);
     return result;
   }
 
   private void ensureReceiverNode() throws IOException {
-    String name = RECEIVER_NODE_NAME;
-    ReceiverNodes receiverNodes = restClient.follow(configurationState.getApplication(), LINK_RECEIVER_NODES,
-        ReceiverNodes.class);
-    ReceiverNode receiverNode = receiverNodes.byName(name);
-    if (receiverNode == null) {
-      createItem(receiverNodes, createReceiverNode(name));
-      receiverNode = restClient.refresh(receiverNodes).byName(name);
-      Objects.requireNonNull(receiverNode, "Could not create receiver node");
-    }
+    ensureNamedItem(cache.getApplication(), LINK_RECEIVER_NODES, ReceiverNodes.class, RECEIVER_NODE_NAME,
+        this::createReceiverNode);
   }
 
   private ReceiverNode createReceiverNode(String name) {
     ReceiverNode result = new ReceiverNode();
     result.setName(name);
-    result.setWorkingDirectory(configurationState.getReceptionFolderUri());
-    result.setLogsStore(configurationState.getStoreUri());
+    result.setWorkingDirectory(cache.getReceptionFolderUri());
+    result.setLogsStore(cache.getStoreUri());
     result.getSips().add(new Sip());
     return result;
   }
 
   private void ensureTenantLevelExportPipelines() throws IOException {
-    String defaultPipelineName = "search-results-csv-gzip";
-    ExportPipelines pipelines = restClient.follow(configurationState.getTenant(), LINK_EXPORT_PIPELINE,
-        ExportPipelines.class);
-    ExportPipeline pipeline = pipelines.byName(defaultPipelineName);
-    if (pipeline == null) {
-      pipeline = new ExportPipeline();
-      pipeline.setName(defaultPipelineName);
-      pipeline.setDescription("gzip envelope for csv export");
-      pipeline.setIncludesContent(false);
-      pipeline.setInputFormat("ROW_COLUMN");
-      pipeline.setOutputFormat("csv");
-      pipeline.setEnvelopeFormat("gz");
-      pipeline.setType("XPROC");
-      pipeline.setComposite(true);
-      pipeline.setCollectionBasedExport(false);
-      pipeline.setContent(
-          "<p:declare-step version=\"2.0\" xmlns:p=\"http://www.w3.org/ns/xproc\" xmlns:ia=\"http://infoarchive.emc.com/xproc\">\n    <p:input port=\"source\" sequence=\"true\"/>\n    <ia:search-results-csv/>\n    <ia:gzip/>\n    <ia:store-export-result format=\"csv\"/>\n</p:declare-step>");
-
-      createItem(pipelines, pipeline);
-      pipeline = restClient.refresh(pipelines).byName(defaultPipelineName);
-      Objects.requireNonNull(pipeline, "Could not create export pipeline");
-    }
-    configurationState.setObjectUri(TYPE_EXPORT_PIPELINE, defaultPipelineName, pipeline.getSelfUri());
+    cacheObject(TYPE_EXPORT_PIPELINE, ensureNamedItem(cache.getTenant(), LINK_EXPORT_PIPELINE, ExportPipelines.class,
+        "search-results-csv-gzip", this::createTenantLevelExportPipeline));
   }
 
-  private void ensureTenantLevelExportConfigurations() throws IOException {
-    String defaultName = "gzip_csv";
-    ExportConfigurations configurations = restClient.follow(configurationState.getTenant(), LINK_EXPORT_CONFIG,
-        ExportConfigurations.class);
-    ExportConfiguration exportConfiguration = configurations.byName(defaultName);
-    if (exportConfiguration == null) {
-      exportConfiguration = new ExportConfiguration();
-      exportConfiguration.setName(defaultName);
-      exportConfiguration.setDescription("configurations");
-      exportConfiguration.setExportType("ASYNCHRONOUS");
-      exportConfiguration.setPipeline(configurationState.getObjectUri(TYPE_EXPORT_PIPELINE, "search-results-csv-gzip"));
-      ExportConfiguration.Transformation transformation = new ExportConfiguration.Transformation();
-      transformation.setPortName("stylesheet");
-      transformation.setTransformation(configurationState.getObjectUri(TYPE_EXPORT_TRANSFORMATION, "csv_xsl"));
-      exportConfiguration.addTransformation(transformation);
-      exportConfiguration.addOption(ExportConfiguration.DefaultOptions.XSL_RESULT_FORMAT, "csv");
-      createItem(configurations, exportConfiguration);
-      exportConfiguration = restClient.refresh(configurations).byName(defaultName);
-      Objects.requireNonNull(exportConfiguration, "Could not create export configuration");
-    }
-    configurationState.setObjectUri("export-configuration", defaultName, exportConfiguration.getSelfUri());
-
-  }
-
-  private void ensureTenantLevelExportTransformations() throws IOException {
-    String defaultName = "csv_xsl";
-    ExportTransformations transformations = restClient.follow(configurationState.getTenant(),
-        LINK_EXPORT_TRANSFORMATION, ExportTransformations.class);
-    ExportTransformation exportTransformation = transformations.byName(defaultName);
-    if (exportTransformation == null) {
-      exportTransformation = new ExportTransformation();
-      exportTransformation.setName(defaultName);
-      exportTransformation.setDescription("csv xsl transformation");
-      exportTransformation.setType("XSLT");
-      exportTransformation.setMainPath("search-results-csv.xsl");
-      createItem(transformations, exportTransformation);
-      exportTransformation = restClient.refresh(transformations).byName(defaultName);
-      Objects.requireNonNull(exportTransformation, "Could not create export transformation");
-    }
-    configurationState.setObjectUri(TYPE_EXPORT_TRANSFORMATION, defaultName, exportTransformation.getSelfUri());
-  }
-
-  private void ensureExportPipelines() throws IOException {
-    String rawPipelineNames = configuration.get(EXPORT_PIPELINE_NAME);
-    if (rawPipelineNames != null && !rawPipelineNames.isEmpty()) {
-      String[] pipelineNames = rawPipelineNames.split(",");
-      ExportPipelines pipelines = restClient.follow(configurationState.getApplication(), LINK_EXPORT_PIPELINE,
-          ExportPipelines.class);
-      for (String pipelineName : pipelineNames) {
-        ExportPipeline pipeline = pipelines.byName(pipelineName);
-        if (pipeline == null) {
-          createItem(pipelines, createExportPipeline(pipelineName));
-          pipeline = restClient.refresh(pipelines).byName(pipelineName);
-          Objects.requireNonNull(pipeline, "Could not create export pipeline");
-        }
-        configurationState.setObjectUri(TYPE_EXPORT_PIPELINE, pipelineName, pipeline.getSelfUri());
-      }
-    }
-  }
-
-  private void ensureExportConfigurations() throws IOException {
-    String rawConfigurationNames = configuration.get(EXPORT_CONFIG_NAME);
-    if (rawConfigurationNames != null && !rawConfigurationNames.isEmpty()) {
-      String[] configurationNames = rawConfigurationNames.split(",");
-      ExportConfigurations configurations = restClient.follow(configurationState.getApplication(), LINK_EXPORT_CONFIG,
-          ExportConfigurations.class);
-      for (String configurationName : configurationNames) {
-        ExportConfiguration exportConfiguration = configurations.byName(configurationName);
-        if (exportConfiguration == null) {
-          createItem(configurations, createExportConfiguration(configurationName));
-          exportConfiguration = restClient.refresh(configurations).byName(configurationName);
-          Objects.requireNonNull(configuration, "Could not create export configuration");
-        }
-        configurationState.setObjectUri("export-configuration", configurationName, exportConfiguration.getSelfUri());
-      }
-    }
-  }
-
-  private void ensureExportTransformations() throws IOException {
-    String rawTransformationNames = configuration.get(EXPORT_TRANSFORMATION_NAME);
-    if (rawTransformationNames != null && !rawTransformationNames.isEmpty()) {
-      String[] transformationNames = rawTransformationNames.split(",");
-      ExportTransformations transformations = restClient.follow(configurationState.getApplication(),
-          LINK_EXPORT_TRANSFORMATION, ExportTransformations.class);
-      for (String transformationName : transformationNames) {
-        ExportTransformation exportTransformation = transformations.byName(transformationName);
-        if (exportTransformation == null) {
-          createItem(transformations, createExportTransformation(transformationName));
-          exportTransformation = restClient.refresh(transformations).byName(transformationName);
-          Objects.requireNonNull(configuration, "Could not create export transformation");
-        }
-        configurationState.setObjectUri(TYPE_EXPORT_TRANSFORMATION, transformationName,
-            exportTransformation.getSelfUri());
-      }
-    }
-  }
-
-  private ExportConfiguration createExportConfiguration(String name) {
-    ExportConfiguration result = new ExportConfiguration();
+  private ExportPipeline createTenantLevelExportPipeline(String name) {
+    ExportPipeline result;
+    result = new ExportPipeline();
     result.setName(name);
-    result.setExportType(getString(EXPORT_CONFIG_TYPE_TEMPLATE, name));
-    result.setPipeline(configurationState.getObjectUri(TYPE_EXPORT_PIPELINE, getString(EXPORT_CONFIG_PIPELINE_TEMPLATE,
-        name)));
-    fillExportConfigurationTransformations(name, result);
-    fillExportConfigurationOptions(name, result);
-    fillExportConfigurationEncryptedOptions(name, result);
+    result.setDescription("gzip envelope for csv export");
+    result.setIncludesContent(false);
+    result.setInputFormat("ROW_COLUMN");
+    result.setOutputFormat("csv");
+    result.setEnvelopeFormat("gz");
+    result.setType("XPROC");
+    result.setComposite(true);
+    result.setCollectionBasedExport(false);
+    result.setContent("<p:declare-step version=\"2.0\" xmlns:p=\"http://www.w3.org/ns/xproc\" "
+        + "xmlns:ia=\"http://infoarchive.emc.com/xproc\">\n    <p:input port=\"source\" sequence=\"true\"/>\n    "
+        + "<ia:search-results-csv/>\n    <ia:gzip/>\n    <ia:store-export-result format=\"csv\"/>\n</p:declare-step>");
     return result;
   }
 
-  private void fillExportConfigurationTransformations(String name, ExportConfiguration conf) {
-    String rawConfigTransformationNames = configuration.get(resolveTemplatedKey(
-        EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_NAME, name));
-    if (rawConfigTransformationNames != null && !rawConfigTransformationNames.isEmpty()) {
-      String[] configTransformationNames = rawConfigTransformationNames.split(",");
-      for (String configTransformationName : configTransformationNames) {
-        ExportConfiguration.Transformation transformation = new ExportConfiguration.Transformation();
-        transformation.setPortName(configuration.get(resolveTemplatedKey(
-            EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_PORTNAME_TEMPLATE, name, configTransformationName)));
-        transformation.setTransformation(configurationState.getObjectUri(TYPE_EXPORT_TRANSFORMATION, configuration.get(
-            resolveTemplatedKey(EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_TRANSFORMATION_TEMPLATE, name,
-            configTransformationName))));
-        conf.addTransformation(transformation);
-      }
-    }
+  private void ensureTenantLevelExportConfigurations() throws IOException {
+    cacheObject("export-configuration", ensureNamedItem(cache.getTenant(), LINK_EXPORT_CONFIG,
+        ExportConfigurations.class, "gzip_csv", this::createTenantLevelExportConfiguration));
   }
 
-  private void fillExportConfigurationOptions(String name, ExportConfiguration conf) {
-    conf.addOption(ExportConfiguration.DefaultOptions.XSL_RESULT_FORMAT, getString(
-        EXPORT_CONFIG_OPTIONS_TEMPLATE_XSL_RESULTFORMAT_TEMPLATE, name));
-    conf.addOption(ExportConfiguration.DefaultOptions.XQUERY_RESULT_FORMAT, getString(
-        EXPORT_CONFIG_OPTIONS_TEMPLATE_XQUERY_RESULTFORMAT_TEMPLATE, name));
-    String rawConfigOptionNames = configuration.get(resolveTemplatedKey(EXPORT_CONFIG_OPTIONS_TEMPLATE_NAME, name));
-    if (rawConfigOptionNames != null && !rawConfigOptionNames.isEmpty()) {
-      String[] configOptionNames = rawConfigOptionNames.split(",");
-      for (String configOptionName : configOptionNames) {
-        conf.addOption(configOptionName, configuration.get(resolveTemplatedKey(
-            EXPORT_CONFIG_OPTIONS_TEMPLATE_VALUE_TEMPLATE, name, configOptionName)));
-      }
-    }
+  private ExportConfiguration createTenantLevelExportConfiguration(String name) {
+    ExportConfiguration result;
+    result = new ExportConfiguration();
+    result.setName(name);
+    result.setDescription("configurations");
+    result.setExportType("ASYNCHRONOUS");
+    result.setPipeline(cache.getObjectUri(TYPE_EXPORT_PIPELINE, "search-results-csv-gzip"));
+    ExportConfiguration.Transformation transformation = new ExportConfiguration.Transformation();
+    transformation.setPortName("stylesheet");
+    transformation.setTransformation(cache.getObjectUri(TYPE_EXPORT_TRANSFORMATION, "csv_xsl"));
+    result.addTransformation(transformation);
+    result.addOption(ExportConfiguration.DefaultOptions.XSL_RESULT_FORMAT, "csv");
+    return result;
   }
 
-  private void fillExportConfigurationEncryptedOptions(String name, ExportConfiguration conf) {
-    String rawConfigEncryptedOptionNames = configuration.get(resolveTemplatedKey(
-        EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_NAME, name));
-    if (rawConfigEncryptedOptionNames != null && !rawConfigEncryptedOptionNames.isEmpty()) {
-      String[] configEncryptedOptionNames = rawConfigEncryptedOptionNames.split(",");
-      for (String configEncryptedOptionName : configEncryptedOptionNames) {
-        conf.addEncryptedOption(configEncryptedOptionName, configuration.get(resolveTemplatedKey(
-            EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_VALUE_TEMPLATE, name, configEncryptedOptionName)));
-      }
-    }
+  private void ensureTenantLevelExportTransformations() throws IOException {
+    cacheObject(TYPE_EXPORT_TRANSFORMATION, ensureNamedItem(cache.getTenant(), LINK_EXPORT_TRANSFORMATION,
+        ExportTransformations.class, "csv_xsl", this::createTenantLevelExportTransformation));
+  }
+
+  private ExportTransformation createTenantLevelExportTransformation(String defaultName) {
+    ExportTransformation result;
+    result = new ExportTransformation();
+    result.setName(defaultName);
+    result.setDescription("csv xsl transformation");
+    result.setType("XSLT");
+    result.setMainPath("search-results-csv.xsl");
+    return result;
+  }
+
+  private void ensureExportPipelines() throws IOException {
+    processConfiguredItems(EXPORT_PIPELINE_NAME, this::ensureExportPipeline);
+  }
+
+  private ExportPipeline ensureExportPipeline(String name) throws IOException {
+    return cacheObject(TYPE_EXPORT_PIPELINE, ensureNamedItem(cache.getApplication(), LINK_EXPORT_PIPELINE,
+        ExportPipelines.class, name, this::createExportPipeline));
   }
 
   private ExportPipeline createExportPipeline(String name) {
     ExportPipeline result = new ExportPipeline();
     result.setName(name);
-    result.setComposite(getBoolean(EXPORT_PIPELINE_COMPOSITE_TEMPLATE, name));
-    result.setContent(getString(EXPORT_PIPELINE_CONTENT_TEMPLATE, name));
-    result.setDescription(getString(EXPORT_PIPELINE_DESCRIPTION_TEMPLATE, name));
-    result.setEnvelopeFormat(getString(EXPORT_PIPELINE_ENVELOPE_FORMAT_TEMPLATE, name));
-    result.setIncludesContent(getBoolean(EXPORT_PIPELINE_INCLUDES_CONTENT_TEMPLATE, name));
-    result.setInputFormat(getString(EXPORT_PIPELINE_INPUT_FORMAT_TEMPLATE, name));
-    result.setOutputFormat(getString(EXPORT_PIPELINE_OUTPUT_FORMAT_TEMPLATE, name));
-    result.setType(getString(EXPORT_PIPELINE_TYPE_TEMPLATE, name));
-    result.setCollectionBasedExport(getBoolean(EXPORT_PIPELINE_COLLECTION_BASED_TEMPLATE, name));
+    result.setComposite(templatedBoolean(EXPORT_PIPELINE_COMPOSITE_TEMPLATE, name));
+    result.setContent(templatedString(EXPORT_PIPELINE_CONTENT_TEMPLATE, name));
+    result.setDescription(templatedString(EXPORT_PIPELINE_DESCRIPTION_TEMPLATE, name));
+    result.setEnvelopeFormat(templatedString(EXPORT_PIPELINE_ENVELOPE_FORMAT_TEMPLATE, name));
+    result.setIncludesContent(templatedBoolean(EXPORT_PIPELINE_INCLUDES_CONTENT_TEMPLATE, name));
+    result.setInputFormat(templatedString(EXPORT_PIPELINE_INPUT_FORMAT_TEMPLATE, name));
+    result.setOutputFormat(templatedString(EXPORT_PIPELINE_OUTPUT_FORMAT_TEMPLATE, name));
+    result.setType(templatedString(EXPORT_PIPELINE_TYPE_TEMPLATE, name));
+    result.setCollectionBasedExport(templatedBoolean(EXPORT_PIPELINE_COLLECTION_BASED_TEMPLATE, name));
     return result;
+  }
+
+  private String templatedString(String key, Object... name) {
+    return configuration.get(resolveTemplatedKey(key, name));
+  }
+
+  private String resolveTemplatedKey(String key, Object... vars) {
+    return String.format(key, vars);
+  }
+
+  private boolean templatedBoolean(String key, String name) {
+    return Boolean.parseBoolean(templatedString(key, name));
+  }
+
+  private void ensureExportConfigurations() throws IOException {
+    processConfiguredItems(EXPORT_CONFIG_NAME, this::ensureExportConfiguration);
+  }
+
+  private ExportConfiguration ensureExportConfiguration(String name) throws IOException {
+    return cacheObject("export-configuration", ensureNamedItem(cache.getApplication(), LINK_EXPORT_CONFIG,
+        ExportConfigurations.class, name, this::createExportConfiguration));
+  }
+
+  private ExportConfiguration createExportConfiguration(String name) {
+    ExportConfiguration result = new ExportConfiguration();
+    result.setName(name);
+    result.setExportType(templatedString(EXPORT_CONFIG_TYPE_TEMPLATE, name));
+    result.setPipeline(cache.getObjectUri(TYPE_EXPORT_PIPELINE, templatedString(EXPORT_CONFIG_PIPELINE_TEMPLATE,
+        name)));
+    fillExportConfigurationTransformations(result);
+    fillExportConfigurationOptions(result);
+    fillExportConfigurationEncryptedOptions(result);
+    return result;
+  }
+
+  private void fillExportConfigurationTransformations(ExportConfiguration config) {
+    forEach(templatedString(EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_NAME, config.getName()),
+        name -> fillExportConfigurationTransformation(config, name));
+  }
+
+  private void forEach(String items, Consumer<String> consumer) {
+    commaSeparatedItems(items).forEach(consumer);
+  }
+
+  private void fillExportConfigurationTransformation(ExportConfiguration config, String name) {
+    ExportConfiguration.Transformation result = new ExportConfiguration.Transformation();
+    result.setPortName(templatedString(EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_PORTNAME_TEMPLATE,
+        config.getName(), name));
+    result.setTransformation(cache.getObjectUri(TYPE_EXPORT_TRANSFORMATION, templatedString(
+        EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_TRANSFORMATION_TEMPLATE, config.getName(), name)));
+    config.addTransformation(result);
+  }
+
+  private void fillExportConfigurationOptions(ExportConfiguration config) {
+    config.addOption(ExportConfiguration.DefaultOptions.XSL_RESULT_FORMAT,
+        templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_XSL_RESULTFORMAT_TEMPLATE, config.getName()));
+    config.addOption(ExportConfiguration.DefaultOptions.XQUERY_RESULT_FORMAT,
+        templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_XQUERY_RESULTFORMAT_TEMPLATE, config.getName()));
+    forEach(templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_NAME, config.getName()), name ->
+        config.addOption(name, templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_VALUE_TEMPLATE,
+        config.getName(), name)));
+  }
+
+  private void fillExportConfigurationEncryptedOptions(ExportConfiguration config) {
+    forEach(templatedString(EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_NAME, config.getName()),
+        name -> config.addEncryptedOption(name, templatedString(EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_VALUE_TEMPLATE,
+        config.getName(), name)));
+  }
+
+  private void ensureExportTransformations() throws IOException {
+    processConfiguredItems(EXPORT_TRANSFORMATION_NAME, this::ensureExportTransformation);
+  }
+
+  private ExportTransformation ensureExportTransformation(String name) throws IOException {
+    return cacheObject(TYPE_EXPORT_TRANSFORMATION, ensureNamedItem(cache.getApplication(),
+        LINK_EXPORT_TRANSFORMATION, ExportTransformations.class, name, this::createExportTransformation));
   }
 
   private ExportTransformation createExportTransformation(String name) {
     ExportTransformation result = new ExportTransformation();
     result.setName(name);
-    result.setDescription(getString(EXPORT_TRANSFORMATION_DESCRIPTION_TEMPLATE, name));
-    result.setType(getString(EXPORT_TRANSFORMATION_TYPE_TEMPLATE, name));
-    result.setMainPath(getString(EXPORT_TRANSFORMATION_MAIN_PATH_TEMPLATE, name));
+    result.setDescription(templatedString(EXPORT_TRANSFORMATION_DESCRIPTION_TEMPLATE, name));
+    result.setType(templatedString(EXPORT_TRANSFORMATION_TYPE_TEMPLATE, name));
+    result.setMainPath(templatedString(EXPORT_TRANSFORMATION_MAIN_PATH_TEMPLATE, name));
     return result;
   }
 
-  private boolean getBoolean(String key, String name) {
-    return Boolean.parseBoolean(getString(key, name));
-  }
-
-  private String getString(String key, String name) {
-    return configuration.get(resolveTemplatedKey(key, name));
-  }
-
   private void ensureIngestNode() throws IOException {
-    String name = INGEST_NODE_NAME;
-    IngestNodes ingestNodes = restClient.follow(configurationState.getApplication(), LINK_INGEST_NODES,
-        IngestNodes.class);
-    IngestNode ingestNode = ingestNodes.byName(name);
-    if (ingestNode == null) {
-      createItem(ingestNodes, createIngestionNode(name));
-      ingestNode = restClient.refresh(ingestNodes).byName(name);
-      Objects.requireNonNull(ingestNode, "Could not create ingest node");
-    }
-    configurationState.setIngestNodeUri(ingestNode.getSelfUri());
+    IngestNode ingestNode = ensureNamedItem(cache.getApplication(), LINK_INGEST_NODES, IngestNodes.class,
+        INGEST_NODE_NAME, this::createIngestionNode);
+    cache.setIngestNodeUri(ingestNode.getSelfUri());
   }
 
   private IngestNode createIngestionNode(String name) {
     IngestNode result = new IngestNode();
     result.setName(name);
-    result.setWorkingDirectory(configurationState.getFileSystemFolderUri());
+    result.setWorkingDirectory(cache.getFileSystemFolderUri());
     return result;
   }
 
   private void ensureRetentionPolicy() throws IOException {
-    String name = configured(RETENTION_POLICY_NAME);
-    RetentionPolicies retentionPolicies = restClient.follow(configurationState.getTenant(), LINK_RETENTION_POLICIES,
-        RetentionPolicies.class);
-    RetentionPolicy retentionPolicy = retentionPolicies.byName(name);
-    if (retentionPolicy == null) {
-      createItem(retentionPolicies, createRetentionPolicy(name));
-      retentionPolicy = restClient.refresh(retentionPolicies).byName(name);
-      Objects.requireNonNull(retentionPolicy, "Could not create retention policy");
-    }
+    ensureItem(cache.getTenant(), LINK_RETENTION_POLICIES, RetentionPolicies.class, RETENTION_POLICY_NAME,
+        this::createRetentionPolicy);
   }
 
   private RetentionPolicy createRetentionPolicy(String name) {
@@ -705,16 +612,15 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensurePdi() throws IOException {
-    String name = configured(RETENTION_POLICY_NAME);
-    Pdis pdis = restClient.follow(configurationState.getApplication(), LINK_PDIS, Pdis.class);
-    Pdi pdi = pdis.byName(name);
-    if (pdi == null) {
-      createItem(pdis, createPdi(name));
-      pdi = restClient.refresh(pdis).byName(name);
-      Objects.requireNonNull(pdi, "Could not create PDI");
-    }
+    Pdi pdi = ensureItem(cache.getApplication(), LINK_PDIS, Pdis.class, RETENTION_POLICY_NAME, this::createPdi);
     ensureContents(pdi, PDI_XML, FORMAT_XML);
-    configurationState.setPdiUri(pdi.getSelfUri());
+    cache.setPdiUri(pdi.getSelfUri());
+  }
+
+  private Pdi createPdi(String name) {
+    Pdi result = new Pdi();
+    result.setName(name);
+    return result;
   }
 
   private void ensureContents(LinkContainer state, String configurationName, String format) throws IOException {
@@ -730,22 +636,10 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     }
   }
 
-  private Pdi createPdi(String name) {
-    Pdi result = new Pdi();
-    result.setName(name);
-    return result;
-  }
-
   private void ensurePdiSchema() throws IOException {
-    String name = configured(PDI_SCHEMA_NAME);
-    PdiSchemas pdiSchemas = restClient.follow(configurationState.getApplication(), LINK_PDI_SCHEMAS, PdiSchemas.class);
-    PdiSchema pdiSchema = pdiSchemas.byName(name);
-    if (pdiSchema == null) {
-      createItem(pdiSchemas, createPdiSchema(name));
-      pdiSchema = restClient.refresh(pdiSchemas).byName(name);
-      Objects.requireNonNull(pdiSchema, "Could not create PDI schema");
-    }
-    configurationState.setPdiSchema(pdiSchema);
+    PdiSchema pdiSchema = ensureItem(cache.getApplication(), LINK_PDI_SCHEMAS, PdiSchemas.class, PDI_SCHEMA_NAME,
+        this::createPdiSchema);
+    cache.setPdiSchema(pdiSchema);
     ensureContents(pdiSchema, PDI_SCHEMA, FORMAT_XSD);
   }
 
@@ -756,15 +650,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureIngest() throws IOException {
-    String name = INGEST_NAME;
-    Ingests ingests = restClient.follow(configurationState.getApplication(), LINK_INGESTS, Ingests.class);
-    Ingest ingest = ingests.byName(name);
-    if (ingest == null) {
-      createItem(ingests, createIngest(name));
-      ingest = restClient.refresh(ingests).byName(name);
-      Objects.requireNonNull(ingest, "Could not create ingest");
-    }
-    configurationState.setIngestUri(ingest.getSelfUri());
+    Ingest ingest = ensureNamedItem(cache.getApplication(), LINK_INGESTS, Ingests.class, INGEST_NAME,
+        this::createIngest);
+    cache.setIngestUri(ingest.getSelfUri());
     ensureContents(ingest, INGEST_XML, FORMAT_XML);
   }
 
@@ -775,15 +663,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureLibrary() throws IOException {
-    String name = configured(HOLDING_NAME);
-    Libraries libraries = restClient.follow(configurationState.getSpaceRootLibrary(), LINK_LIBRARIES, Libraries.class);
-    Library library = libraries.byName(name);
-    if (library == null) {
-      createItem(libraries, createLibrary(name));
-      library = restClient.refresh(libraries).byName(name);
-      Objects.requireNonNull(library, "Could not create library");
-    }
-    configurationState.setLibraryUri(library.getSelfUri());
+    Library library = ensureItem(cache.getSpaceRootLibrary(), LINK_LIBRARIES, Libraries.class, HOLDING_NAME,
+        this::createLibrary);
+    cache.setLibraryUri(library.getSelfUri());
   }
 
   private Library createLibrary(String name) {
@@ -794,147 +676,113 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureHolding() throws IOException {
-    String name = configuration.get(HOLDING_NAME);
-    Holdings holdings = restClient.follow(configurationState.getApplication(), LINK_HOLDINGS, Holdings.class);
-    Holding holding = holdings.byName(name);
-    if (holding == null) {
-      createItem(holdings, createHolding(name));
-      holding = restClient.refresh(holdings).byName(name);
-      Objects.requireNonNull(holding, "Could not create holding");
-    }
-    configurationState.setHoldingUri(holding.getSelfUri());
+    Holding holding = ensureItem(cache.getApplication(), LINK_HOLDINGS, Holdings.class, HOLDING_NAME,
+        this::createHolding);
+    cache.setHoldingUri(holding.getSelfUri());
+  }
+
+  private Holding createHolding(String holdingName) {
+    Holding result = new Holding();
+    result.setName(holdingName);
+    result.setAllStores(cache.getStoreUri());
+    IngestConfig ingestConfig = new IngestConfig();
+    ingestConfig.setIngest(cache.getIngestUri());
+    result.getIngestConfigs().add(ingestConfig);
+    result.getIngestNodes().add(cache.getIngestNodeUri());
+    SubPriority priority = new SubPriority();
+    priority.setPriority(0);
+    priority.setDeadline(100);
+    result.getSubPriorities().add(priority);
+    priority = new SubPriority();
+    priority.setPriority(1);
+    priority.setDeadline(200);
+    result.getSubPriorities().add(priority);
+    result.setXdbLibraryParent(cache.getLibraryUri());
+    RetentionClass retentionClass = new RetentionClass();
+    retentionClass.getPolicies().add(configured(RETENTION_POLICY_NAME));
+    result.getRetentionClasses().add(retentionClass);
+    PdiConfig pdiConfig = new PdiConfig();
+    pdiConfig.setPdi(cache.getPdiUri());
+    pdiConfig.setSchema(configured(PDI_SCHEMA_NAME));
+    result.getPdiConfigs().add(pdiConfig);
+    return result;
   }
 
   private void ensureAic() throws IOException {
-    String name = configured(AIC_NAME);
-    Aics aics = restClient.follow(configurationState.getApplication(), LINK_AICS, Aics.class);
-    Aic aic = aics.byName(name);
-    if (aic == null) {
-      createItem(aics, createAic(name));
-      aic = restClient.refresh(aics).byName(name);
-      Objects.requireNonNull(aic, "Could not create aic");
-    }
-    configurationState.setAicUri(aic.getSelfUri());
-    configurationState.setAicUriByName(name, aic.getSelfUri());
-
+    Aic aic = ensureItem(cache.getApplication(), LINK_AICS, Aics.class, AIC_NAME, this::createAic);
+    cache.setAicUri(aic.getSelfUri());
+    cache.setAicUriByName(aic.getName(), aic.getSelfUri());
   }
 
   private Aic createAic(String name) {
     Aic result = new Aic();
     result.setName(name);
     result.setCriterias(createCriteria());
-    result.getHoldings()
-      .add(configurationState.getHoldingUri());
+    result.getHoldings().add(cache.getHoldingUri());
     return result;
   }
 
   private List<Criterion> createCriteria() {
     List<Criterion> result = new ArrayList<>();
-
     RepeatingConfigReader reader = new RepeatingConfigReader("criteria", Arrays.asList(CRITERIA_NAME, CRITERIA_LABEL,
         CRITERIA_TYPE, CRITERIA_PKEYMINATTR, CRITERIA_PKEYMAXATTR, CRITERIA_PKEYVALUESATTR, CRITERIA_INDEXED));
-
-    List<Map<String, String>> criterionConfigurations = reader.read(configuration);
-    for (Map<String, String> cfg : criterionConfigurations) {
-      Criterion criterion = new Criterion();
-      criterion.setIndexed(Boolean.parseBoolean(cfg.get(CRITERIA_INDEXED)));
-      criterion.setLabel(cfg.get(CRITERIA_LABEL));
-      criterion.setName(cfg.get(CRITERIA_NAME));
-
-      String minAttr = cfg.get(CRITERIA_PKEYMINATTR).trim();
-      if (!minAttr.isEmpty()) {
-        criterion.setpKeyMinAttr(minAttr);
-      }
-
-      String maxAttr = cfg.get(CRITERIA_PKEYMAXATTR).trim();
-      if (!maxAttr.isEmpty()) {
-        criterion.setpKeyMaxAttr(maxAttr);
-      }
-
-      String valueAttr = cfg.get(CRITERIA_PKEYVALUESATTR).trim();
-      if (!valueAttr.isEmpty()) {
-        criterion.setpKeyValuesAttr(valueAttr);
-      }
-      criterion.setType(cfg.get(CRITERIA_TYPE));
-      result.add(criterion);
+    for (Map<String, String> cfg : reader.read(configuration)) {
+      result.add(createCriterion(cfg));
     }
-
     return result;
   }
 
-  private void ensureQuery() throws IOException {
-    String rawQueryNames = configuration.get(QUERY_NAME);
+  private Criterion createCriterion(Map<String, String> config) {
+    Criterion criterion = new Criterion();
+    criterion.setIndexed(Boolean.parseBoolean(config.get(CRITERIA_INDEXED)));
+    criterion.setLabel(config.get(CRITERIA_LABEL));
+    criterion.setName(config.get(CRITERIA_NAME));
+
+    String minAttr = config.get(CRITERIA_PKEYMINATTR).trim();
+    if (!minAttr.isEmpty()) {
+      criterion.setpKeyMinAttr(minAttr);
+    }
+
+    String maxAttr = config.get(CRITERIA_PKEYMAXATTR).trim();
+    if (!maxAttr.isEmpty()) {
+      criterion.setpKeyMaxAttr(maxAttr);
+    }
+
+    String valueAttr = config.get(CRITERIA_PKEYVALUESATTR).trim();
+    if (!valueAttr.isEmpty()) {
+      criterion.setpKeyValuesAttr(valueAttr);
+    }
+    criterion.setType(config.get(CRITERIA_TYPE));
+    return criterion;
+  }
+
+  private void ensureQueries() throws IOException {
     List<String> queryUris = new ArrayList<>();
-    if (rawQueryNames != null && !rawQueryNames.isEmpty()) {
-      String[] queryNames = rawQueryNames.split(",");
-      for (String queryName : queryNames) {
-        Queries queries = restClient.follow(configurationState.getApplication(), LINK_QUERIES, Queries.class);
-        Query query = queries.byName(queryName);
-        if (query == null) {
-          createItem(queries, createQuery(queryName));
-          query = restClient.refresh(queries).byName(queryName);
-          Objects.requireNonNull(query, "Could not create query");
-        }
-        queryUris.add(query.getSelfUri());
-        configurationState.setQueryUriByName(queryName, query.getSelfUri());
-      }
-      configurationState.setQueryUris(queryUris);
-    }
+    processConfiguredItems(QUERY_NAME, name -> queryUris.add(ensureQuery(name).getSelfUri()));
+    cache.setQueryUris(queryUris);
   }
 
-  private void ensureQuota() throws IOException {
-    String name = configured(QUOTA_NAME);
-
-    Quotas quotas = restClient.follow(configurationState.getApplication(), LINK_QUERY_QUOTAS, Quotas.class);
-    Quota quota = quotas.byName(name);
-    if (quota == null) {
-      createItem(quotas, createQuota(name));
-      quota = restClient.refresh(quotas).byName(name);
-      Objects.requireNonNull(quota, "Could not create query");
-    }
-    configurationState.setQuotaUri(quota.getSelfUri());
-
-  }
-
-  private Quota createQuota(String name) {
-    Quota result = new Quota();
-    result.setName(name);
-
-    int aipQuota = getOptionalInt(QUOTA_AIP, 0);
-    result.setAipQuota(aipQuota);
-
-    int aiuQuota = getOptionalInt(QUOTA_AIU, 0);
-    result.setAiuQuota(aiuQuota);
-
-    int dipQuota = getOptionalInt(QUOTA_DIP, 0);
-    result.setDipQuota(dipQuota);
-
+  private Query ensureQuery(String name) throws IOException {
+    Query result = ensureNamedItem(cache.getApplication(), LINK_QUERIES, Queries.class, name, this::createQuery);
+    cache.setQueryUriByName(name, result.getSelfUri());
     return result;
-  }
-
-  private int getOptionalInt(String name, int defaultValue) {
-    String value = configuration.get(name);
-    if (value == null || value.isEmpty()) {
-      return defaultValue;
-    }
-    return Integer.parseInt(value);
   }
 
   private Query createQuery(String name) {
     Query result = new Query();
     result.setName(name);
 
-    result.setResultRootElement(configuration.get(resolveTemplatedKey(QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, name)));
+    result.setResultRootElement(templatedString(QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, name));
     result.setResultRootNsEnabled(
-        Boolean.parseBoolean(configuration.get(resolveTemplatedKey(QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, name))));
-    result.setResultSchema(configuration.get(resolveTemplatedKey(QUERY_RESULT_SCHEMA_TEMPLATE, name)));
+        Boolean.parseBoolean(templatedString(QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, name)));
+    result.setResultSchema(templatedString(QUERY_RESULT_SCHEMA_TEMPLATE, name));
 
     result.setNamespaces(createNamespaces(name));
     result.setXdbPdiConfigs(createXdbPdiConfigs(name));
 
-    result.setQuota(configurationState.getQuotaUri());
-    result.setQuotaAsync(configurationState.getQuotaUri());
-    result.getAics().add(configurationState.getAicUri());
+    result.setQuota(cache.getQuotaUri());
+    result.setQuotaAsync(cache.getQuotaUri());
+    result.getAics().add(cache.getAicUri());
 
     return result;
   }
@@ -953,13 +801,15 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     return result;
   }
 
+  private List<String> resolveTemplatedKeys(List<String> templatedKeys, Object... vars) {
+    return templatedKeys.stream()
+      .map(key -> resolveTemplatedKey(key, vars))
+      .collect(Collectors.toList());
+  }
+
   private List<XdbPdiConfig> createXdbPdiConfigs(String name) {
-    RepeatingConfigReader reader = new RepeatingConfigReader("xdbpdiconfigs", resolveTemplatedKeys(
-        Arrays.asList(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, QUERY_XDBPDI_SCHEMA_TEMPLATE, QUERY_XDBPDI_TEMPLATE_TEMPLATE),
-        name));
-    List<Map<String, String>> xdbPdiCfgs = reader.read(configuration);
     List<XdbPdiConfig> result = new ArrayList<>();
-    for (Map<String, String> cfg : xdbPdiCfgs) {
+    for (Map<String, String> cfg : getPdiConfigs(name)) {
       XdbPdiConfig xdbPdi = new XdbPdiConfig();
       xdbPdi.setEntityPath(cfg.get(resolveTemplatedKey(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name)));
       xdbPdi.setSchema(cfg.get(resolveTemplatedKey(QUERY_XDBPDI_SCHEMA_TEMPLATE, name)));
@@ -970,13 +820,15 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     return result;
   }
 
+  private List<Map<String, String>> getPdiConfigs(String name) {
+    return new RepeatingConfigReader("xdbpdiconfigs", resolveTemplatedKeys(
+        Arrays.asList(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, QUERY_XDBPDI_SCHEMA_TEMPLATE, QUERY_XDBPDI_TEMPLATE_TEMPLATE),
+        name)).read(configuration);
+  }
+
   private List<Operand> createOperands(String name, String schema) {
-    RepeatingConfigReader reader = new RepeatingConfigReader("operands", resolveTemplatedKeys(Arrays.asList(
-        QUERY_XDBPDI_OPERAND_NAME, QUERY_XDBPDI_OPERAND_PATH, QUERY_XDBPDI_OPERAND_TYPE, QUERY_XDBPDI_OPERAND_INDEX),
-        name, schema));
-    List<Map<String, String>> operandCfgs = reader.read(configuration);
     List<Operand> result = new ArrayList<>();
-    for (Map<String, String> cfg : operandCfgs) {
+    for (Map<String, String> cfg : getOperandConfigs(name, schema)) {
       Operand operand = new Operand();
       operand.setIndex(Boolean.parseBoolean(cfg.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_INDEX, name, schema))));
       operand.setType(cfg.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_TYPE, name, schema)));
@@ -987,56 +839,40 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     return result;
   }
 
-  private List<String> resolveTemplatedKeys(List<String> templatedKeys, Object... vars) {
-    return templatedKeys.stream()
-      .map(key -> resolveTemplatedKey(key, vars))
-      .collect(Collectors.toList());
+  private List<Map<String, String>> getOperandConfigs(String name, String schema) {
+    return new RepeatingConfigReader("operands", resolveTemplatedKeys(Arrays.asList(
+        QUERY_XDBPDI_OPERAND_NAME, QUERY_XDBPDI_OPERAND_PATH, QUERY_XDBPDI_OPERAND_TYPE, QUERY_XDBPDI_OPERAND_INDEX),
+        name, schema)).read(configuration);
   }
 
-  private String resolveTemplatedKey(String key, Object... vars) {
-    return String.format(key, vars);
+  private void ensureQuota() throws IOException {
+    Quota quota = ensureItem(cache.getApplication(), LINK_QUERY_QUOTAS, Quotas.class, QUOTA_NAME, this::createQuota);
+    cache.setQuotaUri(quota.getSelfUri());
+
   }
 
-  private Holding createHolding(String holdingName) {
-    Holding result = new Holding();
-    result.setName(holdingName);
-    result.setAllStores(configurationState.getStoreUri());
-    IngestConfig ingestConfig = new IngestConfig();
-    ingestConfig.setIngest(configurationState.getIngestUri());
-    result.getIngestConfigs().add(ingestConfig);
-    result.getIngestNodes().add(configurationState.getIngestNodeUri());
-    SubPriority priority = new SubPriority();
-    priority.setPriority(0);
-    priority.setDeadline(100);
-    result.getSubPriorities().add(priority);
-    priority = new SubPriority();
-    priority.setPriority(1);
-    priority.setDeadline(200);
-    result.getSubPriorities().add(priority);
-    result.setXdbLibraryParent(configurationState.getLibraryUri());
-    RetentionClass retentionClass = new RetentionClass();
-    retentionClass.getPolicies().add(configured(RETENTION_POLICY_NAME));
-    result.getRetentionClasses().add(retentionClass);
-    PdiConfig pdiConfig = new PdiConfig();
-    pdiConfig.setPdi(configurationState.getPdiUri());
-    pdiConfig.setSchema(configured(PDI_SCHEMA_NAME));
-    result.getPdiConfigs().add(pdiConfig);
+  private Quota createQuota(String name) {
+    Quota result = new Quota();
+    result.setName(name);
+    result.setAipQuota(getOptionalInt(QUOTA_AIP, 0));
+    result.setAiuQuota(getOptionalInt(QUOTA_AIU, 0));
+    result.setDipQuota(getOptionalInt(QUOTA_DIP, 0));
     return result;
+  }
+
+  private int getOptionalInt(String name, int defaultValue) {
+    String value = configuration.get(name);
+    return isBlank(value) ? defaultValue : Integer.parseInt(value);
   }
 
   private void ensureResultConfigurationHelper() throws IOException {
     String name = configuration.getOrDefault(RESULT_HELPER_NAME, DEFAULT_RESULT_HELPER_NAME);
-    if (configuration.containsKey(resolveTemplatedKey(RESULT_HELPER_XML, name))) {
-      ResultConfigurationHelpers helpers = restClient.follow(configurationState.getApplication(),
-          LINK_RESULT_CONFIGURATION_HELPERS, ResultConfigurationHelpers.class);
-      ResultConfigurationHelper helper = helpers.byName(name);
-      if (helper == null) {
-        createItem(helpers, createResultConfigurationHelper(name));
-        helper = restClient.refresh(helpers).byName(name);
-        Objects.requireNonNull(helper, "Could not create Result configuration helper");
-      }
-      ensureContents(helper, resolveTemplatedKey(RESULT_HELPER_XML, name), FORMAT_XML);
-      configurationState.setResultConfigHelperUri(helper.getSelfUri());
+    String helperXmlName = resolveTemplatedKey(RESULT_HELPER_XML, name);
+    if (configuration.containsKey(helperXmlName)) {
+      ResultConfigurationHelper helper = ensureNamedItem(cache.getApplication(), LINK_RESULT_CONFIGURATION_HELPERS,
+          ResultConfigurationHelpers.class, name, this::createResultConfigurationHelper);
+      ensureContents(helper, helperXmlName, FORMAT_XML);
+      cache.setResultConfigHelperUri(helper.getSelfUri());
     }
   }
 
@@ -1048,54 +884,41 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private List<String> createResultSchema(String name) {
-    return Collections.singletonList(configuration.get(resolveTemplatedKey(RESULT_HELPER_SCHEMA_TEMPLATE, name)));
+    return Collections.singletonList(templatedString(RESULT_HELPER_SCHEMA_TEMPLATE, name));
   }
 
-  private void ensureSearch() throws IOException {
-    String searchNames = configuration.get(SEARCH_NAME);
-    if (searchNames == null) {
-      return;
-    }
-    for (String name : searchNames.split(",")) {
-      Searches searches = restClient.follow(configurationState.getApplication(), LINK_SEARCHES, Searches.class);
-      configurationState.setSearch(searches.byName(name));
-      if (configurationState.getSearch() == null) {
-        createItem(searches, createSearch(name));
-        configurationState.setSearch(restClient.refresh(searches).byName(name));
-        Objects.requireNonNull(configurationState.getSearch(), "Could not create Search");
+  private void ensureSearches() throws IOException {
+    processConfiguredItems(SEARCH_NAME, this::ensureSearch);
+  }
 
-        ensureSearchComposition(name);
-      }
-    }
+  private Search ensureSearch(String name) throws IOException {
+    Search result = ensureNamedItem(cache.getApplication(), LINK_SEARCHES, Searches.class, name, this::createSearch);
+    cache.setSearch(result);
+    ensureSearchComposition(name);
+    return result;
   }
 
   private Search createSearch(String name) {
     Search result = new Search();
     result.setName(name);
-    result.setDescription(configuration.get(resolveTemplatedKey(SEARCH_DESCRIPTION, name)));
-    result.setNestedSearch(Boolean.parseBoolean(configuration.get(resolveTemplatedKey(SEARCH_NESTED, name))));
-    result.setState(configuration.get(resolveTemplatedKey(SEARCH_STATE, name)));
-    result.setInUse(Boolean.parseBoolean(configuration.get(resolveTemplatedKey(SEARCH_INUSE, name))));
-    result.setAic(configurationState.getAicUriByName(configuration.get(resolveTemplatedKey(SEARCH_AIC, name))));
-    result.setQuery(configurationState.getQueryUriByName(configuration.get(resolveTemplatedKey(SEARCH_QUERY, name))));
+    result.setDescription(templatedString(SEARCH_DESCRIPTION, name));
+    result.setNestedSearch(Boolean.parseBoolean(templatedString(SEARCH_NESTED, name)));
+    result.setState(templatedString(SEARCH_STATE, name));
+    result.setInUse(Boolean.parseBoolean(templatedString(SEARCH_INUSE, name)));
+    result.setAic(cache.getAicUriByName(templatedString(SEARCH_AIC, name)));
+    result.setQuery(cache.getQueryUriByName(templatedString(SEARCH_QUERY, name)));
     return result;
   }
 
   private void ensureSearchComposition(String searchName) throws IOException {
-    String name = configuration.get(resolveTemplatedKey(SEARCH_COMPOSITION_NAME, searchName));
-    if (name == null || name.isEmpty()) {
+    String name = templatedString(SEARCH_COMPOSITION_NAME, searchName);
+    if (isBlank(name)) {
       name = "Set 1";
     }
-    SearchCompositions compositions = restClient.follow(configurationState.getSearch(), LINK_SEARCH_COMPOSITIONS,
-        SearchCompositions.class);
-    configurationState.setSearchComposition(compositions.byName(name));
-    if (configurationState.getSearchComposition() == null) {
-      createItem(compositions, createSearchComposition(name), LINK_SELF);
-      SearchComposition composition = restClient.refresh(compositions).byName(name);
-      Objects.requireNonNull(composition, "Could not create Search compostion");
-
-      ensureAllSearchComponents(searchName, composition);
-    }
+    SearchComposition composition = ensureNamedItem(cache.getSearch(), LINK_SEARCH_COMPOSITIONS,
+        SearchCompositions.class, name, this::createSearchComposition);
+    ensureAllSearchComponents(searchName, composition);
+    cache.setSearchComposition(composition);
   }
 
   private SearchComposition createSearchComposition(String name) {
@@ -1117,41 +940,33 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
 
   private XForm createXForm(String searchName, String compositionName) throws IOException {
     XForm result = new XForm();
-    String formName = resolveTemplatedKey(SEARCH_COMPOSITION_XFORM, searchName, compositionName);
-    String form = configured(formName);
-    result.setForm(form);
+    result.setForm(configured(resolveTemplatedKey(SEARCH_COMPOSITION_XFORM, searchName, compositionName)));
     return result;
   }
 
   private ResultMaster createResultMaster(String searchName, String compositionName) throws IOException {
     ResultMaster result = new ResultMaster();
 
-    result.setNamespaces(createNamespaces(configuration.get(resolveTemplatedKey(SEARCH_QUERY, searchName))));
+    result.setNamespaces(createNamespaces(templatedString(SEARCH_QUERY, searchName)));
     List<Column> columns = result.getDefaultTab().getColumns();
 
-    result.getDefaultTab().setExportEnabled(getBoolean(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE,
+    result.getDefaultTab().setExportEnabled(templatedBoolean(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE,
         searchName));
     result.getDefaultTab()
       .getExportConfigurations()
       .addAll(uriFromNamesAndType("export-configuration", getStrings(
           SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName)));
 
-    RepeatingConfigReader reader = new RepeatingConfigReader("maincolumns", resolveTemplatedKeys(Arrays.asList(
-        SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL,
-        SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE,
-        SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT), searchName, compositionName));
-    List<Map<String, String>> columnCfgs = reader.read(configuration);
-
-    for (Map<String, String> columnCfg : columnCfgs) {
-      String name = columnCfg.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, searchName,
+    for (Map<String, String> config : getSearchColumnConfigs(searchName, compositionName)) {
+      String name = config.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, searchName,
           compositionName));
-      String label = columnCfg.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, searchName,
+      String label = config.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, searchName,
           compositionName));
-      String path = columnCfg.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName,
+      String path = config.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName,
           compositionName));
-      DataType dataType = DataType.valueOf(columnCfg.get(resolveTemplatedKey(
+      DataType dataType = DataType.valueOf(config.get(resolveTemplatedKey(
           SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName, compositionName)));
-      DefaultSort sortOrder = DefaultSort.valueOf(columnCfg.get(resolveTemplatedKey(
+      DefaultSort sortOrder = DefaultSort.valueOf(config.get(resolveTemplatedKey(
           SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT, searchName, compositionName)));
 
       Column column = Column.fromSchema(name, label, path, dataType, sortOrder);
@@ -1160,18 +975,34 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     return result;
   }
 
+  private Collection<String> getStrings(String key, String variable) {
+    return commaSeparatedItems(templatedString(key, variable));
+  }
+
+  private Collection<String> uriFromNamesAndType(String type, Collection<String> names) {
+    return names.stream()
+      .map(name -> cache.getObjectUri(type, name))
+      .collect(Collectors.toList());
+  }
+
+  private List<Map<String, String>> getSearchColumnConfigs(String searchName, String compositionName) {
+    return new RepeatingConfigReader("maincolumns", resolveTemplatedKeys(Arrays.asList(
+        SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL,
+        SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE,
+        SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT), searchName, compositionName)).read(configuration);
+  }
+
   private void ensureCryptoObject() throws IOException {
-    String name = configuration.get(CRYPTO_OBJECT_NAME);
-    if (name == null) {
-      return;
-    }
-    CryptoObjects cryptoObjects = restClient.follow(configurationState.getServices(), LINK_CRYPTO_OBJECTS, CryptoObjects.class);
-    configurationState.setCryptoObject(cryptoObjects.byName(name));
-    if (configurationState.getCryptoObject() == null) {
-      createItem(cryptoObjects, createCryptoObject(name));
-      configurationState.setCryptoObject(restClient.refresh(cryptoObjects).byName(name));
-      Objects.requireNonNull(configurationState.getCryptoObject(), "Could not create crypto object");
-    }
+    ensureOptionalItem(cache.getServices(), LINK_CRYPTO_OBJECTS, CryptoObjects.class, CRYPTO_OBJECT_NAME,
+        this::createCryptoObject).ifPresent(cryptoObject ->
+      cache.setCryptoObject(cryptoObject));
+  }
+
+  private <T extends NamedLinkContainer> Optional<T> ensureOptionalItem(LinkContainer collectionOwner,
+      String collectionLinkRelation, Class<? extends ItemContainer<T>> collectionType, String objectName,
+          Function<String, ? extends T> objectCreator) throws IOException {
+    return Optional.ofNullable(
+        ensureItem(collectionOwner, collectionLinkRelation, collectionType, objectName, objectCreator, true));
   }
 
   private CryptoObject createCryptoObject(String name) {
@@ -1179,62 +1010,48 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     result.setName(name);
     result.setSecurityProvider(configuration.get(CRYPTO_OBJECT_SECURITY_PROVIDER));
     result.setKeySize(Integer.parseInt(configuration.get(CRYPTO_OBJECT_KEY_SIZE)));
-    result.setInUse(Boolean.parseBoolean(configuration.getOrDefault(CRYPTO_OBJECT_IN_USE, Boolean.TRUE.toString())));
+    result.setInUse(configuredBoolean(CRYPTO_OBJECT_IN_USE));
     result.setEncryptionMode(configuration.get(CRYPTO_OBJECT_ENCRYPTION_MODE));
     result.setPaddingScheme(configuration.get(CRYPTO_OBJECT_PADDING_SCHEME));
     result.setEncryptionAlgorithm(configuration.get(CRYPTO_OBJECT_ENCRYPTION_ALGORITHM));
     return result;
   }
 
+  private boolean configuredBoolean(String key) {
+    return Boolean.parseBoolean(configuration.getOrDefault(key, Boolean.TRUE.toString()));
+  }
+
   private void ensurePdiCrypto() throws IOException {
-    String name = configuration.get(PDI_CRYPTO_NAME);
-    if (name == null) {
-      return;
-    }
-    PdiCryptos pdiCryptos = restClient.follow(configurationState.getApplication(), LINK_PDI_CRYPTOS, PdiCryptos.class);
-    PdiCrypto pdiCrypto = pdiCryptos.byName(name);
-    if (pdiCrypto == null) {
-      createItem(pdiCryptos, createPdiCrypto(name));
-      pdiCrypto = restClient.refresh(pdiCryptos).byName(name);
-      Objects.requireNonNull(pdiCrypto, "Could not create pdi crypto");
-    }
-    configurationState.setPdiCryptoUri(pdiCrypto.getSelfUri());
+    ensureOptionalItem(cache.getApplication(), LINK_PDI_CRYPTOS, PdiCryptos.class, PDI_CRYPTO_NAME,
+        this::createPdiCrypto).ifPresent(pdiCrypto ->
+      cache.setPdiCryptoUri(pdiCrypto.getSelfUri()));
   }
 
   private PdiCrypto createPdiCrypto(String name) {
     PdiCrypto result = new PdiCrypto();
     result.setName(name);
-    result.setApplication(configurationState.getApplication().getSelfUri());
+    result.setApplication(cache.getApplication().getSelfUri());
     return result;
   }
 
   private void ensureHoldingCrypto() throws IOException {
-    String name = configuration.get(HOLDING_CRYPTO_NAME);
-    if (name == null) {
-      return;
-    }
-    HoldingCryptos holdingCryptos = restClient.follow(configurationState.getApplication(), LINK_HOLDING_CRYPTOS, HoldingCryptos.class);
-    HoldingCrypto holdingCrypto = holdingCryptos.byName(name);
-    if (holdingCrypto == null) {
-      createItem(holdingCryptos, createHoldingCrypto(name));
-      holdingCrypto = restClient.refresh(holdingCryptos).byName(name);
-      Objects.requireNonNull(holdingCrypto, "Could not create holding crypto");
-    }
+    ensureOptionalItem(cache.getApplication(), LINK_HOLDING_CRYPTOS, HoldingCryptos.class, HOLDING_CRYPTO_NAME,
+        this::createHoldingCrypto);
   }
 
   private HoldingCrypto createHoldingCrypto(String name) {
     HoldingCrypto result = new HoldingCrypto();
     result.setName(name);
-    result.setApplication(configurationState.getApplication().getSelfUri());
-    result.setHolding(configurationState.getHoldingUri());
+    result.setApplication(cache.getApplication().getSelfUri());
+    result.setHolding(cache.getHoldingUri());
     HoldingCrypto.PdiCryptoConfig pdiCryptoConfig = new HoldingCrypto.PdiCryptoConfig();
-    pdiCryptoConfig.setSchema(configurationState.getPdiSchema().getName());
-    pdiCryptoConfig.setPdiCrypto(configurationState.getPdiCryptoUri());
+    pdiCryptoConfig.setSchema(cache.getPdiSchema().getName());
+    pdiCryptoConfig.setPdiCrypto(cache.getPdiCryptoUri());
     result.setPdis(Collections.singletonList(pdiCryptoConfig));
     result.setCryptoEncoding(configuration.getOrDefault(HOLDING_CRYPTO_ENCODING, "base64"));
     HoldingCrypto.ObjectCryptoConfig objectCryptoConfig = new HoldingCrypto.ObjectCryptoConfig();
-    objectCryptoConfig.setCryptoEnabled(Boolean.parseBoolean(configuration.getOrDefault(HOLDING_CRYPTO_ENABLED, Boolean.TRUE.toString())));
-    objectCryptoConfig.setCryptoObject(configurationState.getCryptoObject().getSelfUri());
+    objectCryptoConfig.setCryptoEnabled(configuredBoolean(HOLDING_CRYPTO_ENABLED));
+    objectCryptoConfig.setCryptoObject(cache.getCryptoObject().getSelfUri());
     result.setSip(objectCryptoConfig);
     result.setPdi(objectCryptoConfig);
     result.setCi(objectCryptoConfig);
@@ -1242,17 +1059,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureStorageEndPoint() throws IOException {
-    String name = configuration.get(STORAGE_END_POINT_NAME);
-    if (name == null) {
-      return;
-    }
-    StorageEndPoints storageEndPoints = restClient.follow(configurationState.getServices(), LINK_STORAGE_END_POINTS, StorageEndPoints.class);
-    StorageEndPoint storageEndPoint = storageEndPoints.byName(name);
-    if (storageEndPoint == null) {
-      createItem(storageEndPoints, createStorageEndPoint(name));
-      storageEndPoint = restClient.refresh(storageEndPoints).byName(name);
-      Objects.requireNonNull(storageEndPoint, "Could not create storage end point");
-    }
+    ensureOptionalItem(cache.getServices(), LINK_STORAGE_END_POINTS, StorageEndPoints.class, STORAGE_END_POINT_NAME,
+        this::createStorageEndPoint);
   }
 
   private StorageEndPoint createStorageEndPoint(String name) {
@@ -1266,17 +1074,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureCustomStorage() throws IOException {
-    String name = configuration.get(CUSTOM_STORAGE_NAME);
-    if (name == null) {
-      return;
-    }
-    CustomStorages customStorages = restClient.follow(configurationState.getServices(), LINK_CUSTOM_STORAGES, CustomStorages.class);
-    CustomStorage customStorage = customStorages.byName(name);
-    if (customStorage == null) {
-      createItem(customStorages, createCustomStorage(name));
-      customStorage = restClient.refresh(customStorages).byName(name);
-      Objects.requireNonNull(customStorage, "Could not create custom storage");
-    }
+    ensureOptionalItem(cache.getServices(), LINK_CUSTOM_STORAGES, CustomStorages.class, CUSTOM_STORAGE_NAME,
+        this::createCustomStorage);
   }
 
   private CustomStorage createCustomStorage(String name) {
@@ -1291,17 +1090,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureContentAddressedStorage() throws IOException {
-    String name = configuration.get(CONTENT_ADDRESSED_STORAGE_NAME);
-    if (name == null) {
-      return;
-    }
-    ContentAddressedStorages contentAddressedStorages = restClient.follow(configurationState.getServices(), LINK_CONTENT_ADDRESSED_STORAGES, ContentAddressedStorages.class);
-    ContentAddressedStorage contentAddressedStorage = contentAddressedStorages.byName(name);
-    if (contentAddressedStorage == null) {
-      createItem(contentAddressedStorages, createContentAddressedStorage(name));
-      contentAddressedStorage = restClient.refresh(contentAddressedStorages).byName(name);
-      Objects.requireNonNull(contentAddressedStorage, "Could not create content addressed storage");
-    }
+    ensureOptionalItem(cache.getServices(), LINK_CONTENT_ADDRESSED_STORAGES, ContentAddressedStorages.class,
+        CONTENT_ADDRESSED_STORAGE_NAME, this::createContentAddressedStorage);
   }
 
   private ContentAddressedStorage createContentAddressedStorage(String name) {
@@ -1314,35 +1104,16 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     return result;
   }
 
-  private List<String> uriFromNamesAndType(String type, Collection<String> strings) {
-    return strings.stream()
-      .map(it -> configurationState.getObjectUri(type, it))
-      .collect(Collectors.toList());
-  }
-
-  private List<String> getStrings(String key, String variable) {
-    String rawString = getString(key, variable);
-    if (rawString == null) {
-      return Collections.emptyList();
-    }
-    String[] values = rawString.split(",");
-    List<String> result = new ArrayList<>();
-    for (String value : values) {
-      if (value == null) {
-        continue;
-      }
-      String normalizedValue = value.trim();
-      if (!normalizedValue.isEmpty()) {
-        result.add(normalizedValue);
-      }
-    }
-    return result;
-  }
-
 
   @FunctionalInterface
   interface Operation<T> {
     T perform() throws IOException;
+  }
+
+
+  @FunctionalInterface
+  private interface Processor {
+    Object accept(String name) throws IOException;
   }
 
 }
