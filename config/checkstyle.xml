@@ -28,15 +28,19 @@
   </module>
 
    <module name="RegexpHeader">
-     <property name="header" 
-         value="/\*\n \* Copyright \(c\) 201[3-9] EMC Corporation. All Rights Reserved.\n \*/\n" />
-     <property name="fileExtensions" value="java"/>    
+     <property name="header"
+         value="/\*\n \* Copyright \(c\) 201[3-9](-201[7-9])? by OpenText Corporation. All Rights Reserved.\n \*/\n" />
+     <property name="fileExtensions" value="java"/>
    </module>
 
   <module name="UniqueProperties"/>
-
+  
+  <module name="SuppressWarningsFilter"/>
+  
   <module name="TreeWalker">
-
+    <!-- Needed for SuppressWarningsFilter -->
+    <module name="SuppressWarningsHolder" />
+    
     <!-- Needed for SuppressionCommentFilter -->
     <module name="FileContentsHolder"/>
 
@@ -154,19 +158,19 @@
     <module name="MutableException"/>
     <module name="OneTopLevelClass"/>
     <module name="VisibilityModifier">
-      <property name="ignoreAnnotationCanonicalNames" value="org.junit.Rule"/>
+      <property name="ignoreAnnotationCanonicalNames" value="org.junit.Rule,org.junit.runners.Parameterized.Parameter"/>
     </module>
 
     <!-- Miscellaneous other checks.                   -->
     <!-- See http://checkstyle.sf.net/config_misc.html -->
     <module name="ArrayTypeStyle"/>
     <module name="UpperEll"/>
-    
+
     <!-- Annotation checks.                                  -->
     <!-- See http://checkstyle.sf.net/config_annotation.html -->
     <module name="AnnotationLocation"/>
     <module name="PackageAnnotation"/>
-    
+
     <!-- Regular expression checks.                      -->
     <!-- See http://checkstyle.sf.net/config_regexp.html -->
     <module name="RegexpSinglelineJava">

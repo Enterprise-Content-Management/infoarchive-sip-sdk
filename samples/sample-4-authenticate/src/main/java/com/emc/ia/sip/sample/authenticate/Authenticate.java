@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 EMC Corporation. All Rights Reserved.
+ * Copyright (c) 2017 by OpenText Corporation. All Rights Reserved.
  */
 
 package com.emc.ia.sip.sample.authenticate;
