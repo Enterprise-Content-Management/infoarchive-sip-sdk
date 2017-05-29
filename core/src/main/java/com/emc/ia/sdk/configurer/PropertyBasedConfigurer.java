@@ -180,10 +180,20 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private Federation createFederation(String name) {
-    Federation result = new Federation();
-    result.setName(name);
+    Federation result = createObject(name, Federation.class);
     result.setSuperUserPassword(configuration.get(FEDERATION_SUPERUSER_PASSWORD));
     result.setBootstrap(configuration.get(FEDERATION_BOOTSTRAP));
+    return result;
+  }
+
+  private <T extends NamedLinkContainer> T createObject(String name, Class<T> type) {
+    T result;
+    try {
+      result = type.newInstance();
+    } catch (InstantiationException | IllegalAccessException e) {
+      throw new IllegalStateException("Unable to create object of type " + type, e);
+    }
+    result.setName(name);
     return result;
   }
 
@@ -233,8 +243,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private Database createDatabase(String name) {
-    Database result = new Database();
-    result.setName(name);
+    Database result = createObject(name, Database.class);
     result.setAdminPassword(configured(DATABASE_ADMIN_PASSWORD));
     return result;
   }
@@ -254,9 +263,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
         configuration.get(OLD_APPLICATION_NAME)), "Missing " + APPLICATION_NAME);
   }
 
-  private Application createApplication(String applicationName) {
-    Application result = new Application();
-    result.setName(applicationName);
+  private Application createApplication(String name) {
+    Application result = createObject(name, Application.class);
     result.setDescription(configuration.get(APPLICATION_DESCRIPTION));
     result.setCategory(configuration.get(APPLICATION_CATEGORY));
     return result;
@@ -268,9 +276,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private Space createSpace(String name) {
-    Space result = new Space();
-    result.setName(name);
-    return result;
+    return createObject(name, Space.class);
   }
 
   private void ensureSpaceRootLibrary() throws IOException {
@@ -279,8 +285,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private SpaceRootLibrary createSpaceRootLibrary(String name) {
-    SpaceRootLibrary result = new SpaceRootLibrary();
-    result.setName(name);
+    SpaceRootLibrary result = createObject(name, SpaceRootLibrary.class);
     result.setXdbDatabase(cache.getDatabaseUri());
     return result;
   }
@@ -291,8 +296,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private SpaceRootFolder createSpaceRootFolder(String name) {
-    SpaceRootFolder result = new SpaceRootFolder();
-    result.setName(name);
+    SpaceRootFolder result = createObject(name, SpaceRootFolder.class);
     result.setFileSystemRoot(cache.getFileSystemRootUri());
     return result;
   }
@@ -336,8 +340,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private FileSystemFolder createFileSystemFolder(String name) {
-    FileSystemFolder result = new FileSystemFolder();
-    result.setName(name);
+    FileSystemFolder result = createObject(name, FileSystemFolder.class);
     result.setParentSpaceRootFolder(cache.getSpaceRootFolder().getSelfUri());
     result.setSubPath("stores/" + DEFAULT_STORE_NAME);
     return result;
@@ -362,9 +365,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
         storeName -> createStore(storeName, storeType, fileSystemFolderUri, type)));
   }
 
-  private Store createStore(String storeName, String storeType, String fileSystemFolderUri, String type) {
-    Store result = new Store();
-    result.setName(storeName);
+  private Store createStore(String name, String storeType, String fileSystemFolderUri, String type) {
+    Store result = createObject(name, Store.class);
     if (isNotBlank(storeType)) {
       result.setStoreType(storeType);
     }
@@ -386,8 +388,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private FileSystemFolder createReceptionFolder(String name) {
-    FileSystemFolder result = new FileSystemFolder();
-    result.setName(name);
+    FileSystemFolder result = createObject(name, FileSystemFolder.class);
     result.setParentSpaceRootFolder(cache.getSpaceRootFolder().getSelfUri());
     result.setSubPath(WORKING_FOLDER_NAME + RECEIVER_NODE_NAME);
     return result;
@@ -399,8 +400,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private FileSystemFolder createIngestionFolder(String name) {
-    FileSystemFolder result = new FileSystemFolder();
-    result.setName(name);
+    FileSystemFolder result = createObject(name, FileSystemFolder.class);
     result.setParentSpaceRootFolder(cache.getSpaceRootFolder().getSelfUri());
     result.setSubPath(WORKING_FOLDER_NAME + INGEST_NODE_NAME);
     return result;
@@ -412,8 +412,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private ReceiverNode createReceiverNode(String name) {
-    ReceiverNode result = new ReceiverNode();
-    result.setName(name);
+    ReceiverNode result = createObject(name, ReceiverNode.class);
     result.setWorkingDirectory(cache.getReceptionFolderUri());
     result.setLogsStore(cache.getStoreUri());
     result.getSips().add(new Sip());
@@ -426,9 +425,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private ExportPipeline createTenantLevelExportPipeline(String name) {
-    ExportPipeline result;
-    result = new ExportPipeline();
-    result.setName(name);
+    ExportPipeline result = createObject(name, ExportPipeline.class);
     result.setDescription("gzip envelope for csv export");
     result.setIncludesContent(false);
     result.setInputFormat("ROW_COLUMN");
@@ -449,9 +446,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private ExportConfiguration createTenantLevelExportConfiguration(String name) {
-    ExportConfiguration result;
-    result = new ExportConfiguration();
-    result.setName(name);
+    ExportConfiguration result = createObject(name, ExportConfiguration.class);
     result.setDescription("configurations");
     result.setExportType("ASYNCHRONOUS");
     result.setPipeline(cache.getObjectUri(TYPE_EXPORT_PIPELINE, "search-results-csv-gzip"));
@@ -468,10 +463,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
         ExportTransformations.class, "csv_xsl", this::createTenantLevelExportTransformation));
   }
 
-  private ExportTransformation createTenantLevelExportTransformation(String defaultName) {
-    ExportTransformation result;
-    result = new ExportTransformation();
-    result.setName(defaultName);
+  private ExportTransformation createTenantLevelExportTransformation(String name) {
+    ExportTransformation result = createObject(name, ExportTransformation.class);
     result.setDescription("csv xsl transformation");
     result.setType("XSLT");
     result.setMainPath("search-results-csv.xsl");
@@ -488,8 +481,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private ExportPipeline createExportPipeline(String name) {
-    ExportPipeline result = new ExportPipeline();
-    result.setName(name);
+    ExportPipeline result = createObject(name, ExportPipeline.class);
     result.setComposite(templatedBoolean(EXPORT_PIPELINE_COMPOSITE_TEMPLATE, name));
     result.setContent(templatedString(EXPORT_PIPELINE_CONTENT_TEMPLATE, name));
     result.setDescription(templatedString(EXPORT_PIPELINE_DESCRIPTION_TEMPLATE, name));
@@ -524,8 +516,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private ExportConfiguration createExportConfiguration(String name) {
-    ExportConfiguration result = new ExportConfiguration();
-    result.setName(name);
+    ExportConfiguration result = createObject(name, ExportConfiguration.class);
     result.setExportType(templatedString(EXPORT_CONFIG_TYPE_TEMPLATE, name));
     result.setPipeline(cache.getObjectUri(TYPE_EXPORT_PIPELINE, templatedString(EXPORT_CONFIG_PIPELINE_TEMPLATE,
         name)));
@@ -579,8 +570,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private ExportTransformation createExportTransformation(String name) {
-    ExportTransformation result = new ExportTransformation();
-    result.setName(name);
+    ExportTransformation result = createObject(name, ExportTransformation.class);
     result.setDescription(templatedString(EXPORT_TRANSFORMATION_DESCRIPTION_TEMPLATE, name));
     result.setType(templatedString(EXPORT_TRANSFORMATION_TYPE_TEMPLATE, name));
     result.setMainPath(templatedString(EXPORT_TRANSFORMATION_MAIN_PATH_TEMPLATE, name));
@@ -594,8 +584,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private IngestNode createIngestionNode(String name) {
-    IngestNode result = new IngestNode();
-    result.setName(name);
+    IngestNode result = createObject(name, IngestNode.class);
     result.setWorkingDirectory(cache.getFileSystemFolderUri());
     return result;
   }
@@ -606,9 +595,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private RetentionPolicy createRetentionPolicy(String name) {
-    RetentionPolicy result = new RetentionPolicy();
-    result.setName(name);
-    return result;
+    return createObject(name, RetentionPolicy.class);
   }
 
   private void ensurePdi() throws IOException {
@@ -618,9 +605,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private Pdi createPdi(String name) {
-    Pdi result = new Pdi();
-    result.setName(name);
-    return result;
+    return createObject(name, Pdi.class);
   }
 
   private void ensureContents(LinkContainer state, String configurationName, String format) throws IOException {
@@ -644,9 +629,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private PdiSchema createPdiSchema(String name) {
-    PdiSchema result = new PdiSchema();
-    result.setName(name);
-    return result;
+    return createObject(name, PdiSchema.class);
   }
 
   private void ensureIngest() throws IOException {
@@ -657,9 +640,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private Ingest createIngest(String name) {
-    Ingest result = new Ingest();
-    result.setName(name);
-    return result;
+    return createObject(name, Ingest.class);
   }
 
   private void ensureLibrary() throws IOException {
@@ -669,8 +650,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private Library createLibrary(String name) {
-    Library result = new Library();
-    result.setName(name);
+    Library result = createObject(name, Library.class);
     result.setSubPath("aips/" + getApplicationName().replace(' ', '-'));
     return result;
   }
@@ -681,9 +661,8 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     cache.setHoldingUri(holding.getSelfUri());
   }
 
-  private Holding createHolding(String holdingName) {
-    Holding result = new Holding();
-    result.setName(holdingName);
+  private Holding createHolding(String name) {
+    Holding result = createObject(name, Holding.class);
     result.setAllStores(cache.getStoreUri());
     IngestConfig ingestConfig = new IngestConfig();
     ingestConfig.setIngest(cache.getIngestUri());
@@ -715,8 +694,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private Aic createAic(String name) {
-    Aic result = new Aic();
-    result.setName(name);
+    Aic result = createObject(name, Aic.class);
     result.setCriterias(createCriteria());
     result.getHoldings().add(cache.getHoldingUri());
     return result;
@@ -769,8 +747,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private Query createQuery(String name) {
-    Query result = new Query();
-    result.setName(name);
+    Query result = createObject(name, Query.class);
 
     result.setResultRootElement(templatedString(QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, name));
     result.setResultRootNsEnabled(
@@ -852,8 +829,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private Quota createQuota(String name) {
-    Quota result = new Quota();
-    result.setName(name);
+    Quota result = createObject(name, Quota.class);
     result.setAipQuota(getOptionalInt(QUOTA_AIP, 0));
     result.setAiuQuota(getOptionalInt(QUOTA_AIU, 0));
     result.setDipQuota(getOptionalInt(QUOTA_DIP, 0));
@@ -877,8 +853,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private ResultConfigurationHelper createResultConfigurationHelper(String name) {
-    ResultConfigurationHelper result = new ResultConfigurationHelper();
-    result.setName(name);
+    ResultConfigurationHelper result = createObject(name, ResultConfigurationHelper.class);
     result.setResultSchema(createResultSchema(name));
     return result;
   }
@@ -899,8 +874,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private Search createSearch(String name) {
-    Search result = new Search();
-    result.setName(name);
+    Search result = createObject(name, Search.class);
     result.setDescription(templatedString(SEARCH_DESCRIPTION, name));
     result.setNestedSearch(Boolean.parseBoolean(templatedString(SEARCH_NESTED, name)));
     result.setState(templatedString(SEARCH_STATE, name));
@@ -922,8 +896,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private SearchComposition createSearchComposition(String name) {
-    SearchComposition result = new SearchComposition();
-    result.setName(name);
+    SearchComposition result = createObject(name, SearchComposition.class);
     result.setSearchName(SEARCH_NAME);
     return result;
   }
@@ -1006,8 +979,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private CryptoObject createCryptoObject(String name) {
-    CryptoObject result = new CryptoObject();
-    result.setName(name);
+    CryptoObject result = createObject(name, CryptoObject.class);
     result.setSecurityProvider(configuration.get(CRYPTO_OBJECT_SECURITY_PROVIDER));
     result.setKeySize(Integer.parseInt(configuration.get(CRYPTO_OBJECT_KEY_SIZE)));
     result.setInUse(configuredBoolean(CRYPTO_OBJECT_IN_USE));
@@ -1028,8 +1000,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private PdiCrypto createPdiCrypto(String name) {
-    PdiCrypto result = new PdiCrypto();
-    result.setName(name);
+    PdiCrypto result = createObject(name, PdiCrypto.class);
     result.setApplication(cache.getApplication().getSelfUri());
     return result;
   }
@@ -1040,8 +1011,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private HoldingCrypto createHoldingCrypto(String name) {
-    HoldingCrypto result = new HoldingCrypto();
-    result.setName(name);
+    HoldingCrypto result = createObject(name, HoldingCrypto.class);
     result.setApplication(cache.getApplication().getSelfUri());
     result.setHolding(cache.getHoldingUri());
     HoldingCrypto.PdiCryptoConfig pdiCryptoConfig = new HoldingCrypto.PdiCryptoConfig();
@@ -1064,8 +1034,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private StorageEndPoint createStorageEndPoint(String name) {
-    StorageEndPoint result = new StorageEndPoint();
-    result.setName(name);
+    StorageEndPoint result = createObject(name, StorageEndPoint.class);
     result.setType(configuration.get(STORAGE_END_POINT_TYPE));
     result.setDescription(configuration.get(STORAGE_END_POINT_DESCRIPTION));
     result.setUrl(configuration.get(STORAGE_END_POINT_URL));
@@ -1079,8 +1048,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private CustomStorage createCustomStorage(String name) {
-    CustomStorage result = new CustomStorage();
-    result.setName(name);
+    CustomStorage result = createObject(name, CustomStorage.class);
     result.setDescription(configuration.get(CUSTOM_STORAGE_DESCRIPTION));
     result.setFactoryServiceName(configuration.get(CUSTOM_STORAGE_FACTORY_SERVICE_NAME));
     Map<String, String> properties = new HashMap<>();
@@ -1095,8 +1063,7 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private ContentAddressedStorage createContentAddressedStorage(String name) {
-    ContentAddressedStorage result = new ContentAddressedStorage();
-    result.setName(name);
+    ContentAddressedStorage result = createObject(name, ContentAddressedStorage.class);
     result.setConnexionString(configuration.get(CONTENT_ADDRESSED_STORAGE_CONNEXION_STRING));
     Map<String, String> peas = new HashMap<>();
     peas.put(configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_NAME), configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_VALUE));
