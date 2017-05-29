@@ -141,8 +141,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureFederation() throws IOException {
-    cache.setFederation(ensureItem(cache.getServices(), LINK_FEDERATIONS, Federations.class, FEDERATION_NAME,
-        this::createFederation));
+    Federation federation = ensureItem(cache.getServices(), LINK_FEDERATIONS, Federations.class, FEDERATION_NAME,
+        this::createFederation);
+    cache.setFederation(federation);
   }
 
   private <T extends NamedLinkContainer> T ensureItem(LinkContainer collectionOwner,
@@ -249,13 +250,15 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureFileSystemRoot() throws IOException {
-    cache.setFileSystemRootUri(Objects.requireNonNull(restClient.follow(cache.getServices(), LINK_FILE_SYSTEM_ROOTS,
-        FileSystemRoots.class), "Missing file system roots").first().getSelfUri());
+    FileSystemRoots existingFileSystemRoots = Objects.requireNonNull(restClient.follow(cache.getServices(),
+        LINK_FILE_SYSTEM_ROOTS, FileSystemRoots.class), "Missing file system roots");
+    cache.setFileSystemRootUri(existingFileSystemRoots.first().getSelfUri());
   }
 
   private void ensureApplication() throws IOException {
-    cache.setApplication(ensureNamedItem(cache.getTenant(), LINK_APPLICATIONS, Applications.class,
-        getApplicationName(), this::createApplication));
+    Application application = ensureNamedItem(cache.getTenant(), LINK_APPLICATIONS, Applications.class,
+        getApplicationName(), this::createApplication);
+    cache.setApplication(application);
   }
 
   private String getApplicationName() {
@@ -271,8 +274,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureSpace() throws IOException {
-    cache.setSpace(ensureNamedItem(cache.getApplication(), LINK_SPACES, Spaces.class, cache.getApplication().getName(),
-        this::createSpace));
+    Space space = ensureNamedItem(cache.getApplication(), LINK_SPACES, Spaces.class, cache.getApplication().getName(),
+        this::createSpace);
+    cache.setSpace(space);
   }
 
   private Space createSpace(String name) {
@@ -291,8 +295,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureSpaceRootFolder() throws IOException {
-    cache.setSpaceRootFolder(ensureNamedItem(cache.getSpace(), LINK_SPACE_ROOT_FOLDERS, SpaceRootFolders.class,
-        cache.getSpace().getName(), this::createSpaceRootFolder));
+    SpaceRootFolder spaceRootFolder = ensureNamedItem(cache.getSpace(), LINK_SPACE_ROOT_FOLDERS, SpaceRootFolders.class,
+        cache.getSpace().getName(), this::createSpaceRootFolder);
+    cache.setSpaceRootFolder(spaceRootFolder);
   }
 
   private SpaceRootFolder createSpaceRootFolder(String name) {
@@ -335,8 +340,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private FileSystemFolder ensureFileSystemFolder(String name) throws IOException {
-    return cacheObject("filesystemfolder", ensureNamedItem(cache.getSpaceRootFolder(), LINK_FILE_SYSTEM_FOLDERS,
-        FileSystemFolders.class, name, this::createFileSystemFolder));
+    FileSystemFolder fileSystemFolder = ensureNamedItem(cache.getSpaceRootFolder(), LINK_FILE_SYSTEM_FOLDERS,
+        FileSystemFolders.class, name, this::createFileSystemFolder);
+    return cacheObject("filesystemfolder", fileSystemFolder);
   }
 
   private FileSystemFolder createFileSystemFolder(String name) {
@@ -361,8 +367,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
 
   private Store ensureStore(String name, String storeType, String fileSystemFolderUri, String type)
       throws IOException {
-    return cacheObject("store", ensureNamedItem(cache.getApplication(), LINK_STORES, Stores.class, name,
-        storeName -> createStore(storeName, storeType, fileSystemFolderUri, type)));
+    Store store = ensureNamedItem(cache.getApplication(), LINK_STORES, Stores.class, name,
+        storeName -> createStore(storeName, storeType, fileSystemFolderUri, type));
+    return cacheObject("store", store);
   }
 
   private Store createStore(String name, String storeType, String fileSystemFolderUri, String type) {
@@ -383,8 +390,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureReceptionFolder() throws IOException {
-    cache.setReceptionFolderUri(ensureNamedItem(cache.getSpaceRootFolder(), LINK_FILE_SYSTEM_FOLDERS,
-        FileSystemFolders.class, "reception-folder", this::createReceptionFolder).getSelfUri());
+    FileSystemFolder receptionFolder = ensureNamedItem(cache.getSpaceRootFolder(), LINK_FILE_SYSTEM_FOLDERS,
+        FileSystemFolders.class, "reception-folder", this::createReceptionFolder);
+    cache.setReceptionFolderUri(receptionFolder.getSelfUri());
   }
 
   private FileSystemFolder createReceptionFolder(String name) {
@@ -420,8 +428,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureTenantLevelExportPipelines() throws IOException {
-    cacheObject(TYPE_EXPORT_PIPELINE, ensureNamedItem(cache.getTenant(), LINK_EXPORT_PIPELINE, ExportPipelines.class,
-        "search-results-csv-gzip", this::createTenantLevelExportPipeline));
+    ExportPipeline exportPipeline = ensureNamedItem(cache.getTenant(), LINK_EXPORT_PIPELINE, ExportPipelines.class,
+        "search-results-csv-gzip", this::createTenantLevelExportPipeline);
+    cacheObject(TYPE_EXPORT_PIPELINE, exportPipeline);
   }
 
   private ExportPipeline createTenantLevelExportPipeline(String name) {
@@ -441,8 +450,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureTenantLevelExportConfigurations() throws IOException {
-    cacheObject("export-configuration", ensureNamedItem(cache.getTenant(), LINK_EXPORT_CONFIG,
-        ExportConfigurations.class, "gzip_csv", this::createTenantLevelExportConfiguration));
+    ExportConfiguration exportConfiguration = ensureNamedItem(cache.getTenant(), LINK_EXPORT_CONFIG,
+        ExportConfigurations.class, "gzip_csv", this::createTenantLevelExportConfiguration);
+    cacheObject("export-configuration", exportConfiguration);
   }
 
   private ExportConfiguration createTenantLevelExportConfiguration(String name) {
@@ -459,8 +469,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureTenantLevelExportTransformations() throws IOException {
-    cacheObject(TYPE_EXPORT_TRANSFORMATION, ensureNamedItem(cache.getTenant(), LINK_EXPORT_TRANSFORMATION,
-        ExportTransformations.class, "csv_xsl", this::createTenantLevelExportTransformation));
+    ExportTransformation exportTransformation = ensureNamedItem(cache.getTenant(), LINK_EXPORT_TRANSFORMATION,
+        ExportTransformations.class, "csv_xsl", this::createTenantLevelExportTransformation);
+    cacheObject(TYPE_EXPORT_TRANSFORMATION, exportTransformation);
   }
 
   private ExportTransformation createTenantLevelExportTransformation(String name) {
@@ -476,8 +487,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private ExportPipeline ensureExportPipeline(String name) throws IOException {
-    return cacheObject(TYPE_EXPORT_PIPELINE, ensureNamedItem(cache.getApplication(), LINK_EXPORT_PIPELINE,
-        ExportPipelines.class, name, this::createExportPipeline));
+    ExportPipeline exportPipeline = ensureNamedItem(cache.getApplication(), LINK_EXPORT_PIPELINE,
+        ExportPipelines.class, name, this::createExportPipeline);
+    return cacheObject(TYPE_EXPORT_PIPELINE, exportPipeline);
   }
 
   private ExportPipeline createExportPipeline(String name) {
@@ -511,8 +523,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private ExportConfiguration ensureExportConfiguration(String name) throws IOException {
-    return cacheObject("export-configuration", ensureNamedItem(cache.getApplication(), LINK_EXPORT_CONFIG,
-        ExportConfigurations.class, name, this::createExportConfiguration));
+    ExportConfiguration exportConfiguration = ensureNamedItem(cache.getApplication(), LINK_EXPORT_CONFIG,
+        ExportConfigurations.class, name, this::createExportConfiguration);
+    return cacheObject("export-configuration", exportConfiguration);
   }
 
   private ExportConfiguration createExportConfiguration(String name) {
@@ -565,8 +578,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private ExportTransformation ensureExportTransformation(String name) throws IOException {
-    return cacheObject(TYPE_EXPORT_TRANSFORMATION, ensureNamedItem(cache.getApplication(),
-        LINK_EXPORT_TRANSFORMATION, ExportTransformations.class, name, this::createExportTransformation));
+    ExportTransformation exportTransformation = ensureNamedItem(cache.getApplication(),
+        LINK_EXPORT_TRANSFORMATION, ExportTransformations.class, name, this::createExportTransformation);
+    return cacheObject(TYPE_EXPORT_TRANSFORMATION, exportTransformation);
   }
 
   private ExportTransformation createExportTransformation(String name) {
