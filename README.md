@@ -34,7 +34,7 @@ For the latest version, see the `maven-central` button at the top of this page.
 **Gradle**
 
     dependencies { 
-      compile 'com.emc.ia:infoarchive-sip-sdk-core:5.6.2'
+      compile 'com.emc.ia:infoarchive-sip-sdk-core:5.7.0'
     }
     
 **Maven**
@@ -43,7 +43,7 @@ For the latest version, see the `maven-central` button at the top of this page.
       <dependency>
         <groupId>com.emc.ia</groupId>
         <artifactId>infoarchive-sip-sdk-core</artifactId>
-        <version>5.6.2</version>
+        <version>5.7.0</version>
       </dependency>
     </dependencies>
     
