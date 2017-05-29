@@ -36,9 +36,13 @@ import com.emc.ia.sdk.sip.client.dto.Aic;
 import com.emc.ia.sdk.sip.client.dto.Aics;
 import com.emc.ia.sdk.sip.client.dto.Application;
 import com.emc.ia.sdk.sip.client.dto.Applications;
+import com.emc.ia.sdk.sip.client.dto.ContentAddressedStorage;
+import com.emc.ia.sdk.sip.client.dto.ContentAddressedStorages;
 import com.emc.ia.sdk.sip.client.dto.Contents;
 import com.emc.ia.sdk.sip.client.dto.CryptoObject;
 import com.emc.ia.sdk.sip.client.dto.CryptoObjects;
+import com.emc.ia.sdk.sip.client.dto.CustomStorage;
+import com.emc.ia.sdk.sip.client.dto.CustomStorages;
 import com.emc.ia.sdk.sip.client.dto.Database;
 import com.emc.ia.sdk.sip.client.dto.Databases;
 import com.emc.ia.sdk.sip.client.dto.Federation;
@@ -92,6 +96,8 @@ import com.emc.ia.sdk.sip.client.dto.SpaceRootFolders;
 import com.emc.ia.sdk.sip.client.dto.SpaceRootLibraries;
 import com.emc.ia.sdk.sip.client.dto.SpaceRootLibrary;
 import com.emc.ia.sdk.sip.client.dto.Spaces;
+import com.emc.ia.sdk.sip.client.dto.StorageEndPoint;
+import com.emc.ia.sdk.sip.client.dto.StorageEndPoints;
 import com.emc.ia.sdk.sip.client.dto.Store;
 import com.emc.ia.sdk.sip.client.dto.Stores;
 import com.emc.ia.sdk.sip.client.dto.Tenant;
@@ -190,6 +196,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     CryptoObjects cryptoObjects = mock(CryptoObjects.class);
     PdiCryptos pdiCryptos = mock(PdiCryptos.class);
     HoldingCryptos holdingCryptos = mock(HoldingCryptos.class);
+    StorageEndPoints storageEndPoints = mock(StorageEndPoints.class);
+    CustomStorages customStorages = mock(CustomStorages.class);
+    ContentAddressedStorages contentAddressedStorages = mock(ContentAddressedStorages.class);
 
     aic = new Aic();
 
@@ -241,6 +250,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(CryptoObjects.class, cryptoObjects);
     mockCollection(PdiCryptos.class, pdiCryptos);
     mockCollection(HoldingCryptos.class, holdingCryptos);
+    mockCollection(StorageEndPoints.class, storageEndPoints);
+    mockCollection(CustomStorages.class, customStorages);
+    mockCollection(ContentAddressedStorages.class, contentAddressedStorages);
     when(restClient.createCollectionItem(any(LinkContainer.class), any(XForm.class), eq(LINK_SELF))).thenReturn(xForm);
 
     mockByName(federations, new Federation());
@@ -273,6 +285,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(cryptoObjects, new CryptoObject());
     mockByName(pdiCryptos, new PdiCrypto());
     mockByName(holdingCryptos, new HoldingCrypto());
+    mockByName(storageEndPoints, new StorageEndPoint());
+    mockByName(customStorages, new CustomStorage());
+    mockByName(contentAddressedStorages, new ContentAddressedStorage());
 
     when(restClient.put(anyString(), eq(SearchComposition.class), any(AllSearchComponents.class)))
         .thenReturn(new SearchComposition());
@@ -342,7 +357,14 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.path", "n:sender/n:email");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.type", "STRING");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.sort", "NONE");
+    configuration.put("ia.search.emailsSearch.composition.exportconfigs", "exportConfig1,exportconfig2");
 
+    prepareExport();
+    prepareCrypto();
+    prepareStorages();
+  }
+
+  private void prepareExport() {
     configuration.put("ia.exportpipeline.names", "ExportPipeline");
     configuration.put("ia.exportpipeline.ExportPipeline.composite", "NONE");
     configuration.put("ia.exportpipeline.ExportPipeline.content", "<pipeline></pipeline>");
@@ -372,7 +394,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.exporttransformation.ExportTransformation.description", "csv xsl transformation");
     configuration.put("ia.exporttransformation.ExportTransformation.type", "XSLT");
     configuration.put("ia.exporttransformation.ExportTransformation.mainpath", "search-results-csv.xsl");
+  }
 
+  private void prepareCrypto() {
     configuration.put("ia.crypto.object.name", "MyCryptoObject");
     configuration.put("ia.crypto.object.security.provider", "Bouncy Castle");
     configuration.put("ia.crypto.object.key.size", "256");
@@ -386,6 +410,25 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.holding.crypto.name", "MyHoldingCrypto");
     configuration.put("ia.holding.crypto.encoding", "base64");
     configuration.put("ia.holding.crypto.enabled", Boolean.TRUE.toString());
+  }
+
+  private void prepareStorages() {
+    configuration.put("ia.storage.end.point.name", "MyStorageEndPoint");
+    configuration.put("ia.storage.end.point.type", "ECS");
+    configuration.put("ia.storage.end.point.description", "MyStorageEndPointDescription");
+    configuration.put("ia.storage.end.point.url", "http://localhost");
+    configuration.put("ia.storage.end.point.proxy.url", "http://localhost");
+
+    configuration.put("ia.custom.storage.name", "MyCustomStorage");
+    configuration.put("ia.custom.storage.description", "MyCustomStorageDescription");
+    configuration.put("ia.custom.storage.factory.service.name", "MyCustomStorageFactoryServiceName");
+    configuration.put("ia.custom.storage.property.name", "MyCustomStoragePropertyName");
+    configuration.put("ia.custom.storage.property.value", "MyCustomStoragePropertyValue");
+
+    configuration.put("ia.content.addressed.storage.name", "MyContentAddressedStorage");
+    configuration.put("ia.content.addressed.storage.connexion.string", "http://connection");
+    configuration.put("ia.content.addressed.storage.pea.name", "MyContentAddressedStoragePaeName");
+    configuration.put("ia.content.addressed.storage.pea.value", "MyContentAddressedStoragePaeValue");
   }
 
   private <T> OngoingStubbing<T> mockCollection(Class<T> type, T object) throws IOException {

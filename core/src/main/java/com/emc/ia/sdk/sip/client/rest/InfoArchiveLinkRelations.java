@@ -55,5 +55,8 @@ public interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_CRYPTO_OBJECTS = LINK_PREFIX + "crypto-objects";
   String LINK_PDI_CRYPTOS = LINK_PREFIX + "pdi-cryptos";
   String LINK_HOLDING_CRYPTOS = LINK_PREFIX + "holding-cryptos";
+  String LINK_STORAGE_END_POINTS = LINK_PREFIX + "storage-end-points";
+  String LINK_CUSTOM_STORAGES = LINK_PREFIX + "custom-storages";
+  String LINK_CONTENT_ADDRESSED_STORAGES = LINK_PREFIX + "content-addressed-storages";
 
 }

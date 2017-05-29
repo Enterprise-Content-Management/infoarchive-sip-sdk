@@ -78,6 +78,9 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
       ensureFederation();
       ensureDatabase();
       ensureFileSystemRoot();
+      ensureStorageEndPoint();
+      ensureContentAddressedStorage();
+      ensureCustomStorage();
       ensureCryptoObject();
       ensureTenantLevelExportPipelines();
       ensureTenantLevelExportTransformations();
@@ -352,24 +355,24 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
   }
 
   private void ensureStore() throws IOException {
-    Store defaultStore = ensureStore(DEFAULT_STORE_NAME, null, configurationState.getFileSystemFolderUri());
+    Store defaultStore = ensureStore(DEFAULT_STORE_NAME, null, configurationState.getFileSystemFolderUri(), null);
     configurationState.setStoreUri(defaultStore.getSelfUri());
 
     RepeatingConfigReader reader = new RepeatingConfigReader("stores", Arrays.asList(STORE_NAME, STORE_FOLDER,
-        STORE_STORETYPE));
+        STORE_STORETYPE, STORE_TYPE));
 
     List<Map<String, String>> storeConfigurations = reader.read(configuration);
     for (Map<String, String> cfg : storeConfigurations) {
       ensureStore(cfg.get(STORE_NAME), cfg.get(STORE_STORETYPE), configurationState.getObjectUri("filesystemfolder",
-          cfg.get(STORE_FOLDER)));
+          cfg.get(STORE_FOLDER)), cfg.get(STORE_TYPE));
     }
   }
 
-  private Store ensureStore(String name, String storeType, String fileSystemFolderUri) throws IOException {
+  private Store ensureStore(String name, String storeType, String fileSystemFolderUri, String type) throws IOException {
     Stores stores = restClient.follow(configurationState.getApplication(), LINK_STORES, Stores.class);
     Store result = stores.byName(name);
     if (result == null) {
-      createItem(stores, createStore(name, storeType, fileSystemFolderUri));
+      createItem(stores, createStore(name, storeType, fileSystemFolderUri, type));
       result = restClient.refresh(stores).byName(name);
       Objects.requireNonNull(result, "Could not create store");
     }
@@ -377,13 +380,16 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     return result;
   }
 
-  private Store createStore(String storeName, String storeType, String fileSystemFolderUri) {
+  private Store createStore(String storeName, String storeType, String fileSystemFolderUri, String type) {
     Store result = new Store();
     result.setName(storeName);
     if (storeType != null && !storeType.isEmpty()) {
       result.setStoreType(storeType);
     }
     result.setFileSystemFolder(fileSystemFolderUri);
+    if (type != null && !type.isEmpty()) {
+      result.setType(type);
+    }
     return result;
   }
 
@@ -1232,6 +1238,79 @@ public class PropertyBasedConfigurer implements InfoArchiveConfigurer, InfoArchi
     result.setSip(objectCryptoConfig);
     result.setPdi(objectCryptoConfig);
     result.setCi(objectCryptoConfig);
+    return result;
+  }
+
+  private void ensureStorageEndPoint() throws IOException {
+    String name = configuration.get(STORAGE_END_POINT_NAME);
+    if (name == null) {
+      return;
+    }
+    StorageEndPoints storageEndPoints = restClient.follow(configurationState.getServices(), LINK_STORAGE_END_POINTS, StorageEndPoints.class);
+    StorageEndPoint storageEndPoint = storageEndPoints.byName(name);
+    if (storageEndPoint == null) {
+      createItem(storageEndPoints, createStorageEndPoint(name));
+      storageEndPoint = restClient.refresh(storageEndPoints).byName(name);
+      Objects.requireNonNull(storageEndPoint, "Could not create storage end point");
+    }
+  }
+
+  private StorageEndPoint createStorageEndPoint(String name) {
+    StorageEndPoint result = new StorageEndPoint();
+    result.setName(name);
+    result.setType(configuration.get(STORAGE_END_POINT_TYPE));
+    result.setDescription(configuration.get(STORAGE_END_POINT_DESCRIPTION));
+    result.setUrl(configuration.get(STORAGE_END_POINT_URL));
+    result.setProxyUrl(configuration.get(STORAGE_END_POINT_PROXY_URL));
+    return result;
+  }
+
+  private void ensureCustomStorage() throws IOException {
+    String name = configuration.get(CUSTOM_STORAGE_NAME);
+    if (name == null) {
+      return;
+    }
+    CustomStorages customStorages = restClient.follow(configurationState.getServices(), LINK_CUSTOM_STORAGES, CustomStorages.class);
+    CustomStorage customStorage = customStorages.byName(name);
+    if (customStorage == null) {
+      createItem(customStorages, createCustomStorage(name));
+      customStorage = restClient.refresh(customStorages).byName(name);
+      Objects.requireNonNull(customStorage, "Could not create custom storage");
+    }
+  }
+
+  private CustomStorage createCustomStorage(String name) {
+    CustomStorage result = new CustomStorage();
+    result.setName(name);
+    result.setDescription(configuration.get(CUSTOM_STORAGE_DESCRIPTION));
+    result.setFactoryServiceName(configuration.get(CUSTOM_STORAGE_FACTORY_SERVICE_NAME));
+    Map<String, String> properties = new HashMap<>();
+    properties.put(configuration.get(CUSTOM_STORAGE_PROPERTY_NAME), configuration.get(CUSTOM_STORAGE_PROPERTY_VALUE));
+    result.setProperties(properties);
+    return result;
+  }
+
+  private void ensureContentAddressedStorage() throws IOException {
+    String name = configuration.get(CONTENT_ADDRESSED_STORAGE_NAME);
+    if (name == null) {
+      return;
+    }
+    ContentAddressedStorages contentAddressedStorages = restClient.follow(configurationState.getServices(), LINK_CONTENT_ADDRESSED_STORAGES, ContentAddressedStorages.class);
+    ContentAddressedStorage contentAddressedStorage = contentAddressedStorages.byName(name);
+    if (contentAddressedStorage == null) {
+      createItem(contentAddressedStorages, createContentAddressedStorage(name));
+      contentAddressedStorage = restClient.refresh(contentAddressedStorages).byName(name);
+      Objects.requireNonNull(contentAddressedStorage, "Could not create content addressed storage");
+    }
+  }
+
+  private ContentAddressedStorage createContentAddressedStorage(String name) {
+    ContentAddressedStorage result = new ContentAddressedStorage();
+    result.setName(name);
+    result.setConnexionString(configuration.get(CONTENT_ADDRESSED_STORAGE_CONNEXION_STRING));
+    Map<String, String> peas = new HashMap<>();
+    peas.put(configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_NAME), configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_VALUE));
+    result.setPeas(peas);
     return result;
   }
 
