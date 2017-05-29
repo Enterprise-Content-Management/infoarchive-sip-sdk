@@ -16,7 +16,8 @@ any collection or stream of Plain Old Java Objects regardless of if they represe
 tweets, etc.
 
 While the focus of the SIP SDK is on assembling SIPs, you can also use it to ingest those SIPs into InfoArchive and
-even to configure an InfoArchive holding.
+even to configure an InfoArchive holding. For this functionality you must have access to a running InfoArchive server.
+The SIP SDK supports version 4.0 of InfoArchive and newer.
 
 
 ## Quick Start
