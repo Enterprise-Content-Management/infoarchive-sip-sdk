@@ -33,7 +33,11 @@ public class YamlConfiguration {
 
   @SuppressWarnings("unchecked")
   private void expand(InputStream input) {
-    expand((Map<String, Object>)new Yaml().load(input));
+    Map<String, Object> source = new HashMap<>();
+    for (Object data : new Yaml().loadAll(input)) {
+      source.putAll((Map<String, Object>)data);
+    }
+    expand(source);
   }
 
   @SuppressWarnings("PMD.UnusedFormalParameter")
