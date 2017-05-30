@@ -36,7 +36,7 @@ public class FileArchiver {
 
   private void run(String rootPath, String sip) throws IOException {
     // Tell InfoArchive where and how to archive the data
-    URI entityUri = URI.create("urn:com.pentext.ia.sip.sample.file:1.0");
+    URI entityUri = URI.create("urn:com.opentext.ia.sip.sample.file:1.0");
     String entityName = "file";
     PackagingInformation prototype = PackagingInformation.builder()
         .dss()
