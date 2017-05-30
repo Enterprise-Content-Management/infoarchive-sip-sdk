@@ -3,14 +3,13 @@
  */
 package com.opentext.ia.sdk.configurer;
 
-import static com.opentext.ia.sdk.configurer.InfoArchiveConfiguration.*;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import com.opentext.ia.sdk.sip.client.ArchiveClient;
-import com.opentext.ia.sdk.sip.client.ClientConfigurationFinder;
 import com.opentext.ia.sdk.sip.client.dto.*;
 import com.opentext.ia.sdk.sip.client.rest.ArchiveOperationsByApplicationResourceCache;
 import com.opentext.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
@@ -31,106 +30,74 @@ import com.opentext.ia.sdk.support.rest.RestClient;
  */
 public final class ArchiveClients {
 
-  private ArchiveClients() { }
-
-  /**
-   * Installs, if necessary, the application and holding artifacts based on the details in the configuration map then
-   * returns an ArchiveClient instance.
-   * @param configuration The configuration map.
-   * @return An ArchiveClient
-   */
-  public static ArchiveClient withPropertyBasedAutoConfiguration(Map<String, String> configuration) {
-    return withPropertyBasedAutoConfiguration(configuration, Optional.empty());
+  private ArchiveClients() {
+    // Utility class
   }
 
   /**
-   * Installs, if necessary, the application and holding artifacts based on the details in the configuration map then
-   * returns an ArchiveClient instance.
-   * @param configuration The configuration map.
-   * @param restClient The RestClient used to interact with the InfoArchive REST api.
+   * Returns an ArchiveClient instance and configures the InfoArchive server that it communicates with.
+   * @param configurer How to configure InfoArchive
    * @return An ArchiveClient
    */
-  public static ArchiveClient withPropertyBasedAutoConfiguration(Map<String, String> configuration,
-      RestClient restClient) {
-    return withPropertyBasedAutoConfiguration(configuration, restClient, null);
-  }
-
-  public static ArchiveClient withPropertyBasedAutoConfiguration(Map<String, String> configuration,
-      RestClient restClient, Clock clock) {
-    return withPropertyBasedAutoConfiguration(configuration, Optional.ofNullable(restClient),
-        Optional.ofNullable(clock));
-  }
-
-  private static ArchiveClient withPropertyBasedAutoConfiguration(Map<String, String> configuration,
-      Optional<RestClient> potentialClient) {
-    return withPropertyBasedAutoConfiguration(configuration, potentialClient, Optional.empty());
-  }
-
-  private static ArchiveClient withPropertyBasedAutoConfiguration(Map<String, String> configuration,
-      Optional<RestClient> potentialClient, Optional<Clock> potentialClock) {
-    Clock clock = potentialClock.orElseGet(DefaultClock::new);
-    RestClient client = potentialClient.orElseGet(() -> createRestClient(configuration, clock));
-    InfoArchiveConfigurers.propertyBased(configuration, client, clock).configure();
-    String billboardUrl = getBillboadUrl(configuration);
-    String applicationName = getApplicationName(configuration);
-    return client(client, billboardUrl, applicationName);
+  public static ArchiveClient configuringServerUsing(InfoArchiveConfigurer configurer) {
+    return configuringServerUsing(configurer, null);
   }
 
   /**
-   * Creates a new ArchiveClient instance without installing any artifacts in the archive using the default RestClient.
-   * @param billboardUrl The URL entry point to the InfoArchive REST api.
-   * @param applicationName The name of the application to create the ArchiveClient for.
+   * Returns an ArchiveClient instance and configures the InfoArchive server that it communicates with.
+   * @param configurer How to configure InfoArchive
+   * @param restClient The REST client to use for communication with the server
    * @return An ArchiveClient
    */
-  public static ArchiveClient client(String billboardUrl, String applicationName) {
-    RestClient restClient = createDefaultRestClient();
-    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, billboardUrl, applicationName));
+  public static ArchiveClient configuringServerUsing(InfoArchiveConfigurer configurer, RestClient restClient) {
+    return configuringServerUsing(configurer, restClient, null);
   }
 
   /**
-   * Creates a new ArchiveClient instance without installing any artifacts in the archive using the sdk configuration
-   * file.
+   * Returns an ArchiveClient instance and configures the InfoArchive server that it communicates with.
+   * @param configurer How to configure InfoArchive
+   * @param optionalClient The REST client to use for communication with the server
+   * @param optionalClock The clock to use
    * @return An ArchiveClient
    */
-  public static ArchiveClient client() {
-    Map<String, String> configuration = getSdkConfiguration();
-    RestClient restClient = createRestClient(configuration, null);
-    String billboardUrl = getBillboadUrl(configuration);
-    String applicationName = getApplicationName(configuration);
-    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, billboardUrl, applicationName));
+  public static ArchiveClient configuringServerUsing(InfoArchiveConfigurer configurer, RestClient optionalClient,
+      Clock optionalClock) {
+    ServerConfiguration serverConfiguration = configurer.getServerConfiguration();
+    Clock clock = Optional.ofNullable(optionalClock).orElseGet(DefaultClock::new);
+    RestClient client = Optional.ofNullable(optionalClient).orElseGet(
+        () -> createRestClient(serverConfiguration, clock));
+    configurer.configure();
+    return forConfiguredServer(serverConfiguration, client);
+  }
+
+  private static RestClient createRestClient(ServerConfiguration configuration, Clock clock) {
+    HttpClient httpClient = NewInstance.of(configuration.getHttpClientClassName(),
+        ApacheHttpClient.class.getName()).as(HttpClient.class);
+    AuthenticationStrategy authentication = new AuthenticationStrategyFactory(configuration).getAuthenticationStrategy(
+        () -> httpClient, () -> clock);
+    RestClient result = new RestClient(httpClient);
+    result.init(authentication);
+    return result;
   }
 
   /**
    * Creates a new ArchiveClient instance without installing any artifacts in the archive.
-   * @param configuration The configuration map.
-   * @return An ArchiveClient
-   */
-  public static ArchiveClient client(Map<String, String> configuration) {
-    RestClient restClient = createRestClient(configuration, null);
-    String billboardUrl = getBillboadUrl(configuration);
-    String applicationName = getApplicationName(configuration);
-    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, billboardUrl, applicationName));
-  }
-
-  /**
-   * Creates a new ArchiveClient instance without installing any artifacts in the archive.
+   * @param configuration How to communicate with the InfoArchive Server
    * @param restClient The RestClient used to interact with the InfoArchive REST api.
-   * @param billboardUrl The URL entry point to the InfoArchive REST api.
-   * @param applicationName The name of the application to create the ArchiveClient for.
    * @return An ArchiveClient
    */
-  public static ArchiveClient client(RestClient restClient, String billboardUrl, String applicationName) {
-    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, billboardUrl, applicationName));
+  public static ArchiveClient forConfiguredServer(ServerConfiguration configuration, RestClient restClient) {
+    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, configuration));
   }
 
   private static ArchiveOperationsByApplicationResourceCache appResourceCache(RestClient restClient,
-      String billboardUrl, String applicationName) {
+      ServerConfiguration configuration) {
     try {
-      ArchiveOperationsByApplicationResourceCache resourceCache =
-          new ArchiveOperationsByApplicationResourceCache(applicationName);
-      Services services = restClient.get(billboardUrl, Services.class);
+      ArchiveOperationsByApplicationResourceCache resourceCache = new ArchiveOperationsByApplicationResourceCache(
+          configuration.getApplicationName());
+      Services services = restClient.get(configuration.getBillboardUri(), Services.class);
       Tenant tenant = getTenant(restClient, services);
-      Application application = getApplication(restClient, tenant, applicationName);
+      Application application = getApplication(restClient, tenant, configuration.getApplicationName());
       cacheResourceUris(resourceCache, restClient, application);
       return resourceCache;
     } catch (IOException e) {
@@ -165,52 +132,14 @@ public final class ArchiveClients {
     resourceCache.setAipIngestDirectResourceUri(aips.getUri(InfoArchiveLinkRelations.LINK_INGEST_DIRECT));
   }
 
-  private static RestClient createDefaultRestClient() {
-    Map<String, String> configuration = getSdkConfiguration();
-    return createRestClient(configuration, null);
-  }
-
-  private static Map<String, String> getSdkConfiguration() {
-    try (InputStream stream = ClientConfigurationFinder.find()) {
-      return asMap(stream);
-    } catch (IOException e) {
-      throw new RuntimeIoException(e);
-    }
-  }
-
-  private static Map<String, String> asMap(InputStream stream) throws IOException {
-    Properties properties = new Properties();
-    properties.load(stream);
-    Map<String, String> result = new HashMap<>();
-    for (Map.Entry<Object, Object> e : properties.entrySet()) {
-      result.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
-    }
-    return result;
-  }
-
-  private static RestClient createRestClient(Map<String, String> configuration, Clock clock) {
-    HttpClient httpClient = NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME,
-        ApacheHttpClient.class.getName()).as(HttpClient.class);
-    AuthenticationStrategy authentication = new AuthenticationStrategyFactory(configuration).getAuthenticationStrategy(
-        () -> httpClient, () -> Optional.ofNullable(clock).orElseGet(DefaultClock::new));
-    RestClient result = new RestClient(httpClient);
-    result.init(authentication);
-    return result;
-  }
-
-  private static String getApplicationName(Map<String, String> configuration) {
-    String result = configuration.get(APPLICATION_NAME);
-    if (result == null) {
-      // Backwards compatibility
-      result = configuration.get(OLD_APPLICATION_NAME);
-    }
-    return Objects.requireNonNull(result,
-        "The property " + APPLICATION_NAME + " cannot be null or empty.");
-  }
-
-  private static String getBillboadUrl(Map<String, String> configuration) {
-    return Objects.requireNonNull(configuration.get(SERVER_URI),
-        "The property " + SERVER_URI + " cannot be null or empty.");
+  /**
+   * Creates a new ArchiveClient instance without installing any artifacts in the archive using the default RestClient.
+   * @param serverConfiguration How to communicate with the server
+   * @return An ArchiveClient
+   */
+  public static ArchiveClient forConfiguredServer(ServerConfiguration serverConfiguration) {
+    RestClient restClient = createRestClient(serverConfiguration, new DefaultClock());
+    return forConfiguredServer(serverConfiguration, restClient);
   }
 
 }

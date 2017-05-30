@@ -27,6 +27,7 @@ import org.mockito.stubbing.OngoingStubbing;
 
 import com.opentext.ia.sdk.configurer.ArchiveClients;
 import com.opentext.ia.sdk.configurer.InfoArchiveConfiguration;
+import com.opentext.ia.sdk.configurer.PropertiesBasedConfigurer;
 import com.opentext.ia.sdk.sip.client.dto.*;
 import com.opentext.ia.sdk.sip.client.dto.export.*;
 import com.opentext.ia.sdk.sip.client.dto.query.Comparison;
@@ -365,12 +366,21 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   @Test(expected = RuntimeIoException.class)
   public void shouldWrapExceptionDuringConfiguration() throws IOException {
     when(restClient.get(BILLBOARD_URI, Services.class)).thenThrow(IOException.class);
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
+  }
+
+  private void configureServer() {
+    configureServer(configuration);
+  }
+
+  private ArchiveClient configureServer(Map<String, String> config) {
+    return archiveClient = ArchiveClients.configuringServerUsing(new PropertiesBasedConfigurer(config, restClient),
+        restClient);
   }
 
   @Test
   public void shouldIngestSuccessfully() throws IOException {
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
 
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
@@ -390,7 +400,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Link link = new Link();
     link.setHref(BILLBOARD_URI);
     links.put(InfoArchiveLinkRelations.LINK_INGEST_DIRECT, link);
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
 
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
@@ -404,7 +414,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   @Test
   public void shouldIngestWithoutIngestDirect() throws IOException {
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
 
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
@@ -430,8 +440,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   @Test(expected = NullPointerException.class)
   public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull() throws IOException {
-    Map<String, String> config = new HashMap<>();
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(config, restClient);
+    configureServer(new HashMap<>());
   }
 
   @Test
@@ -453,7 +462,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
       return applications;
     });
 
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
 
     // No error about being unable to create application
   }
@@ -480,7 +489,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     String aicName = "MyAic";
     String schema = NAMESPACE;
 
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
     QueryResult result = archiveClient.query(query, aicName, schema, 10);
 
     assertEquals(queryResult, result);
@@ -488,7 +497,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   @Test
   public void configure() {
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
 
     // Verify no exceptions are thrown
   }
@@ -501,7 +510,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
       throw new HttpException(503, "");
     });
 
-    ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient, mock(Clock.class));
+    ArchiveClients.configuringServerUsing(new PropertiesBasedConfigurer(configuration, restClient, mock(Clock.class)),
+        restClient);
 
     verify(restClient, times(5)).createCollectionItem(eq(federations), any(Federation.class), eq(LINK_ADD),
         eq(LINK_SELF));
@@ -533,7 +543,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     searchComparisonLinks.put("self", compositionLink);
     searchComparison.setLinks(searchComparisonLinks);
 
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
     SearchResults result = archiveClient.search(searchQuery, searchComparison);
 
     assertEquals(searchResults, result);
@@ -560,7 +570,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     ExportConfiguration exportConfiguration = mock(ExportConfiguration.class);
     when(exportConfiguration.getSelfUri()).thenReturn(uri);
 
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
     OrderItem result = archiveClient.export(searchResults, exportConfiguration, randomString());
 
     assertEquals(orderItem, result);
@@ -582,7 +592,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     ExportConfiguration exportConfiguration = mock(ExportConfiguration.class);
     when(exportConfiguration.getSelfUri()).thenReturn(uri);
 
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
     OrderItem result = archiveClient.exportAndWait(searchResults, exportConfiguration, randomString(), 6000);
 
     assertEquals(orderItem, result);
@@ -604,7 +614,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     ExportConfiguration exportConfiguration = mock(ExportConfiguration.class);
     when(exportConfiguration.getSelfUri()).thenReturn(uri);
 
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
     OrderItem result = archiveClient.exportAndWait(searchResults, exportConfiguration, randomString(), randomInt(3000));
 
     assertEquals(orderItem, result);
@@ -612,7 +622,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   @Test(expected = NullPointerException.class)
   public void shouldFetchContentUnsuccessfully() throws IOException {
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
     archiveClient.fetchContent(randomString());
   }
 
@@ -630,7 +640,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.get(eq(uri), any(ContentResultFactory.class))).thenReturn(contentResult);
     OrderItem orderItem = new OrderItem();
 
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
     ContentResult result = archiveClient.fetchOrderContent(orderItem);
 
     assertEquals(contentResult, result);
@@ -646,7 +656,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(linkContainer.getUri(anyString())).thenReturn(randomString());
     when(restClient.post(anyString(), eq(LinkContainer.class), any(Part.class))).thenReturn(linkContainer);
 
-    archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(configuration, restClient);
+    configureServer();
     LinkContainer result = archiveClient.uploadTransformation(exportTransformation, zip);
 
     assertEquals(linkContainer, result);

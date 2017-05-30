@@ -4,6 +4,7 @@
 package com.opentext.ia.sdk.support;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Create instances of a configured class.
@@ -18,7 +19,11 @@ public class NewInstance {
   private final String className;
 
   public NewInstance(Map<String, String> configuration, String classConfigurationName, String defaultClassName) {
-    className = configuration.getOrDefault(classConfigurationName, defaultClassName);
+    this(configuration.getOrDefault(classConfigurationName, defaultClassName));
+  }
+
+  private NewInstance(String className) {
+    this.className = className;
   }
 
   public <T> T as(Class<T> type) {
@@ -28,6 +33,10 @@ public class NewInstance {
     } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public static NewInstance of(String optionalClassName, String defaultClassName) {
+    return new NewInstance(Optional.ofNullable(optionalClassName).orElse(defaultClassName));
   }
 
 }

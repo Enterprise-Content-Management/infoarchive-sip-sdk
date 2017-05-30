@@ -33,7 +33,6 @@ public interface InfoArchiveConfiguration {
   String DATABASE_ADMIN_PASSWORD = DATABASE + "admin.password";
 
   String APPLICATION_PREFIX = PREFIX + "application.";
-  String OLD_APPLICATION_NAME = PREFIX + "applicaton." + NAME;
   String APPLICATION_NAME = APPLICATION_PREFIX + NAME;
   String APPLICATION_DESCRIPTION = APPLICATION_PREFIX + DESCRIPTION;
   String APPLICATION_CATEGORY = APPLICATION_PREFIX + "category";
@@ -129,6 +128,9 @@ public interface InfoArchiveConfiguration {
   String INGEST_XML = PREFIX + "ingest.xml";
 
   String HTTP_CLIENT_CLASSNAME = PREFIX + "http.client";
+
+  String PROXY_HOST = "proxy.host";
+  String PROXY_PORT = "proxy.port";
 
   String EXPORT_PIPELINE_PREFIX = PREFIX + "exportpipeline.";
   String EXPORT_PIPELINE_TEMPLATE_PREFIX = PREFIX + "exportpipeline.%s.";

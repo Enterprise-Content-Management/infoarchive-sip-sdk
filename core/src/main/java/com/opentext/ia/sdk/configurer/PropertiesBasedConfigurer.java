@@ -25,6 +25,7 @@ import com.opentext.ia.sdk.sip.client.rest.RestCache;
 import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.RepeatingConfigReader;
 import com.opentext.ia.sdk.support.datetime.Clock;
+import com.opentext.ia.sdk.support.datetime.DefaultClock;
 import com.opentext.ia.sdk.support.http.*;
 import com.opentext.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
@@ -34,7 +35,7 @@ import com.opentext.ia.sdk.support.rest.RestClient;
 
 
 @SuppressWarnings("PMD.ExcessiveClassLength")
-class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLinkRelations,
+public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLinkRelations,
     InfoArchiveConfiguration {
 
   private static final String TYPE_EXPORT_PIPELINE = "export-pipeline";
@@ -56,10 +57,35 @@ class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLin
   private RestClient restClient;
   private final Clock clock;
 
-  PropertiesBasedConfigurer(RestClient restClient, Clock clock, Map<String, String> configuration) {
+  public PropertiesBasedConfigurer(Map<String, String> configuration) {
+    this(configuration, null);
+  }
+
+  public PropertiesBasedConfigurer(Map<String, String> configuration, RestClient restClient) {
+    this(configuration, restClient, new DefaultClock());
+  }
+
+  public PropertiesBasedConfigurer(Map<String, String> configuration, RestClient restClient, Clock clock) {
     this.restClient = restClient;
     this.clock = clock;
     this.configuration = configuration;
+  }
+
+  @Override
+  public ServerConfiguration getServerConfiguration() {
+    ServerConfiguration result = new ServerConfiguration();
+    result.setApplicationName(configuration.get(APPLICATION_NAME));
+    result.setAuthenticationGateway(configuration.get(SERVER_AUTHENTICATION_GATEWAY));
+    result.setAuthenticationPassword(configuration.get(SERVER_AUTHENTICATION_PASSWORD));
+    result.setAuthenticationToken(configuration.get(SERVER_AUTENTICATON_TOKEN));
+    result.setAuthenticationUser(configuration.get(SERVER_AUTHENTICATION_USER));
+    result.setBillboardUri(configuration.get(SERVER_URI));
+    result.setClientId(configuration.get(SERVER_CLIENT_ID));
+    result.setClientSecret(configuration.get(SERVER_CLIENT_SECRET));
+    result.setHttpClientClassName(configuration.get(HTTP_CLIENT_CLASSNAME));
+    result.setProxyHost(configuration.get(PROXY_HOST));
+    result.setProxyPort(configuration.get(PROXY_PORT));
+    return result;
   }
 
   @Override
@@ -76,7 +102,7 @@ class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLin
     if (restClient == null) {
       HttpClient httpClient = NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME,
           ApacheHttpClient.class.getName()).as(HttpClient.class);
-      AuthenticationStrategy authentication = new AuthenticationStrategyFactory(configuration)
+      AuthenticationStrategy authentication = new AuthenticationStrategyFactory(getServerConfiguration())
           .getAuthenticationStrategy(() -> httpClient, () -> clock);
       restClient = new RestClient(httpClient);
       restClient.init(authentication);
@@ -84,7 +110,7 @@ class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLin
     cache.setServices(restClient.get(configured(SERVER_URI), Services.class));
   }
 
-  public String configured(String name) {
+  private String configured(String name) {
     String result = configuration.get(name);
     Objects.requireNonNull(result, "Missing " + name);
     return result;
@@ -164,8 +190,10 @@ class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLin
     Objects.requireNonNull(collection, "Missing " + nameOf(collectionType));
     T result = collection.byName(name);
     if (result == null) {
-      createItem(collection, name, objectCreator);
-      result = restClient.refresh(collection).byName(name);
+      result = createItem(collection, name, objectCreator);
+      if (result == null) {
+        result = restClient.refresh(collection).byName(name);
+      }
       Objects.requireNonNull(result, "Could not create item in " + nameOf(collectionType));
     }
     return result;
@@ -251,14 +279,9 @@ class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLin
   }
 
   private void ensureApplication() throws IOException {
-    Application application = ensureNamedItem(cache.getTenant(), LINK_APPLICATIONS, Applications.class,
-        getApplicationName(), this::createApplication);
+    Application application = ensureItem(cache.getTenant(), LINK_APPLICATIONS, Applications.class,
+        APPLICATION_NAME, this::createApplication);
     cache.setApplication(application);
-  }
-
-  private String getApplicationName() {
-    return Objects.requireNonNull(configuration.getOrDefault(APPLICATION_NAME,
-        configuration.get(OLD_APPLICATION_NAME)), "Missing " + APPLICATION_NAME);
   }
 
   private Application createApplication(String name) {
@@ -269,7 +292,7 @@ class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLin
   }
 
   private void ensureSpace() throws IOException {
-    Space space = ensureNamedItem(cache.getApplication(), LINK_SPACES, Spaces.class, cache.getApplication().getName(),
+    Space space = ensureNamedItem(cache.getApplication(), LINK_SPACES, Spaces.class, getApplicationName(),
         this::createSpace);
     cache.setSpace(space);
   }
@@ -662,6 +685,11 @@ class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLin
     Library result = createObject(name, Library.class);
     result.setSubPath("aips/" + getApplicationName().replace(' ', '-'));
     return result;
+  }
+
+  private String getApplicationName() {
+    String result = cache.getApplication().getName();
+    return result == null ? configured(APPLICATION_NAME) : result;
   }
 
   private void ensureHolding() throws IOException {

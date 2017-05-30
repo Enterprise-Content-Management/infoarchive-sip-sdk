@@ -15,6 +15,7 @@ import java.util.*;
 import org.apache.commons.io.IOUtils;
 
 import com.opentext.ia.sdk.configurer.ArchiveClients;
+import com.opentext.ia.sdk.configurer.PropertiesBasedConfigurer;
 import com.opentext.ia.sdk.sip.assembly.*;
 import com.opentext.ia.sdk.sip.client.ArchiveClient;
 import com.opentext.ia.sdk.support.io.FileSupplier;
@@ -82,8 +83,9 @@ public class SipIngester {
     // Get an ArchiveClient instance to interact with InfoArchive.
     // In this case, we start with a blank installation, and create a sample holding from scratch that will contain
     // the SIP we've just assembled.
-    // Use one of the ArchiveClients.client() methods instead if you already have a configured holding.
-    ArchiveClient archiveClient = ArchiveClients.withPropertyBasedAutoConfiguration(sampleHoldingConfiguration());
+    // Use one of the ArchiveClients.forConfiguredServer() methods instead if you already have a configured holding.
+    ArchiveClient archiveClient = ArchiveClients.configuringServerUsing(
+        new PropertiesBasedConfigurer(sampleHoldingConfiguration()));
 
     // Ingest the SIP into InfoArchive
     try (InputStream sip = new FileInputStream(assembledSip)) {
