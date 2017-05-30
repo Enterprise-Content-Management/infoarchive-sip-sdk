@@ -48,6 +48,13 @@ For the latest version, see the `maven-central` button at the top of this page.
       </dependency>
     </dependencies>
     
+    
+## Versioning
+    
+The SIP SDK uses [semantic versioning](https://semver.org).
+Any [breaking changes](https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/Breaking-changes) in major
+versions are documented on the wiki.
+
 
 ## Additional Information
 
