@@ -34,6 +34,10 @@ import com.opentext.ia.sdk.support.rest.LinkContainer;
 import com.opentext.ia.sdk.support.rest.RestClient;
 
 
+/**
+ * Configure InfoArchive based on properties in a map. This is less convenient for repeating and/or hierarchical
+ * configuration. For a more convenient way of specifying the configuration, see {@linkplain YamlBasedConfigurer}.
+ */
 @SuppressWarnings("PMD.ExcessiveClassLength")
 public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLinkRelations,
     InfoArchiveConfiguration {
