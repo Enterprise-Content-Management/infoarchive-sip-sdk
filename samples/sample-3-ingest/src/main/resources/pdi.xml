@@ -6,7 +6,7 @@
     <indexes>
       <path.value.index>
         <name>animal_name</name>
-        <path>/{urn:emc:ia:schema:sample:animal:1.0}animals/{urn:emc:ia:schema:sample:animal:1.0}animal/animal_name&lt;STRING>
+        <path>/{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal/animal_name&lt;STRING>
         </path>
         <compressed>false</compressed>
         <unique.keys>false</unique.keys>
@@ -15,7 +15,7 @@
       </path.value.index>
       <path.value.index>
         <name>file_path</name>
-        <path>/{urn:emc:ia:schema:sample:animal:1.0}animals/{urn:emc:ia:schema:sample:animal:1.0}animal/file_path&lt;STRING>
+        <path>/{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal/file_path&lt;STRING>
         </path>
         <compressed>false</compressed>
         <unique.keys>false</unique.keys>
@@ -28,7 +28,7 @@
     <id>pdi.aiu.id</id>
     <select.query>
       <![CDATA[
-        declare namespace n = "urn:emc:ia:schema:sample:animal:1.0";
+        declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
         for $animal in /n:animals/n:animal
         return ($animal, $animal/text())
       ]]>
@@ -38,7 +38,7 @@
     <id>pdi.aiu.cnt</id>
     <select.query>
       <![CDATA[
-        declare namespace n = "urn:emc:ia:schema:sample:animal:1.0";
+        declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
         count(/n:animals/n:animal)
       ]]>
     </select.query>
@@ -47,7 +47,7 @@
     <id>pdi.pkeys</id>
     <pkey attr="string01">
       <![CDATA[
-        declare namespace n = "urn:emc:ia:schema:sample:animal:1.0";
+        declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
         let $animals := (for $animal in /n:animals/n:animal/text()
         order by $animal
         return $animal)
@@ -56,7 +56,7 @@
     </pkey>
     <pkey attr="string02">
       <![CDATA[
-        declare namespace n = "urn:emc:ia:schema:sample:animal:1.0";
+        declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
         let $animals := (for $animal in /n:animals/n:animal/text()
         order by $animal descending
         return $animal)

@@ -16,7 +16,7 @@ task assembleSampleSip(type: JavaExec) {
   dependsOn prepareSampleDirectory
   
   classpath = sourceSets.main.runtimeClasspath
-  main = 'com.emc.ia.sdk.sip.sample.assemble.FileArchiver'
+  main = 'com.opentext.ia.sdk.sample.assemble.FileArchiver'
   args sampleDir.path, sipFile.path
 }
 

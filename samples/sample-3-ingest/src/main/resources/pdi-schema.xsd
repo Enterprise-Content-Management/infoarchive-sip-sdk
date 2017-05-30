@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
-    targetNamespace="urn:emc:ia:schema:sample:animal:1.0" xmlns:animal="urn:emc:ia:schema:sample:animal:1.0">
+    targetNamespace="urn:opentext:ia:schema:sample:animal:1.0" xmlns:animal="urn:opentext:ia:schema:sample:animal:1.0">
   <xs:element name="animals">
     <xs:complexType>
       <xs:sequence>

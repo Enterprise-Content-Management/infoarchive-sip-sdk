@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resultConfigurationHelper xmlns:n="urn:emc:ia:schema:sample:animal:1.0" xmlns:ia="urn:x-emc:ia:schema:pdi">
+<resultConfigurationHelper xmlns:n="urn:opentext:ia:schema:sample:animal:1.0" xmlns:ia="urn:x-emc:ia:schema:pdi">
   <element>
     <name>id</name>
     <label>ID</label>
