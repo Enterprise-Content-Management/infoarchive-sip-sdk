@@ -23,7 +23,7 @@ public class HelloSip {
 
   private void run() throws IOException {
     // Tell InfoArchive where and how to archive the data
-    URI entityUri = URI.create("urn:com.opentext.ia.sip.sample.greeting:1.0");
+    URI entityUri = URI.create("urn:com.opentext.ia.sdk.sample.greeting:1.0");
     String entityName = "greeting";
     PackagingInformation prototype = PackagingInformation.builder()
         .dss()

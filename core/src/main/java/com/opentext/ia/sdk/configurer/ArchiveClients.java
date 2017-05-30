@@ -67,7 +67,7 @@ public final class ArchiveClients {
     RestClient client = Optional.ofNullable(optionalClient).orElseGet(
         () -> createRestClient(serverConfiguration, clock));
     configurer.configure();
-    return forConfiguredServer(serverConfiguration, client);
+    return usingAlreadyConfiguredServer(serverConfiguration, client);
   }
 
   private static RestClient createRestClient(ServerConfiguration configuration, Clock clock) {
@@ -86,7 +86,7 @@ public final class ArchiveClients {
    * @param restClient The RestClient used to interact with the InfoArchive REST api.
    * @return An ArchiveClient
    */
-  public static ArchiveClient forConfiguredServer(ServerConfiguration configuration, RestClient restClient) {
+  public static ArchiveClient usingAlreadyConfiguredServer(ServerConfiguration configuration, RestClient restClient) {
     return new InfoArchiveRestClient(restClient, appResourceCache(restClient, configuration));
   }
 
@@ -137,9 +137,9 @@ public final class ArchiveClients {
    * @param serverConfiguration How to communicate with the server
    * @return An ArchiveClient
    */
-  public static ArchiveClient forConfiguredServer(ServerConfiguration serverConfiguration) {
+  public static ArchiveClient usingAlreadyConfiguredServer(ServerConfiguration serverConfiguration) {
     RestClient restClient = createRestClient(serverConfiguration, new DefaultClock());
-    return forConfiguredServer(serverConfiguration, restClient);
+    return usingAlreadyConfiguredServer(serverConfiguration, restClient);
   }
 
 }

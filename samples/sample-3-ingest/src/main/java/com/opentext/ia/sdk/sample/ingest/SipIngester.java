@@ -83,7 +83,8 @@ public class SipIngester {
     // Get an ArchiveClient instance to interact with InfoArchive.
     // In this case, we start with a blank installation, and create a sample holding from scratch that will contain
     // the SIP we've just assembled.
-    // Use one of the ArchiveClients.forConfiguredServer() methods instead if you already have a configured holding.
+    // Use ArchiveClients.usingAlreadyConfiguredServer() instead if you already configured the server with application,
+    // holding, etc.
     ArchiveClient archiveClient = ArchiveClients.configuringServerUsing(
         new PropertiesBasedConfigurer(sampleHoldingConfiguration()));
 
