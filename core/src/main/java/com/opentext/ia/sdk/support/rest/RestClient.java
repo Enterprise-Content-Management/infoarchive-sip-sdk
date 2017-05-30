@@ -74,18 +74,8 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return httpClient.post(uri, withAuthorization(headers), type, parts);
   }
 
-  @Deprecated
-  public <T> T post(String uri, String data, Class<T> type) throws IOException {
-    return post(uri, type, data);
-  }
-
   public <T> T post(String uri, Class<T> type, String data, String contentType) throws IOException {
     return httpClient.post(uri, withAuthorization(withContentType(contentType)), type, data);
-  }
-
-  @Deprecated
-  public <T> T post(String uri, String data, String contentType, Class<T> type) throws IOException {
-    return post(uri, type, data, contentType);
   }
 
   public void delete(String uri) throws IOException {

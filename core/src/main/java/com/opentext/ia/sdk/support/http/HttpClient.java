@@ -24,11 +24,6 @@ public interface HttpClient {
 
   <T> T post(String uri, Collection<Header> headers, Class<T> type, InputStream payload) throws IOException;
 
-  @Deprecated
-  default <T> T post(String uri, Collection<Header> headers, String payload, Class<T> type) throws IOException {
-    return post(uri, headers, type, payload);
-  }
-
   <T> T post(String uri, Collection<Header> headers, Class<T> type, Part... parts) throws IOException;
 
   default void delete(String uri, Collection<Header> headers) throws IOException {
