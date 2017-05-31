@@ -101,7 +101,8 @@ public abstract class PrintWriterAssembler<D> implements Assembler<D> {
   }
 
   @Override
-  public Metrics getMetrics() { // NOPMD EmptyMethodInAbstractClassShouldBeAbstract - This *is* the real implementation
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract") // This *is* the real implementation
+  public Metrics getMetrics() {
     return null;
   }
 

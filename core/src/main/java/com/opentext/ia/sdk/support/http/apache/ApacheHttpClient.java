@@ -84,6 +84,7 @@ public class ApacheHttpClient implements HttpClient {
     }
   }
 
+  @SuppressWarnings("PMD.AvoidRethrowingException")
   protected <T> T execute(HttpRequestBase request, Class<T> type) throws IOException {
     Objects.requireNonNull(request, "Missing request");
     try {
@@ -91,7 +92,7 @@ public class ApacheHttpClient implements HttpClient {
         .toString(), type));
     } catch (HttpResponseException e) {
       throw new HttpException(e.getStatusCode(), e);
-    } catch (HttpException e) { // NOPMD AvoidRethrowingException
+    } catch (HttpException e) {
       throw e;
     } catch (IOException e) {
       throw new HttpException(500, e);
@@ -100,13 +101,14 @@ public class ApacheHttpClient implements HttpClient {
     }
   }
 
+  @SuppressWarnings("PMD.AvoidRethrowingException")
   protected <T> T execute(HttpRequestBase request, ResponseFactory<T> factory) throws IOException {
     CloseableHttpResponse httpResponse;
     try {
       httpResponse = client.execute(request);
     } catch (HttpResponseException e) {
       throw new HttpException(e.getStatusCode(), e);
-    } catch (HttpException e) { // NOPMD AvoidRethrowingException
+    } catch (HttpException e) {
       throw e;
     } catch (IOException e) {
       throw new HttpException(500, e);

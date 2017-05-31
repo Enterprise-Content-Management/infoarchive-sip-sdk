@@ -25,8 +25,8 @@ public class DataSubmissionSession {
   private final String application;
   private final String retentionClass;
 
-  public DataSubmissionSession(String id, String holding, String schema, Date productionDate, Date baseRetentionDate, // NOPMD
-                                                                                                                      // ExcessiveParameterList
+  @SuppressWarnings("PMD.ExcessiveParameterList")
+  public DataSubmissionSession(String id, String holding, String schema, Date productionDate, Date baseRetentionDate,
       String producer, String entity, int priority, String application, String retentionClass) {
     this.id = id;
     this.holding = holding;

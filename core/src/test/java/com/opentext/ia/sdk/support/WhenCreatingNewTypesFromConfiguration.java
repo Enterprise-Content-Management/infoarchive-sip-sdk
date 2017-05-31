@@ -16,6 +16,7 @@ import org.junit.rules.ExpectedException;
 import com.opentext.ia.sdk.support.test.RandomData;
 
 
+@SuppressWarnings("PMD.LooseCoupling")
 public class WhenCreatingNewTypesFromConfiguration {
 
   @Rule
@@ -25,7 +26,7 @@ public class WhenCreatingNewTypesFromConfiguration {
   @Test
   public void shouldReturnInstanceOfConfiguredClassAsRequestedType() {
     String option = random.string(16);
-    Class<?> type = HashMap.class; // NOPMD LooseCoupling
+    Class<?> type = HashMap.class;
     Map<String, String> configuration = Collections.singletonMap(option, type.getName());
 
     Map<?, ?> instance = NewInstance.fromConfiguration(configuration, option, null)
@@ -36,7 +37,7 @@ public class WhenCreatingNewTypesFromConfiguration {
 
   @Test
   public void shouldReturnInstanceOfDefaultClassWhenConfigurationIsMissing() {
-    Class<?> type = HashMap.class; // NOPMD LooseCoupling
+    Class<?> type = HashMap.class;
 
     Map<?, ?> instance = NewInstance.fromConfiguration(Collections.emptyMap(), "", type.getName())
       .as(Map.class);

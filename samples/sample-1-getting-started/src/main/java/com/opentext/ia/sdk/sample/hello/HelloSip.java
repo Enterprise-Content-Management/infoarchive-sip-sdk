@@ -13,11 +13,12 @@ import com.opentext.ia.sdk.sip.assembly.*;
 
 public class HelloSip {
 
+  @SuppressWarnings("PMD.AvoidPrintStackTrace")
   public static void main(String[] args) {
     try {
       new HelloSip().run();
     } catch (IOException e) {
-      e.printStackTrace(); // NOPMD
+      e.printStackTrace();
     }
   }
 

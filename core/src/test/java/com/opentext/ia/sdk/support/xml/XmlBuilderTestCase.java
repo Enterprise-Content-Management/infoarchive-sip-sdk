@@ -28,7 +28,8 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
 
   protected abstract String getOutput();
 
-  private final StringBuilder result = new StringBuilder(256); // NOPMD AvoidStringBufferField
+  @SuppressWarnings("PMD.AvoidStringBufferField")
+  private final StringBuilder result = new StringBuilder(256);
   private XmlBuilder<T> builder;
 
   @Before

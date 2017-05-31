@@ -9,7 +9,9 @@ import java.util.Map;
 
 import com.opentext.ia.sdk.sip.client.dto.*;
 
-public class RestCache { // NOPMD TooManyFields
+
+@SuppressWarnings("PMD.TooManyFields")
+public class RestCache {
 
   private Services services;
   private Tenant tenant;

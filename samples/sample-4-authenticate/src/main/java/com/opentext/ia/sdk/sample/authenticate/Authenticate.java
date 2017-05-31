@@ -22,6 +22,7 @@ public final class Authenticate {
 
   private Authenticate() { }
 
+  @SuppressWarnings("PMD.SystemPrintln")
   public static void main(String[] args) {
     HttpClient httpClient = new ApacheHttpClient();
     try {
@@ -33,7 +34,7 @@ public final class Authenticate {
       Header header = authentication.issueAuthHeader();
 
       // Use this header in calls using the HTTP client
-      System.out.println(header); // NOPMD
+      System.out.println(header);
     } finally {
       httpClient.close();
     }

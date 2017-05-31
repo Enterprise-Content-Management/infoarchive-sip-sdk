@@ -6,7 +6,9 @@ package com.opentext.ia.sdk.sip.client.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Holding extends NamedLinkContainer { // NOPMD TooManyFields - Dictated by IA
+
+@SuppressWarnings("PMD.TooManyFields") // Dictated by IA
+public class Holding extends NamedLinkContainer {
 
   private String logStore;
   private boolean keepSipAfterCommitEnabled;

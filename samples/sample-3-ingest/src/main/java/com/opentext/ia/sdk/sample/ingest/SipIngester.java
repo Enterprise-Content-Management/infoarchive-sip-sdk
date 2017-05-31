@@ -29,15 +29,17 @@ public class SipIngester {
   private static final String SAMPLE_FILES_PATH = "src/main/resources";
   private static final String DATATYPE_STRING = "STRING";
 
+  @SuppressWarnings("PMD.AvoidPrintStackTrace")
   public static void main(String[] args) {
     try {
       String rootPath = new File(".").getCanonicalPath();
       new SipIngester().run(rootPath);
     } catch (IOException e) {
-      e.printStackTrace(); // NOPMD
+      e.printStackTrace();
     }
   }
 
+  @SuppressWarnings("PMD.SystemPrintln")
   private void run(String rootPath) throws IOException {
     // Tell InfoArchive where and how to archive the data
     URI entityUri = URI.create(SAMPLE_NAMESPACE);
@@ -91,7 +93,7 @@ public class SipIngester {
     // Ingest the SIP into InfoArchive
     try (InputStream sip = new FileInputStream(assembledSip)) {
       String aipId = archiveClient.ingestDirect(sip);
-      System.out.println("SIP ingested as AIP " + aipId); // NOPMD
+      System.out.println("SIP ingested as AIP " + aipId);
     }
   }
 

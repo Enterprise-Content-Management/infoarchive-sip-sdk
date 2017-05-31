@@ -45,6 +45,7 @@ import com.opentext.ia.sdk.support.rest.RestClient;
 import com.opentext.ia.sdk.support.test.TestCase;
 
 
+@SuppressWarnings("PMD.NcssMethodCount")
 public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations {
 
   private static final String BILLBOARD_URI = "http://foo.com/bar";
@@ -66,7 +67,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private Federations federations;
 
   @Before
-  public void init() throws IOException { // NOPMD NcssMethodCount
+  public void init() throws IOException {
     prepareConfiguration();
 
     Services resource = new Services();

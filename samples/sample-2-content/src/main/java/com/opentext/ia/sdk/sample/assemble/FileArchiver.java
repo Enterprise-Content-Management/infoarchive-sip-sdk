@@ -23,6 +23,7 @@ public class FileArchiver {
    * <li>The path to the SIP archive to be built. The default value is <code>build/files.zip</code></li>
    * </ol>
    */
+  @SuppressWarnings("PMD.AvoidPrintStackTrace")
   public static void main(String[] args) {
     try {
       Arguments arguments = new Arguments(args);
@@ -30,7 +31,7 @@ public class FileArchiver {
       String sip = arguments.next("build/files.zip");
       new FileArchiver().run(rootPath, sip);
     } catch (IOException e) {
-      e.printStackTrace(); // NOPMD
+      e.printStackTrace();
     }
   }
 
@@ -114,7 +115,8 @@ public class FileArchiver {
     private final String[] args;
     private int index;
 
-    public Arguments(String[] args) { // NOPMD ArrayIsStoredDirectly
+    @SuppressWarnings("PMD.ArrayIsStoredDirectly")
+    public Arguments(String[] args) {
       this.args = args;
     }
 

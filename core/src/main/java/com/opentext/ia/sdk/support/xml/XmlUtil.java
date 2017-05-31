@@ -27,10 +27,12 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+
 /**
  * Generic XML processing functions.
  */
-public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplexity
+@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.StdCyclomaticComplexity" })
+public final class XmlUtil {
 
   private static final String NL = System.getProperty("line.separator");
 
@@ -121,8 +123,8 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     return result.toString();
   }
 
-  private static void append(Node node, String indentation, Namespaces namespaces, // NOPMD CyclomaticComplexity
-      StringBuilder builder) {
+  @SuppressWarnings("PMD.CyclomaticComplexity")
+  private static void append(Node node, String indentation, Namespaces namespaces, StringBuilder builder) {
     switch (node.getNodeType()) {
       case Node.ELEMENT_NODE:
         appendElement(node, indentation, namespaces, builder);
@@ -430,8 +432,7 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
   }
 
   private static Element firstOf(Stream<Element> elements) {
-    return elements.findFirst()
-      .orElse(null);
+    return elements.findFirst().orElse(null);
   }
 
   /**
@@ -450,12 +451,13 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     }
   }
 
+  @SuppressWarnings("PMD.AvoidCatchingNPE") // Want better error message
   public static Validator newXmlSchemaValidator(InputStream xmlSchema) {
     try {
       return SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
         .newSchema(new StreamSource(xmlSchema))
         .newValidator();
-    } catch (SAXException | NullPointerException e) { // NOPMD AvoidCatchingNPE - Want better error message
+    } catch (SAXException | NullPointerException e) {
       throw new ValidationException("Invalid XML Schema", e);
     } finally {
       IOUtils.closeQuietly(xmlSchema);
