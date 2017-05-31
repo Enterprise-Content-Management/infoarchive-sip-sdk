@@ -211,5 +211,5 @@ if (project.hasProperty('sonarToken')) {
   }.each {
     it.sonarqube.skipProject = true
   }
-  build.dependsOn 'sonarqube'
+  check.dependsOn 'sonarqube'
 }
