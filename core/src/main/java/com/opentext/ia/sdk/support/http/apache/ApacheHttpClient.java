@@ -5,7 +5,6 @@ package com.opentext.ia.sdk.support.http.apache;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Objects;
@@ -15,12 +14,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
@@ -38,12 +32,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opentext.ia.sdk.support.http.*;
 import com.opentext.ia.sdk.support.io.ByteArrayInputOutputStream;
-
-
+import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
 
 public class ApacheHttpClient implements HttpClient {
 
+  private static final String MISSING_URI = "Missing URI";
   private static final int STATUS_CODE_RANGE_MIN = 200;
   private static final int STATUS_CODE_RANGE_MAX = 300;
   private static final int MAX_HTTP_CONNECTIONS = 50;
@@ -78,7 +72,7 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   private HttpGet newGet(String uri, Collection<Header> headers) {
-    Objects.requireNonNull(uri, "Missing URI");
+    Objects.requireNonNull(uri, MISSING_URI);
     HttpGet result = new HttpGet(uri);
     setHeaders(result, headers);
     return result;
@@ -127,7 +121,7 @@ public class ApacheHttpClient implements HttpClient {
       int statusCode = statusLine.getStatusCode();
       if (!isOk(statusCode)) {
         HttpEntity entity = httpResponse.getEntity();
-        String body = entity == null ? "" : EntityUtils.toString(entity);
+        String body = toString(entity);
         String method = request.getMethod();
         URI uri = request.getURI();
         String reasonPhrase = statusLine.getReasonPhrase();
@@ -137,13 +131,17 @@ public class ApacheHttpClient implements HttpClient {
       T result = factory.create(new ApacheResponse(httpResponse), closeResponse);
       shouldCloseResponse = false;
       return result;
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    } catch (IOException e) {
+      throw new RuntimeIoException(e);
     } finally {
       if (shouldCloseResponse) {
         closeResponse.run();
       }
     }
+  }
+
+  private String toString(HttpEntity entity) throws IOException {
+    return entity == null ? "" : EntityUtils.toString(entity);
   }
 
   <T> ResponseHandler<T> getResponseHandler(String method, String uri, Class<T> type) {
@@ -153,7 +151,7 @@ public class ApacheHttpClient implements HttpClient {
         int status = statusLine.getStatusCode();
         HttpEntity entity = response.getEntity();
         boolean isBinary = InputStream.class.equals(type);
-        String body = isBinary ? "<binary>" : entity == null ? "" : EntityUtils.toString(entity);
+        String body = isBinary ? "<binary>" : toString(entity);
         if (!isOk(status)) {
           throw new HttpException(status,
               String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
@@ -192,8 +190,8 @@ public class ApacheHttpClient implements HttpClient {
     }
     try {
       return mapper.readValue(body, type);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    } catch (IOException e) {
+      throw new RuntimeIoException(e);
     }
   }
 
@@ -212,7 +210,7 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   private HttpPut newPut(String uri, Collection<Header> headers) {
-    Objects.requireNonNull(uri, "Missing URI");
+    Objects.requireNonNull(uri, MISSING_URI);
     HttpPut result = new HttpPut(uri);
     setHeaders(result, headers);
     return result;
@@ -246,7 +244,7 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   private HttpPost newPost(String uri, Collection<Header> headers) {
-    Objects.requireNonNull(uri, "Missing URI");
+    Objects.requireNonNull(uri, MISSING_URI);
     HttpPost result = new HttpPost(uri);
     setHeaders(result, headers);
     return result;
@@ -263,7 +261,7 @@ public class ApacheHttpClient implements HttpClient {
     return execute(request, type);
   }
 
-  private ContentBody newContentBody(Part part) throws UnsupportedEncodingException {
+  private ContentBody newContentBody(Part part) {
     ContentType contentType = ContentType.create(part.getMediaType());
     if (part instanceof TextPart) {
       TextPart textPart = (TextPart)part;
@@ -273,8 +271,7 @@ public class ApacheHttpClient implements HttpClient {
       BinaryPart binaryPart = (BinaryPart)part;
       return new InputStreamBody(binaryPart.getData(), contentType, binaryPart.getDownloadName());
     }
-    throw new IllegalArgumentException("Unhandled part type: " + part.getClass()
-      .getName());
+    throw new IllegalArgumentException("Unhandled part type: " + part.getClass().getName());
   }
 
   @Override

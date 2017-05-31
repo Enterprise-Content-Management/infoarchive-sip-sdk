@@ -8,16 +8,13 @@ import java.util.Map;
 import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ModelAdaptor;
 import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 
 
 class MapModelAdaptor implements ModelAdaptor {
 
   @Override
   @SuppressWarnings("rawtypes")
-  public Object getProperty(Interpreter interpreter, ST template, Object model, Object property, String propertyName)
-      throws STNoSuchPropertyException {
-
+  public Object getProperty(Interpreter interpreter, ST template, Object model, Object property, String propertyName) {
     return ((Map)model).get(propertyName);
   }
 

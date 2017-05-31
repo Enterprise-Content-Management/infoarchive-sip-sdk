@@ -8,10 +8,11 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
 public class LinkContainer {
 
   @JsonProperty("_links")
-  private Map<String, Link> links = new HashMap<String, Link>();
+  private Map<String, Link> links = new HashMap<>();
 
   public Map<String, Link> getLinks() {
     return links;

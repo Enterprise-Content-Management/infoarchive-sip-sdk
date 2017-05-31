@@ -95,7 +95,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       URI uri = builder.build();
       return restClient.get(uri.toString(), contentResultFactory);
     } catch (URISyntaxException e) {
-      throw new RuntimeException("Failed to create content resource uri.", e);
+      throw new IllegalStateException("Failed to create content resource uri.", e);
     }
   }
 
@@ -187,8 +187,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return plainOrderItem;
   }
 
-  private String getValidJsonRequestForExport(String exportConfigurationUri, List<SearchResult> searchResults)
-      throws IOException {
+  private String getValidJsonRequestForExport(String exportConfigurationUri, List<SearchResult> searchResults) {
     JsonNodeFactory jsonNodeFactory = new ObjectMapper().getNodeFactory();
     ObjectNode root = jsonNodeFactory.objectNode();
     ArrayNode includedRows = jsonNodeFactory.arrayNode();
@@ -204,7 +203,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   @Override
-  public LinkContainer uploadTransformation(ExportTransformation exportTransformation, InputStream zip) throws IOException {
+  public LinkContainer uploadTransformation(ExportTransformation exportTransformation, InputStream zip)
+      throws IOException {
     String uri = exportTransformation.getUri(LINK_EXPORT_TRANSFORMATION_ZIP);
     return restClient.post(uri, LinkContainer.class, new BinaryPart("file", zip, "stylesheet.zip"));
   }

@@ -31,7 +31,7 @@ public class NewInstance {
       return type.cast(Class.forName(className)
         .newInstance());
     } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-      throw new RuntimeException(e);
+      throw new IllegalArgumentException("Failed to instantiate " + className, e);
     }
   }
 

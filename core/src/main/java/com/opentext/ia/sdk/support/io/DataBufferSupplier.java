@@ -5,6 +5,7 @@ package com.opentext.ia.sdk.support.io;
 
 import java.util.function.Supplier;
 
+
 /**
  * Supply instances of a particular type of {@linkplain DataBuffer}.
  */
@@ -25,7 +26,7 @@ public class DataBufferSupplier<T extends DataBuffer> implements Supplier<T> {
     try {
       return dataBufferType.newInstance();
     } catch (InstantiationException | IllegalAccessException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException("Failed to instantiate " + dataBufferType.getName(), e);
     }
   }
 

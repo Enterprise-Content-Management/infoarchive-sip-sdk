@@ -66,7 +66,7 @@ public class FileArchiver {
                     .attribute("value", hash.getValue());
               });
         } catch (IOException e) {
-          throw new RuntimeException(e);
+          throw new RuntimeIoException(e);
         }
       }
     };

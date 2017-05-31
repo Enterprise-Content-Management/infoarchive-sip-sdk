@@ -365,8 +365,8 @@ public final class XmlUtil { // NOPMD CyclomaticComplexity, StdCyclomaticComplex
     DocumentBuilder documentBuilder = getDocumentBuilder();
     try {
       return documentBuilder.parse(stream);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    } catch (SAXException | IOException e) {
+      throw new IllegalArgumentException("Failed to parse XML document", e);
     } finally {
       documentBuilder.reset();
     }

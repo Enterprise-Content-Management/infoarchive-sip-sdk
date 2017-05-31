@@ -3,11 +3,8 @@
  */
 package com.opentext.ia.sdk.support;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 
 public class RepeatingConfigReader {
 
@@ -21,7 +18,6 @@ public class RepeatingConfigReader {
     if (fields == null || fields.isEmpty()) {
       throw new IllegalArgumentException("RepeatingConfigReader.fields cannot be null/empty.");
     }
-
     this.name = name;
     this.fields = fields;
   }
@@ -45,22 +41,15 @@ public class RepeatingConfigReader {
       return Collections.emptyList();
     }
 
-    long valueCount = sizes.stream()
-      .distinct()
-      .count();
-    if (valueCount > 1) {
+    if (sizes.stream().distinct().count() > 1) {
       throw new IllegalArgumentException(formatErrorMessage(values, sizes));
     }
-
-    List<Map<String, String>> list = convertToListOfMaps(values);
-
-    return list;
+    return convertToListOfMaps(values);
   }
 
   private List<Map<String, String>> convertToListOfMaps(List<List<String>> values) {
-    int numValues = values.get(0)
-      .size();
-    List<Map<String, String>> list = new ArrayList<>();
+    int numValues = values.get(0).size();
+    List<Map<String, String>> result = new ArrayList<>();
 
     for (int valueIndex = 0; valueIndex < numValues; ++valueIndex) {
       Map<String, String> map = new HashMap<>();
@@ -68,9 +57,9 @@ public class RepeatingConfigReader {
         List<String> fieldValue = values.get(i);
         map.put(fields.get(i), fieldValue.get(valueIndex));
       }
-      list.add(map);
+      result.add(map);
     }
-    return list;
+    return result;
   }
 
   private String formatErrorMessage(List<List<String>> values, List<Integer> sizes) {
@@ -93,7 +82,7 @@ public class RepeatingConfigReader {
   }
 
   private static List<String> getComponents(String value) {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     int offset = 0;
     int index = 0;
     while ((index = value.indexOf(',', offset)) != -1) {
@@ -103,4 +92,5 @@ public class RepeatingConfigReader {
     result.add(value.substring(offset, value.length()));
     return result;
   }
+
 }

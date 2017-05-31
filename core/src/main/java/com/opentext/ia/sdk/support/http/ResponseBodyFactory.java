@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.IOUtils;
 
+import com.opentext.ia.sdk.support.io.RuntimeIoException;
+
 
 public abstract class ResponseBodyFactory<T> implements ResponseFactory<T> {
 
@@ -30,7 +32,7 @@ public abstract class ResponseBodyFactory<T> implements ResponseFactory<T> {
       resourceOwnershipTransferred = true;
       return result;
     } catch (final IOException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeIoException(e);
     } finally {
       if (!resourceOwnershipTransferred) {
         closeResult.run();
