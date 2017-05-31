@@ -3,9 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
+
 public class JobInstances extends ItemContainer<JobInstance> {
 
-  protected JobInstances() {
-    super("jobInstances");
-  }
 }

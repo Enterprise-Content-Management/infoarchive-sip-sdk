@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class ReceiverNodes extends ItemContainer<ReceiverNode> {
 
-  protected ReceiverNodes() {
-    super("receiverNodes");
-  }
+public class ReceiverNodes extends ItemContainer<ReceiverNode> {
 
 }

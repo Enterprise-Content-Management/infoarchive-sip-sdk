@@ -6,8 +6,4 @@ package com.opentext.ia.sdk.sip.client.dto;
 
 public class OrderItems extends ItemContainer<OrderItem> {
 
-  protected OrderItems() {
-    super("orderItems");
-  }
-
 }

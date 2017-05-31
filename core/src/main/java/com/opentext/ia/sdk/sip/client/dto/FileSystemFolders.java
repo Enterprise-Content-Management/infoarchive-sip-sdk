@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class FileSystemFolders extends ItemContainer<FileSystemFolder> {
 
-  public FileSystemFolders() {
-    super("fileSystemFolders");
-  }
+public class FileSystemFolders extends ItemContainer<FileSystemFolder> {
 
 }

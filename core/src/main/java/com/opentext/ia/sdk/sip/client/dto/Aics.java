@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Aics extends ItemContainer<Aic> {
 
-  protected Aics() {
-    super("aics");
-  }
+public class Aics extends ItemContainer<Aic> {
 
 }

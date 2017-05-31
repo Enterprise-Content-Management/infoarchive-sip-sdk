@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Databases extends ItemContainer<Database> {
 
-  protected Databases() {
-    super("xdbDatabases");
-  }
+public class Databases extends ItemContainer<Database> {
 
 }

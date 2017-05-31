@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Searches extends ItemContainer<Search> {
 
-  protected Searches() {
-    super("searches");
-  }
+public class Searches extends ItemContainer<Search> {
 
 }

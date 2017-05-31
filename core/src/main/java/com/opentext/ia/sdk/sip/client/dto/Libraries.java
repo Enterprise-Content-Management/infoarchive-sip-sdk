@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Libraries extends ItemContainer<Library> {
 
-  public Libraries() {
-    super("xdbLibraries");
-  }
+public class Libraries extends ItemContainer<Library> {
 
 }

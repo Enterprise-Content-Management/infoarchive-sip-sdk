@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class SpaceRootLibraries extends ItemContainer<SpaceRootLibrary> {
 
-  protected SpaceRootLibraries() {
-    super("spaceRootXdbLibraries");
-  }
+public class SpaceRootLibraries extends ItemContainer<SpaceRootLibrary> {
 
 }

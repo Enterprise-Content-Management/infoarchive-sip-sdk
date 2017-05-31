@@ -6,8 +6,4 @@ package com.opentext.ia.sdk.sip.client.dto;
 
 public class StorageEndPoints extends ItemContainer<StorageEndPoint> {
 
-  public StorageEndPoints() {
-    super("storageEndPoints");
-  }
-
 }

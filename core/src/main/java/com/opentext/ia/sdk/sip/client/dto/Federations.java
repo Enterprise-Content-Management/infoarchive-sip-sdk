@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Federations extends ItemContainer<Federation> {
 
-  protected Federations() {
-    super("xdbFederations");
-  }
+public class Federations extends ItemContainer<Federation> {
 
 }

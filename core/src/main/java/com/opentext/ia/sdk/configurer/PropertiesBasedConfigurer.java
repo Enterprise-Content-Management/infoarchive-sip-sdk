@@ -671,7 +671,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
 
   private void ensureContents(LinkContainer state, String configurationName, String format) throws IOException {
     Contents contents = restClient.follow(state, LINK_CONTENTS, Contents.class);
-    if (contents.hasContent()) {
+    if (contents.hasItems()) {
       return;
     }
     String content = configured(configurationName);
@@ -1069,7 +1069,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void ensurePdiCrypto() throws IOException {
-    ensureOptionalItem(cache.getApplication(), LINK_PDI_CRYPTOS, PdiCryptos.class, PDI_CRYPTO_NAME,
+    ensureOptionalItem(cache.getApplication(), LINK_PDI_CRYPTOS, PdiCryptoes.class, PDI_CRYPTO_NAME,
         this::createPdiCrypto).ifPresent(pdiCrypto ->
       cache.setPdiCryptoUri(pdiCrypto.getSelfUri()));
   }
@@ -1081,7 +1081,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void ensureHoldingCrypto() throws IOException {
-    ensureOptionalItem(cache.getApplication(), LINK_HOLDING_CRYPTOS, HoldingCryptos.class, HOLDING_CRYPTO_NAME,
+    ensureOptionalItem(cache.getApplication(), LINK_HOLDING_CRYPTOS, HoldingCryptoes.class, HOLDING_CRYPTO_NAME,
         this::createHoldingCrypto);
   }
 

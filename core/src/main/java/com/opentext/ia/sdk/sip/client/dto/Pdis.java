@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Pdis extends ItemContainer<Pdi> {
 
-  public Pdis() {
-    super("pdis");
-  }
+public class Pdis extends ItemContainer<Pdi> {
 
 }

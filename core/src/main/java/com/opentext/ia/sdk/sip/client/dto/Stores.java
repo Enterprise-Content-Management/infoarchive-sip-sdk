@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Stores extends ItemContainer<Store> {
 
-  public Stores() {
-    super("stores");
-  }
+public class Stores extends ItemContainer<Store> {
 
 }

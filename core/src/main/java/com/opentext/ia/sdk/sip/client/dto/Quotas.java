@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Quotas extends ItemContainer<Quota> {
 
-  protected Quotas() {
-    super("queryQuotas");
-  }
+public class Quotas extends ItemContainer<Quota> {
 
 }

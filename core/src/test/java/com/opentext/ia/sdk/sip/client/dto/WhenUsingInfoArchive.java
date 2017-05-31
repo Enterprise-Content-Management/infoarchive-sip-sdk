@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.sip.client;
+package com.opentext.ia.sdk.sip.client.dto;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
@@ -28,7 +28,9 @@ import org.mockito.stubbing.OngoingStubbing;
 import com.opentext.ia.sdk.configurer.ArchiveClients;
 import com.opentext.ia.sdk.configurer.InfoArchiveConfiguration;
 import com.opentext.ia.sdk.configurer.PropertiesBasedConfigurer;
-import com.opentext.ia.sdk.sip.client.dto.*;
+import com.opentext.ia.sdk.sip.client.ArchiveClient;
+import com.opentext.ia.sdk.sip.client.ContentResult;
+import com.opentext.ia.sdk.sip.client.QueryResult;
 import com.opentext.ia.sdk.sip.client.dto.export.*;
 import com.opentext.ia.sdk.sip.client.dto.query.Comparison;
 import com.opentext.ia.sdk.sip.client.dto.query.Item;
@@ -107,8 +109,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     XForms xForms = mock(XForms.class);
     XForm xForm = mock(XForm.class);
     CryptoObjects cryptoObjects = mock(CryptoObjects.class);
-    PdiCryptos pdiCryptos = mock(PdiCryptos.class);
-    HoldingCryptos holdingCryptos = mock(HoldingCryptos.class);
+    PdiCryptoes pdiCryptos = mock(PdiCryptoes.class);
+    HoldingCryptoes holdingCryptos = mock(HoldingCryptoes.class);
     StorageEndPoints storageEndPoints = mock(StorageEndPoints.class);
     CustomStorages customStorages = mock(CustomStorages.class);
     ContentAddressedStorages contentAddressedStorages = mock(ContentAddressedStorages.class);
@@ -161,8 +163,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(SearchCompositions.class, compositions);
     mockCollection(XForms.class, xForms);
     mockCollection(CryptoObjects.class, cryptoObjects);
-    mockCollection(PdiCryptos.class, pdiCryptos);
-    mockCollection(HoldingCryptos.class, holdingCryptos);
+    mockCollection(PdiCryptoes.class, pdiCryptos);
+    mockCollection(HoldingCryptoes.class, holdingCryptos);
     mockCollection(StorageEndPoints.class, storageEndPoints);
     mockCollection(CustomStorages.class, customStorages);
     mockCollection(ContentAddressedStorages.class, contentAddressedStorages);

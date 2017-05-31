@@ -5,16 +5,12 @@ package com.opentext.ia.sdk.sip.client.dto;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang.ClassUtils;
 import org.atteo.evo.inflector.English;
@@ -26,64 +22,21 @@ import org.junit.runners.Parameterized.Parameters;
 
 
 @RunWith(Parameterized.class)
-public class WhenTransferringDataUsingObjects {
+public class WhenTransferringDataUsingObjects extends AbstractDtoTestCase {
 
   private static final Collection<Class<?>> PRIMITIVE_WRAPPER_TYPES = Arrays.asList(String.class, Integer.class,
       Long.class, Byte.class, Boolean.class, Double.class, Float.class, Character.class);
 
   @Parameters(name = "{0}")
   public static Object[] getParameters() {
-    return relativePathsIn("src/main/java", WhenTransferringDataUsingObjects::isJava)
-        .map(WhenTransferringDataUsingObjects::toClass)
+    return classesInDtoPackage()
         .filter(WhenTransferringDataUsingObjects::isDto)
         .toArray();
   }
 
-  private static boolean isJava(File file) {
-    return file.isFile() && file.getName().endsWith(".java");
-  }
-
-  private static Stream<String> relativePathsIn(String root, Predicate<File> acceptableFiles) {
-    Collection<File> result = new ArrayList<>();
-    File rootDir = new File(root);
-    collectFilesIn(rootDir, acceptableFiles, result);
-    Path rootPath = rootDir.toPath();
-    return result.stream()
-        .map(file -> rootPath.relativize(file.toPath()).toString());
-  }
-
-  private static void collectFilesIn(File dir, Predicate<File> acceptableFiles, Collection<File> files) {
-    Optional.ofNullable(dir.listFiles()).ifPresent(children -> {
-      for (File child : children) {
-        if (child.isDirectory()) {
-          collectFilesIn(child, acceptableFiles, files);
-        } else if (acceptableFiles.test(child)) {
-          files.add(child);
-        }
-      }
-    });
-  }
-
-  private static Class<?> toClass(String path) {
-    try {
-      return Class.forName(path.substring(0, path.lastIndexOf('.')).replace(File.separatorChar, '.'));
-    } catch (ClassNotFoundException e) {
-      return null;
-    }
-  }
-
   private static boolean isDto(Class<?> type) {
-    return type != null && isInDtoPackage(type) && extendsDtoBaseClass(type);
-  }
-
-  private static boolean isInDtoPackage(Class<?> type) {
-    return type.getName().contains(".dto.");
-  }
-
-  private static boolean extendsDtoBaseClass(Class<?> type) {
     return NamedLinkContainer.class.equals(type.getSuperclass());
   }
-
 
   @Parameter
   public Class<?> type;
@@ -102,24 +55,8 @@ public class WhenTransferringDataUsingObjects {
   }
 
   private void assertJavaBean(Class<?> bean) throws ReflectiveOperationException {
-    assertTrue("Not a Java Bean: " + bean.getSimpleName(), hasOnlyPublicNoArgConstructor(bean));
+    assertHasOnlyPublicNoArgConstructor(bean);
     assertOnlyGettersAndSetters(bean);
-  }
-
-  private boolean hasOnlyPublicNoArgConstructor(Class<?> bean) throws ReflectiveOperationException {
-    Constructor<?>[] constructors = bean.getDeclaredConstructors();
-    if (constructors.length != 1) {
-      return false;
-    }
-    Constructor<?> constructor = constructors[0];
-    if (constructor.getModifiers() != Modifier.PUBLIC) {
-      return false;
-    }
-    if (constructor.getParameterCount() != 0) {
-      return false;
-    }
-    constructor.newInstance(); // Check for exceptions
-    return true;
   }
 
   private void assertOnlyGettersAndSetters(Class<?> bean) throws ReflectiveOperationException {
@@ -144,8 +81,8 @@ public class WhenTransferringDataUsingObjects {
     String extraMethods = allMethods.stream()
         .map(method -> method.getName())
         .collect(Collectors.joining("(), "));
-    assertTrue(String.format("Non-getter/setter public %s in %s: %s()", English.plural("method", allMethods.size()),
-        bean, extraMethods), allMethods.isEmpty());
+    assertTrue(String.format("DTO should not have any logic, but found non-getter/setter public %s in %s: %s()",
+        English.plural("method", allMethods.size()), bean, extraMethods), allMethods.isEmpty());
   }
 
   private String getterPrefixFor(Class<?> fieldType) {
@@ -243,4 +180,3 @@ public class WhenTransferringDataUsingObjects {
   }
 
 }
-
