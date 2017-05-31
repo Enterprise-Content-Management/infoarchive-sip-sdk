@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import org.apache.http.HeaderElement;
+import org.apache.http.NameValuePair;
 import org.apache.http.entity.mime.MIME;
 import org.apache.http.message.BasicHeaderValueParser;
 
@@ -32,7 +33,7 @@ public class ContentResultFactory extends ResponseBodyFactory<ContentResult> {
         .filter(element -> "attachment".equalsIgnoreCase(element.getName()))
         .findAny()
         .map(element -> element.getParameterByName("filename"))
-        .map(pair -> pair.getValue())
+        .map(NameValuePair::getValue)
         .orElse("");
   }
 

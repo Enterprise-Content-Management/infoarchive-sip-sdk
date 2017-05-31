@@ -29,6 +29,7 @@ subprojects {
   }
 
   configurations {
+    awaitility
     commonsBeanutils {
       exclude module: 'commons-collections'
     }
@@ -44,10 +45,11 @@ subprojects {
     xmlunit
     yaml
 
-    testCompile.extendsFrom junit, mockito, xmlunit
+    testCompile.extendsFrom awaitility, junit, mockito, xmlunit
   }
 
   dependencies {
+    awaitility "org.awaitility:awaitility:$awaitilityVersion"
     commonsBeanutils "commons-beanutils:commons-beanutils:$commonsBeanutilsVersion"
     commonsCodec "commons-codec:commons-codec:$commonsCodecVersion"
     commonsCollections "commons-collections:commons-collections:$commonsCollectionsVersion"
