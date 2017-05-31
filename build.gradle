@@ -36,6 +36,7 @@ subprojects {
     commonsCodec
     commonsCollections
     commonsIo
+    commonsLang
     evoInflector
     httpclient
     httpmime
@@ -54,6 +55,7 @@ subprojects {
     commonsCodec "commons-codec:commons-codec:$commonsCodecVersion"
     commonsCollections "commons-collections:commons-collections:$commonsCollectionsVersion"
     commonsIo "commons-io:commons-io:$commonsIoVersion"
+    commonsLang "commons-lang:commons-lang:$commonsLangVersion"
     evoInflector "org.atteo:evo-inflector:$evoInflectorVersion"
     httpclient "org.apache.httpcomponents:httpclient:$httpclientVersion"
     httpmime "org.apache.httpcomponents:httpmime:$httpmimeVersion"
@@ -146,8 +148,8 @@ subprojects {
 
 project(':infoarchive-sip-sdk-core') {
   configurations {
-    compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, evoInflector, httpclient,
-        httpmime, jacksonCore, jacksonDatabind, validation, yaml
+    compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, commonsLang, evoInflector, 
+        httpclient, httpmime, jacksonCore, jacksonDatabind, validation, yaml
 
   }
 
