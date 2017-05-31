@@ -94,7 +94,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Pdis pdis = mock(Pdis.class);
     PdiSchemas pdiSchemas = mock(PdiSchemas.class);
     Ingests ingests = mock(Ingests.class);
-    Libraries libraries = mock(Libraries.class);
+    XdbLibraries libraries = mock(XdbLibraries.class);
     Contents contents = new Contents();
     aics = mock(Aics.class);
     LinkContainer aips = new LinkContainer();
@@ -151,7 +151,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(Pdis.class, pdis);
     mockCollection(PdiSchemas.class, pdiSchemas);
     mockCollection(Ingests.class, ingests);
-    mockCollection(Libraries.class, libraries);
+    mockCollection(XdbLibraries.class, libraries);
     mockCollection(Aics.class, aics);
     mockCollection(Quotas.class, quotas);
     mockCollection(Queries.class, queries);
@@ -185,7 +185,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(pdis, new Pdi());
     mockByName(pdiSchemas, new PdiSchema());
     mockByName(ingests, new Ingest());
-    mockByName(libraries, new Library());
+    mockByName(libraries, new XdbLibrary());
     mockByName(holdings, new Holding());
     mockByName(aics, aic);
     mockByName(quotas, new Quota());

@@ -705,13 +705,13 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void ensureLibrary() throws IOException {
-    Library library = ensureItem(cache.getSpaceRootLibrary(), LINK_LIBRARIES, Libraries.class, HOLDING_NAME,
+    XdbLibrary library = ensureItem(cache.getSpaceRootLibrary(), LINK_LIBRARIES, XdbLibraries.class, HOLDING_NAME,
         this::createLibrary);
     cache.setLibraryUri(library.getSelfUri());
   }
 
-  private Library createLibrary(String name) {
-    Library result = createObject(name, Library.class);
+  private XdbLibrary createLibrary(String name) {
+    XdbLibrary result = createObject(name, XdbLibrary.class);
     result.setSubPath("aips/" + getApplicationName().replace(' ', '-'));
     return result;
   }

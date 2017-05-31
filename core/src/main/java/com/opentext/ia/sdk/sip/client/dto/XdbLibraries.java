@@ -4,6 +4,6 @@
 package com.opentext.ia.sdk.sip.client.dto;
 
 
-public class Libraries extends ItemContainer<Library> {
+public class XdbLibraries extends ItemContainer<XdbLibrary> {
 
 }
