@@ -67,7 +67,7 @@ public final class ArchiveClients {
     RestClient client = Optional.ofNullable(optionalClient).orElseGet(
         () -> createRestClient(serverConfiguration, clock));
     configurer.configure();
-    return usingAlreadyConfiguredServer(serverConfiguration, client);
+    return usingAlreadyConfiguredServer(serverConfiguration, client, clock);
   }
 
   private static RestClient createRestClient(ServerConfiguration configuration, Clock clock) {
@@ -87,7 +87,12 @@ public final class ArchiveClients {
    * @return An ArchiveClient
    */
   public static ArchiveClient usingAlreadyConfiguredServer(ServerConfiguration configuration, RestClient restClient) {
-    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, configuration));
+    return usingAlreadyConfiguredServer(configuration, restClient, new DefaultClock());
+  }
+
+  private static ArchiveClient usingAlreadyConfiguredServer(ServerConfiguration configuration, RestClient restClient,
+      Clock clock) {
+    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, configuration), clock);
   }
 
   private static ArchiveOperationsByApplicationResourceCache appResourceCache(RestClient restClient,
@@ -138,8 +143,9 @@ public final class ArchiveClients {
    * @return An ArchiveClient
    */
   public static ArchiveClient usingAlreadyConfiguredServer(ServerConfiguration serverConfiguration) {
-    RestClient restClient = createRestClient(serverConfiguration, new DefaultClock());
-    return usingAlreadyConfiguredServer(serverConfiguration, restClient);
+    Clock clock = new DefaultClock();
+    RestClient restClient = createRestClient(serverConfiguration, clock);
+    return usingAlreadyConfiguredServer(serverConfiguration, restClient, clock);
   }
 
 }

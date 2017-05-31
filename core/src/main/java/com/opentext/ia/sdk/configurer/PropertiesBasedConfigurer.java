@@ -45,8 +45,8 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   private static final String TYPE_EXPORT_PIPELINE = "export-pipeline";
   private static final String TYPE_EXPORT_TRANSFORMATION = "export-transformation";
   private static final int MAX_RETRIES = 5;
-  private static final int RETRY_MS = 500;
-  private static final int WAIT_RACE_CONDITION_MS = 2000;
+  private static final long RETRY_MS = 500;
+  private static final long WAIT_RACE_CONDITION_MS = 2000;
   private static final String FORMAT_XML = "xml";
   private static final String FORMAT_XSD = "xsd";
   private static final String WORKING_FOLDER_NAME = "working/";

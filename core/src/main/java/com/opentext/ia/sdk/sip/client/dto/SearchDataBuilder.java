@@ -41,11 +41,11 @@ public final class SearchDataBuilder {
     return this;
   }
 
-  public SearchDataBuilder equal(String field, String value) {
+  public SearchDataBuilder isEqual(String field, String value) {
     return criterion(field, "EQUAL", value);
   }
 
-  public SearchDataBuilder notEqual(String field, String value) {
+  public SearchDataBuilder isNotEqual(String field, String value) {
     return criterion(field, "NOT_EQUAL", value);
   }
 

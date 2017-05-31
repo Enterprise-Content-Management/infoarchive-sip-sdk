@@ -106,12 +106,12 @@ public class WhenWorkingWithSearch {
 
   @Test
   public void searchDataBuilderCriteriaEqualSuccessful() {
-    assertNotNull(builder.equal(TEST_SUBJECT, TEST_VALUE));
+    assertNotNull(builder.isEqual(TEST_SUBJECT, TEST_VALUE));
   }
 
   @Test
   public void searchDataBuilderCriteriaNotEqualSuccessful() {
-    assertNotNull(builder.notEqual(TEST_SUBJECT, TEST_VALUE));
+    assertNotNull(builder.isNotEqual(TEST_SUBJECT, TEST_VALUE));
   }
 
   @Test

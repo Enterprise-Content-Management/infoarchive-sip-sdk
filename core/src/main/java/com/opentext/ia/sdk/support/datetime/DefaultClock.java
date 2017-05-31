@@ -23,7 +23,7 @@ public class DefaultClock implements Clock {
     try {
       unit.sleep(time);
     } catch (InterruptedException e) {
-      // Ignore
+      Thread.currentThread().interrupt();
     }
   }
 

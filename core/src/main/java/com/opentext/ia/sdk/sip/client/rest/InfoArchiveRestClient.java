@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.utils.URIBuilder;
 
@@ -28,6 +29,7 @@ import com.opentext.ia.sdk.sip.client.dto.query.Comparison;
 import com.opentext.ia.sdk.sip.client.dto.query.Item;
 import com.opentext.ia.sdk.sip.client.dto.query.QueryFormatter;
 import com.opentext.ia.sdk.sip.client.dto.query.SearchQuery;
+import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.BinaryPart;
 import com.opentext.ia.sdk.support.http.MediaTypes;
 import com.opentext.ia.sdk.support.http.ResponseFactory;
@@ -47,10 +49,13 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private final RestClient restClient;
   private final ArchiveOperationsByApplicationResourceCache resourceCache;
+  private final Clock clock;
 
-  public InfoArchiveRestClient(RestClient restClient, ArchiveOperationsByApplicationResourceCache resourceCache) {
+  public InfoArchiveRestClient(RestClient restClient, ArchiveOperationsByApplicationResourceCache resourceCache,
+      Clock clock) {
     this.restClient = restClient;
     this.resourceCache = resourceCache;
+    this.clock = clock;
   }
 
   @Override
@@ -124,10 +129,10 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       if (item instanceof Comparison) {
         Comparison comparison = (Comparison)item;
         switch (comparison.getOperator()) {
-          case EQUAL: searchDataBuilder.equal(comparison.getName(), comparison.getValue().get(0));
+          case EQUAL: searchDataBuilder.isEqual(comparison.getName(), comparison.getValue().get(0));
             break;
           case NOT_EQUAL:
-            searchDataBuilder.notEqual(comparison.getName(), comparison.getValue().get(0));
+            searchDataBuilder.isNotEqual(comparison.getName(), comparison.getValue().get(0));
             break;
           case STARTS_WITH:
             searchDataBuilder.startsWith(comparison.getName(), comparison.getValue().get(0));
@@ -177,11 +182,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       if (downloadOrderItem.getUri(LINK_DOWNLOAD) != null) {
         return downloadOrderItem;
       }
-      try {
-        Thread.sleep(3000);
-      } catch (InterruptedException e) {
-        // Ignored
-      }
+      clock.sleep(2, TimeUnit.SECONDS);
     }
     return plainOrderItem;
   }
