@@ -5,13 +5,15 @@ package com.opentext.ia.sdk.configurer;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
 
-public class YamlConfiguration {
+public class YamlConfiguration implements InfoArchiveConfiguration {
 
   private final Map<String, String> map = new HashMap<>();
 
@@ -42,11 +44,49 @@ public class YamlConfiguration {
 
   @SuppressWarnings("PMD.UnusedFormalParameter")
   private void expand(Map<String, Object> source) {
-    // TODO: Expand the YAML in [source] into [map]
+    map.put(TENANT_NAME, getString(source, "tenant"));
+    map.put(DATABASE_NAME, getString(source, "database", NAME));
+    map.put(DATABASE_ADMIN_PASSWORD, getString(source, "database", "password"));
+    map.put(APPLICATION_NAME, getString(source, "application", NAME));
+    map.put(HOLDING_NAME, getString(source, "holding", "name"));
+    map.put(RETENTION_POLICY_NAME, getString(source, "retention", NAME));
+    map.put(PDI_XML, getString(source, "pdi", "xml"));
+    map.put(PDI_SCHEMA_NAME, getString(source, "pdi", "schema", NAME));
+    map.put(PDI_SCHEMA, getString(source, "pdi", "schema"));
+    map.put(INGEST_XML, "");
   }
 
   public Map<String, String> toMap() {
     return map;
+  }
+
+  private String getString(Map<String, Object> source, String... vars) {
+    if (vars.length == 0) {
+      throw new IllegalArgumentException("There is no second argument.");
+    } else if (vars.length == 1) {
+      return (String)source.get(vars[0]);
+    } else {
+      Map<String, String> nearestMap = getMap(source, Arrays.copyOfRange(vars, 0, vars.length - 1));
+      if (nearestMap == null || nearestMap.isEmpty()) {
+        return "";
+      }
+      return nearestMap.getOrDefault(vars[vars.length - 1], "");
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private Map<String, String> getMap(Map<String, Object> source, String... vars) {
+    if (vars.length == 0) {
+      throw new IllegalArgumentException("There is no second argument.");
+    } else if (vars.length == 1) {
+      if (source == null) {
+        return Collections.EMPTY_MAP;
+      } else {
+        return (Map<String, String>)source.get(vars[0]);
+      }
+    } else {
+      return getMap((Map<String, Object>)source.get(vars[0]), Arrays.copyOfRange(vars, 1, vars.length));
+    }
   }
 
 }
