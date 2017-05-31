@@ -17,7 +17,7 @@ public class RestCache {
   private Tenant tenant;
   private Application application;
   private String ingestUri;
-  private Federation federation;
+  private XdbFederation federation;
   private String fileSystemRootUri;
   private Space space;
   private String databaseUri;
@@ -86,11 +86,11 @@ public class RestCache {
     this.tenant = tenant;
   }
 
-  public Federation getFederation() {
+  public XdbFederation getFederation() {
     return federation;
   }
 
-  public void setFederation(Federation federation) {
+  public void setFederation(XdbFederation federation) {
     this.federation = federation;
   }
 

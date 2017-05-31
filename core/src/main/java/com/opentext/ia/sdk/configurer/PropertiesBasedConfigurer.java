@@ -169,7 +169,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void ensureFederation() throws IOException {
-    Federation federation = ensureItem(cache.getServices(), LINK_FEDERATIONS, Federations.class, FEDERATION_NAME,
+    XdbFederation federation = ensureItem(cache.getServices(), LINK_FEDERATIONS, XdbFederations.class, FEDERATION_NAME,
         this::createFederation);
     cache.setFederation(federation);
   }
@@ -210,8 +210,8 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
     return type.getSimpleName().toLowerCase(Locale.ENGLISH);
   }
 
-  private Federation createFederation(String name) {
-    Federation result = createObject(name, Federation.class);
+  private XdbFederation createFederation(String name) {
+    XdbFederation result = createObject(name, XdbFederation.class);
     result.setSuperUserPassword(configuration.get(FEDERATION_SUPERUSER_PASSWORD));
     result.setBootstrap(configuration.get(FEDERATION_BOOTSTRAP));
     return result;

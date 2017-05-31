@@ -66,7 +66,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private Application application;
   private Aics aics;
   private Aic aic;
-  private Federations federations;
+  private XdbFederations federations;
 
   @Before
   public void init() throws IOException {
@@ -77,7 +77,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Tenant tenant = new Tenant();
     application = new Application();
     applications = mock(Applications.class);
-    federations = mock(Federations.class);
+    federations = mock(XdbFederations.class);
     Spaces spaces = mock(Spaces.class);
     Databases databases = mock(Databases.class);
     FileSystemRoots fileSystemRoots = mock(FileSystemRoots.class);
@@ -136,7 +136,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     aips.setLinks(links);
 
     mockCollection(Applications.class, applications);
-    mockCollection(Federations.class, federations);
+    mockCollection(XdbFederations.class, federations);
     mockCollection(Spaces.class, spaces);
     mockCollection(Databases.class, databases);
     mockCollection(FileSystemRoots.class, fileSystemRoots);
@@ -170,7 +170,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(ContentAddressedStorages.class, contentAddressedStorages);
     when(restClient.createCollectionItem(any(LinkContainer.class), any(XForm.class), eq(LINK_SELF))).thenReturn(xForm);
 
-    mockByName(federations, new Federation());
+    mockByName(federations, new XdbFederation());
     mockByName(databases, new Database());
     mockByName(applications, application);
     mockByName(spaces, new Space());
@@ -508,7 +508,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   @Test
   public void shouldRetryWhenTemporarilyUnavailable() throws IOException {
     configuration.put(InfoArchiveConfiguration.FEDERATION_NAME, randomString());
-    when(restClient.createCollectionItem(eq(federations), any(Federation.class), eq(LINK_ADD), eq(LINK_SELF)))
+    when(restClient.createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD), eq(LINK_SELF)))
         .then(invocation -> {
       throw new HttpException(503, "");
     });
@@ -516,7 +516,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     ArchiveClients.configuringServerUsing(new PropertiesBasedConfigurer(configuration, restClient, mock(Clock.class)),
         restClient);
 
-    verify(restClient, times(5)).createCollectionItem(eq(federations), any(Federation.class), eq(LINK_ADD),
+    verify(restClient, times(5)).createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD),
         eq(LINK_SELF));
   }
 

@@ -4,6 +4,6 @@
 package com.opentext.ia.sdk.sip.client.dto;
 
 
-public class Federations extends ItemContainer<Federation> {
+public class XdbFederations extends ItemContainer<XdbFederation> {
 
 }
