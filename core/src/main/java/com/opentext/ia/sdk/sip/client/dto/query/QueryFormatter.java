@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+
 public class QueryFormatter {
 
   private final ObjectMapper mapper = new ObjectMapper();
@@ -21,7 +22,7 @@ public class QueryFormatter {
       return mapper.writer()
         .writeValueAsString(request);
     } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException("Failed to process JSON", e);
     }
   }
 
