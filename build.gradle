@@ -1,9 +1,13 @@
 buildscript {
   repositories {
     mavenCentral()
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
   }
   dependencies {
     classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
+    classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.4'
   }
 }
 
@@ -198,3 +202,14 @@ defaultTasks 'build'
 
 apply from: rootProject.file('publish.gradle')
 
+
+// [sonarToken] is encrypted in .travis.yml, so only available when building in Travis
+if (project.hasProperty('sonarToken')) {
+  apply plugin: 'org.sonarqube'
+  subprojects.findAll { 
+    it.name.startsWith('sample')
+  }.each {
+    it.sonarqube.skipProject = true
+  }
+  build.dependsOn 'sonarqube'
+}
