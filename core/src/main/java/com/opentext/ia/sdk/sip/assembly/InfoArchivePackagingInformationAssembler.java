@@ -46,13 +46,11 @@ public class InfoArchivePackagingInformationAssembler extends PrintWriterAssembl
     .element("is_last", String.valueOf(packagingInformation.isLast()))
     .element("aiu_count", String.valueOf(packagingInformation.getAiuCount()))
     .element("page_count", String.valueOf(packagingInformation.getPageCount()));
-    packagingInformation.pdiHash().ifPresent(hash -> {
-      builder.element("pdi_hash")
+    packagingInformation.pdiHash().ifPresent(hash -> builder.element("pdi_hash")
         .attribute("algorithm", hash.getHashFunction())
         .attribute("encoding", hash.getEncoding())
         .text(hash.getValue())
-        .end();
-    });
+        .end());
     builder.build();
   }
 

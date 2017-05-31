@@ -42,6 +42,7 @@ import com.opentext.ia.sdk.support.rest.RestClient;
 public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLinkRelations,
     InfoArchiveConfiguration {
 
+  private static final String EXPORT_CONFIGURATION = "export-configuration";
   private static final String TYPE_EXPORT_PIPELINE = "export-pipeline";
   private static final String TYPE_EXPORT_TRANSFORMATION = "export-transformation";
   private static final int MAX_RETRIES = 5;
@@ -474,7 +475,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   private void ensureTenantLevelExportConfigurations() throws IOException {
     ExportConfiguration exportConfiguration = ensureNamedItem(cache.getTenant(), LINK_EXPORT_CONFIG,
         ExportConfigurations.class, "gzip_csv", this::createTenantLevelExportConfiguration);
-    cacheObject("export-configuration", exportConfiguration);
+    cacheObject(EXPORT_CONFIGURATION, exportConfiguration);
   }
 
   private ExportConfiguration createTenantLevelExportConfiguration(String name) {
@@ -484,9 +485,9 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
     result.setPipeline(cache.getObjectUri(TYPE_EXPORT_PIPELINE, "search-results-csv-gzip"));
     ExportConfiguration.Transformation transformation = new ExportConfiguration.Transformation();
     transformation.setPortName("stylesheet");
-    transformation.setTransformation(cache.getObjectUri(TYPE_EXPORT_TRANSFORMATION, "csv_xsl"));
+    transformation.setName(cache.getObjectUri(TYPE_EXPORT_TRANSFORMATION, "csv_xsl"));
     result.addTransformation(transformation);
-    result.addOption(ExportConfiguration.DefaultOptions.XSL_RESULT_FORMAT, "csv");
+    result.addOption(ExportConfiguration.DefaultOption.XSL_RESULT_FORMAT, "csv");
     return result;
   }
 
@@ -547,7 +548,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   private ExportConfiguration ensureExportConfiguration(String name) throws IOException {
     ExportConfiguration exportConfiguration = ensureNamedItem(cache.getApplication(), LINK_EXPORT_CONFIG,
         ExportConfigurations.class, name, this::createExportConfiguration);
-    return cacheObject("export-configuration", exportConfiguration);
+    return cacheObject(EXPORT_CONFIGURATION, exportConfiguration);
   }
 
   private ExportConfiguration createExportConfiguration(String name) {
@@ -574,15 +575,15 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
     ExportConfiguration.Transformation result = new ExportConfiguration.Transformation();
     result.setPortName(templatedString(EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_PORTNAME_TEMPLATE,
         config.getName(), name));
-    result.setTransformation(cache.getObjectUri(TYPE_EXPORT_TRANSFORMATION, templatedString(
+    result.setName(cache.getObjectUri(TYPE_EXPORT_TRANSFORMATION, templatedString(
         EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_TRANSFORMATION_TEMPLATE, config.getName(), name)));
     config.addTransformation(result);
   }
 
   private void fillExportConfigurationOptions(ExportConfiguration config) {
-    config.addOption(ExportConfiguration.DefaultOptions.XSL_RESULT_FORMAT,
+    config.addOption(ExportConfiguration.DefaultOption.XSL_RESULT_FORMAT,
         templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_XSL_RESULTFORMAT_TEMPLATE, config.getName()));
-    config.addOption(ExportConfiguration.DefaultOptions.XQUERY_RESULT_FORMAT,
+    config.addOption(ExportConfiguration.DefaultOption.XQUERY_RESULT_FORMAT,
         templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_XQUERY_RESULTFORMAT_TEMPLATE, config.getName()));
     forEach(templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_NAME, config.getName()), name ->
         config.addOption(name, templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_VALUE_TEMPLATE,
@@ -952,13 +953,13 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
     Objects.requireNonNull(updatedComposition, "Failed to update search composition");
   }
 
-  private XForm createXForm(String searchName, String compositionName) throws IOException {
+  private XForm createXForm(String searchName, String compositionName) {
     XForm result = new XForm();
     result.setForm(configured(resolveTemplatedKey(SEARCH_COMPOSITION_XFORM, searchName, compositionName)));
     return result;
   }
 
-  private ResultMaster createResultMaster(String searchName, String compositionName) throws IOException {
+  private ResultMaster createResultMaster(String searchName, String compositionName) {
     ResultMaster result = new ResultMaster();
 
     result.setNamespaces(createNamespaces(templatedString(SEARCH_QUERY, searchName)));
@@ -968,7 +969,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
         searchName));
     result.getDefaultTab()
       .getExportConfigurations()
-      .addAll(uriFromNamesAndType("export-configuration", getStrings(
+      .addAll(uriFromNamesAndType(EXPORT_CONFIGURATION, getStrings(
           SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName)));
 
     for (Map<String, String> config : getSearchColumnConfigs(searchName, compositionName)) {
@@ -1008,8 +1009,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
 
   private void ensureCryptoObject() throws IOException {
     ensureOptionalItem(cache.getServices(), LINK_CRYPTO_OBJECTS, CryptoObjects.class, CRYPTO_OBJECT_NAME,
-        this::createCryptoObject).ifPresent(cryptoObject ->
-      cache.setCryptoObject(cryptoObject));
+        this::createCryptoObject).ifPresent(cache::setCryptoObject);
   }
 
   private <T extends NamedLinkContainer> Optional<T> ensureOptionalItem(LinkContainer collectionOwner,

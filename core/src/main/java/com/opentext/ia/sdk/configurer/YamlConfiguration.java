@@ -21,7 +21,7 @@ public class YamlConfiguration {
     }
   }
 
-  public YamlConfiguration(InputStream yaml) throws IOException {
+  public YamlConfiguration(InputStream yaml) {
     expand(yaml);
   }
 

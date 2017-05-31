@@ -3,11 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.assembly;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import javax.validation.ValidationException;
 import javax.xml.transform.stream.StreamSource;
@@ -15,6 +11,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.xml.sax.SAXException;
 
 import com.opentext.ia.sdk.support.xml.XmlUtil;
+
 
 /**
  * Validate an XML instance against an XML Schema.
@@ -41,7 +38,7 @@ public class XmlSchemaValidator implements Validator {
   }
 
   @Override
-  public void validate(InputStream xmlInstance) throws ValidationException {
+  public void validate(InputStream xmlInstance) {
     try {
       validator.validate(new StreamSource(xmlInstance));
     } catch (SAXException | IOException e) {

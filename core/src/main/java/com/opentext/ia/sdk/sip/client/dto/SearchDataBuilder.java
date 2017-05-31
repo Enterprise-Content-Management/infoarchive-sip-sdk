@@ -11,8 +11,13 @@ import com.opentext.ia.sdk.support.xml.XmlBuilder;
 
 public final class SearchDataBuilder {
 
+  private static final String CRITERION = "criterion";
+  private static final String NAME = "name";
+  private static final String OPERATOR = "operator";
+  private static final String VALUE = "value";
+
   private final StringWriter output = new StringWriter();
-  private final XmlBuilder<?> builder;
+  private final XmlBuilder<Void> builder;
 
   private SearchDataBuilder() {
     builder = XmlBuilder.newDocument(new PrintWriter(output)).element("data");
@@ -23,20 +28,20 @@ public final class SearchDataBuilder {
   }
 
   private SearchDataBuilder criterion(String field, String operator, String value) {
-    builder.element("criterion")
-        .element("name", field)
-        .element("operator", operator)
-        .element("value", value)
+    builder.element(CRITERION)
+        .element(NAME, field)
+        .element(OPERATOR, operator)
+        .element(VALUE, value)
         .end();
     return this;
   }
 
   private SearchDataBuilder criterion(String field, String operator, String value1, String value2) {
-    builder.element("criterion")
-        .element("name", field)
-        .element("operator", operator)
-        .element("value", value1)
-        .element("value", value2)
+    builder.element(CRITERION)
+        .element(NAME, field)
+        .element(OPERATOR, operator)
+        .element(VALUE, value1)
+        .element(VALUE, value2)
     .end();
     return this;
   }

@@ -10,8 +10,9 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+
 @JsonPropertyOrder({ "name", "operator", "value" })
-public class Comparison extends Item {
+public class Comparison implements Item {
 
   private final List<String> value;
   private String name;

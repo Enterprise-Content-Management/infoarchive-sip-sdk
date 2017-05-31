@@ -6,7 +6,8 @@ package com.opentext.ia.sdk.sip.client.dto.query;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Relation extends Item {
+
+public class Relation implements Item {
 
   private final List<Item> items;
 
@@ -22,4 +23,5 @@ public class Relation extends Item {
     this.items.clear();
     this.items.addAll(items);
   }
+
 }

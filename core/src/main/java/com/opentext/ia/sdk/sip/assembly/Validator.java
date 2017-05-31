@@ -7,6 +7,7 @@ import java.io.InputStream;
 
 import javax.validation.ValidationException;
 
+
 /**
  * Validate that the contents of a stream meets the expectations.
  */
@@ -18,6 +19,6 @@ public interface Validator {
    * @param stream The stream to validate
    * @throws ValidationException When the stream doesn't meet expectations
    */
-  void validate(InputStream stream) throws ValidationException;
+  void validate(InputStream stream);
 
 }

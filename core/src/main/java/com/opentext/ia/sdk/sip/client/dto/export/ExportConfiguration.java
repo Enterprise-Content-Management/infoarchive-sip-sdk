@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.opentext.ia.sdk.sip.client.dto.NamedLinkContainer;
 
+
 public class ExportConfiguration extends NamedLinkContainer {
 
   private String description;
@@ -52,7 +53,7 @@ public class ExportConfiguration extends NamedLinkContainer {
   }
 
   public void addTransformation(Transformation transformation) {
-    if (transformation != null && transformation.getPortName() != null && transformation.getTransformation() != null) {
+    if (transformation != null && transformation.getPortName() != null && transformation.getName() != null) {
       this.transformations.add(transformation);
     }
   }
@@ -63,6 +64,10 @@ public class ExportConfiguration extends NamedLinkContainer {
 
   public void setOptions(Map<String, String> options) {
     this.options = options;
+  }
+
+  public void addOption(DefaultOption option, String value) {
+    addOption(option.getName(), value);
   }
 
   public void addOption(String key, String value) {
@@ -85,16 +90,29 @@ public class ExportConfiguration extends NamedLinkContainer {
     }
   }
 
-  public interface DefaultOptions {
-    String XSL_RESULT_FORMAT = "xslResultFormat";
-    String XQUERY_RESULT_FORMAT = "xqueryResultFormat";
+
+  public enum DefaultOption {
+
+    XSL_RESULT_FORMAT("xslResultFormat"), XQUERY_RESULT_FORMAT("xqueryResultFormat");
+
+    private final String name;
+
+    DefaultOption(String name) {
+      this.name = name;
+    }
+
+    public String getName() {
+      return name;
+    }
+
   }
+
 
   @SuppressWarnings("PMD.AvoidFieldNameMatchingTypeName")
   public static class Transformation {
 
     private String portName;
-    private String transformation;
+    private String name;
 
     public String getPortName() {
       return portName;
@@ -104,12 +122,12 @@ public class ExportConfiguration extends NamedLinkContainer {
       this.portName = portName;
     }
 
-    public String getTransformation() {
-      return transformation;
+    public String getName() {
+      return name;
     }
 
-    public void setTransformation(String transformation) {
-      this.transformation = transformation;
+    public void setName(String transformation) {
+      this.name = transformation;
     }
   }
 }

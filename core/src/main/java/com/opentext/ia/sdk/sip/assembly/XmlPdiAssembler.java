@@ -16,6 +16,7 @@ import com.opentext.ia.sdk.support.xml.DomXmlBuilder;
 import com.opentext.ia.sdk.support.xml.XmlBuilder;
 import com.opentext.ia.sdk.support.xml.XmlUtil;
 
+
 /**
  * Base class for assembling XML documents from domain objects using an {@linkplain DomXmlBuilder}.
  * @param <D> The type of domain objects to assemble the XML document from
@@ -25,7 +26,7 @@ public abstract class XmlPdiAssembler<D> extends PdiAssembler<D> {
   private final Optional<URI> namespace;
   private final Optional<String> documentElementName;
   private final String domainObjectName;
-  private XmlBuilder<?> builder;
+  private XmlBuilder<Void> builder;
 
   /**
    * Create an instance.
@@ -89,7 +90,7 @@ public abstract class XmlPdiAssembler<D> extends PdiAssembler<D> {
    * Return the XML document builder for capturing a domain object.
    * @return The XML document builder for capturing a domain object
    */
-  protected XmlBuilder<?> getBuilder() {
+  protected XmlBuilder<Void> getBuilder() {
     return builder;
   }
 
