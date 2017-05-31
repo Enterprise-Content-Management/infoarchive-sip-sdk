@@ -44,16 +44,32 @@ public class YamlConfiguration implements InfoArchiveConfiguration {
 
   @SuppressWarnings("PMD.UnusedFormalParameter")
   private void expand(Map<String, Object> source) {
+    map.put(SERVER_URI, getString(source, "server", "uri"));
+    map.put(SERVER_AUTENTICATON_TOKEN, getString(source, "server", "token"));
+
+    map.put(FEDERATION_NAME, getString(source, "xdb", "federation", NAME));
+    map.put(FEDERATION_BOOTSTRAP, getString(source, "xdb", "federation", "uri"));
+    map.put(FEDERATION_SUPERUSER_PASSWORD, getString(source, "xdb", "federation", "password"));
+
+    map.put(DATABASE_NAME, getString(source, "xdb", "database", NAME));
+    map.put(DATABASE_ADMIN_PASSWORD, getString(source, "xdb", "database", "password"));
+
+    map.put(RETENTION_POLICY_NAME, getString(source, "retention-policy", NAME));
+    map.put(AIC_NAME, getString(source, "aic", NAME));
+    map.put(QUOTA_NAME, getString(source, "quota", NAME));
+
     map.put(TENANT_NAME, getString(source, "tenant"));
-    map.put(DATABASE_NAME, getString(source, "database", NAME));
-    map.put(DATABASE_ADMIN_PASSWORD, getString(source, "database", "password"));
+
     map.put(APPLICATION_NAME, getString(source, "application", NAME));
-    map.put(HOLDING_NAME, getString(source, "holding", "name"));
-    map.put(RETENTION_POLICY_NAME, getString(source, "retention", NAME));
-    map.put(PDI_XML, getString(source, "pdi", "xml"));
+    map.put(APPLICATION_CATEGORY, getString(source, "application", "category"));
+    map.put(APPLICATION_DESCRIPTION, getString(source, "application", "description"));
+
+    map.put(HOLDING_NAME, getString(source, "holding", NAME));
+
     map.put(PDI_SCHEMA_NAME, getString(source, "pdi", "schema", NAME));
-    map.put(PDI_SCHEMA, getString(source, "pdi", "schema"));
-    map.put(INGEST_XML, "");
+    map.put(PDI_SCHEMA, getString(source, "pdi", "schema", "xsd"));
+    map.put(PDI_XML, getString(source, "pdi", "xml"));
+    map.put(INGEST_XML, getString(source, "ingest", "xml"));
   }
 
   public Map<String, String> toMap() {
