@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.opentext.ia.sdk.client.dto.*;
 import com.opentext.ia.sdk.client.rest.InfoArchiveLinkRelations;
+import com.opentext.ia.sdk.dto.*;
 
 
 @SuppressWarnings("PMD.TooManyFields")

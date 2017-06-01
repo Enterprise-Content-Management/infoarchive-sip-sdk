@@ -10,10 +10,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.opentext.ia.sdk.client.ArchiveClient;
-import com.opentext.ia.sdk.client.dto.*;
 import com.opentext.ia.sdk.client.rest.ApplicationIngestionResourcesCache;
 import com.opentext.ia.sdk.client.rest.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.client.rest.InfoArchiveRestClient;
+import com.opentext.ia.sdk.dto.*;
 import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.datetime.DefaultClock;

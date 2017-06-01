@@ -6,12 +6,12 @@ package com.opentext.ia.sdk.client;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.opentext.ia.sdk.client.dto.OrderItem;
-import com.opentext.ia.sdk.client.dto.SearchComposition;
-import com.opentext.ia.sdk.client.dto.SearchResults;
-import com.opentext.ia.sdk.client.dto.export.ExportConfiguration;
-import com.opentext.ia.sdk.client.dto.export.ExportTransformation;
-import com.opentext.ia.sdk.client.dto.query.SearchQuery;
+import com.opentext.ia.sdk.dto.OrderItem;
+import com.opentext.ia.sdk.dto.SearchComposition;
+import com.opentext.ia.sdk.dto.SearchResults;
+import com.opentext.ia.sdk.dto.export.ExportConfiguration;
+import com.opentext.ia.sdk.dto.export.ExportTransformation;
+import com.opentext.ia.sdk.dto.query.SearchQuery;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 
 
