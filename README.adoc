@@ -21,7 +21,7 @@ You can also use the SDK to ingest SIPs into InfoArchive and even to configure I
 must have access to a running InfoArchive server. The SDK supports version 4.0 of InfoArchive and newer.
 
 
-== Quick Start
+== Overview
 
 The SDK consists of the following jars:
 
@@ -33,23 +33,31 @@ All jars can be found in the https://repo1.maven.org/maven2/com/emc/ia/[Central 
 them is through a dependency management system like http://gradle.org/[Gradle] or https://maven.apache.org/[Maven].
 For the latest version, see the `maven-central` button at the top of this page.
 
-**Gradle**
 
-    dependencies { 
-      compile 'com.emc.ia:infoarchive-sip-sdk-core:5.7.0'
-    }
-    
-**Maven**
+*Gradle*
 
-    <dependencies>
-      <dependency>
-        <groupId>com.emc.ia</groupId>
-        <artifactId>infoarchive-sip-sdk-core</artifactId>
-        <version>5.7.0</version>
-      </dependency>
-    </dependencies>
-    
-    
+[source,groovy]
+.build.gradle
+----
+dependencies { 
+  compile 'com.emc.ia:infoarchive-sip-sdk-core:5.7.0'
+}
+----
+
+*Maven*
+
+[source,xml]
+.pom.xml
+----
+<dependencies>
+  <dependency>
+    <groupId>com.emc.ia</groupId>
+    <artifactId>infoarchive-sip-sdk-core</artifactId>
+    <version>5.7.0</version>
+  </dependency>
+</dependencies>
+----
+
 == Versioning
     
 The InfoArchive SDK uses https://semver.org[semantic versioning].
