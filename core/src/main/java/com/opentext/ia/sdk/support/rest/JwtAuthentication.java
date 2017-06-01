@@ -15,6 +15,9 @@ import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
 
+/**
+ * Authenticate using a <a href="https://tools.ietf.org/html/rfc7519">JSON Web Token</a> (JWT).
+ */
 public final class JwtAuthentication implements AuthenticationStrategy {
 
   private static final long RESERVE_TIME = 10000;

@@ -7,6 +7,9 @@ import java.io.File;
 import java.util.*;
 
 
+/**
+ * Default implementation of {@linkplain DirectoryListener}.
+ */
 public class DefaultDirectoryListener implements DirectoryListener {
 
   private final int delta;

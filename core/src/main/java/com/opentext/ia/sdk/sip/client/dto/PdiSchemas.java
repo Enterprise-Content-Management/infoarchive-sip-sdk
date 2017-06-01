@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class PdiSchemas extends ItemContainer<PdiSchema> {
 
-  public PdiSchemas() {
-    super("pdiSchemas");
-  }
+public class PdiSchemas extends ItemContainer<PdiSchema> {
 
 }

@@ -3,6 +3,10 @@
  */
 package com.opentext.ia.sdk.support.http;
 
+
+/**
+ * Build a URI.
+ */
 public interface UriBuilder {
 
   UriBuilder addParameter(String name, String value);

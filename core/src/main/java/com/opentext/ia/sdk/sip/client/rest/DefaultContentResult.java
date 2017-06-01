@@ -9,6 +9,9 @@ import java.io.InputStream;
 import com.opentext.ia.sdk.sip.client.ContentResult;
 
 
+/**
+ * Default implementation of {@linkplain ContentResult}.
+ */
 public class DefaultContentResult implements ContentResult {
 
   private final InputStream stream;

@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Applications extends ItemContainer<Application> {
 
-  protected Applications() {
-    super("applications");
-  }
+public class Applications extends ItemContainer<Application> {
 
 }

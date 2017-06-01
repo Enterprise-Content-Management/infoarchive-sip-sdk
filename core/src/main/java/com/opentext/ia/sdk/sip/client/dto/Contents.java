@@ -3,15 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
+
 public class Contents extends ItemContainer<NamedLinkContainer> {
-
-  public Contents() {
-    super("contents");
-  }
-
-  public boolean hasContent() {
-    return getItems().findAny()
-      .isPresent();
-  }
 
 }

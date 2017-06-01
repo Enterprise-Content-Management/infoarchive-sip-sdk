@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class SpaceRootFolders extends ItemContainer<SpaceRootFolder> {
 
-  public SpaceRootFolders() {
-    super("spaceRootFolders");
-  }
+public class SpaceRootFolders extends ItemContainer<SpaceRootFolder> {
 
 }

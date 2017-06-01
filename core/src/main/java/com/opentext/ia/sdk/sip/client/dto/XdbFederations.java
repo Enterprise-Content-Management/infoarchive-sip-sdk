@@ -4,6 +4,6 @@
 package com.opentext.ia.sdk.sip.client.dto;
 
 
-public class IngestNodes extends ItemContainer<IngestNode> {
+public class XdbFederations extends ItemContainer<XdbFederation> {
 
 }

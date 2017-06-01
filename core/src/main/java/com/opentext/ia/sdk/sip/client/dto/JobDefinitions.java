@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class JobDefinitions extends ItemContainer<JobDefinition> {
 
-  protected JobDefinitions() {
-    super("jobDefinitions");
-  }
+public class JobDefinitions extends ItemContainer<JobDefinition> {
 
 }

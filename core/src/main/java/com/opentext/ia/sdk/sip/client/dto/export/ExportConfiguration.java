@@ -52,12 +52,6 @@ public class ExportConfiguration extends NamedLinkContainer {
     this.transformations = transformations;
   }
 
-  public void addTransformation(Transformation transformation) {
-    if (transformation != null && transformation.getPortName() != null && transformation.getName() != null) {
-      this.transformations.add(transformation);
-    }
-  }
-
   public Map<String, String> getOptions() {
     return options;
   }
@@ -66,28 +60,12 @@ public class ExportConfiguration extends NamedLinkContainer {
     this.options = options;
   }
 
-  public void addOption(DefaultOption option, String value) {
-    addOption(option.getName(), value);
-  }
-
-  public void addOption(String key, String value) {
-    if (key != null && value != null) {
-      this.options.put(key, value);
-    }
-  }
-
   public Map<String, String> getEncryptedOptions() {
     return encryptedOptions;
   }
 
   public void setEncryptedOptions(Map<String, String> encryptedOptions) {
     this.encryptedOptions = encryptedOptions;
-  }
-
-  public void addEncryptedOption(String key, String value) {
-    if (key != null && value != null) {
-      this.encryptedOptions.put(key, value);
-    }
   }
 
 

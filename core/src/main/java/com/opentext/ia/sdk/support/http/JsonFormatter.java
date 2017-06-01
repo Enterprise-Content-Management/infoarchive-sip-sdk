@@ -10,6 +10,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+
+/**
+ * Format an object as <a href="https://tools.ietf.org/html/rfc7159">JavaScript Object Notation</a> (JSON).
+ */
 public class JsonFormatter {
 
   public String format(Object value) throws IOException {
@@ -18,8 +22,7 @@ public class JsonFormatter {
     mapper.configure(SerializationFeature.INDENT_OUTPUT, false);
     mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    return mapper.writer()
-      .writeValueAsString(Objects.requireNonNull(value));
+    return mapper.writer().writeValueAsString(Objects.requireNonNull(value));
   }
 
 }

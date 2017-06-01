@@ -11,7 +11,12 @@ import org.apache.http.entity.ContentType;
 
 import com.opentext.ia.sdk.support.http.Header;
 
+
+/**
+ * Information about the gateway that issues a JWT.
+ */
 public final class GatewayInfo {
+
   private final String gatewayUrl;
   private final String clientId;
   private final String clientSecret;
@@ -55,4 +60,5 @@ public final class GatewayInfo {
   public String getGatewayUrl() {
     return gatewayUrl;
   }
+
 }

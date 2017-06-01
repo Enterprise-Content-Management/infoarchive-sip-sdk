@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class RetentionPolicies extends ItemContainer<RetentionPolicy> {
 
-  public RetentionPolicies() {
-    super("retentionPolicies");
-  }
+public class RetentionPolicies extends ItemContainer<RetentionPolicy> {
 
 }

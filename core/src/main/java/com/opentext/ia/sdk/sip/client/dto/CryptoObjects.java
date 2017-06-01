@@ -6,8 +6,4 @@ package com.opentext.ia.sdk.sip.client.dto;
 
 public class CryptoObjects extends ItemContainer<CryptoObject> {
 
-  protected CryptoObjects() {
-    super("cryptoObjects");
-  }
-
 }

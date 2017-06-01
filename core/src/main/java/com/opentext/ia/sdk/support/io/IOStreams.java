@@ -8,11 +8,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
+
+/**
+ * Utility methods to work with I/O streams.
+ */
 public final class IOStreams {
 
   private IOStreams() {
-    throw new IllegalArgumentException(
-        "IOStreams is a utility class with only static methods and should not be instantiated.");
+    // Utility class
   }
 
   /**
@@ -38,4 +41,5 @@ public final class IOStreams {
       numRead = in.read(buffer);
     }
   }
+
 }

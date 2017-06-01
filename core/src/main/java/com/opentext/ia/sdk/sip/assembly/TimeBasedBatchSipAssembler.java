@@ -12,6 +12,12 @@ import com.opentext.ia.sdk.support.datetime.Timer;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
+
+/**
+ * {@linkplain BatchSipAssembler Assemble a batch of SIPs} on a timed interval.
+ * <p>
+ * @param <D> The type of domain objects to assemble
+ */
 public class TimeBasedBatchSipAssembler<D> extends BatchSipAssembler<D> {
 
   private final Object lock = new Object();

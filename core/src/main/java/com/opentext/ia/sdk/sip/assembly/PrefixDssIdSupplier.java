@@ -6,6 +6,10 @@ package com.opentext.ia.sdk.sip.assembly;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+
+/**
+ * Generate Data Submission Session (DSS) IDs from a fixed prefix and a variable part.
+ */
 public abstract class PrefixDssIdSupplier implements Supplier<String> {
 
   private final String prefix;

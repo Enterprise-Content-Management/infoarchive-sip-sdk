@@ -12,6 +12,11 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 
 import com.opentext.ia.sdk.support.http.Response;
 
+
+/**
+ * Implementation of {@linkplain Response} using the <a href="https://hc.apache.org/">Apache HttpComponents</a>
+ * library.
+ */
 public class ApacheResponse implements Response {
 
   private final CloseableHttpResponse wrapped;

@@ -1,23 +1,24 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.sip.client.rest;
+package com.opentext.ia.sdk.configurer;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.opentext.ia.sdk.sip.client.dto.*;
+import com.opentext.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
 
 
 @SuppressWarnings("PMD.TooManyFields")
-public class RestCache {
+class ConfigurationResourcesCache {
 
   private Services services;
   private Tenant tenant;
   private Application application;
   private String ingestUri;
-  private Federation federation;
+  private XdbFederation federation;
   private String fileSystemRootUri;
   private Space space;
   private String databaseUri;
@@ -86,11 +87,11 @@ public class RestCache {
     this.tenant = tenant;
   }
 
-  public Federation getFederation() {
+  public XdbFederation getFederation() {
     return federation;
   }
 
-  public void setFederation(Federation federation) {
+  public void setFederation(XdbFederation federation) {
     this.federation = federation;
   }
 

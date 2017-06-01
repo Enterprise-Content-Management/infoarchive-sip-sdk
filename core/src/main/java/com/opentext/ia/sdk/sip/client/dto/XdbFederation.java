@@ -3,7 +3,8 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Federation extends NamedLinkContainer {
+
+public class XdbFederation extends NamedLinkContainer {
 
   private String superUserPassword;
   private String bootstrap;

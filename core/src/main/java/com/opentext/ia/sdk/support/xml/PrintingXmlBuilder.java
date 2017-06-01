@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Stack;
 
 
+/**
+ * Fluent API for building XML documents by writing them to a {@linkplain PrintWriter}.
+ */
 public class PrintingXmlBuilder implements XmlBuilder<Void> {
 
   private final Stack<Element> elements = new Stack<>();

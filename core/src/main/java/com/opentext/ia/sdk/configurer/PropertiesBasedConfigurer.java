@@ -15,13 +15,14 @@ import java.util.stream.Collectors;
 
 import com.opentext.ia.sdk.sip.client.dto.*;
 import com.opentext.ia.sdk.sip.client.dto.export.*;
+import com.opentext.ia.sdk.sip.client.dto.export.ExportConfiguration.DefaultOption;
+import com.opentext.ia.sdk.sip.client.dto.export.ExportConfiguration.Transformation;
+import com.opentext.ia.sdk.sip.client.dto.result.AllSearchComponents;
 import com.opentext.ia.sdk.sip.client.dto.result.Column;
 import com.opentext.ia.sdk.sip.client.dto.result.Column.DataType;
 import com.opentext.ia.sdk.sip.client.dto.result.Column.DefaultSort;
 import com.opentext.ia.sdk.sip.client.dto.result.ResultMaster;
-import com.opentext.ia.sdk.sip.client.dto.result.searchconfig.AllSearchComponents;
 import com.opentext.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
-import com.opentext.ia.sdk.sip.client.rest.RestCache;
 import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.RepeatingConfigReader;
 import com.opentext.ia.sdk.support.datetime.Clock;
@@ -57,7 +58,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   private static final String DEFAULT_STORE_NAME = "filestore_01";
   private static final String DEFAULT_RESULT_HELPER_NAME = "result_helper";
 
-  private final RestCache cache = new RestCache();
+  private final ConfigurationResourcesCache cache = new ConfigurationResourcesCache();
   private final Map<String, String> configuration;
   private RestClient restClient;
   private final Clock clock;
@@ -167,7 +168,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void ensureFederation() throws IOException {
-    Federation federation = ensureItem(cache.getServices(), LINK_FEDERATIONS, Federations.class, FEDERATION_NAME,
+    XdbFederation federation = ensureItem(cache.getServices(), LINK_FEDERATIONS, XdbFederations.class, FEDERATION_NAME,
         this::createFederation);
     cache.setFederation(federation);
   }
@@ -208,8 +209,8 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
     return type.getSimpleName().toLowerCase(Locale.ENGLISH);
   }
 
-  private Federation createFederation(String name) {
-    Federation result = createObject(name, Federation.class);
+  private XdbFederation createFederation(String name) {
+    XdbFederation result = createObject(name, XdbFederation.class);
     result.setSuperUserPassword(configuration.get(FEDERATION_SUPERUSER_PASSWORD));
     result.setBootstrap(configuration.get(FEDERATION_BOOTSTRAP));
     return result;
@@ -486,9 +487,15 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
     ExportConfiguration.Transformation transformation = new ExportConfiguration.Transformation();
     transformation.setPortName("stylesheet");
     transformation.setName(cache.getObjectUri(TYPE_EXPORT_TRANSFORMATION, "csv_xsl"));
-    result.addTransformation(transformation);
-    result.addOption(ExportConfiguration.DefaultOption.XSL_RESULT_FORMAT, "csv");
+    addTransformation(result, transformation);
+    addOption(result, ExportConfiguration.DefaultOption.XSL_RESULT_FORMAT, "csv");
     return result;
+  }
+
+  private void addTransformation(ExportConfiguration exportConfiguration, Transformation transformation) {
+    if (transformation != null && transformation.getPortName() != null && transformation.getName() != null) {
+      exportConfiguration.getTransformations().add(transformation);
+    }
   }
 
   private void ensureTenantLevelExportTransformations() throws IOException {
@@ -577,23 +584,39 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
         config.getName(), name));
     result.setName(cache.getObjectUri(TYPE_EXPORT_TRANSFORMATION, templatedString(
         EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_TRANSFORMATION_TEMPLATE, config.getName(), name)));
-    config.addTransformation(result);
+    addTransformation(config, result);
   }
 
   private void fillExportConfigurationOptions(ExportConfiguration config) {
-    config.addOption(ExportConfiguration.DefaultOption.XSL_RESULT_FORMAT,
+    addOption(config, ExportConfiguration.DefaultOption.XSL_RESULT_FORMAT,
         templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_XSL_RESULTFORMAT_TEMPLATE, config.getName()));
-    config.addOption(ExportConfiguration.DefaultOption.XQUERY_RESULT_FORMAT,
+    addOption(config, ExportConfiguration.DefaultOption.XQUERY_RESULT_FORMAT,
         templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_XQUERY_RESULTFORMAT_TEMPLATE, config.getName()));
     forEach(templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_NAME, config.getName()), name ->
-        config.addOption(name, templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_VALUE_TEMPLATE,
+        addOption(config, name, templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_VALUE_TEMPLATE,
         config.getName(), name)));
+  }
+
+  private void addOption(ExportConfiguration exportConfiguration, DefaultOption option, String value) {
+    addOption(exportConfiguration, option.getName(), value);
+  }
+
+  private void addOption(ExportConfiguration exportConfiguration, String key, String value) {
+    if (key != null && value != null) {
+      exportConfiguration.getOptions().put(key, value);
+    }
   }
 
   private void fillExportConfigurationEncryptedOptions(ExportConfiguration config) {
     forEach(templatedString(EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_NAME, config.getName()),
-        name -> config.addEncryptedOption(name, templatedString(EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_VALUE_TEMPLATE,
+        name -> addEncryptedOption(config, name, templatedString(EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_VALUE_TEMPLATE,
         config.getName(), name)));
+  }
+
+  private void addEncryptedOption(ExportConfiguration exportConfiguration, String key, String value) {
+    if (key != null && value != null) {
+      exportConfiguration.getEncryptedOptions().put(key, value);
+    }
   }
 
   private void ensureExportTransformations() throws IOException {
@@ -647,7 +670,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
 
   private void ensureContents(LinkContainer state, String configurationName, String format) throws IOException {
     Contents contents = restClient.follow(state, LINK_CONTENTS, Contents.class);
-    if (contents.hasContent()) {
+    if (contents.hasItems()) {
       return;
     }
     String content = configured(configurationName);
@@ -681,13 +704,13 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void ensureLibrary() throws IOException {
-    Library library = ensureItem(cache.getSpaceRootLibrary(), LINK_LIBRARIES, Libraries.class, HOLDING_NAME,
+    XdbLibrary library = ensureItem(cache.getSpaceRootLibrary(), LINK_LIBRARIES, XdbLibraries.class, HOLDING_NAME,
         this::createLibrary);
     cache.setLibraryUri(library.getSelfUri());
   }
 
-  private Library createLibrary(String name) {
-    Library result = createObject(name, Library.class);
+  private XdbLibrary createLibrary(String name) {
+    XdbLibrary result = createObject(name, XdbLibrary.class);
     result.setSubPath("aips/" + getApplicationName().replace(' ', '-'));
     return result;
   }
@@ -705,7 +728,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
 
   private Holding createHolding(String name) {
     Holding result = createObject(name, Holding.class);
-    result.setAllStores(cache.getStoreUri());
+    setAllStores(result, cache.getStoreUri());
     IngestConfig ingestConfig = new IngestConfig();
     ingestConfig.setIngest(cache.getIngestUri());
     result.getIngestConfigs().add(ingestConfig);
@@ -727,6 +750,16 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
     pdiConfig.setSchema(configured(PDI_SCHEMA_NAME));
     result.getPdiConfigs().add(pdiConfig);
     return result;
+  }
+
+  private void setAllStores(Holding holding, String store) {
+    holding.setCiStore(store);
+    holding.setLogStore(store);
+    holding.setRenditionStore(store);
+    holding.setSipStore(store);
+    holding.setXdbStore(store);
+    holding.setXmlStore(store);
+    holding.setManagedItemStore(store);
   }
 
   private void ensureAic() throws IOException {
@@ -1035,7 +1068,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void ensurePdiCrypto() throws IOException {
-    ensureOptionalItem(cache.getApplication(), LINK_PDI_CRYPTOS, PdiCryptos.class, PDI_CRYPTO_NAME,
+    ensureOptionalItem(cache.getApplication(), LINK_PDI_CRYPTOS, PdiCryptoes.class, PDI_CRYPTO_NAME,
         this::createPdiCrypto).ifPresent(pdiCrypto ->
       cache.setPdiCryptoUri(pdiCrypto.getSelfUri()));
   }
@@ -1047,7 +1080,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void ensureHoldingCrypto() throws IOException {
-    ensureOptionalItem(cache.getApplication(), LINK_HOLDING_CRYPTOS, HoldingCryptos.class, HOLDING_CRYPTO_NAME,
+    ensureOptionalItem(cache.getApplication(), LINK_HOLDING_CRYPTOS, HoldingCryptoes.class, HOLDING_CRYPTO_NAME,
         this::createHoldingCrypto);
   }
 

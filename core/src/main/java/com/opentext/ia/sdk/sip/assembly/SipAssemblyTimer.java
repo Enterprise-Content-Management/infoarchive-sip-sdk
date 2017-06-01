@@ -8,6 +8,10 @@ import java.util.function.Consumer;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.datetime.DefaultClock;
 
+
+/**
+ * Timer information for use in repeatedly assembling SIPs.
+ */
 public class SipAssemblyTimer {
 
   private final long millis;

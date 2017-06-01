@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class ResultConfigurationHelpers extends ItemContainer<ResultConfigurationHelper> {
 
-  protected ResultConfigurationHelpers() {
-    super("resultConfigurationHelpers");
-  }
+public class ResultConfigurationHelpers extends ItemContainer<ResultConfigurationHelper> {
 
 }

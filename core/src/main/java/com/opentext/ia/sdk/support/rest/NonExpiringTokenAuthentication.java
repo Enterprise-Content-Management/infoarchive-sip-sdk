@@ -7,6 +7,10 @@ import java.util.Optional;
 
 import com.opentext.ia.sdk.support.http.Header;
 
+
+/**
+ * Authenticate with a token that never expires. This is not very secure!
+ */
 public final class NonExpiringTokenAuthentication implements AuthenticationStrategy {
 
   private final String token;
@@ -31,4 +35,5 @@ public final class NonExpiringTokenAuthentication implements AuthenticationStrat
   public Header issueAuthHeader() {
     return new Header("Authorization", token);
   }
+
 }

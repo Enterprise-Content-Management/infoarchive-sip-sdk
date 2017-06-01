@@ -13,6 +13,9 @@ import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
 
+/**
+ * InfoArchive server configuration in YAML format.
+ */
 public class YamlConfiguration implements InfoArchiveConfiguration {
 
   private final Map<String, String> map = new HashMap<>();

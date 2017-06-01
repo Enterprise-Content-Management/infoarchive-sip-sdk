@@ -35,6 +35,10 @@ import com.opentext.ia.sdk.support.io.ByteArrayInputOutputStream;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
 
+/**
+ * Implementation of {@linkplain HttpClient} using the <a href="https://hc.apache.org/">Apache HttpComponents</a>
+ * library.
+ */
 public class ApacheHttpClient implements HttpClient {
 
   private static final String MISSING_URI = "Missing URI";

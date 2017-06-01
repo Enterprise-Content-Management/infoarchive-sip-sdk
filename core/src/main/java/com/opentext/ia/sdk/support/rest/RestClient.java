@@ -13,6 +13,9 @@ import java.util.Objects;
 import com.opentext.ia.sdk.support.http.*;
 
 
+/**
+ * An HTTP client that understands hyperlinks.
+ */
 public class RestClient implements Closeable, StandardLinkRelations {
 
   private final JsonFormatter formatter = new JsonFormatter();

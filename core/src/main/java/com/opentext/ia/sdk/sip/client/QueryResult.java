@@ -6,6 +6,10 @@ package com.opentext.ia.sdk.sip.client;
 import java.io.Closeable;
 import java.io.InputStream;
 
+
+/**
+ * Result of executing a query.
+ */
 public interface QueryResult extends Closeable {
 
   int getResultSetQuota();

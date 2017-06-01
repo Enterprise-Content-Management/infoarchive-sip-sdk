@@ -3,6 +3,10 @@
  */
 package com.opentext.ia.sdk.support.http;
 
+
+/**
+ * One part in a <a href="https://tools.ietf.org/html/rfc2045">multi-part</a> message.
+ */
 public class Part {
 
   private final String name;

@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Spaces extends ItemContainer<Space> {
 
-  public Spaces() {
-    super("spaces");
-  }
+public class Spaces extends ItemContainer<Space> {
 
 }

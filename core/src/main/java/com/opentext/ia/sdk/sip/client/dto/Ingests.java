@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Ingests extends ItemContainer<Ingest> {
 
-  public Ingests() {
-    super("ingests");
-  }
+public class Ingests extends ItemContainer<Ingest> {
 
 }

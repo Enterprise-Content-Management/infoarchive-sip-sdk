@@ -224,14 +224,4 @@ public class Holding extends NamedLinkContainer {
     this.pdiConfigs = pdiConfigs;
   }
 
-  public final void setAllStores(String store) {
-    setCiStore(store);
-    setLogStore(store);
-    setRenditionStore(store);
-    setSipStore(store);
-    setXdbStore(store);
-    setXmlStore(store);
-    setManagedItemStore(store);
-  }
-
 }
