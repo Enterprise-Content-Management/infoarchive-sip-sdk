@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.sample.ingest;
 
-import static com.opentext.ia.sdk.configurer.InfoArchiveConfiguration.*;
+import static com.opentext.ia.sdk.server.configuration.InfoArchiveConfiguration.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,10 +14,10 @@ import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 
-import com.opentext.ia.sdk.configurer.ArchiveClients;
-import com.opentext.ia.sdk.configurer.PropertiesBasedConfigurer;
-import com.opentext.ia.sdk.sip.assembly.*;
-import com.opentext.ia.sdk.sip.client.ArchiveClient;
+import com.opentext.ia.sdk.client.ArchiveClient;
+import com.opentext.ia.sdk.server.configuration.ArchiveClients;
+import com.opentext.ia.sdk.server.configuration.PropertiesBasedConfigurer;
+import com.opentext.ia.sdk.sip.*;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 
 

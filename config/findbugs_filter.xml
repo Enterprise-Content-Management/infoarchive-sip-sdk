@@ -17,18 +17,8 @@
     </Or>
   </Match>
   <Match>
-    <!-- Must be an instance method, or else JBehave will balk -->
-    <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
-    <Class name="com.opentext.ia.ingestion.integration.SipIngestionFramework" />
-  </Match>
-  <Match>
-    <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
-    <Class name="com.opentext.ia.ingestion.runtime.storm.topology.IngestionSurveillanceStats" />
-    <Method name="prepare" />
-  </Match>
-  <Match>
     <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
-    <Class name="~com\.opentext\.ia\.sdk\.sip\.assembly\.(DataSubmissionSession|PackagingInformation)(\$.*)?" />
+    <Class name="~com\.opentext\.ia\.sdk\.sip\.(DataSubmissionSession|PackagingInformation)(\$.*)?" />
   </Match>
   <Match>
     <Bug pattern="EI_EXPOSE_REP2" />
