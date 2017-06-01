@@ -94,38 +94,38 @@ public class YamlConfiguration implements InfoArchiveConfiguration {
 
     map.put(RETENTION_POLICY_NAME, getString(source, "retention-policy", NAME));
 
-    map.put(PDI_SCHEMA_NAME, getString(source, "pdi", "schema", NAME));
-    map.put(PDI_SCHEMA, getString(source, "pdi", "schema", "xsd"));
-    map.put(PDI_XML, getString(source, "pdi", "xml"));
-    map.put(INGEST_XML, getString(source, "ingest", "xml"));
+    map.put(PDI_SCHEMA_NAME, getString(source, "pdi", SCHEMA, NAME));
+    map.put(PDI_SCHEMA, getString(source, "pdi", SCHEMA, "xsd"));
+    map.put(PDI_XML, getString(source, "pdi", XML));
+    map.put(INGEST_XML, getString(source, "ingest", XML));
 
     for (Map<String, Object> query: getList(source, "query")) {
-      String name = getString(query, "name");
+      String name = getString(query, NAME);
       append(QUERY_NAME, name);
       map.put(String.format(QUERY_NAMESPACE_PREFIX_TEMPLATE, name), getString(query, "namespace", "prefix"));
       map.put(String.format(QUERY_NAMESPACE_URI_TEMPLATE, name), getString(query, "namespace", "uri"));
-      map.put(String.format(QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, name), getString(query, "result", "root", "element"));
-      map.put(String.format(QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, name), getString(query, "result", "root", "ns-enabled"));
-      String schema = getString(query, "result", "schema");
+      map.put(String.format(QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, name), getString(query, RESULT, "root", "element"));
+      map.put(String.format(QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, name), getString(query, RESULT, "root", "ns-enabled"));
+      String schema = getString(query, RESULT, SCHEMA);
       map.put(String.format(QUERY_RESULT_SCHEMA_TEMPLATE, name), schema);
-      map.put(String.format(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name), getString(query, "xdbpdi", "entity", "path"));
-      map.put(String.format(QUERY_XDBPDI_SCHEMA_TEMPLATE, name), getString(query, "xdbpdi", "schema"));
-      map.put(String.format(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name), getString(query, "xdbpdi", "template"));
-      map.put(String.format(QUERY_XDBPDI_OPERAND_NAME, name, schema), getString(query, "xdbpdi", "operand", NAME));
-      map.put(String.format(QUERY_XDBPDI_OPERAND_PATH, name, schema), getString(query, "xdbpdi", "operand", "path"));
-      map.put(String.format(QUERY_XDBPDI_OPERAND_TYPE, name, schema), getString(query, "xdbpdi", "operand", TYPE));
-      map.put(String.format(QUERY_XDBPDI_OPERAND_INDEX, name, schema), getString(query, "xdbpdi", "operand", "index"));
+      map.put(String.format(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name), getString(query, XDBPDI, "entity", "path"));
+      map.put(String.format(QUERY_XDBPDI_SCHEMA_TEMPLATE, name), getString(query, XDBPDI, SCHEMA));
+      map.put(String.format(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name), getString(query, XDBPDI, "template"));
+      map.put(String.format(QUERY_XDBPDI_OPERAND_NAME, name, schema), getString(query, XDBPDI, OPERAND, NAME));
+      map.put(String.format(QUERY_XDBPDI_OPERAND_PATH, name, schema), getString(query, XDBPDI, OPERAND, "path"));
+      map.put(String.format(QUERY_XDBPDI_OPERAND_TYPE, name, schema), getString(query, XDBPDI, OPERAND, TYPE));
+      map.put(String.format(QUERY_XDBPDI_OPERAND_INDEX, name, schema), getString(query, XDBPDI, OPERAND, "index"));
     }
 
     for (Map<String, Object> resultHelper: getList(source, "result-helper")) {
-      String name = getString(resultHelper, "name");
+      String name = getString(resultHelper, NAME);
       append(RESULT_HELPER_NAME, name);
-      map.put(String.format(RESULT_HELPER_SCHEMA_TEMPLATE, name), getString(resultHelper, "schema"));
-      map.put(String.format(RESULT_HELPER_XML, name), getString(resultHelper, "xml"));
+      map.put(String.format(RESULT_HELPER_SCHEMA_TEMPLATE, name), getString(resultHelper, SCHEMA));
+      map.put(String.format(RESULT_HELPER_XML, name), getString(resultHelper, XML));
     }
 
     for (Map<String, Object> search: getList(source, "search")) {
-      String searchName = getString(search, "name");
+      String searchName = getString(search, NAME);
       append(SEARCH_NAME, searchName);
       map.put(String.format(SEARCH_DESCRIPTION, searchName), getString(search, DESCRIPTION));
       map.put(String.format(SEARCH_NESTED, searchName), getString(search, "nested"));
@@ -135,15 +135,15 @@ public class YamlConfiguration implements InfoArchiveConfiguration {
       map.put(String.format(SEARCH_QUERY, searchName), getString(search, "query"));
 
       for (Map<String, Object> composition: getList(search, "composition")) {
-        String compositionName = getString(composition, "name");
+        String compositionName = getString(composition, NAME);
         append(SEARCH_COMPOSITION_NAME, compositionName);
         map.put(String.format(SEARCH_COMPOSITION_XFORM_NAME, searchName), getString(composition, "xform", NAME));
-        map.put(String.format(SEARCH_COMPOSITION_XFORM, searchName), getString(composition, "xform", "xml"));
-        map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, searchName, compositionName), getString(composition, "result", "main", NAME));
-        map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, searchName, compositionName), getString(composition, "result", "main", "label"));
-        map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName, compositionName), getString(composition, "result", "main", "path"));
-        map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName, compositionName), getString(composition, "result", "main", "type"));
-        map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT, searchName, compositionName), getString(composition, "result", "main", "sort"));
+        map.put(String.format(SEARCH_COMPOSITION_XFORM, searchName), getString(composition, "xform", XML));
+        map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, searchName, compositionName), getString(composition, RESULT, MAIN, NAME));
+        map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, searchName, compositionName), getString(composition, RESULT, MAIN, "label"));
+        map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName, compositionName), getString(composition, RESULT, MAIN, "path"));
+        map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName, compositionName), getString(composition, RESULT, MAIN, "type"));
+        map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT, searchName, compositionName), getString(composition, RESULT, MAIN, "sort"));
         map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE, searchName), getString(composition, "export", "enabled"));
         map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName), getString(composition, "export", "configs"));
       }
