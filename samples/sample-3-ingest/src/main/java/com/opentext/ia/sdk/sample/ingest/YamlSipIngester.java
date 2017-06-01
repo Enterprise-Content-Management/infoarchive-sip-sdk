@@ -84,11 +84,8 @@ public class YamlSipIngester {
     // holding, etc.
     ArchiveClient archiveClient;
     try (InputStream yaml = getClass().getResourceAsStream("/configuration.yml")) {
-      YamlConfiguration y = new YamlConfiguration(yaml);
-      //System.out.println(y.toMap().get("server.authentication.user") == null);
-      System.out.println(y.toMap());
       archiveClient = ArchiveClients.configuringServerUsing(
-          new YamlBasedConfigurer(y));
+          new YamlBasedConfigurer(new YamlConfiguration(yaml)));
     }
 
     // Ingest the SIP into InfoArchive
