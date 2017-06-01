@@ -1,6 +1,14 @@
 server:
   uri: http://localhost:8765/services
-  token: eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjM2MDU4Mjg3NjEsInVzZXJfbmFtZSI6InN1ZUBpYWN1c3RvbWVyLmNvbSIsImF1dGhvcml0aWVzIjpbIkdST1VQX0FETUlOSVNUUkFUT1IiLCJHUk9VUF9SRVRFTlRJT05fTUFOQUdFUiIsIkdST1VQX0JVU0lORVNTX09XTkVSIiwiR1JPVVBfRU5EX1VTRVIiLCJHUk9VUF9ERVZFTE9QRVIiLCJHUk9VUF9JVF9PV05FUiIsIlJPTEVfQURNSU5JU1RSQVRPUiIsIlJPTEVfUkVURU5USU9OX01BTkFHRVIiLCJST0xFX0JVU0lORVNTX09XTkVSIiwiUk9MRV9FTkRfVVNFUiIsIlJPTEVfREVWRUxPUEVSIiwiUk9MRV9JVF9PV05FUiJdLCJqdGkiOiJiODhmMGEwMi0yNTMyLTQ2OWUtYmU4ZC1iYWVkZjM5OTExNDIiLCJjbGllbnRfaWQiOiJpbmZvYXJjaGl2ZS5pYXdhIiwic2NvcGUiOlsiYWRtaW5pc3RyYXRpb24iLCJjb21wbGlhbmNlIiwic2VhcmNoIl19.tRNjesTSzMYmpFNP1xCPl_SHUetGtLvyHzvc59TCqF0
+  authentication:
+    token: eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjM2MDU4Mjg3NjEsInVzZXJfbmFtZSI6InN1ZUBpYWN1c3RvbWVyLmNvbSIsImF1dGhvcml0aWVzIjpbIkdST1VQX0FETUlOSVNUUkFUT1IiLCJHUk9VUF9SRVRFTlRJT05fTUFOQUdFUiIsIkdST1VQX0JVU0lORVNTX09XTkVSIiwiR1JPVVBfRU5EX1VTRVIiLCJHUk9VUF9ERVZFTE9QRVIiLCJHUk9VUF9JVF9PV05FUiIsIlJPTEVfQURNSU5JU1RSQVRPUiIsIlJPTEVfUkVURU5USU9OX01BTkFHRVIiLCJST0xFX0JVU0lORVNTX09XTkVSIiwiUk9MRV9FTkRfVVNFUiIsIlJPTEVfREVWRUxPUEVSIiwiUk9MRV9JVF9PV05FUiJdLCJqdGkiOiJiODhmMGEwMi0yNTMyLTQ2OWUtYmU4ZC1iYWVkZjM5OTExNDIiLCJjbGllbnRfaWQiOiJpbmZvYXJjaGl2ZS5pYXdhIiwic2NvcGUiOlsiYWRtaW5pc3RyYXRpb24iLCJjb21wbGlhbmNlIiwic2VhcmNoIl19.tRNjesTSzMYmpFNP1xCPl_SHUetGtLvyHzvc59TCqF0
+    user: null
+    password: null
+    gateway: null
+    client_id: null
+    client_secret: null
+
+tenant: TENANT
 
 xdb:
   federation:
@@ -11,17 +19,6 @@ xdb:
     name: animal
     password: test
 
-retention-policy:
-  name: Animals
-
-aic:
-  name: Animal
-
-quota:
-  name: DefaultQuota
-
-tenant: TENANT
-
 application:
   name: Animals
   description: Sample application
@@ -30,10 +27,187 @@ application:
 holding:
   name: Animals
 
+file-system-folder:
+  name: null
+
+store:
+  name: null
+  store-type: null
+  folder: null
+  type: null
+
+aic:
+  name: Animals
+  criteria:
+    name: animalName,filePath
+    label: "Animal Name","File Path"
+    type: STRING,STRING
+    pkeyminattr: "",""
+    pkeymaxattr: "",""
+    pkeyvaluesattr: "",""
+    indexed: true,true
+
+query:
+  - name: DefaultQuery
+    namespace:
+      prefix: n
+      uri: "urn:opentext:ia:schema:sample:animal:1.0"
+    result:
+      root:
+        element: result
+        ns:
+          enabled: true
+      schema: "urn:opentext:ia:schema:sample:animal:1.0"
+    xdbpdi:
+      entity:
+        path: "/n:animals/n:animal"
+      schema: "urn:opentext:ia:schema:sample:animal:1.0"
+      template: "return $aiu"
+      operand:
+        name: animalName,filePath
+        path: "n:animal_name","n:file_path"
+        type: STRING,STRING
+        index: true,true
+
+quota:
+  name: DefaultQuota
+  aiu: null
+  aip: null
+  dip: null
+
+result-helper:
+  - name: "result_helper"
+    schema: "urn:opentext:ia:schema:sample:animal:1.0"
+    xml: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <resultConfigurationHelper xmlns:n="urn:opentext:ia:schema:sample:animal:1.0" xmlns:ia="urn:x-emc:ia:schema:pdi">
+        <element>
+          <name>id</name>
+          <label>ID</label>
+          <type>ID</type>
+          <path>@ia:id</path>
+        </element>
+        <element>
+          <name>animalName</name>
+          <label>Animal Name</label>
+          <type>STRING</type>
+          <path>n:animal_name</path>
+        </element>
+        <element>
+          <name>filePath</name>
+          <label>File Path</label>
+          <type>STRING</type>
+          <path>n:file_path</path>
+        </element>
+      </resultConfigurationHelper>
+
+search:
+  - default:
+      name: null
+      result-master: null
+  - name: "Find animals"
+    description: null
+    nested-search: false
+    state: DRAFT
+    inuse: true
+    aic: Animals
+    query: DefaultQuery
+    composition:
+      - name: null
+        xform:
+          name: form
+          xml: |
+            <xhtml:html xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xforms="http://www.w3.org/2002/xforms"
+                        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+              <xhtml:head>
+                <xforms:model>
+                  <xforms:instance xmlns="">
+                    <data>
+                      <animalName />
+                      <filePath />
+                    </data>
+                  </xforms:instance>
+                  <xforms:instance xmlns="" id="labels">
+                    <labels>
+                      <animalName>Animal Name</animalName>
+                      <filePath>File Path</filePath>
+                    </labels>
+                  </xforms:instance>
+                  <xforms:instance xmlns="" id="hints">
+                    <hints>
+                      <animalName />
+                      <filePath />
+                    </hints>
+                  </xforms:instance>
+                  <xforms:instance xmlns="" id="prompts">
+                    <prompts>
+                      <animalName />
+                      <filePath />
+                    </prompts>
+                  </xforms:instance>
+                  <xforms:instance xmlns="" id="alerts">
+                    <alerts>
+                      <animalName />
+                      <filePath />
+                    </alerts>
+                  </xforms:instance>
+                  <xforms:instance xmlns="" id="range-messages">
+                    <rangemessages>
+                      <animalName />
+                      <filePath />
+                    </rangemessages>
+                  </xforms:instance>
+                  <xforms:instance xmlns="" id="pattern-messages">
+                    <patternmessages>
+                      <animalName />
+                      <filePath />
+                    </patternmessages>
+                  </xforms:instance>
+                  <xforms:submission id="submit01" method="post" serialization="application/xml" />
+                  <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xforms="http://www.w3.org/2002/xforms"
+                              targetNamespace="http://www.w3.org/2002/xforms" elementFormDefault="qualified">
+                  </xsd:schema>
+                  <bind xmlns="http://www.w3.org/2002/xforms" ref="/data/animalName" />
+                  <bind xmlns="http://www.w3.org/2002/xforms" ref="/data/filePath" />
+                </xforms:model>
+              </xhtml:head>
+              <xhtml:body>
+                <input xmlns="http://www.w3.org/2002/xforms" ref="filePath">
+                  <label ref="instance('labels')/filePath" />
+                  <hint ref="instance('hints')/filePath" />
+                  <hint appearance="minimal" ref="instance('prompts')/filePath" />
+                  <alert ref="instance('alerts')/filePath" />
+                  <message class="range" ref="instance('range-messages')/filePath" />
+                  <message class="pattern" ref="instance('pattern-messages')/filePath" />
+                </input>
+                <input xmlns="http://www.w3.org/2002/xforms" ref="animalName">
+                  <label ref="instance('labels')/animalName" />
+                  <hint ref="instance('hints')/animalName" />
+                  <hint appearance="minimal" ref="instance('prompts')/animalName" />
+                  <alert ref="instance('alerts')/animalName" />
+                  <message class="range" ref="instance('range-messages')/animalName" />
+                  <message class="pattern" ref="instance('pattern-messages')/animalName" />
+                </input>
+              </xhtml:body>
+            </xhtml:html>
+        result:
+          main:
+            name: animalName,filePath
+            label: "Animal Name","File Path"
+            path: "n:animal_name","n:file_path"
+            type: STRING,STRING
+            sort: NONE,NONE
+        export:
+          enabled: null
+          configs: null
+
+retention-policy:
+  name: Animals
+
 pdi:
   schema:
     name: "urn:opentext:ia:schema:sample:animal:1.0"
-    xsd: >
+    xsd: |
       <?xml version="1.0" encoding="UTF-8"?>
       <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
           targetNamespace="urn:opentext:ia:schema:sample:animal:1.0" xmlns:animal="urn:opentext:ia:schema:sample:animal:1.0">
@@ -55,7 +229,7 @@ pdi:
         <xs:element name="animal_name" type="xs:string"/>
         <xs:element name="file_path" type="xs:string"/>
       </xs:schema>
-  xml: >
+  xml: |
     <?xml version="1.0" encoding="UTF-8"?>
     <datas>
       <data>
@@ -125,7 +299,7 @@ pdi:
     </datas>
 
 ingest:
-  xml: >
+  xml: |
     <processors>
       <processor>
         <name>SIP downloader processor</name>
@@ -249,3 +423,13 @@ ingest:
         <class>com.emc.ia.ingestion.processor.commit.CommitProcessor</class>
       </processor>
     </processors>
+
+job:
+  definition: null
+
+http:
+  client: null
+
+proxy:
+  host: null
+  port: null

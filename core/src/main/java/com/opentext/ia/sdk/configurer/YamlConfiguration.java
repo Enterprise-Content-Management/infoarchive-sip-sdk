@@ -48,7 +48,7 @@ public class YamlConfiguration implements InfoArchiveConfiguration {
   @SuppressWarnings("PMD.UnusedFormalParameter")
   private void expand(Map<String, Object> source) {
     map.put(SERVER_URI, getString(source, "server", "uri"));
-    map.put(SERVER_AUTENTICATON_TOKEN, getString(source, "server", "token"));
+    map.put(SERVER_AUTENTICATON_TOKEN, getString(source, "server", "authentication", "token"));
 
     map.put(FEDERATION_NAME, getString(source, XDB, "federation", NAME));
     map.put(FEDERATION_BOOTSTRAP, getString(source, XDB, "federation", "uri"));
