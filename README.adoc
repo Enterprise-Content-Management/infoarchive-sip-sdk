@@ -58,9 +58,10 @@ dependencies {
 
 == Versioning
     
-The InfoArchive SDK uses https://semver.org[semantic versioning].
-https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/Breaking-changes[Breaking changes] only occur 
-in major versions and are documented on the wiki.
+The InfoArchive SDK uses https://semver.org[semantic versioning], which means that backwards incompatible changes will
+only occur in major versions. These 
+https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/breaking-changes[rreaking changes] are
+documented on the wiki.
 
 
 == Usage
