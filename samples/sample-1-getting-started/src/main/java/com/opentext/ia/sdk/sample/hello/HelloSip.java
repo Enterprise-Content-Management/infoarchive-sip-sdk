@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 
-import com.opentext.ia.sdk.sip.assembly.*;
+import com.opentext.ia.sdk.sip.*;
 
 
 public class HelloSip {

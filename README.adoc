@@ -1,0 +1,72 @@
+image:https://img.shields.io/badge/license-mpl2-ff69b4.svg[title="License: MPL2", link="https://www.mozilla.org/en-US/MPL/2.0/"]
+image:https://img.shields.io/travis/Enterprise-Content-Management/infoarchive-sip-sdk.svg[title="Travis", link="https://travis-ci.org/Enterprise-Content-Management/infoarchive-sip-sdk"]
+image:https://img.shields.io/codecov/c/github/Enterprise-Content-Management/infoarchive-sip-sdk.svg[title="Code coverage", link="https://codecov.io/github/Enterprise-Content-Management/infoarchive-sip-sdk"]
+image:https://sonarqube.com/api/badges/measure?key=com.opentext.ia:infoarchive-sip-sdk&metric=sqale_debt_ratio[title="Technical Debt", link="https://sonarqube.com/dashboard?id=com.opentext.ia:infoarchive-sip-sdk"]
+image:https://img.shields.io/maven-central/v/com.emc.ia/infoarchive-sip-sdk-core.svg[title="Maven Central", link="https://repo1.maven.org/maven2/com/emc/ia/"]
+image:https://javadoc-emblem.rhcloud.com/doc/com.emc.ia/infoarchive-sip-sdk-core/badge.svg[title="Javadoc", link="http://www.javadoc.io/doc/com.emc.ia/infoarchive-sip-sdk-core"]
+
+= OpenText InfoArchive SDK
+
+The http://documentum.opentext.com/infoarchive/[OpenText InfoArchive] SDK is a Java library that 
+makes it quick and easy to create SIPs regardless of what type of data it contains or where that data originates
+from. A SIP (_Submission Information Package_) is a package consisting of packaging information, meta-data (structured
+data in the form of XML) and optionally a collection of unstructured data files.
+
+The IA SDK aims to make the process of creating SIPs simpler by allowing a developer to dynamically assemble both
+the XML file containing the structured data as well as the entire SIP itself. It's especially easy to create SIPs from
+any collection or stream of Plain Old Java Objects regardless of if they represent files, SQL query result sets, emails, 
+tweets, etc.
+
+You can also use the SDK to ingest SIPs into InfoArchive and even to configure InfoArchive. For this functionality you 
+must have access to a running InfoArchive server. The SDK supports version 4.0 of InfoArchive and newer.
+
+
+== Overview
+
+The SDK consists of the following jars:
+
+* `infoarchive-sip-sdk-core` is the core of the SDK
+* `infoarchive-sip-sdk-stringtemplate` contains code for working with the http://www.stringtemplate.org/[StringTemplate] template engine
+* `infoarchive-sip-sdk-velocity` contains code for working with the http://velocity.apache.org/[Velocity] template engine
+
+All jars can be found in the https://repo1.maven.org/maven2/com/emc/ia/[Central Repository]. The easiest way to get
+them is through a dependency management system like http://gradle.org/[Gradle] or https://maven.apache.org/[Maven].
+For the latest version, see the `maven-central` button at the top of this page.
+
+
+*Gradle*
+
+[source,groovy]
+----
+dependencies { 
+  compile 'com.emc.ia:infoarchive-sip-sdk-core:5.7.0'
+}
+----
+
+*Maven*
+
+[source,xml]
+----
+<dependencies>
+  <dependency>
+    <groupId>com.emc.ia</groupId>
+    <artifactId>infoarchive-sip-sdk-core</artifactId>
+    <version>5.7.0</version>
+  </dependency>
+</dependencies>
+----
+
+== Versioning
+    
+The InfoArchive SDK uses https://semver.org[semantic versioning], which means that backwards incompatible changes will
+only occur in major versions. These 
+https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/breaking-changes[rreaking changes] are
+documented on the wiki.
+
+
+== Usage
+
+For an https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.2/presentation.pdf[introduction]
+to the SDK and some https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.2/lab.pdf[lab exercises],
+see the related https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab[lab] project.
+For examples on how to use the SDK, see the https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/samples[sample programs].

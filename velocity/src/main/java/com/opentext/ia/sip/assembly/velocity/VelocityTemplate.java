@@ -15,9 +15,9 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 
-import com.opentext.ia.sdk.sip.assembly.ContentInfo;
-import com.opentext.ia.sdk.sip.assembly.DigitalObject;
-import com.opentext.ia.sdk.sip.assembly.FixedHeaderAndFooterTemplate;
+import com.opentext.ia.sdk.sip.ContentInfo;
+import com.opentext.ia.sdk.sip.DigitalObject;
+import com.opentext.ia.sdk.sip.FixedHeaderAndFooterTemplate;
 
 
 /**

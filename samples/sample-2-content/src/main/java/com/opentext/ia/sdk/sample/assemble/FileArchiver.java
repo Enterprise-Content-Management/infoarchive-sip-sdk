@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Map;
 
-import com.opentext.ia.sdk.sip.assembly.*;
+import com.opentext.ia.sdk.sip.*;
 import com.opentext.ia.sdk.support.io.*;
 
 

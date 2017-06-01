@@ -16,7 +16,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.opentext.ia.sdk.sip.assembly.Template;
+import com.opentext.ia.sdk.sip.Template;
 import com.opentext.ia.sdk.support.datetime.Dates;
 import com.opentext.ia.sdk.support.test.TestCase;
 

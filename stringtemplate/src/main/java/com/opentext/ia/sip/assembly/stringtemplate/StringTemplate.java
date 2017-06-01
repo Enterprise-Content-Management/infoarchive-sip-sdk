@@ -15,10 +15,10 @@ import org.stringtemplate.v4.NoIndentWriter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 
-import com.opentext.ia.sdk.sip.assembly.ContentInfo;
-import com.opentext.ia.sdk.sip.assembly.DigitalObject;
-import com.opentext.ia.sdk.sip.assembly.FixedHeaderAndFooterTemplate;
-import com.opentext.ia.sdk.sip.assembly.Template;
+import com.opentext.ia.sdk.sip.ContentInfo;
+import com.opentext.ia.sdk.sip.DigitalObject;
+import com.opentext.ia.sdk.sip.FixedHeaderAndFooterTemplate;
+import com.opentext.ia.sdk.sip.Template;
 
 /**
  * {@linkplain Template} using the <em>StringTemplate</em> templating engine. Templates have access to the following

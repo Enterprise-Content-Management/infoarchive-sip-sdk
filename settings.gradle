@@ -1,13 +1,13 @@
-rootProject.name = 'infoarchive-sip-sdk'
+rootProject.name = 'infoarchive-sdk'
 
 include 'core'
-project(':core').name = 'infoarchive-sip-sdk-core'
+project(':core').name = 'infoarchive-sdk-core'
 
 include 'stringtemplate'
-project(':stringtemplate').name = 'infoarchive-sip-sdk-stringtemplate'
+project(':stringtemplate').name = 'infoarchive-sdk-stringtemplate'
 
 include 'velocity'
-project(':velocity').name = 'infoarchive-sip-sdk-velocity'
+project(':velocity').name = 'infoarchive-sdk-velocity'
 
 new File('samples').listFiles().each { dir ->
   include "samples/$dir.name"

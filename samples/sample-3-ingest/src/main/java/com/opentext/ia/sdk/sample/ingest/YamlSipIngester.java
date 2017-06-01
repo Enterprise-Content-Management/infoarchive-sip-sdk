@@ -10,11 +10,11 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.*;
 
-import com.opentext.ia.sdk.configurer.ArchiveClients;
-import com.opentext.ia.sdk.configurer.YamlBasedConfigurer;
-import com.opentext.ia.sdk.configurer.YamlConfiguration;
-import com.opentext.ia.sdk.sip.assembly.*;
-import com.opentext.ia.sdk.sip.client.ArchiveClient;
+import com.opentext.ia.sdk.client.api.ArchiveClient;
+import com.opentext.ia.sdk.client.factory.ArchiveClients;
+import com.opentext.ia.sdk.server.configuration.YamlBasedConfigurer;
+import com.opentext.ia.sdk.server.configuration.YamlConfiguration;
+import com.opentext.ia.sdk.sip.*;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 
 
