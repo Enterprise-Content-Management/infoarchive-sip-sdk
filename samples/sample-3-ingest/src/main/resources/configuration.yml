@@ -39,13 +39,13 @@ store:
 aic:
   name: Animals
   criteria:
-    name: animalName,filePath
-    label: "Animal Name","File Path"
-    type: STRING,STRING
-    pkeyminattr: "",""
-    pkeymaxattr: "",""
-    pkeyvaluesattr: "",""
-    indexed: true,true
+    name: "animalName,filePath"
+    label: "Animal Name,File Path"
+    type: "STRING,STRING"
+    pkeyminattr: ","
+    pkeymaxattr: ","
+    pkeyvaluesattr: ","
+    indexed: "true,true"
 
 query:
   - name: DefaultQuery
@@ -64,10 +64,10 @@ query:
       schema: "urn:opentext:ia:schema:sample:animal:1.0"
       template: "return $aiu"
       operand:
-        name: animalName,filePath
-        path: "n:animal_name","n:file_path"
-        type: STRING,STRING
-        index: true,true
+        name: "animalName,filePath"
+        path: "n:animal_name,n:file_path"
+        type: "STRING,STRING"
+        index: "true,true"
 
 quota:
   name: DefaultQuota
@@ -192,11 +192,11 @@ search:
             </xhtml:html>
         result:
           main:
-            name: animalName,filePath
-            label: "Animal Name","File Path"
-            path: "n:animal_name","n:file_path"
-            type: STRING,STRING
-            sort: NONE,NONE
+            name: "animalName,filePath"
+            label: "Animal Name,File Path"
+            path: "n:animal_name,n:file_path"
+            type: "STRING,STRING"
+            sort: "NONE,NONE"
         export:
           enabled: null
           configs: null

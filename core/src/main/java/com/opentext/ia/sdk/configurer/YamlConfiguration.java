@@ -49,25 +49,48 @@ public class YamlConfiguration implements InfoArchiveConfiguration {
   private void expand(Map<String, Object> source) {
     map.put(SERVER_URI, getString(source, "server", "uri"));
     map.put(SERVER_AUTENTICATON_TOKEN, getString(source, "server", "authentication", "token"));
+    map.put(SERVER_AUTHENTICATION_USER, getString(source, "server", "authentication", "user"));
+    map.put(SERVER_AUTHENTICATION_PASSWORD, getString(source, "server", "authentication", "password"));
+    map.put(SERVER_AUTHENTICATION_GATEWAY, getString(source, "server", "authentication", "gateway"));
+    map.put(SERVER_CLIENT_ID, getString(source, "server", "authentication", "client_id"));
+    map.put(SERVER_CLIENT_SECRET, getString(source, "server", "authentication", "client_secret"));
+
+    map.put(TENANT_NAME, getString(source, "tenant"));
 
     map.put(FEDERATION_NAME, getString(source, XDB, "federation", NAME));
     map.put(FEDERATION_BOOTSTRAP, getString(source, XDB, "federation", "uri"));
     map.put(FEDERATION_SUPERUSER_PASSWORD, getString(source, XDB, "federation", "password"));
-
     map.put(DATABASE_NAME, getString(source, XDB, "database", NAME));
     map.put(DATABASE_ADMIN_PASSWORD, getString(source, XDB, "database", "password"));
 
-    map.put(RETENTION_POLICY_NAME, getString(source, "retention-policy", NAME));
-    map.put(AIC_NAME, getString(source, "aic", NAME));
-    map.put(QUOTA_NAME, getString(source, "quota", NAME));
-
-    map.put(TENANT_NAME, getString(source, "tenant"));
-
     map.put(APPLICATION_NAME, getString(source, "application", NAME));
     map.put(APPLICATION_CATEGORY, getString(source, "application", "category"));
-    map.put(APPLICATION_DESCRIPTION, getString(source, "application", "description"));
+    map.put(APPLICATION_DESCRIPTION, getString(source, "application", DESCRIPTION));
 
     map.put(HOLDING_NAME, getString(source, "holding", NAME));
+
+    map.put(FILE_SYSTEM_FOLDER, getString(source, "file-system-folder", NAME));
+
+    map.put(STORE_NAME, getString(source, "store", NAME));
+    map.put(STORE_STORETYPE, getString(source, "store", "store-type"));
+    map.put(STORE_FOLDER, getString(source, "store", "folder"));
+    map.put(STORE_TYPE, getString(source, "store", TYPE));
+
+    map.put(AIC_NAME, getString(source, "aic", NAME));
+    map.put(CRITERIA_NAME, getString(source, "aic", "criteria", NAME));
+    map.put(CRITERIA_LABEL, getString(source, "aic", "criteria", "label"));
+    map.put(CRITERIA_TYPE, getString(source, "aic", "criteria", TYPE));
+    map.put(CRITERIA_PKEYMINATTR, getString(source, "aic", "criteria", "pkeyminattr"));
+    map.put(CRITERIA_PKEYMAXATTR, getString(source, "aic", "criteria", "pkeymaxattr"));
+    map.put(CRITERIA_PKEYVALUESATTR, getString(source, "aic", "criteria", "pkeyvaluesattr"));
+    map.put(CRITERIA_INDEXED, getString(source, "aic", "criteria", "indexed"));
+
+    map.put(QUOTA_NAME, getString(source, "quota", NAME));
+    map.put(QUOTA_AIU, getString(source, "quota", "aiu"));
+    map.put(QUOTA_AIP, getString(source, "quota", "aip"));
+    map.put(QUOTA_DIP, getString(source, "quota", "dip"));
+
+    map.put(RETENTION_POLICY_NAME, getString(source, "retention-policy", NAME));
 
     map.put(PDI_SCHEMA_NAME, getString(source, "pdi", "schema", NAME));
     map.put(PDI_SCHEMA, getString(source, "pdi", "schema", "xsd"));
