@@ -268,12 +268,12 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void ensureDatabase() throws IOException {
-    cache.setDatabaseUri(ensureItem(cache.getFederation(), LINK_DATABASES, Databases.class,
+    cache.setDatabaseUri(ensureItem(cache.getFederation(), LINK_DATABASES, XdbDatabases.class,
         DATABASE_NAME, this::createDatabase).getSelfUri());
   }
 
-  private Database createDatabase(String name) {
-    Database result = createObject(name, Database.class);
+  private XdbDatabase createDatabase(String name) {
+    XdbDatabase result = createObject(name, XdbDatabase.class);
     result.setAdminPassword(configured(DATABASE_ADMIN_PASSWORD));
     return result;
   }
@@ -308,12 +308,12 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void ensureSpaceRootLibrary() throws IOException {
-    cache.setSpaceRootLibrary(ensureItem(cache.getSpace(), LINK_SPACE_ROOT_LIBRARIES, SpaceRootLibraries.class,
+    cache.setSpaceRootLibrary(ensureItem(cache.getSpace(), LINK_SPACE_ROOT_LIBRARIES, SpaceRootXdbLibraries.class,
         HOLDING_NAME, this::createSpaceRootLibrary));
   }
 
-  private SpaceRootLibrary createSpaceRootLibrary(String name) {
-    SpaceRootLibrary result = createObject(name, SpaceRootLibrary.class);
+  private SpaceRootXdbLibrary createSpaceRootLibrary(String name) {
+    SpaceRootXdbLibrary result = createObject(name, SpaceRootXdbLibrary.class);
     result.setXdbDatabase(cache.getDatabaseUri());
     return result;
   }
@@ -898,13 +898,13 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void ensureQuota() throws IOException {
-    Quota quota = ensureItem(cache.getApplication(), LINK_QUERY_QUOTAS, Quotas.class, QUOTA_NAME, this::createQuota);
+    QueryQuota quota = ensureItem(cache.getApplication(), LINK_QUERY_QUOTAS, QueryQuotas.class, QUOTA_NAME, this::createQuota);
     cache.setQuotaUri(quota.getSelfUri());
 
   }
 
-  private Quota createQuota(String name) {
-    Quota result = createObject(name, Quota.class);
+  private QueryQuota createQuota(String name) {
+    QueryQuota result = createObject(name, QueryQuota.class);
     result.setAipQuota(getOptionalInt(QUOTA_AIP, 0));
     result.setAiuQuota(getOptionalInt(QUOTA_AIU, 0));
     result.setDipQuota(getOptionalInt(QUOTA_DIP, 0));

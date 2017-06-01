@@ -4,6 +4,6 @@
 package com.opentext.ia.sdk.sip.client.dto;
 
 
-public class Quotas extends ItemContainer<Quota> {
+public class XdbDatabases extends ItemContainer<XdbDatabase> {
 
 }

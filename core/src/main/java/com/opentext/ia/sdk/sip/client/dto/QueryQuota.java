@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Quota extends NamedLinkContainer {
+public class QueryQuota extends NamedLinkContainer {
 
   private int aipQuota;
   private int aiuQuota;
