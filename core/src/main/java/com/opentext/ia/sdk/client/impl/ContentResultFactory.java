@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.client.rest;
+package com.opentext.ia.sdk.client.impl;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.entity.mime.MIME;
 import org.apache.http.message.BasicHeaderValueParser;
 
-import com.opentext.ia.sdk.client.ContentResult;
+import com.opentext.ia.sdk.client.api.ContentResult;
 import com.opentext.ia.sdk.support.http.MediaTypes;
 import com.opentext.ia.sdk.support.http.Response;
 import com.opentext.ia.sdk.support.http.ResponseBodyFactory;

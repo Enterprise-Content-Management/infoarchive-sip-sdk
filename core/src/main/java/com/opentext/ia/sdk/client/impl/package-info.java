@@ -8,4 +8,4 @@
  * <p>
  * SIPs can be assembled using the {@linkplain com.opentext.ia.sdk.sip SIP assembly} library.
  */
-package com.opentext.ia.sdk.client.rest;
+package com.opentext.ia.sdk.client.impl;

@@ -1,11 +1,11 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.client.rest;
+package com.opentext.ia.sdk.client.impl;
 
 import java.io.InputStream;
 
-import com.opentext.ia.sdk.client.QueryResult;
+import com.opentext.ia.sdk.client.api.QueryResult;
 import com.opentext.ia.sdk.support.http.Response;
 import com.opentext.ia.sdk.support.http.ResponseBodyFactory;
 

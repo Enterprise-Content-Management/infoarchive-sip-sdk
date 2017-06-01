@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.client.rest;
+package com.opentext.ia.sdk.client.impl;
 
 import java.io.Closeable;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 
-import com.opentext.ia.sdk.client.QueryResult;
+import com.opentext.ia.sdk.client.api.QueryResult;
 
 
 /**

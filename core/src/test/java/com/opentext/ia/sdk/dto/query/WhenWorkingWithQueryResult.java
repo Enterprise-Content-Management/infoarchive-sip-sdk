@@ -15,8 +15,8 @@ import java.io.InputStream;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentext.ia.sdk.client.QueryResult;
-import com.opentext.ia.sdk.client.rest.DefaultQueryResult;
+import com.opentext.ia.sdk.client.api.QueryResult;
+import com.opentext.ia.sdk.client.impl.DefaultQueryResult;
 import com.opentext.ia.sdk.support.test.RandomData;
 import com.opentext.ia.sdk.support.test.TestCase;
 

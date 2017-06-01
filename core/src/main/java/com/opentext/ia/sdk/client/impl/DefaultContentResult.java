@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.client.rest;
+package com.opentext.ia.sdk.client.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.opentext.ia.sdk.client.ContentResult;
+import com.opentext.ia.sdk.client.api.ContentResult;
 
 
 /**

@@ -8,6 +8,8 @@ import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 
+import com.opentext.ia.sdk.client.api.AuthenticationStrategyFactory;
+import com.opentext.ia.sdk.client.api.ServerConfiguration;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.http.rest.AuthenticationStrategy;

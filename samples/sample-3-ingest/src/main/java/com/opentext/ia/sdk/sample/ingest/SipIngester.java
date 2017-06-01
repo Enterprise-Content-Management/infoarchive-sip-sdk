@@ -14,8 +14,8 @@ import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 
-import com.opentext.ia.sdk.client.ArchiveClient;
-import com.opentext.ia.sdk.server.configuration.ArchiveClients;
+import com.opentext.ia.sdk.client.api.ArchiveClient;
+import com.opentext.ia.sdk.client.factory.ArchiveClients;
 import com.opentext.ia.sdk.server.configuration.PropertiesBasedConfigurer;
 import com.opentext.ia.sdk.sip.*;
 import com.opentext.ia.sdk.support.io.FileSupplier;

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.server.configuration;
+package com.opentext.ia.sdk.client.factory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -9,11 +9,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.opentext.ia.sdk.client.ArchiveClient;
-import com.opentext.ia.sdk.client.rest.ApplicationIngestionResourcesCache;
-import com.opentext.ia.sdk.client.rest.InfoArchiveLinkRelations;
-import com.opentext.ia.sdk.client.rest.InfoArchiveRestClient;
+import com.opentext.ia.sdk.client.api.ArchiveClient;
+import com.opentext.ia.sdk.client.api.AuthenticationStrategyFactory;
+import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
+import com.opentext.ia.sdk.client.api.ServerConfiguration;
+import com.opentext.ia.sdk.client.impl.ApplicationIngestionResourcesCache;
+import com.opentext.ia.sdk.client.impl.InfoArchiveRestClient;
 import com.opentext.ia.sdk.dto.*;
+import com.opentext.ia.sdk.server.configuration.InfoArchiveConfigurer;
 import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.datetime.DefaultClock;
@@ -26,7 +29,7 @@ import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
 
 /**
- * Factory methods for creating ArchiveClient.
+ * Factory methods for creating {@linkplain ArchiveClient}s.
  */
 public final class ArchiveClients {
 

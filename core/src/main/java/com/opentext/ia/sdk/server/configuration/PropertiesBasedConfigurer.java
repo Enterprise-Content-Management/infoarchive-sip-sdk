@@ -13,7 +13,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.opentext.ia.sdk.client.rest.InfoArchiveLinkRelations;
+import com.opentext.ia.sdk.client.api.AuthenticationStrategyFactory;
+import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
+import com.opentext.ia.sdk.client.api.ServerConfiguration;
 import com.opentext.ia.sdk.dto.*;
 import com.opentext.ia.sdk.dto.export.*;
 import com.opentext.ia.sdk.dto.export.ExportConfiguration.DefaultOption;

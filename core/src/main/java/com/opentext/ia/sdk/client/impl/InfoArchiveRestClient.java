@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.client.rest;
+package com.opentext.ia.sdk.client.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,9 +19,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.opentext.ia.sdk.client.ArchiveClient;
-import com.opentext.ia.sdk.client.ContentResult;
-import com.opentext.ia.sdk.client.QueryResult;
+import com.opentext.ia.sdk.client.api.ArchiveClient;
+import com.opentext.ia.sdk.client.api.ContentResult;
+import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
+import com.opentext.ia.sdk.client.api.QueryResult;
 import com.opentext.ia.sdk.dto.*;
 import com.opentext.ia.sdk.dto.export.ExportConfiguration;
 import com.opentext.ia.sdk.dto.export.ExportTransformation;
