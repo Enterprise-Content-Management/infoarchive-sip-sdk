@@ -37,7 +37,6 @@ For the latest version, see the `maven-central` button at the top of this page.
 *Gradle*
 
 [source,groovy]
-.build.gradle
 ----
 dependencies { 
   compile 'com.emc.ia:infoarchive-sip-sdk-core:5.7.0'
@@ -47,7 +46,6 @@ dependencies {
 *Maven*
 
 [source,xml]
-.pom.xml
 ----
 <dependencies>
   <dependency>
