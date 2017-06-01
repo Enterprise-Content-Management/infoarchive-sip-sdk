@@ -1,7 +1,7 @@
 [![License: MPL2](https://img.shields.io/badge/license-mpl2-ff69b4.svg)](https://www.mozilla.org/en-US/MPL/2.0/)
 [![Travis](https://img.shields.io/travis/Enterprise-Content-Management/infoarchive-sip-sdk.svg)](https://travis-ci.org/Enterprise-Content-Management/infoarchive-sip-sdk)
 [![codecov.io](https://img.shields.io/codecov/c/github/Enterprise-Content-Management/infoarchive-sip-sdk.svg)](https://codecov.io/github/Enterprise-Content-Management/infoarchive-sip-sdk)
-[![Technical Debt](https://sonarqube.com/api/badges/measure?key=com.opentext.ia:infoarchive-sip-sdk&metric=sqale_debt_ratio)](https://sonarqube.com/dashboard?id=com.opentext.ia%3Ainfoarchive-sip-sdk)
+[![Technical Debt](https://sonarqube.com/api/badges/measure?key=com.opentext.ia:infoarchive-sip-sdk&metric=sqale_debt_ratio)](https://sonarqube.com/dashboard?id=com.opentext.ia:infoarchive-sip-sdk)
 [![Maven Central](https://img.shields.io/maven-central/v/com.emc.ia/infoarchive-sip-sdk-core.svg)](https://repo1.maven.org/maven2/com/emc/ia/)
 [![Javadoc](https://javadoc-emblem.rhcloud.com/doc/com.emc.ia/infoarchive-sip-sdk-core/badge.svg)](http://www.javadoc.io/doc/com.emc.ia/infoarchive-sip-sdk-core)
 

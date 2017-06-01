@@ -1,17 +1,18 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.sip.client.rest;
+package com.opentext.ia.sdk.configurer;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.opentext.ia.sdk.sip.client.dto.*;
+import com.opentext.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
 
 
 @SuppressWarnings("PMD.TooManyFields")
-public class RestCache {
+class ConfigurationResourcesCache {
 
   private Services services;
   private Tenant tenant;
@@ -25,7 +26,7 @@ public class RestCache {
   private String fileSystemFolderUri;
   private String receptionFolderUri;
   private String storeUri;
-  private SpaceRootLibrary spaceRootLibrary;
+  private SpaceRootXdbLibrary spaceRootLibrary;
   private String libraryUri;
   private String pdiUri;
   private String ingestNodeUri;
@@ -126,11 +127,11 @@ public class RestCache {
     this.space = space;
   }
 
-  public SpaceRootLibrary getSpaceRootLibrary() {
+  public SpaceRootXdbLibrary getSpaceRootLibrary() {
     return spaceRootLibrary;
   }
 
-  public void setSpaceRootLibrary(SpaceRootLibrary spaceRootLibrary) {
+  public void setSpaceRootLibrary(SpaceRootXdbLibrary spaceRootLibrary) {
     this.spaceRootLibrary = spaceRootLibrary;
   }
 

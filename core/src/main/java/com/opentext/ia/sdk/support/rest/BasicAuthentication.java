@@ -9,6 +9,11 @@ import java.util.Optional;
 
 import com.opentext.ia.sdk.support.http.Header;
 
+
+/**
+ * Authenticate using HTTP <a href="https://tools.ietf.org/html/rfc7235">Basic Authentication</a>.
+ * This is not very secure!
+ */
 public final class BasicAuthentication implements AuthenticationStrategy {
 
   private final String username;
@@ -37,8 +42,9 @@ public final class BasicAuthentication implements AuthenticationStrategy {
 
   @Override
   public Header issueAuthHeader() {
-    String token = "Basic " + Base64.getEncoder()
-                                  .encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
+    String token = "Basic " + Base64.getEncoder().encodeToString(
+        (username + ":" + password).getBytes(StandardCharsets.UTF_8));
     return new Header("Authorization", token);
   }
+
 }

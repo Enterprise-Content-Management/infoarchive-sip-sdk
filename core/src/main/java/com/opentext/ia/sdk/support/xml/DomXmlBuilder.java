@@ -11,22 +11,8 @@ import org.w3c.dom.Node;
 
 
 /**
- * Fluent API for building XML documents. Example usage:
- *
- * <pre>
- *
- * Document document = XmlBuilder.newDocument()
- *   .namespace("http://company.com/ns/example")
- *   .element("parent")
- *       .attribute("name", "value")
- *       .element("child")
- *           .element("grandChild")
- *           .end()
- *       .end()
- *       .element("child", "text")
- *   .end()
- *   .build();
- * </pre>
+ * Fluent API for building XML documents in memory using a
+ * <a href="https://www.w3.org/TR/WD-DOM/introduction.html">Document Object Model</a> (DOM).
  */
 public class DomXmlBuilder implements XmlBuilder<Document> {
 

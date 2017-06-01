@@ -11,6 +11,25 @@ import java.util.function.BiConsumer;
 import org.w3c.dom.Document;
 
 
+/**
+ * Fluent API for building XML documents. Example usage:
+ *
+ * <pre>
+ *
+ * Document document = XmlBuilder.newDocument()
+ *   .namespace("http://company.com/ns/example")
+ *   .element("parent")
+ *       .attribute("name", "value")
+ *       .element("child")
+ *           .element("grandChild")
+ *           .end()
+ *       .end()
+ *       .element("child", "text")
+ *   .end()
+ *   .build();
+ * </pre>
+ * @param <T> The type of implementation for XML documents
+ */
 public interface XmlBuilder<T> {
 
   /**

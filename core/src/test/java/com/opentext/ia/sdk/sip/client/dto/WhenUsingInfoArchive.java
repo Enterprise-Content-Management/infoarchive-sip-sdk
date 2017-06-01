@@ -36,7 +36,7 @@ import com.opentext.ia.sdk.sip.client.dto.query.Comparison;
 import com.opentext.ia.sdk.sip.client.dto.query.Item;
 import com.opentext.ia.sdk.sip.client.dto.query.Operator;
 import com.opentext.ia.sdk.sip.client.dto.query.SearchQuery;
-import com.opentext.ia.sdk.sip.client.dto.result.searchconfig.AllSearchComponents;
+import com.opentext.ia.sdk.sip.client.dto.result.AllSearchComponents;
 import com.opentext.ia.sdk.sip.client.rest.*;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.*;
@@ -79,13 +79,13 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     applications = mock(Applications.class);
     federations = mock(XdbFederations.class);
     Spaces spaces = mock(Spaces.class);
-    Databases databases = mock(Databases.class);
+    XdbDatabases databases = mock(XdbDatabases.class);
     FileSystemRoots fileSystemRoots = mock(FileSystemRoots.class);
     FileSystemRoot fileSystemRoot = new FileSystemRoot();
     when(fileSystemRoots.first()).thenReturn(fileSystemRoot);
     Holdings holdings = mock(Holdings.class);
     ReceiverNodes receiverNodes = mock(ReceiverNodes.class);
-    SpaceRootLibraries spaceRootLibraries = mock(SpaceRootLibraries.class);
+    SpaceRootXdbLibraries spaceRootLibraries = mock(SpaceRootXdbLibraries.class);
     SpaceRootFolders rootFolders = mock(SpaceRootFolders.class);
     FileSystemFolders systemFolders = mock(FileSystemFolders.class);
     Stores stores = mock(Stores.class);
@@ -99,7 +99,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     aics = mock(Aics.class);
     LinkContainer aips = new LinkContainer();
     Queries queries = mock(Queries.class);
-    Quotas quotas = mock(Quotas.class);
+    QueryQuotas quotas = mock(QueryQuotas.class);
     ResultConfigurationHelpers helpers = mock(ResultConfigurationHelpers.class);
     ExportConfigurations exportConfigurations = mock(ExportConfigurations.class);
     ExportPipelines exportPipelines = mock(ExportPipelines.class);
@@ -138,11 +138,11 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(Applications.class, applications);
     mockCollection(XdbFederations.class, federations);
     mockCollection(Spaces.class, spaces);
-    mockCollection(Databases.class, databases);
+    mockCollection(XdbDatabases.class, databases);
     mockCollection(FileSystemRoots.class, fileSystemRoots);
     mockCollection(Holdings.class, holdings);
     mockCollection(ReceiverNodes.class, receiverNodes);
-    mockCollection(SpaceRootLibraries.class, spaceRootLibraries);
+    mockCollection(SpaceRootXdbLibraries.class, spaceRootLibraries);
     mockCollection(SpaceRootFolders.class, rootFolders);
     mockCollection(FileSystemFolders.class, systemFolders);
     mockCollection(Stores.class, stores);
@@ -153,7 +153,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(Ingests.class, ingests);
     mockCollection(XdbLibraries.class, libraries);
     mockCollection(Aics.class, aics);
-    mockCollection(Quotas.class, quotas);
+    mockCollection(QueryQuotas.class, quotas);
     mockCollection(Queries.class, queries);
     mockCollection(ResultConfigurationHelpers.class, helpers);
     mockCollection(ExportConfigurations.class, exportConfigurations);
@@ -171,10 +171,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.createCollectionItem(any(LinkContainer.class), any(XForm.class), eq(LINK_SELF))).thenReturn(xForm);
 
     mockByName(federations, new XdbFederation());
-    mockByName(databases, new Database());
+    mockByName(databases, new XdbDatabase());
     mockByName(applications, application);
     mockByName(spaces, new Space());
-    mockByName(spaceRootLibraries, new SpaceRootLibrary());
+    mockByName(spaceRootLibraries, new SpaceRootXdbLibrary());
     mockByName(rootFolders, new SpaceRootFolder());
     mockByName(fileSystemRoots, new FileSystemRoot());
     mockByName(systemFolders, new FileSystemFolder());
@@ -188,7 +188,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(libraries, new XdbLibrary());
     mockByName(holdings, new Holding());
     mockByName(aics, aic);
-    mockByName(quotas, new Quota());
+    mockByName(quotas, new QueryQuota());
     mockByName(queries, new Query());
     mockByName(helpers, new ResultConfigurationHelper());
     mockByName(exportConfigurations, new ExportConfiguration());

@@ -3,6 +3,11 @@
  */
 package com.opentext.ia.sdk.support.rest;
 
+
+/**
+ * Standard link relations as defined in the IANA-maintained
+ * <a href="https://www.iana.org/assignments/link-relations/link-relations.xhtml">registry of link relations</a>.
+ */
 public interface StandardLinkRelations {
 
   String LINK_SELF = "self";

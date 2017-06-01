@@ -3,6 +3,10 @@
  */
 package com.opentext.ia.sdk.support.rest;
 
+
+/**
+ * A link in a hypermedia document.
+ */
 public class Link {
 
   private String href;

@@ -17,6 +17,9 @@ import com.opentext.ia.sdk.support.http.Response;
 import com.opentext.ia.sdk.support.http.ResponseBodyFactory;
 
 
+/**
+ * Factory for creating {@linkplain ContentResult} objects from an HTTP response body (envelope).
+ */
 public class ContentResultFactory extends ResponseBodyFactory<ContentResult> {
 
   @Override

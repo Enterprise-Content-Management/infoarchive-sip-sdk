@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import com.opentext.ia.sdk.sip.client.dto.SearchComposition;
 import com.opentext.ia.sdk.sip.client.dto.XForm;
+import com.opentext.ia.sdk.sip.client.dto.result.AllSearchComponents;
 import com.opentext.ia.sdk.sip.client.dto.result.ResultMaster;
 
 

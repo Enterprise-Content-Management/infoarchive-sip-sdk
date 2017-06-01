@@ -7,6 +7,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
+
+/**
+ * Response from an HTTP server.
+ */
 public interface Response extends Closeable {
 
   String getHeaderValue(String name, String defaultValue);

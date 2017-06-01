@@ -5,6 +5,10 @@ package com.opentext.ia.sdk.support.http;
 
 import java.io.InputStream;
 
+
+/**
+ * A binary part in a <a href="https://tools.ietf.org/html/rfc2045">multi-part</a> message.
+ */
 public class BinaryPart extends Part {
 
   private final InputStream data;

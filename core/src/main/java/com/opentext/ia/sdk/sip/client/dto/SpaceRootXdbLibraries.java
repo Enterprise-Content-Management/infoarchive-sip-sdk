@@ -4,6 +4,6 @@
 package com.opentext.ia.sdk.sip.client.dto;
 
 
-public class Databases extends ItemContainer<Database> {
+public class SpaceRootXdbLibraries extends ItemContainer<SpaceRootXdbLibrary> {
 
 }

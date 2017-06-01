@@ -6,6 +6,9 @@ package com.opentext.ia.sdk.support.http;
 import java.util.Objects;
 
 
+/**
+ * An HTTP <a href="https://tools.ietf.org/html/rfc7231#section-5">header</a>.
+ */
 public class Header implements Comparable<Header> {
 
   private final String name;

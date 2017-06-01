@@ -8,7 +8,7 @@ import com.opentext.ia.sdk.support.rest.RestClient;
 
 
 /**
- * Configure InfoArchive using data in the YAML format.
+ * Configure InfoArchive using data in YAML format.
  */
 public class YamlBasedConfigurer extends PropertiesBasedConfigurer {
 

@@ -8,6 +8,9 @@ import java.io.InputStream;
 import java.util.Collection;
 
 
+/**
+ * Client that communicates with a server over HTTP.
+ */
 public interface HttpClient {
 
   <T> T get(String uri, Collection<Header> headers, Class<T> type) throws IOException;

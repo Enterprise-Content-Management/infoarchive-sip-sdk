@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Database extends NamedLinkContainer {
+public class XdbDatabase extends NamedLinkContainer {
 
   private String adminPassword;
 

@@ -5,6 +5,12 @@ package com.opentext.ia.sdk.support.rest;
 
 import com.opentext.ia.sdk.support.http.Header;
 
+
+/**
+ *  How to authenticate with an HTTP server.
+ */
 public interface AuthenticationStrategy {
+
   Header issueAuthHeader();
+
 }

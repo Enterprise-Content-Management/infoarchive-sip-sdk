@@ -10,6 +10,10 @@ import org.apache.commons.io.IOUtils;
 
 import com.opentext.ia.sdk.sip.client.QueryResult;
 
+
+/**
+ * Default implementation of {@linkplain QueryResult}.
+ */
 public class DefaultQueryResult implements Closeable, QueryResult {
 
   private final int resultSetQuota;

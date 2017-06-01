@@ -4,6 +4,6 @@
 package com.opentext.ia.sdk.sip.client.dto;
 
 
-public class SpaceRootLibraries extends ItemContainer<SpaceRootLibrary> {
+public class QueryQuotas extends ItemContainer<QueryQuota> {
 
 }
