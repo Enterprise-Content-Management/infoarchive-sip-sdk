@@ -11,8 +11,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentext.ia.sdk.support.rest.Link;
-import com.opentext.ia.sdk.support.rest.LinkContainer;
+import com.opentext.ia.sdk.support.http.rest.Link;
+import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 
 
 public class WhenExtractingLinksFromLinkContainer {

@@ -7,9 +7,9 @@ package com.opentext.ia.sdk.sample.authenticate;
 import com.opentext.ia.sdk.support.http.Header;
 import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.http.apache.ApacheHttpClient;
-import com.opentext.ia.sdk.support.rest.AuthenticationStrategy;
-import com.opentext.ia.sdk.support.rest.GatewayInfo;
-import com.opentext.ia.sdk.support.rest.JwtAuthentication;
+import com.opentext.ia.sdk.support.http.rest.AuthenticationStrategy;
+import com.opentext.ia.sdk.support.http.rest.GatewayInfo;
+import com.opentext.ia.sdk.support.http.rest.JwtAuthentication;
 
 
 public final class Authenticate {

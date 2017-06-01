@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.client.rest;
 
-import com.opentext.ia.sdk.support.rest.StandardLinkRelations;
+import com.opentext.ia.sdk.support.http.rest.StandardLinkRelations;
 
 
 /**

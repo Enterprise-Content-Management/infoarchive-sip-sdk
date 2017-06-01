@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.HttpClient;
-import com.opentext.ia.sdk.support.rest.*;
+import com.opentext.ia.sdk.support.http.rest.*;
 
 
 /**

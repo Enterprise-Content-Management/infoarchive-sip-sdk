@@ -19,10 +19,10 @@ import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.datetime.DefaultClock;
 import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.http.apache.ApacheHttpClient;
+import com.opentext.ia.sdk.support.http.rest.AuthenticationStrategy;
+import com.opentext.ia.sdk.support.http.rest.LinkContainer;
+import com.opentext.ia.sdk.support.http.rest.RestClient;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
-import com.opentext.ia.sdk.support.rest.AuthenticationStrategy;
-import com.opentext.ia.sdk.support.rest.LinkContainer;
-import com.opentext.ia.sdk.support.rest.RestClient;
 
 
 /**

@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.opentext.ia.sdk.support.rest.LinkContainer;
+import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 
 
 public class ItemContainer<T extends NamedLinkContainer> extends LinkContainer {

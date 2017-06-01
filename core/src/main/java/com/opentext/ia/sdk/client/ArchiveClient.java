@@ -12,7 +12,7 @@ import com.opentext.ia.sdk.client.dto.SearchResults;
 import com.opentext.ia.sdk.client.dto.export.ExportConfiguration;
 import com.opentext.ia.sdk.client.dto.export.ExportTransformation;
 import com.opentext.ia.sdk.client.dto.query.SearchQuery;
-import com.opentext.ia.sdk.support.rest.LinkContainer;
+import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 
 
 /**

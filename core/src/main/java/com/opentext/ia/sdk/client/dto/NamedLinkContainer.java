@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.client.dto;
 
-import com.opentext.ia.sdk.support.rest.LinkContainer;
+import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 
 public class NamedLinkContainer extends LinkContainer {
 

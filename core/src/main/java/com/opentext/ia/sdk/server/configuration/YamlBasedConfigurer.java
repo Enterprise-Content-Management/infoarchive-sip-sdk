@@ -4,7 +4,7 @@
 package com.opentext.ia.sdk.server.configuration;
 
 import com.opentext.ia.sdk.support.datetime.Clock;
-import com.opentext.ia.sdk.support.rest.RestClient;
+import com.opentext.ia.sdk.support.http.rest.RestClient;
 
 
 /**

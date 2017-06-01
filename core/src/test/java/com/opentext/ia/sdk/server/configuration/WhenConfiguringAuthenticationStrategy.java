@@ -10,10 +10,10 @@ import org.junit.Test;
 
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.HttpClient;
-import com.opentext.ia.sdk.support.rest.AuthenticationStrategy;
-import com.opentext.ia.sdk.support.rest.BasicAuthentication;
-import com.opentext.ia.sdk.support.rest.JwtAuthentication;
-import com.opentext.ia.sdk.support.rest.NonExpiringTokenAuthentication;
+import com.opentext.ia.sdk.support.http.rest.AuthenticationStrategy;
+import com.opentext.ia.sdk.support.http.rest.BasicAuthentication;
+import com.opentext.ia.sdk.support.http.rest.JwtAuthentication;
+import com.opentext.ia.sdk.support.http.rest.NonExpiringTokenAuthentication;
 import com.opentext.ia.sdk.support.test.TestCase;
 
 

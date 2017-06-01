@@ -34,8 +34,8 @@ import com.opentext.ia.sdk.support.http.BinaryPart;
 import com.opentext.ia.sdk.support.http.MediaTypes;
 import com.opentext.ia.sdk.support.http.ResponseFactory;
 import com.opentext.ia.sdk.support.http.TextPart;
-import com.opentext.ia.sdk.support.rest.LinkContainer;
-import com.opentext.ia.sdk.support.rest.RestClient;
+import com.opentext.ia.sdk.support.http.rest.LinkContainer;
+import com.opentext.ia.sdk.support.http.rest.RestClient;
 
 
 /**

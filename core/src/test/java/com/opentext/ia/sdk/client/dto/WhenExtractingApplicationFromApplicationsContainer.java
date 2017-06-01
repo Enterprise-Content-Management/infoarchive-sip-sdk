@@ -12,7 +12,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentext.ia.sdk.support.rest.Link;
+import com.opentext.ia.sdk.support.http.rest.Link;
 
 
 public class WhenExtractingApplicationFromApplicationsContainer {

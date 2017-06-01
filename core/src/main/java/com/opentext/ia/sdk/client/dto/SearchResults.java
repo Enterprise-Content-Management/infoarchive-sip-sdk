@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.opentext.ia.sdk.support.rest.LinkContainer;
+import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 
 
 public class SearchResults extends LinkContainer {

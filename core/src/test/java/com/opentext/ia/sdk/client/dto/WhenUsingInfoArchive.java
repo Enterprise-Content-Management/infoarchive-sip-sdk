@@ -40,10 +40,10 @@ import com.opentext.ia.sdk.server.configuration.InfoArchiveConfiguration;
 import com.opentext.ia.sdk.server.configuration.PropertiesBasedConfigurer;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.*;
+import com.opentext.ia.sdk.support.http.rest.Link;
+import com.opentext.ia.sdk.support.http.rest.LinkContainer;
+import com.opentext.ia.sdk.support.http.rest.RestClient;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
-import com.opentext.ia.sdk.support.rest.Link;
-import com.opentext.ia.sdk.support.rest.LinkContainer;
-import com.opentext.ia.sdk.support.rest.RestClient;
 import com.opentext.ia.sdk.support.test.TestCase;
 
 
