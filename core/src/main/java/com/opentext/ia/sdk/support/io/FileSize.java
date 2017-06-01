@@ -3,6 +3,10 @@
  */
 package com.opentext.ia.sdk.support.io;
 
+
+/**
+ * Various units of size for files.
+ */
 public class FileSize {
 
   private final int number;

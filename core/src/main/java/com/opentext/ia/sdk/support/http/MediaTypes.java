@@ -4,6 +4,9 @@
 package com.opentext.ia.sdk.support.http;
 
 
+/**
+ * Various media (MIME) types.
+ */
 public interface MediaTypes {
 
   String BINARY = "application/octect-stream";

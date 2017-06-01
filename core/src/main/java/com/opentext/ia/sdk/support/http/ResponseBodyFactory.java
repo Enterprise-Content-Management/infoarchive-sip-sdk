@@ -12,6 +12,10 @@ import org.apache.commons.io.IOUtils;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
 
+/**
+ * Factory for creating objects from an HTTP response body (envelope).
+ * @param <T> The type of objects to create.
+ */
 public abstract class ResponseBodyFactory<T> implements ResponseFactory<T> {
 
   @Override

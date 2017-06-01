@@ -6,6 +6,9 @@ package com.opentext.ia.sdk.support;
 import java.util.*;
 
 
+/**
+ * Read sequences of repeating elements from a flat configuration.
+ */
 public class RepeatingConfigReader {
 
   private final String name;

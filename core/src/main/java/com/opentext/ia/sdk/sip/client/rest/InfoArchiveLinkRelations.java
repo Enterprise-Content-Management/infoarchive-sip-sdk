@@ -6,6 +6,9 @@ package com.opentext.ia.sdk.sip.client.rest;
 import com.opentext.ia.sdk.support.rest.StandardLinkRelations;
 
 
+/**
+ * Names of link relations used by the InfoArchive REST server.
+ */
 public interface InfoArchiveLinkRelations extends StandardLinkRelations {
 
   String LINK_PREFIX = "http://identifiers.emc.com/";

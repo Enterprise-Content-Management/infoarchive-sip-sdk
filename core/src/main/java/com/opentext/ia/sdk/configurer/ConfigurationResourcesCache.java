@@ -1,17 +1,18 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.sip.client.rest;
+package com.opentext.ia.sdk.configurer;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.opentext.ia.sdk.sip.client.dto.*;
+import com.opentext.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
 
 
 @SuppressWarnings("PMD.TooManyFields")
-public class RestCache {
+class ConfigurationResourcesCache {
 
   private Services services;
   private Tenant tenant;

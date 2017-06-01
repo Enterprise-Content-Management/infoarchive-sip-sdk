@@ -9,6 +9,11 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
+/**
+ * A hypermedia document, aka a document with {@linkplain Link hyperlinks}. The links are stored in the
+ * <code>_links</code> property, as in <a href="http://stateless.co/hal_specification.html">Hypermedia Application
+ * Language</a> (HAL).
+ */
 public class LinkContainer {
 
   @JsonProperty("_links")

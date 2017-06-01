@@ -23,7 +23,6 @@ import com.opentext.ia.sdk.sip.client.dto.result.Column.DataType;
 import com.opentext.ia.sdk.sip.client.dto.result.Column.DefaultSort;
 import com.opentext.ia.sdk.sip.client.dto.result.ResultMaster;
 import com.opentext.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
-import com.opentext.ia.sdk.sip.client.rest.RestCache;
 import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.RepeatingConfigReader;
 import com.opentext.ia.sdk.support.datetime.Clock;
@@ -59,7 +58,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   private static final String DEFAULT_STORE_NAME = "filestore_01";
   private static final String DEFAULT_RESULT_HELPER_NAME = "result_helper";
 
-  private final RestCache cache = new RestCache();
+  private final ConfigurationResourcesCache cache = new ConfigurationResourcesCache();
   private final Map<String, String> configuration;
   private RestClient restClient;
   private final Clock clock;

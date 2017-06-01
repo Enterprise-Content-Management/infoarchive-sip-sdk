@@ -7,6 +7,7 @@ import java.util.Date;
 
 import com.opentext.ia.sdk.support.datetime.Dates;
 
+
 /**
  * Generate Data Submission Session (DSS) IDs from a prefix and the current date and time.
  */

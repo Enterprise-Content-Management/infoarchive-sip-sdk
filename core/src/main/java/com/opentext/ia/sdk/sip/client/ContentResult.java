@@ -6,6 +6,10 @@ package com.opentext.ia.sdk.sip.client;
 import java.io.Closeable;
 import java.io.InputStream;
 
+
+/**
+ * Result of getting binary content from a SIP.
+ */
 public interface ContentResult extends Closeable {
 
   String getFormatMimeType();
@@ -15,4 +19,5 @@ public interface ContentResult extends Closeable {
   InputStream getInputStream();
 
   String getName();
+
 }

@@ -43,15 +43,15 @@ import com.opentext.ia.sdk.support.rest.RestClient;
  */
 public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRelations {
 
-  private final ResponseFactory<DefaultQueryResult> queryResultFactory = new QueryResultFactory();
+  private final ResponseFactory<QueryResult> queryResultFactory = new QueryResultFactory();
   private final ResponseFactory<ContentResult> contentResultFactory = new ContentResultFactory();
   private final QueryFormatter queryFormatter = new QueryFormatter();
 
   private final RestClient restClient;
-  private final ArchiveOperationsByApplicationResourceCache resourceCache;
+  private final ApplicationIngestionResourcesCache resourceCache;
   private final Clock clock;
 
-  public InfoArchiveRestClient(RestClient restClient, ArchiveOperationsByApplicationResourceCache resourceCache,
+  public InfoArchiveRestClient(RestClient restClient, ApplicationIngestionResourcesCache resourceCache,
       Clock clock) {
     this.restClient = restClient;
     this.resourceCache = resourceCache;

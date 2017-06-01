@@ -3,6 +3,10 @@
  */
 package com.opentext.ia.sdk.configurer;
 
+
+/**
+ * Names of configuration properties.
+ */
 public interface InfoArchiveConfiguration {
 
   String PREFIX = "ia.";

@@ -13,6 +13,10 @@ import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.rest.*;
 
 
+/**
+ * Determine what type of {@linkplain AuthenticationStrategy} to use based on what configuration properties are
+ * specified.
+ */
 public final class AuthenticationStrategyFactory {
 
   private final ServerConfiguration configuration;

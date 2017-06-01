@@ -6,6 +6,9 @@ package com.opentext.ia.sdk.support.rest;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
+/**
+ * The result of successful authentication with an HTTP server.
+ */
 public class AuthenticationSuccess {
 
   private String accessToken;

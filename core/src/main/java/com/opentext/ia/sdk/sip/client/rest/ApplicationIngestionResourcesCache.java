@@ -5,7 +5,11 @@ package com.opentext.ia.sdk.sip.client.rest;
 
 import java.util.Map;
 
-public class ArchiveOperationsByApplicationResourceCache {
+
+/**
+ * Cache of REST resources used for ingesting SIPs into an InfoArchive application.
+ */
+public class ApplicationIngestionResourcesCache {
 
   private final String applicationName;
   private String ciResourceUri;
@@ -13,8 +17,12 @@ public class ArchiveOperationsByApplicationResourceCache {
   private String aipIngestDirectResourceUri;
   private Map<String, String> dipResourceUriByAicName;
 
-  public ArchiveOperationsByApplicationResourceCache(String applicationName) {
+  public ApplicationIngestionResourcesCache(String applicationName) {
     this.applicationName = applicationName;
+  }
+
+  public String getApplicationName() {
+    return applicationName;
   }
 
   public String getCiResourceUri() {
@@ -47,10 +55,6 @@ public class ArchiveOperationsByApplicationResourceCache {
 
   public void setDipResourceUriByAicName(Map<String, String> dipResourceUriByAicName) {
     this.dipResourceUriByAicName = dipResourceUriByAicName;
-  }
-
-  public String getApplicationName() {
-    return applicationName;
   }
 
 }

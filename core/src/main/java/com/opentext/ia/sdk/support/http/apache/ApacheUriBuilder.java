@@ -9,6 +9,11 @@ import org.apache.http.client.utils.URIBuilder;
 
 import com.opentext.ia.sdk.support.http.UriBuilder;
 
+
+/**
+ * Implementation of {@linkplain UriBuilder} using the <a href="https://hc.apache.org/">Apache HttpComponents</a>
+ * library.
+ */
 public class ApacheUriBuilder implements UriBuilder {
 
   private final URIBuilder builder;

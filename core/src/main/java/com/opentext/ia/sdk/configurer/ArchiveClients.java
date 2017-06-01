@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import com.opentext.ia.sdk.sip.client.ArchiveClient;
 import com.opentext.ia.sdk.sip.client.dto.*;
-import com.opentext.ia.sdk.sip.client.rest.ArchiveOperationsByApplicationResourceCache;
+import com.opentext.ia.sdk.sip.client.rest.ApplicationIngestionResourcesCache;
 import com.opentext.ia.sdk.sip.client.rest.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.sip.client.rest.InfoArchiveRestClient;
 import com.opentext.ia.sdk.support.NewInstance;
@@ -95,10 +95,10 @@ public final class ArchiveClients {
     return new InfoArchiveRestClient(restClient, appResourceCache(restClient, configuration), clock);
   }
 
-  private static ArchiveOperationsByApplicationResourceCache appResourceCache(RestClient restClient,
+  private static ApplicationIngestionResourcesCache appResourceCache(RestClient restClient,
       ServerConfiguration configuration) {
     try {
-      ArchiveOperationsByApplicationResourceCache resourceCache = new ArchiveOperationsByApplicationResourceCache(
+      ApplicationIngestionResourcesCache resourceCache = new ApplicationIngestionResourcesCache(
           configuration.getApplicationName());
       Services services = restClient.get(configuration.getBillboardUri(), Services.class);
       Tenant tenant = getTenant(restClient, services);
@@ -123,7 +123,7 @@ public final class ArchiveClients {
         "Application named " + applicationName + " not found.");
   }
 
-  private static void cacheResourceUris(ArchiveOperationsByApplicationResourceCache resourceCache,
+  private static void cacheResourceUris(ApplicationIngestionResourcesCache resourceCache,
       RestClient restClient, Application application) throws IOException {
     Aics aics = restClient.follow(application, InfoArchiveLinkRelations.LINK_AICS, Aics.class);
     LinkContainer aips = restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class);
