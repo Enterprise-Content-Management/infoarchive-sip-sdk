@@ -23,11 +23,17 @@ public class YamlConfiguration implements InfoArchiveConfiguration {
   private static final String AUTHENTICATION = "authentication";
   private static final String APPLICATION = "application";
   private static final String FEDERATION = "federation";
-  private static final String PDI = "pdi";
   private static final String STORE = "store";
   private static final String QUOTA = "quota";
   private static final String AIC = "aic";
   private static final String CRITERIA = "criteria";
+  private static final String XDB = "xdb";
+  private static final String SCHEMA = "schema";
+  private static final String XML = "xml";
+  private static final String RESULT = "result";
+  private static final String XDBPDI = "xdbpdi";
+  private static final String OPERAND = "operand";
+  private static final String MAIN = "main";
 
   private final Map<String, String> map = new HashMap<>();
 
@@ -103,7 +109,7 @@ public class YamlConfiguration implements InfoArchiveConfiguration {
     map.put(QUOTA_DIP, getString(source, QUOTA, "dip"));
 
     map.put(RETENTION_POLICY_NAME, getString(source, "retention-policy", NAME));
-    
+
     map.put(PDI_SCHEMA_NAME, getString(source, "pdi", SCHEMA, NAME));
     map.put(PDI_SCHEMA, getString(source, "pdi", SCHEMA, "xsd"));
     map.put(PDI_XML, getString(source, "pdi", XML));
@@ -152,7 +158,7 @@ public class YamlConfiguration implements InfoArchiveConfiguration {
         map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, searchName, compositionName), getString(composition, RESULT, MAIN, NAME));
         map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, searchName, compositionName), getString(composition, RESULT, MAIN, "label"));
         map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName, compositionName), getString(composition, RESULT, MAIN, "path"));
-        map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName, compositionName), getString(composition, RESULT, MAIN, "type"));
+        map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName, compositionName), getString(composition, RESULT, MAIN, TYPE));
         map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT, searchName, compositionName), getString(composition, RESULT, MAIN, "sort"));
         map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE, searchName), getString(composition, "export", "enabled"));
         map.put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName), getString(composition, "export", "configs"));

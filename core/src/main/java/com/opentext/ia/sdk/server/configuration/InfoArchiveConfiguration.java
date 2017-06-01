@@ -14,19 +14,6 @@ public interface InfoArchiveConfiguration {
   String NAMES = "names";
   String TYPE = "type";
   String DESCRIPTION = "description";
-  String XDB = "xdb";
-  String SERVER = "server";
-  String AUTHENTICATION = "authentication";
-  String STORE = "store";
-  String AIC = "aic";
-  String CRITERIA = "criteria";
-  String QUOTA = "quota";
-  String SCHEMA = "schema";
-  String XML = "xml";
-  String RESULT = "result";
-  String XDBPDI = "xdbpdi";
-  String OPERAND = "operand";
-  String MAIN = "main";
 
   String SERVER_PREFIX = PREFIX + "server.";
   String SERVER_AUTENTICATON_TOKEN = SERVER_PREFIX + "authentication.token";
