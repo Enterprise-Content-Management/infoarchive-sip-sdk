@@ -7,8 +7,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.opentext.ia.sdk.client.rest.SearchOptions;
-
 
 public class WhenWorkingWithSearch {
 
@@ -144,28 +142,4 @@ public class WhenWorkingWithSearch {
     assertNotNull(new SearchResults().getRows());
   }
 
-  @Test
-  public void searchOptionsObjectCreationSuccessful() {
-    assertNotNull(new SearchOptions());
-  }
-
-  @Test
-  public void searchOptionsDefaultPageSizeIsValid() {
-    assertEquals(new SearchOptions().getPagesize(), 20);
-  }
-
-  @Test
-  public void searchOptionsDefaultNameIsValid() {
-    assertEquals(new SearchOptions().getSearchSetName(), "Email");
-  }
-
-  @Test
-  public void searchOptionsDefaultTimeOutIsValid() {
-    assertEquals(new SearchOptions().getTimeoutInSec(), 120);
-  }
-
-  @Test
-  public void searchOptionsDefaultIsNotNull() {
-    assertNotNull(new SearchOptions().getDefault());
-  }
 }
