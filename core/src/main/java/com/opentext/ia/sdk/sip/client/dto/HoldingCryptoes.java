@@ -4,10 +4,6 @@
 package com.opentext.ia.sdk.sip.client.dto;
 
 
-public class PdiCryptos extends ItemContainer<PdiCrypto> {
-
-  protected PdiCryptos() {
-    super("pdiCryptoes");
-  }
+public class HoldingCryptoes extends ItemContainer<HoldingCrypto> {
 
 }

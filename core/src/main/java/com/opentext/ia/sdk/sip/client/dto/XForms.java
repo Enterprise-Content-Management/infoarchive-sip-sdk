@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class XForms extends ItemContainer<XForm> {
 
-  protected XForms() {
-    super("xforms");
-  }
+public class XForms extends ItemContainer<XForm> {
 
 }

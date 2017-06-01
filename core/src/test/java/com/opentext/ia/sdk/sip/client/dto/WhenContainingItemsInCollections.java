@@ -14,10 +14,11 @@ import com.opentext.ia.sdk.support.test.TestCase;
 
 public class WhenContainingItemsInCollections extends TestCase {
 
+
   @Test
   public void shouldExtractItemsByKey() {
-    String key = randomString(8);
-    ItemContainer<NamedLinkContainer> collection = new ItemContainer<>(key);
+    ItemContainer<NamedLinkContainer> collection = new TestItems();
+    String key = collection.getKey();
     Map<String, List<NamedLinkContainer>> embedded = new HashMap<>();
     NamedLinkContainer item1 = new NamedLinkContainer();
     String name1 = randomString();
@@ -34,10 +35,11 @@ public class WhenContainingItemsInCollections extends TestCase {
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldThrowIllegalArgumentExceptionIfEmbeddedListIsMissing() {
-    String key = randomString(8);
-
-    ItemContainer<NamedLinkContainer> collection = new ItemContainer<>(key);
+    ItemContainer<NamedLinkContainer> collection = new TestItems();
     collection.setEmbedded(Collections.emptyMap());
+  }
+
+  public static class TestItems extends ItemContainer<NamedLinkContainer> {
   }
 
 }

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.sip.client;
+package com.opentext.ia.sdk.sip.client.dto;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
@@ -28,7 +28,9 @@ import org.mockito.stubbing.OngoingStubbing;
 import com.opentext.ia.sdk.configurer.ArchiveClients;
 import com.opentext.ia.sdk.configurer.InfoArchiveConfiguration;
 import com.opentext.ia.sdk.configurer.PropertiesBasedConfigurer;
-import com.opentext.ia.sdk.sip.client.dto.*;
+import com.opentext.ia.sdk.sip.client.ArchiveClient;
+import com.opentext.ia.sdk.sip.client.ContentResult;
+import com.opentext.ia.sdk.sip.client.QueryResult;
 import com.opentext.ia.sdk.sip.client.dto.export.*;
 import com.opentext.ia.sdk.sip.client.dto.query.Comparison;
 import com.opentext.ia.sdk.sip.client.dto.query.Item;
@@ -64,7 +66,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private Application application;
   private Aics aics;
   private Aic aic;
-  private Federations federations;
+  private XdbFederations federations;
 
   @Before
   public void init() throws IOException {
@@ -75,7 +77,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Tenant tenant = new Tenant();
     application = new Application();
     applications = mock(Applications.class);
-    federations = mock(Federations.class);
+    federations = mock(XdbFederations.class);
     Spaces spaces = mock(Spaces.class);
     Databases databases = mock(Databases.class);
     FileSystemRoots fileSystemRoots = mock(FileSystemRoots.class);
@@ -92,7 +94,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Pdis pdis = mock(Pdis.class);
     PdiSchemas pdiSchemas = mock(PdiSchemas.class);
     Ingests ingests = mock(Ingests.class);
-    Libraries libraries = mock(Libraries.class);
+    XdbLibraries libraries = mock(XdbLibraries.class);
     Contents contents = new Contents();
     aics = mock(Aics.class);
     LinkContainer aips = new LinkContainer();
@@ -107,8 +109,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     XForms xForms = mock(XForms.class);
     XForm xForm = mock(XForm.class);
     CryptoObjects cryptoObjects = mock(CryptoObjects.class);
-    PdiCryptos pdiCryptos = mock(PdiCryptos.class);
-    HoldingCryptos holdingCryptos = mock(HoldingCryptos.class);
+    PdiCryptoes pdiCryptos = mock(PdiCryptoes.class);
+    HoldingCryptoes holdingCryptos = mock(HoldingCryptoes.class);
     StorageEndPoints storageEndPoints = mock(StorageEndPoints.class);
     CustomStorages customStorages = mock(CustomStorages.class);
     ContentAddressedStorages contentAddressedStorages = mock(ContentAddressedStorages.class);
@@ -134,7 +136,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     aips.setLinks(links);
 
     mockCollection(Applications.class, applications);
-    mockCollection(Federations.class, federations);
+    mockCollection(XdbFederations.class, federations);
     mockCollection(Spaces.class, spaces);
     mockCollection(Databases.class, databases);
     mockCollection(FileSystemRoots.class, fileSystemRoots);
@@ -149,7 +151,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(Pdis.class, pdis);
     mockCollection(PdiSchemas.class, pdiSchemas);
     mockCollection(Ingests.class, ingests);
-    mockCollection(Libraries.class, libraries);
+    mockCollection(XdbLibraries.class, libraries);
     mockCollection(Aics.class, aics);
     mockCollection(Quotas.class, quotas);
     mockCollection(Queries.class, queries);
@@ -161,14 +163,14 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(SearchCompositions.class, compositions);
     mockCollection(XForms.class, xForms);
     mockCollection(CryptoObjects.class, cryptoObjects);
-    mockCollection(PdiCryptos.class, pdiCryptos);
-    mockCollection(HoldingCryptos.class, holdingCryptos);
+    mockCollection(PdiCryptoes.class, pdiCryptos);
+    mockCollection(HoldingCryptoes.class, holdingCryptos);
     mockCollection(StorageEndPoints.class, storageEndPoints);
     mockCollection(CustomStorages.class, customStorages);
     mockCollection(ContentAddressedStorages.class, contentAddressedStorages);
     when(restClient.createCollectionItem(any(LinkContainer.class), any(XForm.class), eq(LINK_SELF))).thenReturn(xForm);
 
-    mockByName(federations, new Federation());
+    mockByName(federations, new XdbFederation());
     mockByName(databases, new Database());
     mockByName(applications, application);
     mockByName(spaces, new Space());
@@ -183,7 +185,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(pdis, new Pdi());
     mockByName(pdiSchemas, new PdiSchema());
     mockByName(ingests, new Ingest());
-    mockByName(libraries, new Library());
+    mockByName(libraries, new XdbLibrary());
     mockByName(holdings, new Holding());
     mockByName(aics, aic);
     mockByName(quotas, new Quota());
@@ -506,7 +508,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   @Test
   public void shouldRetryWhenTemporarilyUnavailable() throws IOException {
     configuration.put(InfoArchiveConfiguration.FEDERATION_NAME, randomString());
-    when(restClient.createCollectionItem(eq(federations), any(Federation.class), eq(LINK_ADD), eq(LINK_SELF)))
+    when(restClient.createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD), eq(LINK_SELF)))
         .then(invocation -> {
       throw new HttpException(503, "");
     });
@@ -514,7 +516,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     ArchiveClients.configuringServerUsing(new PropertiesBasedConfigurer(configuration, restClient, mock(Clock.class)),
         restClient);
 
-    verify(restClient, times(5)).createCollectionItem(eq(federations), any(Federation.class), eq(LINK_ADD),
+    verify(restClient, times(5)).createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD),
         eq(LINK_SELF));
   }
 

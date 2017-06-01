@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Queries extends ItemContainer<Query> {
 
-  protected Queries() {
-    super("queries");
-  }
+public class Queries extends ItemContainer<Query> {
 
 }

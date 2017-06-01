@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Holdings extends ItemContainer<Holding> {
 
-  protected Holdings() {
-    super("holdings");
-  }
+public class Holdings extends ItemContainer<Holding> {
 
 }

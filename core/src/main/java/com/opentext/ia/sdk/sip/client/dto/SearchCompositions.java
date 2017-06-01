@@ -3,10 +3,7 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class SearchCompositions extends ItemContainer<SearchComposition> {
 
-  protected SearchCompositions() {
-    super("searchCompositions");
-  }
+public class SearchCompositions extends ItemContainer<SearchComposition> {
 
 }

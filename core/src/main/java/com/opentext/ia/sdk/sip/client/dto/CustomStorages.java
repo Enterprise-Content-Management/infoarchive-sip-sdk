@@ -6,8 +6,4 @@ package com.opentext.ia.sdk.sip.client.dto;
 
 public class CustomStorages extends ItemContainer<CustomStorage> {
 
-  public CustomStorages() {
-    super("customStorages");
-  }
-
 }

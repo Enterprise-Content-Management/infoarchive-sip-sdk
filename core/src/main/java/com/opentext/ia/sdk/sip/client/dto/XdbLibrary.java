@@ -3,7 +3,8 @@
  */
 package com.opentext.ia.sdk.sip.client.dto;
 
-public class Library extends NamedLinkContainer {
+
+public class XdbLibrary extends NamedLinkContainer {
 
   private String subPath;
   private String parentSpaceRootXdbLibrary;

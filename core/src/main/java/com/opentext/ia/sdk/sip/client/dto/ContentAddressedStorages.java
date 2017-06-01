@@ -6,8 +6,4 @@ package com.opentext.ia.sdk.sip.client.dto;
 
 public class ContentAddressedStorages extends ItemContainer<ContentAddressedStorage> {
 
-  public ContentAddressedStorages() {
-    super("contentAddressedStorages");
-  }
-
 }

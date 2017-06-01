@@ -5,10 +5,7 @@ package com.opentext.ia.sdk.sip.client.dto.export;
 
 import com.opentext.ia.sdk.sip.client.dto.ItemContainer;
 
-public class ExportPipelines extends ItemContainer<ExportPipeline> {
 
-  protected ExportPipelines() {
-    super("exportPipelines");
-  }
+public class ExportPipelines extends ItemContainer<ExportPipeline> {
 
 }
