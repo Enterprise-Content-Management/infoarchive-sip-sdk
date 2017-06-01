@@ -55,8 +55,7 @@ query:
     result:
       root:
         element: result
-        ns:
-          enabled: true
+        ns-enabled: true
       schema: "urn:opentext:ia:schema:sample:animal:1.0"
     xdbpdi:
       entity:
@@ -102,12 +101,9 @@ result-helper:
       </resultConfigurationHelper>
 
 search:
-  - default:
-      name: null
-      result-master: null
   - name: "Find animals"
     description: null
-    nested-search: false
+    nested: false
     state: DRAFT
     inuse: true
     aic: Animals

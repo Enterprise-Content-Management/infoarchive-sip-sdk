@@ -6,7 +6,9 @@ package com.opentext.ia.sdk.configurer;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -18,6 +20,7 @@ public class WhenUsingYamlConfiguration implements InfoArchiveConfiguration {
 
   private static final String EXPECTED_TENANT_NAME = "myTenant";
   private static final String EXPECTED_APPLICATION_NAME = "myApplication";
+  private static final String EXPECTED_QUERY_NAME = "myQuery";
 
   private String yaml;
 
@@ -28,6 +31,11 @@ public class WhenUsingYamlConfiguration implements InfoArchiveConfiguration {
     Map<String, String> application = new HashMap<>();
     application.put(NAME, EXPECTED_APPLICATION_NAME);
     root.put("application", application);
+    List<Map<String, String>> queries = new ArrayList<>();
+    Map<String, String> query = new HashMap<>();
+    query.put(NAME, EXPECTED_QUERY_NAME);
+    queries.add(query);
+    root.put("query", queries);
     yaml = new Yaml().dumpAsMap(root);
   }
 
@@ -37,6 +45,7 @@ public class WhenUsingYamlConfiguration implements InfoArchiveConfiguration {
 
     assertEquals("Tenant name", EXPECTED_TENANT_NAME, config.get(TENANT_NAME));
     assertEquals("Application name", EXPECTED_APPLICATION_NAME, config.get(APPLICATION_NAME));
+    assertEquals("Query name", EXPECTED_QUERY_NAME, config.get(QUERY_NAME));
   }
 
 }
