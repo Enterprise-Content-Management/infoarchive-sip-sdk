@@ -1,5 +1,5 @@
 dependencies {
-  compile project(':infoarchive-sip-sdk-core')
+  compile project(':infoarchive-sdk-core')
 }
 
 ext {

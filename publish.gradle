@@ -2,7 +2,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'io.codearte.nexus-staging'
 
-ext.publishProjects = subprojects.findAll { it.name.startsWith('infoarchive-sip-sdk-') }
+ext.publishProjects = subprojects.findAll { it.name.startsWith('infoarchive-sdk-') }
 
 // OSSRH requires both javadoc and sources jars
 publishProjects.each { prj ->
@@ -61,12 +61,12 @@ uploadArchives {
             name prj.name
             description prj.description
             packaging 'jar'
-            url 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk'
+            url 'https://github.com/Enterprise-Content-Management/infoarchive-sdk'
     
             scm {
-              connection 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git'
-              developerConnection 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git'
-              url 'https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk.git'
+              connection 'https://github.com/Enterprise-Content-Management/infoarchive-sdk.git'
+              developerConnection 'https://github.com/Enterprise-Content-Management/infoarchive-sdk.git'
+              url 'https://github.com/Enterprise-Content-Management/infoarchive-sdk.git'
             }
     
             licenses {

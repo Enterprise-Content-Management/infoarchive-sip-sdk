@@ -146,7 +146,7 @@ subprojects {
 }
 
 
-project(':infoarchive-sip-sdk-core') {
+project(':infoarchive-sdk-core') {
   configurations {
     compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, commonsLang, evoInflector, 
         httpclient, httpmime, jacksonCore, jacksonDatabind, validation, yaml
@@ -162,7 +162,7 @@ project(':infoarchive-sip-sdk-core') {
 }
 
 
-project(':infoarchive-sip-sdk-stringtemplate') {
+project(':infoarchive-sdk-stringtemplate') {
   configurations {
     stringtemplate
     compile.extendsFrom stringtemplate
@@ -170,13 +170,13 @@ project(':infoarchive-sip-sdk-stringtemplate') {
 
   dependencies {
     stringtemplate "org.antlr:ST4:$stringTemplateVersion"
-    compile project(':infoarchive-sip-sdk-core')
-    testCompile project(':infoarchive-sip-sdk-core').sourceSets.test.output
+    compile project(':infoarchive-sdk-core')
+    testCompile project(':infoarchive-sdk-core').sourceSets.test.output
   }
 }
 
 
-project(':infoarchive-sip-sdk-velocity') {
+project(':infoarchive-sdk-velocity') {
   configurations {
     velocity
     velocityTools {
@@ -196,8 +196,8 @@ project(':infoarchive-sip-sdk-velocity') {
   dependencies {
     velocity "org.apache.velocity:velocity:$velocityVersion"
     velocityTools "org.apache.velocity:velocity-tools:$velocityToolsVersion"
-    compile project(':infoarchive-sip-sdk-core')
-    testCompile project(':infoarchive-sip-sdk-core').sourceSets.test.output
+    compile project(':infoarchive-sdk-core')
+    testCompile project(':infoarchive-sdk-core').sourceSets.test.output
   }
 }
 
