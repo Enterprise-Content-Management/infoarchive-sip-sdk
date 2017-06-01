@@ -26,7 +26,7 @@ class ConfigurationResourcesCache {
   private String fileSystemFolderUri;
   private String receptionFolderUri;
   private String storeUri;
-  private SpaceRootLibrary spaceRootLibrary;
+  private SpaceRootXdbLibrary spaceRootLibrary;
   private String libraryUri;
   private String pdiUri;
   private String ingestNodeUri;
@@ -127,11 +127,11 @@ class ConfigurationResourcesCache {
     this.space = space;
   }
 
-  public SpaceRootLibrary getSpaceRootLibrary() {
+  public SpaceRootXdbLibrary getSpaceRootLibrary() {
     return spaceRootLibrary;
   }
 
-  public void setSpaceRootLibrary(SpaceRootLibrary spaceRootLibrary) {
+  public void setSpaceRootLibrary(SpaceRootXdbLibrary spaceRootLibrary) {
     this.spaceRootLibrary = spaceRootLibrary;
   }
 
