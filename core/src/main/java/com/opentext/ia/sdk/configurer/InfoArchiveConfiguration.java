@@ -10,6 +10,7 @@ public interface InfoArchiveConfiguration {
   String NAMES = "names";
   String TYPE = "type";
   String DESCRIPTION = "description";
+  String XDB = "xdb";
 
   String SERVER_PREFIX = PREFIX + "server.";
   String SERVER_AUTENTICATON_TOKEN = SERVER_PREFIX + "authentication.token";

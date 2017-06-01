@@ -47,12 +47,12 @@ public class YamlConfiguration implements InfoArchiveConfiguration {
     map.put(SERVER_URI, getString(source, "server", "uri"));
     map.put(SERVER_AUTENTICATON_TOKEN, getString(source, "server", "token"));
 
-    map.put(FEDERATION_NAME, getString(source, "xdb", "federation", NAME));
-    map.put(FEDERATION_BOOTSTRAP, getString(source, "xdb", "federation", "uri"));
-    map.put(FEDERATION_SUPERUSER_PASSWORD, getString(source, "xdb", "federation", "password"));
+    map.put(FEDERATION_NAME, getString(source, XDB, "federation", NAME));
+    map.put(FEDERATION_BOOTSTRAP, getString(source, XDB, "federation", "uri"));
+    map.put(FEDERATION_SUPERUSER_PASSWORD, getString(source, XDB, "federation", "password"));
 
-    map.put(DATABASE_NAME, getString(source, "xdb", "database", NAME));
-    map.put(DATABASE_ADMIN_PASSWORD, getString(source, "xdb", "database", "password"));
+    map.put(DATABASE_NAME, getString(source, XDB, "database", NAME));
+    map.put(DATABASE_ADMIN_PASSWORD, getString(source, XDB, "database", "password"));
 
     map.put(RETENTION_POLICY_NAME, getString(source, "retention-policy", NAME));
     map.put(AIC_NAME, getString(source, "aic", NAME));
