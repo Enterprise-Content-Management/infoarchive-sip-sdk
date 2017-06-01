@@ -36,7 +36,7 @@ import com.opentext.ia.sdk.sip.client.dto.query.Comparison;
 import com.opentext.ia.sdk.sip.client.dto.query.Item;
 import com.opentext.ia.sdk.sip.client.dto.query.Operator;
 import com.opentext.ia.sdk.sip.client.dto.query.SearchQuery;
-import com.opentext.ia.sdk.sip.client.dto.result.searchconfig.AllSearchComponents;
+import com.opentext.ia.sdk.sip.client.dto.result.AllSearchComponents;
 import com.opentext.ia.sdk.sip.client.rest.*;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.*;
