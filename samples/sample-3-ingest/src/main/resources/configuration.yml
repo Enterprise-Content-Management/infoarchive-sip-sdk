@@ -109,7 +109,7 @@ search:
     aic: Animals
     query: DefaultQuery
     composition:
-      - name: null
+      - name: "Set 1"
         xform:
           name: form
           xml: |
