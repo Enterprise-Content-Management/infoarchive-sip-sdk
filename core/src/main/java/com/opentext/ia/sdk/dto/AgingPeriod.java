@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class AgingPeriod {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class AgingPeriod extends JavaBean {
 
   private String units;
   private int value;

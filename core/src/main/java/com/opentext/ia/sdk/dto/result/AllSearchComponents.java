@@ -5,8 +5,10 @@ package com.opentext.ia.sdk.dto.result;
 
 import com.opentext.ia.sdk.dto.SearchComposition;
 import com.opentext.ia.sdk.dto.XForm;
+import com.opentext.ia.sdk.support.JavaBean;
 
-public class AllSearchComponents {
+
+public class AllSearchComponents extends JavaBean {
 
   private SearchComposition searchComposition;
   private ResultMaster resultMaster;

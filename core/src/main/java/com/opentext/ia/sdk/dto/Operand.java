@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class Operand {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class Operand extends JavaBean {
 
   private String name;
   private String path;

@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
+
 public class Search extends NamedLinkContainer {
 
   private String description;

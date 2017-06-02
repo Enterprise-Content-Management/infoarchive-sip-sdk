@@ -5,6 +5,7 @@ package com.opentext.ia.sdk.dto.export;
 
 import com.opentext.ia.sdk.dto.NamedLinkContainer;
 
+
 public class ExportTransformation extends NamedLinkContainer {
 
   private String description;

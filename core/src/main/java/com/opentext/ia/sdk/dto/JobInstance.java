@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
+
 public class JobInstance extends NamedLinkContainer {
 
   private String status;
@@ -18,4 +19,5 @@ public class JobInstance extends NamedLinkContainer {
   public final void setStatus(String status) {
     this.status = status;
   }
+
 }

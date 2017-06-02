@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
+
 public class PdiSchema extends NamedLinkContainer {
 
   private String format;

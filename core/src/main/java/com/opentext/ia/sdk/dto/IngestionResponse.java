@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
+
 public class IngestionResponse extends NamedLinkContainer {
 
   private String aipId;

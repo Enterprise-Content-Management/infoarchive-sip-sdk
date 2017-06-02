@@ -6,7 +6,10 @@ package com.opentext.ia.sdk.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XdbPdiConfig {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class XdbPdiConfig extends JavaBean {
 
   private List<Operand> operands;
   private String schema;

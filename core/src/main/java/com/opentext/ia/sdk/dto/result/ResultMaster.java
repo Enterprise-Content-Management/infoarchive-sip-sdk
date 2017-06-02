@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.opentext.ia.sdk.dto.Namespace;
+import com.opentext.ia.sdk.support.VersionedJavaBean;
 
-public class ResultMaster {
+
+public class ResultMaster extends VersionedJavaBean {
 
   private List<Panel> panels;
-
   private List<Namespace> namespaces;
 
   public ResultMaster() {
@@ -28,9 +29,9 @@ public class ResultMaster {
 
   public Panel getPanelByName(String panelName) {
     return panels.stream()
-      .filter(p -> panelName.equals(p.getName()))
-      .findFirst()
-      .orElse(null);
+        .filter(p -> panelName.equals(p.getName()))
+        .findFirst()
+        .orElse(null);
   }
 
   public List<Panel> getPanels() {
@@ -48,4 +49,5 @@ public class ResultMaster {
   public void setNamespaces(List<Namespace> namespaces) {
     this.namespaces = namespaces;
   }
+
 }

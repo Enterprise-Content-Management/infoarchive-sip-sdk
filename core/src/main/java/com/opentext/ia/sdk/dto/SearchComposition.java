@@ -3,10 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class SearchComposition extends NamedLinkContainer {
+
+public class SearchComposition extends VersionedLinkContainer {
 
   private String searchName;
-  private Long version;
 
   public SearchComposition() {
     setName("Set 1");
@@ -18,14 +18,6 @@ public class SearchComposition extends NamedLinkContainer {
 
   public void setSearchName(String searchName) {
     this.searchName = searchName;
-  }
-
-  public Long getVersion() {
-    return version;
-  }
-
-  public void setVersion(Long version) {
-    this.version = version;
   }
 
 }

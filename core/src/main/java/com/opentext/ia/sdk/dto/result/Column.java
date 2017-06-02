@@ -3,8 +3,11 @@
  */
 package com.opentext.ia.sdk.dto.result;
 
-@SuppressWarnings("PMD.TooManyFields")
-public class Column {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+@SuppressWarnings("PMD.TooManyFields") // Dictated by IA
+public class Column extends JavaBean {
 
   public enum DefaultSort {
     NONE,
@@ -34,35 +37,20 @@ public class Column {
   }
 
   private String name;
-
   private String label;
-
   private String xdbElementName;
-
   private boolean hidden;
-
   private boolean encrypt;
-
   private boolean masked;
-
   private boolean exportable = true;
-
   private DataType dataType;
-
   private Type type;
-
   private int order;
-
   private boolean sortable;
-
   private DefaultSort defaultSort;
-
   private String nestedSearchName;
-
   private String groupName;
-
   private String groupPath;
-
   private String path;
 
   public String getName() {

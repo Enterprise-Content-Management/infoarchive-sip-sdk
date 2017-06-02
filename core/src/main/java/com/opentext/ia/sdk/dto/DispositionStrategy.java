@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class DispositionStrategy {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class DispositionStrategy extends JavaBean {
 
   private String type;
 

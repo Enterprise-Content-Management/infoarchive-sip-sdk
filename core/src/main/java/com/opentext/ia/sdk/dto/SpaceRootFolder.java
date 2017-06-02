@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
+
 public class SpaceRootFolder extends NamedLinkContainer {
 
   private String fileSystemRoot;

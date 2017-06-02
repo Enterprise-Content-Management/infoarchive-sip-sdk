@@ -5,6 +5,7 @@ package com.opentext.ia.sdk.dto;
 
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 
+
 public class NamedLinkContainer extends LinkContainer {
 
   private String name;
@@ -15,11 +16,6 @@ public class NamedLinkContainer extends LinkContainer {
 
   public String getName() {
     return name;
-  }
-
-  @Override
-  public String toString() {
-    return String.format("name=%s; links=%s", name, super.toString());
   }
 
 }

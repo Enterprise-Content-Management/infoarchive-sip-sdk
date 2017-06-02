@@ -6,7 +6,10 @@ package com.opentext.ia.sdk.dto.result;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Panel {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class Panel extends JavaBean {
 
   private String name;
   private String title;
@@ -31,9 +34,9 @@ public class Panel {
 
   public Tab getTabByName(String tabName) {
     return tabs.stream()
-      .filter(t -> tabName.equals(t.getName()))
-      .findFirst()
-      .orElse(null);
+        .filter(t -> tabName.equals(t.getName()))
+        .findFirst()
+        .orElse(null);
   }
 
   public String getName() {

@@ -6,8 +6,10 @@ package com.opentext.ia.sdk.dto.query;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.opentext.ia.sdk.support.JavaBean;
 
-public class Relation implements Item {
+
+public class Relation extends JavaBean implements Item {
 
   private final List<Item> items;
 

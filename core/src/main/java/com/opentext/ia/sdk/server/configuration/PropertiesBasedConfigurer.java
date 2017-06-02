@@ -981,30 +981,30 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   private void ensureAllSearchComponents(String searchName, SearchComposition composition) throws IOException {
     AllSearchComponents components = new AllSearchComponents();
     components.setSearchComposition(composition);
-    components.setXform(createXForm(searchName, composition.getName()));
-    components.setResultMaster(createResultMaster(searchName, composition.getName()));
+    components.setXform(createXForm(searchName, composition.getName(), composition.getVersion()));
+    components.setResultMaster(createResultMaster(searchName, composition.getName(), composition.getVersion()));
     SearchComposition updatedComposition = restClient.put(composition.getUri(LINK_ALLCOMPONENTS),
         SearchComposition.class, components);
     Objects.requireNonNull(updatedComposition, "Failed to update search composition");
   }
 
-  private XForm createXForm(String searchName, String compositionName) {
+  private XForm createXForm(String searchName, String compositionName, long version) {
     XForm result = new XForm();
     result.setForm(configured(resolveTemplatedKey(SEARCH_COMPOSITION_XFORM, searchName, compositionName)));
+    result.setVersion(version);
     return result;
   }
 
-  private ResultMaster createResultMaster(String searchName, String compositionName) {
+  private ResultMaster createResultMaster(String searchName, String compositionName, long version) {
     ResultMaster result = new ResultMaster();
+    result.setVersion(version);
 
     result.setNamespaces(createNamespaces(templatedString(SEARCH_QUERY, searchName)));
     List<Column> columns = result.getDefaultTab().getColumns();
 
     result.getDefaultTab().setExportEnabled(templatedBoolean(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE,
         searchName));
-    result.getDefaultTab()
-      .getExportConfigurations()
-      .addAll(uriFromNamesAndType(EXPORT_CONFIGURATION, getStrings(
+    result.getDefaultTab().getExportConfigurations().addAll(uriFromNamesAndType(EXPORT_CONFIGURATION, getStrings(
           SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName)));
 
     for (Map<String, String> config : getSearchColumnConfigs(searchName, compositionName)) {
