@@ -3,12 +3,16 @@
  */
 package com.opentext.ia.sdk.sample.ingest;
 
+import static com.opentext.ia.sdk.server.configuration.InfoArchiveConfiguration.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
@@ -16,12 +20,11 @@ import com.opentext.ia.sdk.server.configuration.YamlBasedConfigurer;
 import com.opentext.ia.sdk.server.configuration.YamlConfiguration;
 import com.opentext.ia.sdk.sip.*;
 import com.opentext.ia.sdk.support.io.FileSupplier;
+import com.opentext.ia.sdk.support.io.StringStream;
 
 
 public class YamlSipIngester {
-  private static final String SAMPLE_HOLDING = "Animals";
-  private static final String SAMPLE_SCHEMA = "pdi-schema.xsd";
-  private static final String SAMPLE_NAMESPACE = "urn:opentext:ia:schema:sample:animal:1.0";
+
   private static final String SAMPLE_FILES_PATH = "src/main/resources";
 
   @SuppressWarnings("PMD.AvoidPrintStackTrace")
@@ -36,13 +39,19 @@ public class YamlSipIngester {
 
   @SuppressWarnings("PMD.SystemPrintln")
   private void run(String rootPath) throws IOException {
+    // Load the configuration
+    YamlConfiguration configuration = null;
+    try (InputStream yaml = getClass().getResourceAsStream("/configuration.yml")) {
+      configuration = new YamlConfiguration(yaml);
+    }
+
     // Tell InfoArchive where and how to archive the data
-    URI entityUri = URI.create(SAMPLE_NAMESPACE);
+    URI entityUri = URI.create(configuration.get(PDI_SCHEMA_NAME));
     String entityName = "animal";
     PackagingInformation prototype = PackagingInformation.builder()
         .dss()
-        .application(SAMPLE_HOLDING)
-        .holding(SAMPLE_HOLDING)
+        .application(configuration.get(APPLICATION_NAME))
+        .holding(configuration.get(HOLDING_NAME))
         .producer("SIP-SDK")
         .entity(entityName)
         .schema(entityUri.toString())
@@ -51,7 +60,7 @@ public class YamlSipIngester {
 
     // Define a mapping from our domain object to the PDI XML
     XmlPdiAssembler<File> pdiAssembler;
-    try (InputStream schema = getClass().getResourceAsStream('/' + SAMPLE_SCHEMA)) {
+    try (InputStream schema = new StringStream(configuration.get(PDI_SCHEMA))) {
       pdiAssembler = new XmlPdiAssembler<File>(entityUri, entityName, schema) {
         @Override
         protected void doAdd(File value, Map<String, ContentInfo> ignored) {
@@ -82,11 +91,7 @@ public class YamlSipIngester {
     // the SIP we've just assembled.
     // Use ArchiveClients.usingAlreadyConfiguredServer() instead if you already configured the server with application,
     // holding, etc.
-    ArchiveClient archiveClient;
-    try (InputStream yaml = getClass().getResourceAsStream("/configuration.yml")) {
-      archiveClient = ArchiveClients.configuringServerUsing(
-          new YamlBasedConfigurer(new YamlConfiguration(yaml)));
-    }
+    ArchiveClient archiveClient = ArchiveClients.configuringServerUsing(new YamlBasedConfigurer(configuration));
 
     // Ingest the SIP into InfoArchive
     try (InputStream sip = new FileInputStream(assembledSip)) {

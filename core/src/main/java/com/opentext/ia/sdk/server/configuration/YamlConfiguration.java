@@ -5,11 +5,7 @@ package com.opentext.ia.sdk.server.configuration;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -221,6 +217,10 @@ public class YamlConfiguration implements InfoArchiveConfiguration {
   private List<Map<String, Object>> getList(Map<String, Object> source, String var) {
     Object obj = source.get(var);
     return (obj == null) ? Collections.EMPTY_LIST : (List<Map<String, Object>>)obj;
+  }
+
+  public String get(String name) {
+    return map.get(name);
   }
 
 }
