@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
+
 public class Store extends NamedLinkContainer {
 
   private String fileSystemFolder;

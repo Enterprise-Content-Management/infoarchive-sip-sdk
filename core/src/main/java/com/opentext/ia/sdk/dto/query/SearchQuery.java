@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
+
 @JsonRootName(value = "data")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class SearchQuery {

@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class ReceptionRequest {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class ReceptionRequest extends JavaBean {
 
   private String format;
 
@@ -17,11 +20,6 @@ public class ReceptionRequest {
 
   public final void setFormat(String format) {
     this.format = format;
-  }
-
-  @Override
-  public String toString() {
-    return String.format("format=%s", format);
   }
 
 }

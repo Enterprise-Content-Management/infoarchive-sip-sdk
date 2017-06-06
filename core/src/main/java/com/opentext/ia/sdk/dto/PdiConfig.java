@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class PdiConfig {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class PdiConfig extends JavaBean {
 
   private String schema;
   private String pdi;

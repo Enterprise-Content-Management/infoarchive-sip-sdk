@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class AgingStrategy {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class AgingStrategy extends JavaBean {
 
   private String type;
   private AgingPeriod agingPeriod;

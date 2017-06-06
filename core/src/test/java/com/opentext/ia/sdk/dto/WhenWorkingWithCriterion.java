@@ -64,7 +64,6 @@ public class WhenWorkingWithCriterion extends TestCase {
     Criterion criterion = newCriterion();
 
     String string = criterion.toString();
-    assertTrue(string.contains(Criterion.class.getSimpleName()));
     assertTrue(string.contains(label));
     assertTrue(string.contains(name));
     assertTrue(string.contains(type));

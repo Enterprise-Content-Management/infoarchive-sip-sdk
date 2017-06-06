@@ -6,6 +6,7 @@ package com.opentext.ia.sdk.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ReceiverNode extends NamedLinkContainer {
 
   private String workingDirectory;

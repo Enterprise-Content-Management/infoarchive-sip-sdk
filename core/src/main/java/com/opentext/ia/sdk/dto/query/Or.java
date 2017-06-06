@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.dto.query;
 
+
 public class Or extends Relation {
 
 }

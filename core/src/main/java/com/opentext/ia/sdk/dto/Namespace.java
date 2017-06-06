@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class Namespace {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class Namespace extends JavaBean {
 
   private String uri;
   private String prefix;
@@ -32,4 +35,5 @@ public class Namespace {
   public final void setPrefix(String prefix) {
     this.prefix = prefix;
   }
+
 }

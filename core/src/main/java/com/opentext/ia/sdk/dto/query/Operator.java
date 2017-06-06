@@ -3,7 +3,9 @@
  */
 package com.opentext.ia.sdk.dto.query;
 
+
 public enum Operator {
+
   EQUAL,
   NOT_EQUAL,
   GREATER,
@@ -13,4 +15,5 @@ public enum Operator {
   LESS_OR_EQUAL,
   STARTS_WITH,
   FULLTEXT
+
 }

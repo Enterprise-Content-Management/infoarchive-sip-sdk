@@ -6,7 +6,10 @@ package com.opentext.ia.sdk.dto.result;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tab {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class Tab extends JavaBean {
 
   private String name;
   private String title;
@@ -72,4 +75,5 @@ public class Tab {
   public void setExportConfigurations(List<String> exportConfigurations) {
     this.exportConfigurations = exportConfigurations;
   }
+
 }

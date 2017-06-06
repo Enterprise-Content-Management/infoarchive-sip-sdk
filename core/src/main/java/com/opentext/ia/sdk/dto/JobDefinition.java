@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
+
 public class JobDefinition extends NamedLinkContainer {
 
   private String handlerName;
@@ -18,4 +19,5 @@ public class JobDefinition extends NamedLinkContainer {
   public final void setHandlerName(String handlerName) {
     this.handlerName = handlerName;
   }
+
 }

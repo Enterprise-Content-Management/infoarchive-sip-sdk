@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
+
 public class FileSystemFolder extends NamedLinkContainer {
 
   private String subPath;

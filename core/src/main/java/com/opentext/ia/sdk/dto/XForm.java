@@ -3,7 +3,8 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class XForm extends NamedLinkContainer {
+
+public class XForm extends VersionedLinkContainer {
 
   private String form;
   private String searchName;

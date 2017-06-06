@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class Column {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class Column extends JavaBean {
 
   private String name;
   private String value;
@@ -23,4 +26,5 @@ public class Column {
   public final void setValue(String value) {
     this.value = value;
   }
+
 }

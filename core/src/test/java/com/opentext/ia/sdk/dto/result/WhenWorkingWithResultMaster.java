@@ -20,26 +20,21 @@ public class WhenWorkingWithResultMaster {
 
     Panel mainPanel = master.getPanelByName("Main Panel");
     assertEquals("Main Panel", mainPanel.getName());
-    assertEquals(1, mainPanel.getTabs()
-      .size());
-    assertEquals(master.getDefaultTab(), mainPanel.getTabs()
-      .get(0));
+    assertEquals(1, mainPanel.getTabs().size());
+    assertEquals(master.getDefaultTab(), mainPanel.getTabs().get(0));
 
     Tab defaultTab = master.getDefaultTab();
     assertNotNull(defaultTab);
     assertEquals("_ia_Default_Main_tab_", defaultTab.getName());
-    assertTrue(defaultTab.getColumns()
-      .isEmpty());
+    assertTrue(defaultTab.getColumns().isEmpty());
 
     Panel sidePanel = master.getPanelByName("Side Panel");
     assertEquals("Side Panel", sidePanel.getName());
-    assertTrue(sidePanel.getTabs()
-      .isEmpty());
+    assertTrue(sidePanel.getTabs().isEmpty());
 
     Panel inlinePanel = master.getPanelByName("Inline Panel");
     assertEquals("Inline Panel", inlinePanel.getName());
-    assertTrue(inlinePanel.getTabs()
-      .isEmpty());
-
+    assertTrue(inlinePanel.getTabs().isEmpty());
   }
+
 }

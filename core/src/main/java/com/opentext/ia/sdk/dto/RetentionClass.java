@@ -6,7 +6,10 @@ package com.opentext.ia.sdk.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RetentionClass {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class RetentionClass extends JavaBean {
 
   private String name;
   private List<String> policies;

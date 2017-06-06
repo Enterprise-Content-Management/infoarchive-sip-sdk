@@ -5,6 +5,7 @@ package com.opentext.ia.sdk.dto.export;
 
 import com.opentext.ia.sdk.dto.NamedLinkContainer;
 
+
 public class ExportPipeline extends NamedLinkContainer {
 
   private String description;
@@ -88,4 +89,5 @@ public class ExportPipeline extends NamedLinkContainer {
   public void setCollectionBasedExport(boolean collectionBasedExport) {
     this.collectionBasedExport = collectionBasedExport;
   }
+
 }

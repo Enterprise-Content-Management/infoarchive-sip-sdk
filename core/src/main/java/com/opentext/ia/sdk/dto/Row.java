@@ -6,8 +6,10 @@ package com.opentext.ia.sdk.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.opentext.ia.sdk.support.JavaBean;
 
-public class Row {
+
+public class Row extends JavaBean {
 
   private String id;
   private List<Column> columns;

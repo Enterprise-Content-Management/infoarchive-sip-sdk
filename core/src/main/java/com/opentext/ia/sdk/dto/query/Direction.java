@@ -3,8 +3,9 @@
  */
 package com.opentext.ia.sdk.dto.query;
 
+
 public enum Direction {
 
-  ASCENDING,
-  DESCENDING
+  ASCENDING, DESCENDING
+
 }

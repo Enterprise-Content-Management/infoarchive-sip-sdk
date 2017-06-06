@@ -5,11 +5,6 @@ server:
   uri: http://localhost:8765/services
   authentication:
     token: eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjM2MDU4Mjg3NjEsInVzZXJfbmFtZSI6InN1ZUBpYWN1c3RvbWVyLmNvbSIsImF1dGhvcml0aWVzIjpbIkdST1VQX0FETUlOSVNUUkFUT1IiLCJHUk9VUF9SRVRFTlRJT05fTUFOQUdFUiIsIkdST1VQX0JVU0lORVNTX09XTkVSIiwiR1JPVVBfRU5EX1VTRVIiLCJHUk9VUF9ERVZFTE9QRVIiLCJHUk9VUF9JVF9PV05FUiIsIlJPTEVfQURNSU5JU1RSQVRPUiIsIlJPTEVfUkVURU5USU9OX01BTkFHRVIiLCJST0xFX0JVU0lORVNTX09XTkVSIiwiUk9MRV9FTkRfVVNFUiIsIlJPTEVfREVWRUxPUEVSIiwiUk9MRV9JVF9PV05FUiJdLCJqdGkiOiJiODhmMGEwMi0yNTMyLTQ2OWUtYmU4ZC1iYWVkZjM5OTExNDIiLCJjbGllbnRfaWQiOiJpbmZvYXJjaGl2ZS5pYXdhIiwic2NvcGUiOlsiYWRtaW5pc3RyYXRpb24iLCJjb21wbGlhbmNlIiwic2VhcmNoIl19.tRNjesTSzMYmpFNP1xCPl_SHUetGtLvyHzvc59TCqF0
-    user: null
-    password: null
-    gateway: null
-    client_id: null
-    client_secret: null
 
 tenant: TENANT
 
@@ -29,15 +24,6 @@ application:
 
 holding:
   name: *_name
-
-file-system-folder:
-  name: null
-
-store:
-  name: null
-  store-type: null
-  folder: null
-  type: null
 
 aic:
   name: *_name
@@ -73,9 +59,6 @@ query:
 
 quota:
   name: DefaultQuota
-  aiu: null
-  aip: null
-  dip: null
 
 result-helper:
   - name: "result_helper"
@@ -105,7 +88,7 @@ result-helper:
 
 search:
   - name: "Find yaml animals"
-    description: null
+    description: "Search animal"
     nested: false
     state: DRAFT
     inuse: true
@@ -196,9 +179,6 @@ search:
             path: "n:animal_name,n:file_path"
             type: "STRING,STRING"
             sort: "NONE,NONE"
-        export:
-          enabled: null
-          configs: null
 
 retention-policy:
   name: *_name
@@ -299,14 +279,5 @@ pdi:
 
 ingest:
   default: true
-  xml: null
+#  xml: null
 
-job:
-  definition: null
-
-http:
-  client: null
-
-proxy:
-  host: null
-  port: null

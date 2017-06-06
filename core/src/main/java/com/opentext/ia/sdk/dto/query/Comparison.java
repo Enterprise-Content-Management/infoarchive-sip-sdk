@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.opentext.ia.sdk.support.JavaBean;
 
 
 @JsonPropertyOrder({ "name", "operator", "value" })
-public class Comparison implements Item {
+public class Comparison extends JavaBean implements Item {
 
   private final List<String> value;
   private String name;
@@ -59,4 +60,5 @@ public class Comparison implements Item {
     Objects.requireNonNull(value);
     this.value.addAll(value);
   }
+
 }

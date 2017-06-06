@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
+
 public class XdbDatabase extends NamedLinkContainer {
 
   private String adminPassword;

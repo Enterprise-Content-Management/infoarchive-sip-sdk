@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.opentext.ia.sdk.support.JavaBean;
 
 
 /**
@@ -14,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <code>_links</code> property, as in <a href="http://stateless.co/hal_specification.html">Hypermedia Application
  * Language</a> (HAL).
  */
-public class LinkContainer {
+public class LinkContainer extends JavaBean {
 
   @JsonProperty("_links")
   private Map<String, Link> links = new HashMap<>();
@@ -34,11 +35,6 @@ public class LinkContainer {
   public String getUri(String linkRelation) {
     Link selfLink = links.get(linkRelation);
     return selfLink == null ? null : selfLink.getHref();
-  }
-
-  @Override
-  public String toString() {
-    return links.toString();
   }
 
 }

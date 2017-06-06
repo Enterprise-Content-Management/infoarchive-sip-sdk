@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class SubPriority {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class SubPriority extends JavaBean {
 
   private int priority;
   private int deadline;

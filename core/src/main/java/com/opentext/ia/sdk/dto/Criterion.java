@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class Criterion {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class Criterion extends JavaBean {
 
   private String name;
   private String label;
@@ -67,27 +70,6 @@ public class Criterion {
 
   public void setIndexed(boolean indexed) {
     this.indexed = indexed;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder(128);
-    builder.append("Criterion [name=");
-    builder.append(name);
-    builder.append(", label=");
-    builder.append(label);
-    builder.append(", type=");
-    builder.append(type);
-    builder.append(", pKeyMinAttr=");
-    builder.append(pKeyMinAttr);
-    builder.append(", pKeyMaxAttr=");
-    builder.append(pKeyMaxAttr);
-    builder.append(", pKeyValuesAttr=");
-    builder.append(pKeyValuesAttr);
-    builder.append(", indexed=");
-    builder.append(indexed);
-    builder.append(']');
-    return builder.toString();
   }
 
 }

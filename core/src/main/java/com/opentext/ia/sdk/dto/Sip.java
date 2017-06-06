@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-public class Sip {
+import com.opentext.ia.sdk.support.JavaBean;
+
+
+public class Sip extends JavaBean {
 
   private String format;
   private String extractorImpl;

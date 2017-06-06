@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
+
 public class QueryQuota extends NamedLinkContainer {
 
   private int aipQuota;
