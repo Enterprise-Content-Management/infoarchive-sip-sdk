@@ -1,0 +1,96 @@
+<datas>
+    <data>
+        <id>pdi.index.creator</id>
+        <key.document.name>xdb.pdi.name</key.document.name>
+        <indexes>
+            <path.value.index>
+                <name>Message</name>
+                <path>
+                    /{urn:com.emc.ia.sip.sample.greeting:1.0}Greetings/{urn:com.emc.ia.sip.sample.greeting:1.0}Greeting[{urn:com.emc.ia.sip.sample.greeting:1.0}Message&lt;STRING>]
+                </path>
+                <compressed>false</compressed>
+                <unique.keys>false</unique.keys>
+                <concurrent>false</concurrent>
+                <build.without.logging>false</build.without.logging>
+            </path.value.index>
+            <path.value.index>
+                <name>Content</name>
+                <path>
+                    /{urn:com.emc.ia.sip.sample.greeting:1.0}Greetings/{urn:com.emc.ia.sip.sample.greeting:1.0}Greeting[{urn:com.emc.ia.sip.sample.greeting:1.0}Content&lt;STRING>]
+                </path>
+                <compressed>false</compressed>
+                <unique.keys>false</unique.keys>
+                <concurrent>false</concurrent>
+                <build.without.logging>false</build.without.logging>
+            </path.value.index>
+            <path.value.index>
+                <name>File</name>
+                <path>
+                    /{urn:com.emc.ia.sip.sample.greeting:1.0}Greetings/{urn:com.emc.ia.sip.sample.greeting:1.0}Greeting[{urn:com.emc.ia.sip.sample.greeting:1.0}File&lt;STRING>]
+                </path>
+                <compressed>false</compressed>
+                <unique.keys>false</unique.keys>
+                <concurrent>false</concurrent>
+                <build.without.logging>false</build.without.logging>
+            </path.value.index>
+        </indexes>
+    </data>
+    <data>
+        <id>pdi.aiu.id</id>
+        <select.query>
+            <![CDATA[
+                declare namespace n = "urn:com.emc.ia.sip.sample.greeting:1.0";
+                for $Greeting in /n:Greetings/n:Greeting
+                return ($Greeting, $Greeting/n:Content/text())
+                ]]>
+        </select.query>
+    </data>
+    <data>
+        <id>pdi.aiu.cnt</id>
+        <select.query>
+            <![CDATA[
+                declare namespace n = "urn:com.emc.ia.sip.sample.greeting:1.0";
+                count(/n:Greetings/n:Greeting)
+                ]]>
+        </select.query>
+    </data>
+    <data>
+        <id>pdi.pkeys</id>
+        <pkey attr="values01">
+            declare namespace n = "urn:com.emc.ia.sip.sample.greeting:1.0";
+            distinct-values(/n:Greetings/n:Greeting/n:Content/xs:string(.))
+        </pkey>
+    </data>
+    <data>
+        <id>ri.init</id>
+        <select.query>
+            <![CDATA[
+                declare namespace n = "urn:com.emc.ia.sip.sample.greeting:1.0";
+                for $ci in distinct-values(/n:Greetings/n:Greeting/n:File)
+                order by $ci
+                return <content type="text/html">{ $ci }</content>
+                ]]>
+        </select.query>
+    </data>
+    <data>
+        <id>xdb.pdi.ci.id</id>
+        <select.query>
+            <![CDATA[
+                declare variable $id as xs:string external;
+                declare variable $seqno_start as xs:long external;
+                declare namespace n = "urn:com.emc.ia.sip.sample.greeting:1.0";
+                declare namespace ri = "urn:x-emc:ia:schema:ri";
+                let $pdi_uri := root(.)
+                let $ri_uri  := replace(document-uri($pdi_uri), '\.pdi$', '.ri')
+                for $ri in doc($ri_uri)/ri:ris/ri:ri[@key]
+                for $n in /n:Greetings/n:Greeting/n:File[. = $ri/@key]
+                return ($n,concat($id,":ci:", sum(($ri/@seqno,$seqno_start))))
+                ]]>
+        </select.query>
+    </data>
+    <data>
+        <id>pdi.transformer</id>
+        <result.schema>urn:x-emc:ia:schema:pdi:export</result.schema>
+        <level>2</level>
+    </data>
+</datas>

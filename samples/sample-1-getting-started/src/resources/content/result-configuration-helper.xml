@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF=8"?>
+<resultConfigurationHelper xmlns:n="urn:com.emc.ia.sip.sample.greeting:1.0" xmlns:ia="urn:x-emc-ia:schema:pdi">
+    <element>
+        <name>id</name>
+        <label>ID</label>
+        <type>ID</type>
+        <path>@ia:id</path>
+    </element>
+    <element>
+        <name>Message</name>
+        <label>Message</label>
+        <type>STRING</type>
+        <path>n:Message</path>
+    </element>
+    <element>
+        <name>Content</name>
+        <label>Content</label>
+        <type>STRING</type>
+        <path>n:Content</path>
+    </element>
+    <element>
+        <name>File</name>
+        <label>File</label>
+        <type>STRING</type>
+        <path>n:File</path>
+    </element>
+    <element>
+        <name>cid</name>
+        <label>CID</label>
+        <type>CID</type>
+        <path>n:File/@ia:cid</path>
+    </element>
+</resultConfigurationHelper>
