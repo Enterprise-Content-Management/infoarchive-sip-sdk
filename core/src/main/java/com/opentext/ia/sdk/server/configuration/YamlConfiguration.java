@@ -7,6 +7,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.Yaml;
 
 
@@ -109,7 +110,18 @@ public class YamlConfiguration implements InfoArchiveConfiguration {
     map.put(PDI_SCHEMA_NAME, getString(source, "pdi", SCHEMA, NAME));
     map.put(PDI_SCHEMA, getString(source, "pdi", SCHEMA, "xsd"));
     map.put(PDI_XML, getString(source, "pdi", XML));
-    map.put(INGEST_XML, getString(source, "ingest", XML));
+
+    boolean useDefaultIngestXml = Boolean.valueOf(getString(source, "ingest", "default"));
+    if (useDefaultIngestXml) {
+      try (InputStream xml = getClass().getResourceAsStream("/default-ingest.xml")) {
+        String defaultIngestXml = IOUtils.toString(xml, StandardCharsets.UTF_8);
+        map.put(INGEST_XML, defaultIngestXml);
+      } catch (IOException e) {
+        map.put(INGEST_XML, "");
+      }
+    } else {
+      map.put(INGEST_XML, getString(source, "ingest", XML));
+    }
 
     for (Map<String, Object> query: getList(source, "query")) {
       String name = getString(query, NAME);

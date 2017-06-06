@@ -1,3 +1,6 @@
+anchored_name: &_name Animals
+anchored_schema: &_schema "urn:opentext:ia:schema:sample:animal:1.0"
+
 server:
   uri: http://localhost:8765/services
   authentication:
@@ -15,15 +18,15 @@ xdb:
     password: test
 
 application:
-  name: Animals
+  name: *_name
   description: Sample application
   category: Sample category
 
 holding:
-  name: Animals
+  name: *_name
 
 aic:
-  name: Animals
+  name: *_name
   criteria:
     name: "animalName,filePath"
     label: "Animal Name,File Path"
@@ -37,16 +40,16 @@ query:
   - name: DefaultQuery
     namespace:
       prefix: n
-      uri: "urn:opentext:ia:schema:sample:animal:1.0"
+      uri: *_schema
     result:
       root:
         element: result
         ns-enabled: true
-      schema: "urn:opentext:ia:schema:sample:animal:1.0"
+      schema: *_schema
     xdbpdi:
       entity:
         path: "/n:animals/n:animal"
-      schema: "urn:opentext:ia:schema:sample:animal:1.0"
+      schema: *_schema
       template: "return $aiu"
       operand:
         name: "animalName,filePath"
@@ -59,7 +62,7 @@ quota:
 
 result-helper:
   - name: "result_helper"
-    schema: "urn:opentext:ia:schema:sample:animal:1.0"
+    schema: *_schema
     xml: |
       <?xml version="1.0" encoding="UTF-8"?>
       <resultConfigurationHelper xmlns:n="urn:opentext:ia:schema:sample:animal:1.0" xmlns:ia="urn:x-emc:ia:schema:pdi">
@@ -84,11 +87,12 @@ result-helper:
       </resultConfigurationHelper>
 
 search:
-  - name: "Find animals"
+  - name: "Find yaml animals"
+    description: "Search animal"
     nested: false
     state: DRAFT
     inuse: true
-    aic: Animals
+    aic: *_name
     query: DefaultQuery
     composition:
       - name: "Set 1"
@@ -177,11 +181,11 @@ search:
             sort: "NONE,NONE"
 
 retention-policy:
-  name: Animals
+  name: *_name
 
 pdi:
   schema:
-    name: "urn:opentext:ia:schema:sample:animal:1.0"
+    name: *_schema
     xsd: |
       <?xml version="1.0" encoding="UTF-8"?>
       <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
@@ -274,127 +278,6 @@ pdi:
     </datas>
 
 ingest:
-  xml: |
-    <processors>
-      <processor>
-        <name>SIP downloader processor</name>
-        <class>com.emc.ia.ingestion.processor.downloader.SipContentDownloader</class>
-      </processor>
-      <processor>
-        <name>SIP Decrypter processor</name>
-        <class>com.emc.ia.ingestion.processor.crypto.SipDecryptProcessor</class>
-        <id>sip.decrypt</id>
-      </processor>
-      <processor>
-        <name>SIP extractor processor</name>
-        <class>com.emc.ia.ingestion.processor.extractor.SipExtractor</class>
-        <id>sip.extractor</id>
-        <data>
-          <pdi.name>eas_pdi.xml</pdi.name>
-          <sip.name>eas_sip.xml</sip.name>
-        </data>
-      </processor>
-      <processor>
-        <name>PDI hash validation processor</name>
-        <class>com.emc.ia.ingestion.processor.hash.PdiHashValidatorProcessor</class>
-      </processor>
-      <processor>
-        <name>PDI schema validator processor</name>
-        <class>com.emc.ia.ingestion.processor.validator.PdiSchemaValidator</class>
-        <data>
-          <id>pdi.validation</id>
-          <parameter>
-            <are.whiteSpaces.ignored>false</are.whiteSpaces.ignored>
-          </parameter>
-        </data>
-      </processor>
-      <processor>
-        <name>PDI data encryption</name>
-        <class>com.emc.ia.ingestion.processor.crypto.PdiDataEncryptProcessor</class>
-        <id>pdi.data.encrypt</id>
-      </processor>
-      <processor>
-        <name>XDB Library creator processor</name>
-        <class>com.emc.ia.ingestion.processor.library.LibraryCreatorProcessor</class>
-      </processor>
-      <processor>
-        <name>XDB SIP importer processor</name>
-        <class>com.emc.ia.ingestion.processor.importer.SipImporterProcessor</class>
-      </processor>
-      <processor>
-        <name>XDB PDI importer processor</name>
-        <class>com.emc.ia.ingestion.processor.importer.PdiImporterProcessor</class>
-        <id>pdi.xdb.importer</id>
-      </processor>
-      <processor>
-        <name>XDB PDI index processor</name>
-        <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>
-        <id>pdi.index.creator</id>
-        <data>
-          <key.document.name>xdb.pdi.name</key.document.name>
-          <indexes />
-        </data>
-      </processor>
-      <processor>
-        <name>PDI AIU Ids processor</name>
-        <class>com.emc.ia.ingestion.processor.aiu.PdiAiuIdProcessor</class>
-        <id>pdi.aiu.id</id>
-      </processor>
-      <processor>
-        <name>PDI AIU count processor</name>
-        <class>com.emc.ia.ingestion.processor.aiu.PdiAiuCountProcessor</class>
-        <id>pdi.aiu.cnt</id>
-      </processor>
-      <processor>
-        <name>XDB AIU index processor</name>
-        <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>
-        <id>xdb.pdi.aiu.index</id>
-        <data>
-          <key.document.name>xdb.pdi.name</key.document.name>
-          <indexes>
-            <value.index>
-              <name>pdi.aiu.id</name>
-              <compressed>false</compressed>
-              <unique.keys>true</unique.keys>
-              <concurrent>false</concurrent>
-              <value.index.type>STRING</value.index.type>
-              <element.uri />
-              <element.name />
-              <attribute.uri>urn:x-emc:ia:schema:pdi</attribute.uri>
-              <attribute.name>id</attribute.name>
-            </value.index>
-          </indexes>
-        </data>
-      </processor>
-      <processor>
-        <name>PDI Partition Keys processor</name>
-        <class>com.emc.ia.ingestion.processor.partition.PartitionValuesProcessor</class>
-        <id>pdi.pkeys</id>
-      </processor>
-      <processor>
-        <name>PDI XML compression processor</name>
-        <class>com.emc.ia.ingestion.processor.compress.PdiCompressionProcessor</class>
-      </processor>
-      <processor>
-        <name>PDI XML encryption processor</name>
-        <class>com.emc.ia.ingestion.processor.crypto.PdiFileEncryptProcessor</class>
-        <id>pdi.encrypt</id>
-      </processor>
-      <processor>
-        <transaction />
-        <name>XDB library backup</name>
-        <class>com.emc.ia.ingestion.processor.backup.BackupProcessor</class>
-      </processor>
-      <processor>
-        <name>PDI Transformer</name>
-        <class>com.emc.ia.ingestion.processor.transformer.PdiTransformerProcessor</class>
-        <id>pdi.transformer</id>
-        <data>
-          <resultSchema></resultSchema>
-        </data>
-      </processor>
-      <processor>
-        <name>Synchronous commit</name>
-        <class>com.emc.ia.ingestion.processor.commit.CommitProcessor</class>
-      </processor>
-    </processors>
+  default: true
+#  xml: null
+
