@@ -15,15 +15,15 @@ xdb:
     password: test
 
 application:
-  name: Animals
+  name: Animals2
   description: Sample application
   category: Sample category
 
 holding:
-  name: Animals
+  name: Animals2
 
 aic:
-  name: Animals
+  name: Animals2
   criteria:
     name: "animalName,filePath"
     label: "Animal Name,File Path"
@@ -88,7 +88,7 @@ search:
     nested: false
     state: DRAFT
     inuse: true
-    aic: Animals
+    aic: Animals2
     query: DefaultQuery
     composition:
       - name: "Set 1"
@@ -177,7 +177,7 @@ search:
             sort: "NONE,NONE"
 
 retention-policy:
-  name: Animals
+  name: Animals2
 
 pdi:
   schema:
