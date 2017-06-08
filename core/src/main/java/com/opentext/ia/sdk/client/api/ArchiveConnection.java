@@ -5,12 +5,12 @@ package com.opentext.ia.sdk.client.api;
 
 
 /**
- * How to communicate with the InfoArchive server.
+ * How to communicate with the Archive server.
  */
-public class ServerConfiguration {
+public class ArchiveConnection {
 
   private String billboardUri;
-  private String applicationName;
+  private String applicationName; // TODO: Remove this
   private String proxyHost;
   private String proxyPort;
   private String httpClientClassName;

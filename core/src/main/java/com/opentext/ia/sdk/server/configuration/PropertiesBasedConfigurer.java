@@ -13,9 +13,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.AuthenticationStrategyFactory;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
-import com.opentext.ia.sdk.client.api.ServerConfiguration;
 import com.opentext.ia.sdk.dto.*;
 import com.opentext.ia.sdk.dto.export.*;
 import com.opentext.ia.sdk.dto.export.ExportConfiguration.DefaultOption;
@@ -92,8 +92,8 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   @Override
-  public ServerConfiguration getServerConfiguration() {
-    ServerConfiguration result = new ServerConfiguration();
+  public ArchiveConnection getArchiveConnection() {
+    ArchiveConnection result = new ArchiveConnection();
     result.setApplicationName(configuration.get(APPLICATION_NAME));
     result.setAuthenticationGateway(configuration.get(SERVER_AUTHENTICATION_GATEWAY));
     result.setAuthenticationPassword(configuration.get(SERVER_AUTHENTICATION_PASSWORD));
@@ -119,16 +119,16 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void initRestClient() throws IOException {
-    ServerConfiguration serverConfiguration = getServerConfiguration();
+    ArchiveConnection connection = getArchiveConnection();
     if (restClient == null) {
-      HttpClient httpClient = NewInstance.of(serverConfiguration.getHttpClientClassName(),
+      HttpClient httpClient = NewInstance.of(connection.getHttpClientClassName(),
           ApacheHttpClient.class.getName()).as(HttpClient.class);
-      AuthenticationStrategy authentication = new AuthenticationStrategyFactory(serverConfiguration)
+      AuthenticationStrategy authentication = new AuthenticationStrategyFactory(connection)
           .getAuthenticationStrategy(() -> httpClient, () -> clock);
       restClient = new RestClient(httpClient);
       restClient.init(authentication);
     }
-    cache.setServices(restClient.get(serverConfiguration.getBillboardUri(), Services.class));
+    cache.setServices(restClient.get(connection.getBillboardUri(), Services.class));
   }
 
   private String configured(String name) {

@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.server.configuration;
 
-import com.opentext.ia.sdk.client.api.ServerConfiguration;
+import com.opentext.ia.sdk.client.api.ArchiveConnection;
 
 
 /**
@@ -11,7 +11,7 @@ import com.opentext.ia.sdk.client.api.ServerConfiguration;
  */
 public interface InfoArchiveConfigurer {
 
-  ServerConfiguration getServerConfiguration();
+  ArchiveConnection getArchiveConnection();
 
   void configure();
 

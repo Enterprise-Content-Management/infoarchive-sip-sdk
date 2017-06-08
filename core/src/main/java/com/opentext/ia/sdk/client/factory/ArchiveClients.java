@@ -10,9 +10,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
+import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.AuthenticationStrategyFactory;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
-import com.opentext.ia.sdk.client.api.ServerConfiguration;
 import com.opentext.ia.sdk.client.impl.ApplicationIngestionResourcesCache;
 import com.opentext.ia.sdk.client.impl.InfoArchiveRestClient;
 import com.opentext.ia.sdk.dto.*;
@@ -65,18 +65,18 @@ public final class ArchiveClients {
    */
   public static ArchiveClient configuringServerUsing(InfoArchiveConfigurer configurer, RestClient optionalClient,
       Clock optionalClock) {
-    ServerConfiguration serverConfiguration = configurer.getServerConfiguration();
+    ArchiveConnection connection = configurer.getArchiveConnection();
     Clock clock = Optional.ofNullable(optionalClock).orElseGet(DefaultClock::new);
     RestClient client = Optional.ofNullable(optionalClient).orElseGet(
-        () -> createRestClient(serverConfiguration, clock));
+        () -> createRestClient(connection, clock));
     configurer.configure();
-    return usingAlreadyConfiguredServer(serverConfiguration, client, clock);
+    return usingAlreadyConfiguredServer(connection, client, clock);
   }
 
-  private static RestClient createRestClient(ServerConfiguration configuration, Clock clock) {
-    HttpClient httpClient = NewInstance.of(configuration.getHttpClientClassName(),
+  private static RestClient createRestClient(ArchiveConnection connection, Clock clock) {
+    HttpClient httpClient = NewInstance.of(connection.getHttpClientClassName(),
         ApacheHttpClient.class.getName()).as(HttpClient.class);
-    AuthenticationStrategy authentication = new AuthenticationStrategyFactory(configuration).getAuthenticationStrategy(
+    AuthenticationStrategy authentication = new AuthenticationStrategyFactory(connection).getAuthenticationStrategy(
         () -> httpClient, () -> clock);
     RestClient result = new RestClient(httpClient);
     result.init(authentication);
@@ -85,27 +85,27 @@ public final class ArchiveClients {
 
   /**
    * Creates a new ArchiveClient instance without installing any artifacts in the archive.
-   * @param configuration How to communicate with the InfoArchive Server
+   * @param connection How to communicate with the InfoArchive Server
    * @param restClient The RestClient used to interact with the InfoArchive REST api.
    * @return An ArchiveClient
    */
-  public static ArchiveClient usingAlreadyConfiguredServer(ServerConfiguration configuration, RestClient restClient) {
-    return usingAlreadyConfiguredServer(configuration, restClient, new DefaultClock());
+  public static ArchiveClient usingAlreadyConfiguredServer(ArchiveConnection connection, RestClient restClient) {
+    return usingAlreadyConfiguredServer(connection, restClient, new DefaultClock());
   }
 
-  private static ArchiveClient usingAlreadyConfiguredServer(ServerConfiguration configuration, RestClient restClient,
+  private static ArchiveClient usingAlreadyConfiguredServer(ArchiveConnection connection, RestClient restClient,
       Clock clock) {
-    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, configuration), clock);
+    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, connection), clock);
   }
 
   private static ApplicationIngestionResourcesCache appResourceCache(RestClient restClient,
-      ServerConfiguration configuration) {
+      ArchiveConnection connection) {
     try {
       ApplicationIngestionResourcesCache resourceCache = new ApplicationIngestionResourcesCache(
-          configuration.getApplicationName());
-      Services services = restClient.get(configuration.getBillboardUri(), Services.class);
+          connection.getApplicationName());
+      Services services = restClient.get(connection.getBillboardUri(), Services.class);
       Tenant tenant = getTenant(restClient, services);
-      Application application = getApplication(restClient, tenant, configuration.getApplicationName());
+      Application application = getApplication(restClient, tenant, connection.getApplicationName());
       cacheResourceUris(resourceCache, restClient, application);
       return resourceCache;
     } catch (IOException e) {
@@ -142,13 +142,13 @@ public final class ArchiveClients {
 
   /**
    * Creates a new ArchiveClient instance without installing any artifacts in the archive using the default RestClient.
-   * @param serverConfiguration How to communicate with the server
+   * @param connection How to communicate with the server
    * @return An ArchiveClient
    */
-  public static ArchiveClient usingAlreadyConfiguredServer(ServerConfiguration serverConfiguration) {
+  public static ArchiveClient usingAlreadyConfiguredServer(ArchiveConnection connection) {
     Clock clock = new DefaultClock();
-    RestClient restClient = createRestClient(serverConfiguration, clock);
-    return usingAlreadyConfiguredServer(serverConfiguration, restClient, clock);
+    RestClient restClient = createRestClient(connection, clock);
+    return usingAlreadyConfiguredServer(connection, restClient, clock);
   }
 
 }

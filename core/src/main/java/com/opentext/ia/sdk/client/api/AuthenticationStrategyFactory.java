@@ -14,15 +14,14 @@ import com.opentext.ia.sdk.support.http.rest.*;
 
 
 /**
- * Determine what type of {@linkplain AuthenticationStrategy} to use based on what configuration properties are
- * specified.
+ * Determine what type of {@linkplain AuthenticationStrategy} to use based on connection properties.
  */
 public final class AuthenticationStrategyFactory {
 
-  private final ServerConfiguration configuration;
+  private final ArchiveConnection connection;
 
-  public AuthenticationStrategyFactory(ServerConfiguration configuration) {
-    this.configuration = Objects.requireNonNull(configuration);
+  public AuthenticationStrategyFactory(ArchiveConnection connection) {
+    this.connection = Objects.requireNonNull(connection);
   }
 
   public AuthenticationStrategy getAuthenticationStrategy(Supplier<? extends HttpClient> httpClientSupplier,
@@ -38,17 +37,17 @@ public final class AuthenticationStrategyFactory {
   private Stream<Supplier<Optional<AuthenticationStrategy>>> strategySuppliers(
       Supplier<? extends HttpClient> httpClientSupplier, Supplier<? extends Clock> clockSupplier) {
     return Stream.<Supplier<Optional<AuthenticationStrategy>>>of(
-        () -> NonExpiringTokenAuthentication.optional(configuration.getAuthenticationToken(),
-            configuration.getAuthenticationUser(), configuration.getAuthenticationPassword()),
-        () -> BasicAuthentication.optional(configuration.getAuthenticationUser(),
-            configuration.getAuthenticationPassword(), configuration.getAuthenticationGateway()),
+        () -> NonExpiringTokenAuthentication.optional(connection.getAuthenticationToken(),
+            connection.getAuthenticationUser(), connection.getAuthenticationPassword()),
+        () -> BasicAuthentication.optional(connection.getAuthenticationUser(),
+            connection.getAuthenticationPassword(), connection.getAuthenticationGateway()),
         () -> JwtAuthentication.optional(
-            configuration.getAuthenticationUser(),
-            configuration.getAuthenticationPassword(),
+            connection.getAuthenticationUser(),
+            connection.getAuthenticationPassword(),
             GatewayInfo.optional(
-                configuration.getAuthenticationGateway(),
-                configuration.getClientId(),
-                configuration.getClientSecret()
+                connection.getAuthenticationGateway(),
+                connection.getClientId(),
+                connection.getClientSecret()
             ).orElse(null),
             httpClientSupplier.get(),
             clockSupplier.get()));
