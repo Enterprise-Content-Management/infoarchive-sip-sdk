@@ -3,9 +3,10 @@
  */
 package com.opentext.ia.sdk.server.configuration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +65,14 @@ public class WhenUsingYamlConfiguration implements InfoArchiveConfiguration {
     assertEquals("Query name", EXPECTED_QUERY_NAME, config.get(QUERY_NAME));
     assertEquals("Search name", EXPECTED_SEARCH_NAME, config.get(SEARCH_NAME));
     assertEquals("Search composition name", EXPECTED_SEARCH_COMPOSITION_NAME, config.get(SEARCH_COMPOSITION_NAME));
+  }
+
+  @Test
+  public void shouldInlineResources() throws Exception {
+    try (InputStream configuration = getClass().getResourceAsStream("/config/configuration.yml")) {
+      String text = new YamlConfiguration(configuration, new ClasspathResolver("/config")).toString();
+      assertTrue("Resource not inlined:\n" + text, text.contains("foo"));
+    }
   }
 
 }

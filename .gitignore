@@ -16,3 +16,4 @@ classes/
 *.iml
 *.ipr
 *.iws
+hs_err_pid*

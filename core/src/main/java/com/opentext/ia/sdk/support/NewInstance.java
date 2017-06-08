@@ -6,6 +6,7 @@ package com.opentext.ia.sdk.support;
 import java.util.Map;
 import java.util.Optional;
 
+
 /**
  * Create instances of a configured class.
  */
@@ -28,8 +29,7 @@ public class NewInstance {
 
   public <T> T as(Class<T> type) {
     try {
-      return type.cast(Class.forName(className)
-        .newInstance());
+      return type.cast(Class.forName(className).newInstance());
     } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
       throw new IllegalArgumentException("Failed to instantiate " + className, e);
     }

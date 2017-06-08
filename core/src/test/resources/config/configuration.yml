@@ -1,0 +1,4 @@
+object:
+  content:
+    format: text
+    resource: external.txt

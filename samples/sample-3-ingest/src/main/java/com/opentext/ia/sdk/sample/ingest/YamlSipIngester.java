@@ -16,6 +16,7 @@ import java.util.Map;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
+import com.opentext.ia.sdk.server.configuration.ClasspathResolver;
 import com.opentext.ia.sdk.server.configuration.YamlBasedConfigurer;
 import com.opentext.ia.sdk.server.configuration.YamlConfiguration;
 import com.opentext.ia.sdk.sip.*;
@@ -42,7 +43,7 @@ public class YamlSipIngester {
     // Load the configuration
     YamlConfiguration configuration = null;
     try (InputStream yaml = getClass().getResourceAsStream("/configuration.yml")) {
-      configuration = new YamlConfiguration(yaml);
+      configuration = new YamlConfiguration(yaml, new ClasspathResolver());
     }
 
     // Tell InfoArchive where and how to archive the data

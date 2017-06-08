@@ -61,7 +61,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   private static final String DEFAULT_RESULT_HELPER_NAME = "result_helper";
 
   private final ConfigurationResourcesCache cache = new ConfigurationResourcesCache();
-  private final Map<String, String> configuration;
+  private Map<String, String> configuration;
   private RestClient restClient;
   private final Clock clock;
 
@@ -76,6 +76,18 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   public PropertiesBasedConfigurer(Map<String, String> configuration, RestClient restClient, Clock clock) {
     this.restClient = restClient;
     this.clock = clock;
+    this.configuration = configuration;
+  }
+
+  protected ConfigurationResourcesCache getCache() {
+    return cache;
+  }
+
+  protected RestClient getRestClient() {
+    return restClient;
+  }
+
+  protected void setConfiguration(Map<String, String> configuration) {
     this.configuration = configuration;
   }
 
@@ -107,15 +119,16 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   }
 
   private void initRestClient() throws IOException {
+    ServerConfiguration serverConfiguration = getServerConfiguration();
     if (restClient == null) {
-      HttpClient httpClient = NewInstance.fromConfiguration(configuration, HTTP_CLIENT_CLASSNAME,
+      HttpClient httpClient = NewInstance.of(serverConfiguration.getHttpClientClassName(),
           ApacheHttpClient.class.getName()).as(HttpClient.class);
-      AuthenticationStrategy authentication = new AuthenticationStrategyFactory(getServerConfiguration())
+      AuthenticationStrategy authentication = new AuthenticationStrategyFactory(serverConfiguration)
           .getAuthenticationStrategy(() -> httpClient, () -> clock);
       restClient = new RestClient(httpClient);
       restClient.init(authentication);
     }
-    cache.setServices(restClient.get(configured(SERVER_URI), Services.class));
+    cache.setServices(restClient.get(serverConfiguration.getBillboardUri(), Services.class));
   }
 
   private String configured(String name) {
@@ -124,7 +137,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
     return result;
   }
 
-  private void applyConfiguration() throws IOException {
+  protected void applyConfiguration() throws IOException {
     ensureTenant();
     ensureFederation();
     ensureDatabase();
