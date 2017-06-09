@@ -70,7 +70,7 @@ public final class ArchiveClients {
     RestClient client = Optional.ofNullable(optionalClient).orElseGet(
         () -> createRestClient(connection, clock));
     configurer.configure();
-    return usingAlreadyConfiguredServer(connection, client, clock);
+    return usingAlreadyConfiguredServer(client, connection, configurer.getApplicationName(), clock);
   }
 
   private static RestClient createRestClient(ArchiveConnection connection, Clock clock) {
@@ -85,28 +85,30 @@ public final class ArchiveClients {
 
   /**
    * Creates a new ArchiveClient instance without installing any artifacts in the archive.
+   * @param restClient The RestClient used to interact with the InfoArchive REST API.
    * @param connection How to communicate with the InfoArchive Server
-   * @param restClient The RestClient used to interact with the InfoArchive REST api.
+   * @param applicationName The name of the already configured application to use
    * @return An ArchiveClient
    */
-  public static ArchiveClient usingAlreadyConfiguredServer(ArchiveConnection connection, RestClient restClient) {
-    return usingAlreadyConfiguredServer(connection, restClient, new DefaultClock());
+  public static ArchiveClient usingAlreadyConfiguredServer(RestClient restClient, ArchiveConnection connection,
+      String applicationName) {
+    return usingAlreadyConfiguredServer(restClient, connection, applicationName, new DefaultClock());
   }
 
-  private static ArchiveClient usingAlreadyConfiguredServer(ArchiveConnection connection, RestClient restClient,
-      Clock clock) {
-    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, connection), clock);
+  private static ArchiveClient usingAlreadyConfiguredServer(RestClient restClient, ArchiveConnection connection,
+      String applicationName, Clock clock) {
+    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, connection, applicationName), clock);
   }
 
   private static ApplicationIngestionResourcesCache appResourceCache(RestClient restClient,
-      ArchiveConnection connection) {
+      ArchiveConnection connection, String applicationName) {
     try {
       ApplicationIngestionResourcesCache resourceCache = new ApplicationIngestionResourcesCache(
-          connection.getApplicationName());
+          applicationName);
       Services services = restClient.get(connection.getBillboardUri(), Services.class);
       Tenant tenant = getTenant(restClient, services);
-      Application application = getApplication(restClient, tenant, connection.getApplicationName());
-      cacheResourceUris(resourceCache, restClient, application);
+      Application application = getApplication(restClient, tenant, applicationName);
+      cacheResourceUris(restClient, application, resourceCache);
       return resourceCache;
     } catch (IOException e) {
       throw new RuntimeIoException(e);
@@ -126,8 +128,8 @@ public final class ArchiveClients {
         "Application named " + applicationName + " not found.");
   }
 
-  private static void cacheResourceUris(ApplicationIngestionResourcesCache resourceCache,
-      RestClient restClient, Application application) throws IOException {
+  private static void cacheResourceUris(RestClient restClient,
+      Application application, ApplicationIngestionResourcesCache resourceCache) throws IOException {
     Aics aics = restClient.follow(application, InfoArchiveLinkRelations.LINK_AICS, Aics.class);
     LinkContainer aips = restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class);
 
@@ -143,12 +145,13 @@ public final class ArchiveClients {
   /**
    * Creates a new ArchiveClient instance without installing any artifacts in the archive using the default RestClient.
    * @param connection How to communicate with the server
+   * @param applicationName The name of the already configured application to use
    * @return An ArchiveClient
    */
-  public static ArchiveClient usingAlreadyConfiguredServer(ArchiveConnection connection) {
+  public static ArchiveClient usingAlreadyConfiguredServer(ArchiveConnection connection, String applicationName) {
     Clock clock = new DefaultClock();
     RestClient restClient = createRestClient(connection, clock);
-    return usingAlreadyConfiguredServer(connection, restClient, clock);
+    return usingAlreadyConfiguredServer(restClient, connection, applicationName, clock);
   }
 
 }

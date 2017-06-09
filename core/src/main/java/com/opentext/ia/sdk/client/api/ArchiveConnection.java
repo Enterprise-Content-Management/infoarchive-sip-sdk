@@ -10,7 +10,6 @@ package com.opentext.ia.sdk.client.api;
 public class ArchiveConnection {
 
   private String billboardUri;
-  private String applicationName; // TODO: Remove this
   private String proxyHost;
   private String proxyPort;
   private String httpClientClassName;
@@ -27,14 +26,6 @@ public class ArchiveConnection {
 
   public void setBillboardUri(String billboardUri) {
     this.billboardUri = billboardUri;
-  }
-
-  public String getApplicationName() {
-    return applicationName;
-  }
-
-  public void setApplicationName(String applicationName) {
-    this.applicationName = applicationName;
   }
 
   public String getProxyHost() {

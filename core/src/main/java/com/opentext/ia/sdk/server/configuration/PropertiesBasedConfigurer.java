@@ -94,7 +94,6 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   @Override
   public ArchiveConnection getArchiveConnection() {
     ArchiveConnection result = new ArchiveConnection();
-    result.setApplicationName(configuration.get(APPLICATION_NAME));
     result.setAuthenticationGateway(configuration.get(SERVER_AUTHENTICATION_GATEWAY));
     result.setAuthenticationPassword(configuration.get(SERVER_AUTHENTICATION_PASSWORD));
     result.setAuthenticationToken(configuration.get(SERVER_AUTENTICATON_TOKEN));
@@ -730,7 +729,8 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
     return result;
   }
 
-  private String getApplicationName() {
+  @Override
+  public String getApplicationName() {
     String result = cache.getApplication().getName();
     return result == null ? configured(APPLICATION_NAME) : result;
   }
