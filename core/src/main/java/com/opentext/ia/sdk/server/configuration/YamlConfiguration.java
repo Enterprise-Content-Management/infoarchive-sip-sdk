@@ -13,6 +13,7 @@ import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
 import com.opentext.ia.sdk.support.io.StringStream;
+import com.opentext.ia.sdk.support.resource.ResourceResolver;
 
 
 /**
@@ -26,7 +27,7 @@ public class YamlConfiguration {
   private Map<String, String> properties;
 
   public YamlConfiguration(File yaml) throws IOException {
-    this(new FileInputStream(yaml), new FileResolver(yaml));
+    this(new FileInputStream(yaml), ResourceResolver.fromFile(yaml));
   }
 
   @SuppressWarnings("unchecked")
@@ -38,9 +39,7 @@ public class YamlConfiguration {
   }
 
   public YamlConfiguration(String yaml) throws IOException {
-    this(new StringStream(yaml), name -> {
-      throw new UnknownResourceException(name, null);
-    });
+    this(new StringStream(yaml), ResourceResolver.none());
   }
 
   @SuppressWarnings("unchecked")

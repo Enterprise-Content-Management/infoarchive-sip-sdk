@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
+import com.opentext.ia.sdk.support.resource.ResourceResolver;
+
 
 public class WhenUsingYamlConfiguration implements InfoArchiveConfiguration {
 
@@ -70,7 +72,7 @@ public class WhenUsingYamlConfiguration implements InfoArchiveConfiguration {
   @Test
   public void shouldInlineResources() throws Exception {
     try (InputStream configuration = getClass().getResourceAsStream("/config/configuration.yml")) {
-      String text = new YamlConfiguration(configuration, new ClasspathResolver("/config")).toString();
+      String text = new YamlConfiguration(configuration, ResourceResolver.fromClasspath("/config")).toString();
       assertTrue("Resource not inlined:\n" + text, text.contains("foo"));
     }
   }

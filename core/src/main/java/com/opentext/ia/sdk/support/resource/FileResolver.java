@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.server.configuration;
+package com.opentext.ia.sdk.support.resource;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,11 +11,11 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 
 
-public class FileResolver implements ResourceResolver {
+class FileResolver implements ResourceResolver {
 
   private final File dir;
 
-  public FileResolver(File base) {
+  FileResolver(File base) {
     dir = base.getParentFile();
   }
 

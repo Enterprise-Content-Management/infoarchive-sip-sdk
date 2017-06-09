@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.server.configuration;
+package com.opentext.ia.sdk.support.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,15 +9,15 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 
 
-public class ClasspathResolver implements ResourceResolver {
+class ClasspathResolver implements ResourceResolver {
 
   private final String prefix;
 
-  public ClasspathResolver() {
+  ClasspathResolver() {
     this("");
   }
 
-  public ClasspathResolver(String prefix) {
+  ClasspathResolver(String prefix) {
     this.prefix = prefix + '/';
   }
 

@@ -1,9 +1,10 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.server.configuration;
+package com.opentext.ia.sdk.support.resource;
 
 import java.io.IOException;
+
 
 public class UnknownResourceException extends IllegalArgumentException {
 
