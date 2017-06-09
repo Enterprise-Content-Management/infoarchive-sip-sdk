@@ -1,9 +1,11 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.server.configuration;
+package com.opentext.ia.sdk.server.configuration.yaml;
 
 import java.util.*;
+
+import com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties;
 
 
 class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveConfigurationProperties {

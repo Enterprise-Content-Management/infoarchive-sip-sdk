@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.server.configuration;
+package com.opentext.ia.sdk.server.configuration.yaml;
 
 import java.io.File;
 import java.io.FileInputStream;

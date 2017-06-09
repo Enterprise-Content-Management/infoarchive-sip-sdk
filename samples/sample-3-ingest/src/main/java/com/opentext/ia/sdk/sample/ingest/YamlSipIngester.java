@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.sample.ingest;
 
-import static com.opentext.ia.sdk.server.configuration.InfoArchiveConfigurationProperties.*;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,8 +16,8 @@ import java.util.Map;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
-import com.opentext.ia.sdk.server.configuration.YamlBasedConfigurer;
-import com.opentext.ia.sdk.server.configuration.YamlConfiguration;
+import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedConfigurer;
+import com.opentext.ia.sdk.server.configuration.yaml.YamlConfiguration;
 import com.opentext.ia.sdk.sip.*;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 import com.opentext.ia.sdk.support.io.StringStream;

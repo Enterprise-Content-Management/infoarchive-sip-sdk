@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.server.configuration;
+package com.opentext.ia.sdk.server.configuration.properties;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,6 +25,9 @@ import com.opentext.ia.sdk.dto.result.Column;
 import com.opentext.ia.sdk.dto.result.Column.DataType;
 import com.opentext.ia.sdk.dto.result.Column.DefaultSort;
 import com.opentext.ia.sdk.dto.result.ResultMaster;
+import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
+import com.opentext.ia.sdk.server.configuration.ApplicationResourcesCache;
+import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedConfigurer;
 import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.RepeatingConfigReader;
 import com.opentext.ia.sdk.support.datetime.Clock;

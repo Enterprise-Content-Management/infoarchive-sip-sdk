@@ -1,10 +1,11 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.server.configuration;
+package com.opentext.ia.sdk.server.configuration.yaml;
 
 import java.io.IOException;
 
+import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedConfigurer;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.datetime.DefaultClock;
 import com.opentext.ia.sdk.support.http.rest.RestClient;

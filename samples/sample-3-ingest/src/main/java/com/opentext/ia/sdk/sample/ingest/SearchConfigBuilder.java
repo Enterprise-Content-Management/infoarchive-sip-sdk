@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.sample.ingest;
 
-import static com.opentext.ia.sdk.server.configuration.InfoArchiveConfigurationProperties.*;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.*;
 
 import java.util.HashMap;
 import java.util.Map;

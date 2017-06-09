@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
+import com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties;
+import com.opentext.ia.sdk.server.configuration.yaml.YamlConfiguration;
 import com.opentext.ia.sdk.support.resource.ResourceResolver;
 
 
