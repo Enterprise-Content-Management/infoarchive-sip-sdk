@@ -37,7 +37,7 @@ import com.opentext.ia.sdk.dto.query.Item;
 import com.opentext.ia.sdk.dto.query.Operator;
 import com.opentext.ia.sdk.dto.query.SearchQuery;
 import com.opentext.ia.sdk.dto.result.AllSearchComponents;
-import com.opentext.ia.sdk.server.configuration.InfoArchiveConfiguration;
+import com.opentext.ia.sdk.server.configuration.InfoArchiveConfigurationProperties;
 import com.opentext.ia.sdk.server.configuration.PropertiesBasedConfigurer;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.*;
@@ -213,27 +213,27 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   private void prepareConfiguration() {
-    configuration.put(InfoArchiveConfiguration.SERVER_URI, BILLBOARD_URI);
-    configuration.put(InfoArchiveConfiguration.SERVER_AUTENTICATON_TOKEN, AUTH_TOKEN);
-    configuration.put(InfoArchiveConfiguration.TENANT_NAME, TENANT_NAME);
-    configuration.put(InfoArchiveConfiguration.DATABASE_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.DATABASE_ADMIN_PASSWORD, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.APPLICATION_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.HOLDING_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.RETENTION_POLICY_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.PDI_XML, "");
-    configuration.put(InfoArchiveConfiguration.PDI_SCHEMA_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfiguration.PDI_SCHEMA, "");
-    configuration.put(InfoArchiveConfiguration.INGEST_XML, "");
-    configuration.put(InfoArchiveConfiguration.SEARCH_DESCRIPTION, "Default emails search");
-    configuration.put(InfoArchiveConfiguration.SEARCH_NESTED, Boolean.FALSE.toString());
-    configuration.put(InfoArchiveConfiguration.SEARCH_NAME, "emailsSearch");
-    configuration.put(InfoArchiveConfiguration.SEARCH_STATE, "DRAFT");
-    configuration.put(InfoArchiveConfiguration.SEARCH_INUSE, Boolean.FALSE.toString());
-    configuration.put(InfoArchiveConfiguration.SEARCH_COMPOSITION_NAME, "DefaultSearchComposition");
-    configuration.put(InfoArchiveConfiguration.SEARCH_COMPOSITION_XFORM_NAME, "Test Search Form");
-    configuration.put(InfoArchiveConfiguration.SEARCH_DEFAULT_RESULT_MASTER, "");
-    configuration.put(InfoArchiveConfiguration.SEARCH_DEFAULT_SEARCH, "");
+    configuration.put(InfoArchiveConfigurationProperties.SERVER_URI, BILLBOARD_URI);
+    configuration.put(InfoArchiveConfigurationProperties.SERVER_AUTENTICATON_TOKEN, AUTH_TOKEN);
+    configuration.put(InfoArchiveConfigurationProperties.TENANT_NAME, TENANT_NAME);
+    configuration.put(InfoArchiveConfigurationProperties.DATABASE_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfigurationProperties.DATABASE_ADMIN_PASSWORD, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfigurationProperties.APPLICATION_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfigurationProperties.HOLDING_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfigurationProperties.RETENTION_POLICY_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfigurationProperties.PDI_XML, "");
+    configuration.put(InfoArchiveConfigurationProperties.PDI_SCHEMA_NAME, APPLICATION_NAME);
+    configuration.put(InfoArchiveConfigurationProperties.PDI_SCHEMA, "");
+    configuration.put(InfoArchiveConfigurationProperties.INGEST_XML, "");
+    configuration.put(InfoArchiveConfigurationProperties.SEARCH_DESCRIPTION, "Default emails search");
+    configuration.put(InfoArchiveConfigurationProperties.SEARCH_NESTED, Boolean.FALSE.toString());
+    configuration.put(InfoArchiveConfigurationProperties.SEARCH_NAME, "emailsSearch");
+    configuration.put(InfoArchiveConfigurationProperties.SEARCH_STATE, "DRAFT");
+    configuration.put(InfoArchiveConfigurationProperties.SEARCH_INUSE, Boolean.FALSE.toString());
+    configuration.put(InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_NAME, "DefaultSearchComposition");
+    configuration.put(InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_XFORM_NAME, "Test Search Form");
+    configuration.put(InfoArchiveConfigurationProperties.SEARCH_DEFAULT_RESULT_MASTER, "");
+    configuration.put(InfoArchiveConfigurationProperties.SEARCH_DEFAULT_SEARCH, "");
 
     configuration.put("ia.aic.name", "MyAic");
     configuration.put("ia.aic.criteria.name", "name");
@@ -508,7 +508,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   @Test
   public void shouldRetryWhenTemporarilyUnavailable() throws IOException {
-    configuration.put(InfoArchiveConfiguration.FEDERATION_NAME, randomString());
+    configuration.put(InfoArchiveConfigurationProperties.FEDERATION_NAME, randomString());
     when(restClient.createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD), eq(LINK_SELF)))
         .then(invocation -> {
       throw new HttpException(503, "");

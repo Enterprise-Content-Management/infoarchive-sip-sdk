@@ -6,7 +6,7 @@ package com.opentext.ia.sdk.server.configuration;
 import java.util.*;
 
 
-class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveConfiguration {
+class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveConfigurationProperties {
 
   private static final long serialVersionUID = -3961784010133931113L;
   private static final String SERVER = "server";

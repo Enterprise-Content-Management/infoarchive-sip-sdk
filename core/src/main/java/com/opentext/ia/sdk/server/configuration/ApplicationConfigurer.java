@@ -7,9 +7,9 @@ import com.opentext.ia.sdk.client.api.ArchiveConnection;
 
 
 /**
- * Interface hiding the details of how the application and holding configuration objects are created in the Archive.
+ * Interface hiding the details of how an application in the Archive is configured.
  */
-public interface InfoArchiveConfigurer {
+public interface ApplicationConfigurer {
 
   /**
    * Returns details about how to connect to the Archive.

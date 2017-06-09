@@ -19,7 +19,7 @@ import org.yaml.snakeyaml.Yaml;
 import com.opentext.ia.sdk.support.resource.ResourceResolver;
 
 
-public class WhenUsingYamlConfiguration implements InfoArchiveConfiguration {
+public class WhenUsingYamlConfiguration implements InfoArchiveConfigurationProperties {
 
   private static final String EXPECTED_TENANT_NAME = "myTenant";
   private static final String EXPECTED_APPLICATION_NAME = "myApplication";

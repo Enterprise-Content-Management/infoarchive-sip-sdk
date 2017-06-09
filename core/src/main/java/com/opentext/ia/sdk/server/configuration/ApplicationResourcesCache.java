@@ -12,7 +12,7 @@ import com.opentext.ia.sdk.dto.*;
 
 
 @SuppressWarnings("PMD.TooManyFields")
-class ConfigurationResourcesCache {
+class ApplicationResourcesCache {
 
   private Services services;
   private Tenant tenant;

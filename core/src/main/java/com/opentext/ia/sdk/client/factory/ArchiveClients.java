@@ -16,7 +16,7 @@ import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.client.impl.ApplicationIngestionResourcesCache;
 import com.opentext.ia.sdk.client.impl.InfoArchiveRestClient;
 import com.opentext.ia.sdk.dto.*;
-import com.opentext.ia.sdk.server.configuration.InfoArchiveConfigurer;
+import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.datetime.DefaultClock;
@@ -42,7 +42,7 @@ public final class ArchiveClients {
    * @param configurer How to configure InfoArchive
    * @return An ArchiveClient
    */
-  public static ArchiveClient configuringServerUsing(InfoArchiveConfigurer configurer) {
+  public static ArchiveClient configuringServerUsing(ApplicationConfigurer configurer) {
     return configuringServerUsing(configurer, null);
   }
 
@@ -52,7 +52,7 @@ public final class ArchiveClients {
    * @param restClient The REST client to use for communication with the server
    * @return An ArchiveClient
    */
-  public static ArchiveClient configuringServerUsing(InfoArchiveConfigurer configurer, RestClient restClient) {
+  public static ArchiveClient configuringServerUsing(ApplicationConfigurer configurer, RestClient restClient) {
     return configuringServerUsing(configurer, restClient, null);
   }
 
@@ -63,7 +63,7 @@ public final class ArchiveClients {
    * @param optionalClock The clock to use
    * @return An ArchiveClient
    */
-  public static ArchiveClient configuringServerUsing(InfoArchiveConfigurer configurer, RestClient optionalClient,
+  public static ArchiveClient configuringServerUsing(ApplicationConfigurer configurer, RestClient optionalClient,
       Clock optionalClock) {
     ArchiveConnection connection = configurer.getArchiveConnection();
     Clock clock = Optional.ofNullable(optionalClock).orElseGet(DefaultClock::new);

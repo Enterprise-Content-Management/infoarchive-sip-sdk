@@ -11,7 +11,9 @@ import com.opentext.ia.sdk.support.http.rest.RestClient;
 
 
 /**
- * Configure InfoArchive using data in YAML format.
+ * Configure an InfoArchive application using data in YAML format. This class also supports configuring more than one
+ * application or non-application objects <em>provided the InfoArchive server supports this</em>, i.e. version 16.3 or
+ * newer.
  */
 public class YamlBasedConfigurer extends PropertiesBasedConfigurer {
 

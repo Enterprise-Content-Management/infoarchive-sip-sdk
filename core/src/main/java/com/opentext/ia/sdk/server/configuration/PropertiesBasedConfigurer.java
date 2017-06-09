@@ -38,12 +38,13 @@ import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
 
 /**
- * Configure InfoArchive based on properties in a map. This is less convenient for repeating and/or hierarchical
- * configuration. For a more convenient way of specifying the configuration, see {@linkplain YamlBasedConfigurer}.
+ * Configure an InfoArchive application based on properties in a map. This is less convenient for repeating and/or
+ * hierarchical configuration. For a more convenient way of specifying the configuration, see
+ * {@linkplain YamlBasedConfigurer}.
  */
 @SuppressWarnings("PMD.ExcessiveClassLength")
-public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArchiveLinkRelations,
-    InfoArchiveConfiguration {
+public class PropertiesBasedConfigurer implements ApplicationConfigurer, InfoArchiveLinkRelations,
+    InfoArchiveConfigurationProperties {
 
   private static final String EXPORT_CONFIGURATION = "export-configuration";
   private static final String TYPE_EXPORT_PIPELINE = "export-pipeline";
@@ -60,7 +61,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
   private static final String DEFAULT_STORE_NAME = "filestore_01";
   private static final String DEFAULT_RESULT_HELPER_NAME = "result_helper";
 
-  private final ConfigurationResourcesCache cache = new ConfigurationResourcesCache();
+  private final ApplicationResourcesCache cache = new ApplicationResourcesCache();
   private Map<String, String> configuration;
   private RestClient restClient;
   private final Clock clock;
@@ -79,7 +80,7 @@ public class PropertiesBasedConfigurer implements InfoArchiveConfigurer, InfoArc
     this.configuration = configuration;
   }
 
-  protected ConfigurationResourcesCache getCache() {
+  protected ApplicationResourcesCache getCache() {
     return cache;
   }
 

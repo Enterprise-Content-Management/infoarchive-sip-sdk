@@ -7,7 +7,7 @@ package com.opentext.ia.sdk.server.configuration;
 /**
  * Names of configuration properties.
  */
-public interface InfoArchiveConfiguration {
+public interface InfoArchiveConfigurationProperties {
 
   String PREFIX = "ia.";
   String NAME = "name";

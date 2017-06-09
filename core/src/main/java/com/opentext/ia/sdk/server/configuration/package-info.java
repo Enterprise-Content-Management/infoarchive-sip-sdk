@@ -3,6 +3,6 @@
  */
 
 /**
- * Library for {@linkplain com.opentext.ia.sdk.server.configuration.InfoArchiveConfigurer configuring} an InfoArchive server.
+ * Library for {@linkplain com.opentext.ia.sdk.server.configuration.ApplicationConfigurer configuring} an InfoArchive server.
  */
 package com.opentext.ia.sdk.server.configuration;
