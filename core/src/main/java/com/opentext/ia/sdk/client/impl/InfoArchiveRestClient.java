@@ -43,6 +43,8 @@ import com.opentext.ia.sdk.support.http.rest.RestClient;
  */
 public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRelations {
 
+  private static final int MIN_EXPORT_TIME_OUT_MS = 5000;
+
   private final ResponseFactory<QueryResult> queryResultFactory = new QueryResultFactory();
   private final ResponseFactory<ContentResult> contentResultFactory = new ContentResultFactory();
   private final QueryFormatter queryFormatter = new QueryFormatter();
@@ -159,16 +161,16 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   @Override
   public OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration,
-      String outputName, long timeOutInMillis) throws IOException {
+      String outputName, TimeUnit timeUnit, long timeOut) throws IOException {
     OrderItem result = export(searchResults, exportConfiguration, outputName);
-    long endTimeOfExport = System.currentTimeMillis() + Math.min(5000, timeOutInMillis);
-    while (result.getUri(LINK_DOWNLOAD) != null && System.currentTimeMillis() < endTimeOfExport) {
+    long endTimeOfExport = System.currentTimeMillis() + Math.min(MIN_EXPORT_TIME_OUT_MS, timeUnit.toMillis(timeOut));
+    while (result.getUri(LINK_DOWNLOAD) == null && System.currentTimeMillis() < endTimeOfExport) {
       try {
         TimeUnit.SECONDS.sleep(2);
       } catch (InterruptedException ignore) {
         Thread.currentThread().interrupt();
       }
-      result = restClient.get(result.getSelfUri(), OrderItem.class);
+      result = restClient.refresh(result);
     }
     return result;
   }

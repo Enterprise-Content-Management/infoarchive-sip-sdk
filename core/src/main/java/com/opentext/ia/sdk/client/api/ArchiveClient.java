@@ -5,6 +5,7 @@ package com.opentext.ia.sdk.client.api;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 import com.opentext.ia.sdk.dto.OrderItem;
 import com.opentext.ia.sdk.dto.SearchComposition;
@@ -91,11 +92,13 @@ public interface ArchiveClient {
    * @param searchResults The search results.
    * @param exportConfiguration The export configuration.
    * @param outputName The output name of result package.
-   * @param timeOutInMillis The timeout of export process in milliseconds.
+   * @param timeUnit The unit of the <code>timeOut</code> value
+   * @param timeOut The time out of export process
    * @return An OrderItem object that contains information about exported package and link to download it
    * @throws IOException When an I/O error occurs
    */
-  OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName, long timeOutInMillis) throws IOException;
+  OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName,
+      TimeUnit timeUnit, long timeOut) throws IOException;
 
   /**
    * Upload the transformation zip with the stylesheet into the Archive.
