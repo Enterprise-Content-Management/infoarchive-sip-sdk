@@ -600,6 +600,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(contentResultFactory.create(any(Response.class), any(Runnable.class))).thenReturn(contentResult);
     when(restClient.get(eq(uri), any(ContentResultFactory.class))).thenReturn(contentResult);
     OrderItem orderItem = new OrderItem();
+    Link downloadLink = new Link();
+    downloadLink.setHref(randomString());
+    orderItem.getLinks().put(LINK_DOWNLOAD, downloadLink);
 
     configureServer();
     ContentResult result = archiveClient.fetchOrderContent(orderItem);
