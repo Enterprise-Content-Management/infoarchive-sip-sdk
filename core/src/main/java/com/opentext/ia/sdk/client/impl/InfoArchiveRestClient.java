@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.utils.URIBuilder;
 
@@ -154,6 +155,22 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(),
         searchResults.getResults());
     return restClient.post(exportUri, OrderItem.class, exportRequestBody);
+  }
+
+  @Override
+  public OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration,
+      String outputName, long timeOutInMillis) throws IOException {
+    OrderItem result = export(searchResults, exportConfiguration, outputName);
+    long endTimeOfExport = System.currentTimeMillis() + Math.min(5000, timeOutInMillis);
+    while (result.getUri(LINK_DOWNLOAD) != null && System.currentTimeMillis() < endTimeOfExport) {
+      try {
+        TimeUnit.SECONDS.sleep(2);
+      } catch (InterruptedException ignore) {
+        Thread.currentThread().interrupt();
+      }
+      result = restClient.get(result.getSelfUri(), OrderItem.class);
+    }
+    return result;
   }
 
   private String getValidJsonRequestForExport(String exportConfigurationUri, List<SearchResult> searchResults) {

@@ -84,8 +84,18 @@ public interface ArchiveClient {
    * @return An OrderItem object that contains information about exported package without link to download it
    * @throws IOException When an I/O error occurs
    */
-  OrderItem export(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName)
-      throws IOException;
+  OrderItem export(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName) throws IOException;
+
+  /**
+   * Start and wait the export of the search results for the specified export configuration.
+   * @param searchResults The search results.
+   * @param exportConfiguration The export configuration.
+   * @param outputName The output name of result package.
+   * @param timeOutInMillis The timeout of export process in milliseconds.
+   * @return An OrderItem object that contains information about exported package and link to download it
+   * @throws IOException When an I/O error occurs
+   */
+  OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName, long timeOutInMillis) throws IOException;
 
   /**
    * Upload the transformation zip with the stylesheet into the Archive.
