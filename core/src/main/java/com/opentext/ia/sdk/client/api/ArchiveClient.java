@@ -97,7 +97,7 @@ public interface ArchiveClient {
    * @return An OrderItem object that contains information about exported package and link to download it
    * @throws IOException When an I/O error occurs
    */
-  OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName,
+  OrderItem exportAndWaitForDownloadLink(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName,
       TimeUnit timeUnit, long timeOut) throws IOException;
 
   /**

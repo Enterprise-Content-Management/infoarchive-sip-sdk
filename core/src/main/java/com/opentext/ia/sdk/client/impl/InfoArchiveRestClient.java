@@ -43,8 +43,6 @@ import com.opentext.ia.sdk.support.http.rest.RestClient;
  */
 public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRelations {
 
-  private static final int MIN_EXPORT_TIME_OUT_MS = 5000;
-
   private final ResponseFactory<QueryResult> queryResultFactory = new QueryResultFactory();
   private final ResponseFactory<ContentResult> contentResultFactory = new ContentResultFactory();
   private final QueryFormatter queryFormatter = new QueryFormatter();
@@ -162,35 +160,19 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   @Override
-  public OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration,
+  public OrderItem exportAndWaitForDownloadLink(SearchResults searchResults, ExportConfiguration exportConfiguration,
       String outputName, TimeUnit timeUnit, long timeOut) throws IOException {
-    String fullOutputName = outputName + '_' + Long.toString(new Date().getTime());
-    String exportUri = restClient.uri(searchResults.getUri(LINK_EXPORT))
-        .addParameter("name", fullOutputName)
-        .build();
-    String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(),
-        searchResults.getResults());
-    OrderItem plainOrderItem = restClient.post(exportUri, OrderItem.class, exportRequestBody);
-
-    long endTimeOfExport;
-    long timeOutInMillis = timeUnit.toMillis(timeOut);
-    if (timeOutInMillis < 5000) {
-      endTimeOfExport = System.currentTimeMillis() + MIN_EXPORT_TIME_OUT_MS;
-    } else {
-      endTimeOfExport = System.currentTimeMillis() + timeOutInMillis;
-    }
-    while (System.currentTimeMillis() < endTimeOfExport) {
-      OrderItem downloadOrderItem = restClient.get(plainOrderItem.getSelfUri(), OrderItem.class);
-      if (downloadOrderItem.getUri(LINK_DOWNLOAD) != null) {
-        return downloadOrderItem;
-      }
+    OrderItem result = export(searchResults, exportConfiguration, outputName);
+    long maxWaitTime = System.currentTimeMillis() + timeUnit.toMillis(timeOut);
+    while (result.getUri(LINK_DOWNLOAD) == null && System.currentTimeMillis() < maxWaitTime) {
       try {
         TimeUnit.SECONDS.sleep(2);
       } catch (InterruptedException ignored) {
         Thread.currentThread().interrupt();
       }
+      result = restClient.refresh(result);
     }
-    return plainOrderItem;
+    return result;
   }
 
   private String getValidJsonRequestForExport(String exportConfigurationUri, List<SearchResult> searchResults) {
