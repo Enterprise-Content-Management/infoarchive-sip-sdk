@@ -100,9 +100,11 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   @Override
   public ContentResult fetchOrderContent(OrderItem orderItem) throws IOException {
-    String fetchUri = restClient.uri(orderItem.getUri(LINK_DOWNLOAD))
-      .addParameter("downloadToken", "")
-      .build();
+    String downloadUri = Objects.requireNonNull(
+        Objects.requireNonNull(orderItem, "Missing order item").getUri(LINK_DOWNLOAD), "Missing download URI");
+    String fetchUri = restClient.uri(downloadUri)
+        .addParameter("downloadToken", "")
+        .build();
     return restClient.get(fetchUri, contentResultFactory);
   }
 
@@ -162,17 +164,33 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   @Override
   public OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration,
       String outputName, TimeUnit timeUnit, long timeOut) throws IOException {
-    OrderItem result = export(searchResults, exportConfiguration, outputName);
-    long endTimeOfExport = System.currentTimeMillis() + Math.min(MIN_EXPORT_TIME_OUT_MS, timeUnit.toMillis(timeOut));
-    while (result.getUri(LINK_DOWNLOAD) == null && System.currentTimeMillis() < endTimeOfExport) {
+    String fullOutputName = outputName + '_' + Long.toString(new Date().getTime());
+    String exportUri = restClient.uri(searchResults.getUri(LINK_EXPORT))
+        .addParameter("name", fullOutputName)
+        .build();
+    String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(),
+        searchResults.getResults());
+    OrderItem plainOrderItem = restClient.post(exportUri, OrderItem.class, exportRequestBody);
+
+    long endTimeOfExport;
+    long timeOutInMillis = timeUnit.toMillis(timeOut);
+    if (timeOutInMillis < 5000) {
+      endTimeOfExport = System.currentTimeMillis() + MIN_EXPORT_TIME_OUT_MS;
+    } else {
+      endTimeOfExport = System.currentTimeMillis() + timeOutInMillis;
+    }
+    while (System.currentTimeMillis() < endTimeOfExport) {
+      OrderItem downloadOrderItem = restClient.get(plainOrderItem.getSelfUri(), OrderItem.class);
+      if (downloadOrderItem.getUri(LINK_DOWNLOAD) != null) {
+        return downloadOrderItem;
+      }
       try {
         TimeUnit.SECONDS.sleep(2);
-      } catch (InterruptedException ignore) {
+      } catch (InterruptedException ignored) {
         Thread.currentThread().interrupt();
       }
-      result = restClient.refresh(result);
     }
-    return result;
+    return plainOrderItem;
   }
 
   private String getValidJsonRequestForExport(String exportConfigurationUri, List<SearchResult> searchResults) {
