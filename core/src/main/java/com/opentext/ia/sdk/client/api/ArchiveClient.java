@@ -32,7 +32,7 @@ public interface ArchiveClient {
    * Ingest a Submission Information Package (SIP) into the Archive. Will take advantage of the ingestDirect resource if
    * present, otherwise will revert to receive + ingest.
    *
-   * <b>Note</b>, only works if synchronous commit is enabled on the holding and the SIP being ingested is NOT part of a
+   * <b>Note</b>: only works if synchronous commit is enabled on the holding and the SIP being ingested is NOT part of a
    * multi-SIP DSS.
    * @param sip The SIP to add to the Archive
    * @return The ID of the Archival Information Package (AIP) that was generated from the SIP
@@ -84,18 +84,8 @@ public interface ArchiveClient {
    * @return An OrderItem object that contains information about exported package without link to download it
    * @throws IOException When an I/O error occurs
    */
-  OrderItem export(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName) throws IOException;
-
-  /**
-   * Start and wait the export of the search results for the specified export configuration.
-   * @param searchResults The search results.
-   * @param exportConfiguration The export configuration.
-   * @param outputName The output name of result package.
-   * @param timeOutInMillis The timeout of export process in milliseconds.
-   * @return An OrderItem object that contains information about exported package and link to download it
-   * @throws IOException When an I/O error occurs
-   */
-  OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName, long timeOutInMillis) throws IOException;
+  OrderItem export(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName)
+      throws IOException;
 
   /**
    * Upload the transformation zip with the stylesheet into the Archive.

@@ -25,12 +25,12 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.stubbing.OngoingStubbing;
 
-import com.opentext.ia.sdk.client.api.ArchiveClient;
-import com.opentext.ia.sdk.client.api.ContentResult;
-import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
-import com.opentext.ia.sdk.client.api.QueryResult;
+import com.opentext.ia.sdk.client.api.*;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
-import com.opentext.ia.sdk.client.impl.*;
+import com.opentext.ia.sdk.client.impl.ContentResultFactory;
+import com.opentext.ia.sdk.client.impl.DefaultContentResult;
+import com.opentext.ia.sdk.client.impl.DefaultQueryResult;
+import com.opentext.ia.sdk.client.impl.QueryResultFactory;
 import com.opentext.ia.sdk.dto.export.*;
 import com.opentext.ia.sdk.dto.query.Comparison;
 import com.opentext.ia.sdk.dto.query.Item;
@@ -38,8 +38,8 @@ import com.opentext.ia.sdk.dto.query.Operator;
 import com.opentext.ia.sdk.dto.query.SearchQuery;
 import com.opentext.ia.sdk.dto.result.AllSearchComponents;
 import com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties;
+import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedConfigurer;
-import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.*;
 import com.opentext.ia.sdk.support.http.rest.Link;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
@@ -62,6 +62,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private final Map<String, Link> links = new HashMap<>();
   private final Map<String, String> configuration = new HashMap<>();
   private final RestClient restClient = mock(RestClient.class);
+  private ArchiveConnection connection;
   private ArchiveClient archiveClient;
   private Applications applications;
   private Application application;
@@ -72,6 +73,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   @Before
   public void init() throws IOException {
     prepareConfiguration();
+    connection = new PropertiesBasedArchiveConnection(configuration);
+    connection.setRestClient(restClient);
 
     Services resource = new Services();
     Link link = mock(Link.class);
@@ -378,8 +381,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   private ArchiveClient configureServer(Map<String, String> config) {
-    return archiveClient = ArchiveClients.configuringServerUsing(new PropertiesBasedConfigurer(config, restClient),
-        restClient);
+    return archiveClient = ArchiveClients.configuringServerUsing(new PropertiesBasedConfigurer(config), connection);
   }
 
   @Test
@@ -514,8 +516,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
       throw new HttpException(503, "");
     });
 
-    ArchiveClients.configuringServerUsing(new PropertiesBasedConfigurer(configuration, restClient, mock(Clock.class)),
-        restClient);
+    ArchiveClients.configuringServerUsing(new PropertiesBasedConfigurer(configuration), connection);
 
     verify(restClient, times(5)).createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD),
         eq(LINK_SELF));
@@ -576,50 +577,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
     configureServer();
     OrderItem result = archiveClient.export(searchResults, exportConfiguration, randomString());
-
-    assertEquals(orderItem, result);
-  }
-
-  @Test
-  public void shouldExportAndWaitSuccessfully() throws IOException {
-    UriBuilder uriBuilder = mock(UriBuilder.class);
-    String uri = randomString();
-    when(uriBuilder.build()).thenReturn(uri);
-    when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
-    when(restClient.uri(anyString())).thenReturn(uriBuilder);
-    OrderItem orderItem = mock(OrderItem.class);
-    when(orderItem.getUri(anyString())).thenReturn(randomString());
-    when(restClient.post(eq(uri), eq(OrderItem.class), anyString())).thenReturn(orderItem);
-    when(restClient.get(anyString(), eq(OrderItem.class))).thenReturn(orderItem);
-
-    SearchResults searchResults = new SearchResults();
-    ExportConfiguration exportConfiguration = mock(ExportConfiguration.class);
-    when(exportConfiguration.getSelfUri()).thenReturn(uri);
-
-    configureServer();
-    OrderItem result = archiveClient.exportAndWait(searchResults, exportConfiguration, randomString(), 6000);
-
-    assertEquals(orderItem, result);
-  }
-
-  @Test
-  public void shouldExportAndWaitUnsuccessfully() throws IOException {
-    UriBuilder uriBuilder = mock(UriBuilder.class);
-    String uri = randomString();
-    when(uriBuilder.build()).thenReturn(uri);
-    when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
-    when(restClient.uri(anyString())).thenReturn(uriBuilder);
-    OrderItem orderItem = mock(OrderItem.class);
-    when(orderItem.getUri(anyString())).thenReturn(null);
-    when(restClient.post(eq(uri), eq(OrderItem.class), anyString())).thenReturn(orderItem);
-    when(restClient.get(anyString(), eq(OrderItem.class))).thenReturn(orderItem);
-
-    SearchResults searchResults = new SearchResults();
-    ExportConfiguration exportConfiguration = mock(ExportConfiguration.class);
-    when(exportConfiguration.getSelfUri()).thenReturn(uri);
-
-    configureServer();
-    OrderItem result = archiveClient.exportAndWait(searchResults, exportConfiguration, randomString(), randomInt(3000));
 
     assertEquals(orderItem, result);
   }

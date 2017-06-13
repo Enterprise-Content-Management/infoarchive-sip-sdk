@@ -6,9 +6,6 @@ package com.opentext.ia.sdk.server.configuration.yaml;
 import java.io.IOException;
 
 import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedConfigurer;
-import com.opentext.ia.sdk.support.datetime.Clock;
-import com.opentext.ia.sdk.support.datetime.DefaultClock;
-import com.opentext.ia.sdk.support.http.rest.RestClient;
 
 
 /**
@@ -26,19 +23,8 @@ public class YamlBasedConfigurer extends PropertiesBasedConfigurer {
   private final YamlConfiguration yaml;
 
   public YamlBasedConfigurer(YamlConfiguration configuration) {
-    this(configuration, null);
-  }
-
-  public YamlBasedConfigurer(YamlConfiguration configuration, RestClient restClient) {
-    this(configuration, restClient, new DefaultClock());
-  }
-
-  public YamlBasedConfigurer(YamlConfiguration configuration, RestClient restClient, Clock clock) {
-    super(null, restClient, clock);
+    super(null);
     this.yaml = configuration;
-    // TODO: We don't want to expand into properties when the server support YAML directly.
-    //       IOW, we want to move this call into the else branch in applyConfiguration().
-    setConfiguration(yaml.toMap());
   }
 
   @Override
@@ -46,6 +32,7 @@ public class YamlBasedConfigurer extends PropertiesBasedConfigurer {
     if (serverSupportsYamlConfiguration()) {
       letServerApplyConfiguration();
     } else {
+      setConfiguration(yaml.toMap());
       super.applyConfiguration();
     }
   }

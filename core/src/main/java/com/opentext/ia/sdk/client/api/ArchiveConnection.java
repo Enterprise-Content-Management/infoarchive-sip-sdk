@@ -3,12 +3,22 @@
  */
 package com.opentext.ia.sdk.client.api;
 
+import java.util.Optional;
+
+import com.opentext.ia.sdk.support.NewInstance;
+import com.opentext.ia.sdk.support.datetime.Clock;
+import com.opentext.ia.sdk.support.datetime.DefaultClock;
+import com.opentext.ia.sdk.support.http.HttpClient;
+import com.opentext.ia.sdk.support.http.apache.ApacheHttpClient;
+import com.opentext.ia.sdk.support.http.rest.AuthenticationStrategy;
+import com.opentext.ia.sdk.support.http.rest.RestClient;
 
 /**
  * How to communicate with the Archive server.
  */
 public class ArchiveConnection {
 
+  private Clock clock = new DefaultClock();
   private String billboardUri;
   private String proxyHost;
   private String proxyPort;
@@ -19,6 +29,7 @@ public class ArchiveConnection {
   private String authenticationGateway;
   private String clientId;
   private String clientSecret;
+  private RestClient restClient;
 
   public String getBillboardUri() {
     return billboardUri;
@@ -98,6 +109,30 @@ public class ArchiveConnection {
 
   public void setClientSecret(String clientSecret) {
     this.clientSecret = clientSecret;
+  }
+
+  public Clock getClock() {
+    return clock;
+  }
+
+  public void setClock(Clock clock) {
+    this.clock = Optional.ofNullable(clock).orElseGet(DefaultClock::new);
+  }
+
+  public RestClient getRestClient() {
+    if (restClient == null) {
+      HttpClient httpClient = NewInstance.of(getHttpClientClassName(), ApacheHttpClient.class.getName())
+          .as(HttpClient.class);
+      restClient = new RestClient(httpClient);
+      AuthenticationStrategy authentication = new AuthenticationStrategyFactory(this).getAuthenticationStrategy(
+          () -> httpClient, () -> clock);
+      restClient.init(authentication);
+    }
+    return restClient;
+  }
+
+  public void setRestClient(RestClient restClient) {
+    this.restClient = restClient;
   }
 
 }

@@ -15,7 +15,9 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
+import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
+import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedConfigurer;
 import com.opentext.ia.sdk.server.configuration.yaml.YamlConfiguration;
 import com.opentext.ia.sdk.sip.*;
@@ -92,12 +94,19 @@ public class YamlSipIngester {
     // the SIP we've just assembled.
     // Use ArchiveClients.usingAlreadyConfiguredServer() instead if you already configured the server with application,
     // holding, etc.
-    ArchiveClient archiveClient = ArchiveClients.configuringServerUsing(new YamlBasedConfigurer(configuration));
+    ArchiveClient archiveClient = ArchiveClients.configuringServerUsing(new YamlBasedConfigurer(configuration),
+        newArchiveConnection());
 
     // Ingest the SIP into InfoArchive
     try (InputStream sip = new FileInputStream(assembledSip)) {
       String aipId = archiveClient.ingestDirect(sip);
       System.out.println("SIP ingested as AIP " + aipId);
+    }
+  }
+
+  private ArchiveConnection newArchiveConnection() throws IOException {
+    try (InputStream connectionProperties = getClass().getResourceAsStream("/connection.properties")) {
+      return new PropertiesBasedArchiveConnection(connectionProperties);
     }
   }
 

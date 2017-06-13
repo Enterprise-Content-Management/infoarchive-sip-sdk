@@ -10,7 +10,6 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.utils.URIBuilder;
 
@@ -30,7 +29,6 @@ import com.opentext.ia.sdk.dto.query.Comparison;
 import com.opentext.ia.sdk.dto.query.Item;
 import com.opentext.ia.sdk.dto.query.QueryFormatter;
 import com.opentext.ia.sdk.dto.query.SearchQuery;
-import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.BinaryPart;
 import com.opentext.ia.sdk.support.http.MediaTypes;
 import com.opentext.ia.sdk.support.http.ResponseFactory;
@@ -50,13 +48,10 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private final RestClient restClient;
   private final ApplicationIngestionResourcesCache resourceCache;
-  private final Clock clock;
 
-  public InfoArchiveRestClient(RestClient restClient, ApplicationIngestionResourcesCache resourceCache,
-      Clock clock) {
+  public InfoArchiveRestClient(RestClient restClient, ApplicationIngestionResourcesCache resourceCache) {
     this.restClient = restClient;
     this.resourceCache = resourceCache;
-    this.clock = clock;
   }
 
   @Override
@@ -159,33 +154,6 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(),
         searchResults.getResults());
     return restClient.post(exportUri, OrderItem.class, exportRequestBody);
-  }
-
-  @Override
-  public OrderItem exportAndWait(SearchResults searchResults, ExportConfiguration exportConfiguration,
-      String outputName, long timeOutInMillis) throws IOException {
-    String fullOutputName = outputName + '_' + Long.toString(new Date().getTime());
-    String exportUri = restClient.uri(searchResults.getUri(LINK_EXPORT))
-        .addParameter("name", fullOutputName)
-        .build();
-    String exportRequestBody = getValidJsonRequestForExport(exportConfiguration.getSelfUri(),
-        searchResults.getResults());
-    OrderItem plainOrderItem = restClient.post(exportUri, OrderItem.class, exportRequestBody);
-
-    long endTimeOfExport;
-    if (timeOutInMillis < 5000) {
-      endTimeOfExport = System.currentTimeMillis() + 5000;
-    } else {
-      endTimeOfExport = System.currentTimeMillis() + timeOutInMillis;
-    }
-    while (System.currentTimeMillis() < endTimeOfExport) {
-      OrderItem downloadOrderItem = restClient.get(plainOrderItem.getSelfUri(), OrderItem.class);
-      if (downloadOrderItem.getUri(LINK_DOWNLOAD) != null) {
-        return downloadOrderItem;
-      }
-      clock.sleep(2, TimeUnit.SECONDS);
-    }
-    return plainOrderItem;
   }
 
   private String getValidJsonRequestForExport(String exportConfigurationUri, List<SearchResult> searchResults) {

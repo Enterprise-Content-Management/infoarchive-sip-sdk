@@ -14,7 +14,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
-import com.opentext.ia.sdk.client.api.AuthenticationStrategyFactory;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.dto.*;
 import com.opentext.ia.sdk.dto.export.*;
@@ -28,13 +27,11 @@ import com.opentext.ia.sdk.dto.result.ResultMaster;
 import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.server.configuration.ApplicationResourcesCache;
 import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedConfigurer;
-import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.RepeatingConfigReader;
-import com.opentext.ia.sdk.support.datetime.Clock;
-import com.opentext.ia.sdk.support.datetime.DefaultClock;
-import com.opentext.ia.sdk.support.http.*;
-import com.opentext.ia.sdk.support.http.apache.ApacheHttpClient;
-import com.opentext.ia.sdk.support.http.rest.AuthenticationStrategy;
+import com.opentext.ia.sdk.support.http.BinaryPart;
+import com.opentext.ia.sdk.support.http.HttpException;
+import com.opentext.ia.sdk.support.http.MediaTypes;
+import com.opentext.ia.sdk.support.http.TextPart;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 import com.opentext.ia.sdk.support.http.rest.RestClient;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
@@ -67,19 +64,8 @@ public class PropertiesBasedConfigurer implements ApplicationConfigurer, InfoArc
   private final ApplicationResourcesCache cache = new ApplicationResourcesCache();
   private Map<String, String> configuration;
   private RestClient restClient;
-  private final Clock clock;
 
   public PropertiesBasedConfigurer(Map<String, String> configuration) {
-    this(configuration, null);
-  }
-
-  public PropertiesBasedConfigurer(Map<String, String> configuration, RestClient restClient) {
-    this(configuration, restClient, new DefaultClock());
-  }
-
-  public PropertiesBasedConfigurer(Map<String, String> configuration, RestClient restClient, Clock clock) {
-    this.restClient = restClient;
-    this.clock = clock;
     this.configuration = configuration;
   }
 
@@ -96,48 +82,18 @@ public class PropertiesBasedConfigurer implements ApplicationConfigurer, InfoArc
   }
 
   @Override
-  public ArchiveConnection getArchiveConnection() {
-    ArchiveConnection result = new ArchiveConnection();
-    result.setAuthenticationGateway(configuration.get(SERVER_AUTHENTICATION_GATEWAY));
-    result.setAuthenticationPassword(configuration.get(SERVER_AUTHENTICATION_PASSWORD));
-    result.setAuthenticationToken(configuration.get(SERVER_AUTENTICATON_TOKEN));
-    result.setAuthenticationUser(configuration.get(SERVER_AUTHENTICATION_USER));
-    result.setBillboardUri(configuration.get(SERVER_URI));
-    result.setClientId(configuration.get(SERVER_CLIENT_ID));
-    result.setClientSecret(configuration.get(SERVER_CLIENT_SECRET));
-    result.setHttpClientClassName(configuration.get(HTTP_CLIENT_CLASSNAME));
-    result.setProxyHost(configuration.get(PROXY_HOST));
-    result.setProxyPort(configuration.get(PROXY_PORT));
-    return result;
-  }
-
-  @Override
-  public void configure() {
+  public void configure(ArchiveConnection connection) {
     try {
-      initRestClient();
+      initRestClient(connection);
       applyConfiguration();
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
   }
 
-  private void initRestClient() throws IOException {
-    ArchiveConnection connection = getArchiveConnection();
-    if (restClient == null) {
-      HttpClient httpClient = NewInstance.of(connection.getHttpClientClassName(),
-          ApacheHttpClient.class.getName()).as(HttpClient.class);
-      AuthenticationStrategy authentication = new AuthenticationStrategyFactory(connection)
-          .getAuthenticationStrategy(() -> httpClient, () -> clock);
-      restClient = new RestClient(httpClient);
-      restClient.init(authentication);
-    }
+  private void initRestClient(ArchiveConnection connection) throws IOException {
+    restClient = connection.getRestClient();
     cache.setServices(restClient.get(connection.getBillboardUri(), Services.class));
-  }
-
-  private String configured(String name) {
-    String result = configuration.get(name);
-    Objects.requireNonNull(result, "Missing " + name);
-    return result;
   }
 
   protected void applyConfiguration() throws IOException {
@@ -260,13 +216,17 @@ public class PropertiesBasedConfigurer implements ApplicationConfigurer, InfoArc
       try {
         return operation.perform();
       } catch (IOException e) {
-        if (isTemporarilyUnavailable(e)) {
-          clock.sleep(RETRY_MS * retry, TimeUnit.MILLISECONDS);
-        } else if (isDuplicateObjectException(e.getMessage())) {
-          clock.sleep(WAIT_RACE_CONDITION_MS, TimeUnit.MILLISECONDS);
-          break;
-        } else {
-          throw e;
+        try {
+          if (isTemporarilyUnavailable(e)) {
+            TimeUnit.MILLISECONDS.sleep(RETRY_MS * retry);
+          } else if (isDuplicateObjectException(e.getMessage())) {
+            TimeUnit.MILLISECONDS.sleep(WAIT_RACE_CONDITION_MS);
+            break;
+          } else {
+            throw e;
+          }
+        } catch (InterruptedException ignored) {
+          Thread.interrupted();
         }
       }
     }
@@ -294,6 +254,10 @@ public class PropertiesBasedConfigurer implements ApplicationConfigurer, InfoArc
     XdbDatabase result = createObject(name, XdbDatabase.class);
     result.setAdminPassword(configured(DATABASE_ADMIN_PASSWORD));
     return result;
+  }
+
+  private String configured(String name) {
+    return Objects.requireNonNull(configuration.get(name), "Missing " + name);
   }
 
   private void ensureFileSystemRoot() throws IOException {

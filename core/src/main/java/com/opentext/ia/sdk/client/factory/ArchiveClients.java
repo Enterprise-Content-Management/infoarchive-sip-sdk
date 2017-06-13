@@ -7,22 +7,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
-import com.opentext.ia.sdk.client.api.AuthenticationStrategyFactory;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.client.impl.ApplicationIngestionResourcesCache;
 import com.opentext.ia.sdk.client.impl.InfoArchiveRestClient;
 import com.opentext.ia.sdk.dto.*;
 import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
-import com.opentext.ia.sdk.support.NewInstance;
-import com.opentext.ia.sdk.support.datetime.Clock;
-import com.opentext.ia.sdk.support.datetime.DefaultClock;
-import com.opentext.ia.sdk.support.http.HttpClient;
-import com.opentext.ia.sdk.support.http.apache.ApacheHttpClient;
-import com.opentext.ia.sdk.support.http.rest.AuthenticationStrategy;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 import com.opentext.ia.sdk.support.http.rest.RestClient;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
@@ -40,64 +32,23 @@ public final class ArchiveClients {
   /**
    * Returns an ArchiveClient instance and configures the InfoArchive server that it communicates with.
    * @param configurer How to configure InfoArchive
+   * @param connection How to communicate with the InfoArchive server
    * @return An ArchiveClient
    */
-  public static ArchiveClient configuringServerUsing(ApplicationConfigurer configurer) {
-    return configuringServerUsing(configurer, null);
-  }
-
-  /**
-   * Returns an ArchiveClient instance and configures the InfoArchive server that it communicates with.
-   * @param configurer How to configure InfoArchive
-   * @param restClient The REST client to use for communication with the server
-   * @return An ArchiveClient
-   */
-  public static ArchiveClient configuringServerUsing(ApplicationConfigurer configurer, RestClient restClient) {
-    return configuringServerUsing(configurer, restClient, null);
-  }
-
-  /**
-   * Returns an ArchiveClient instance and configures the InfoArchive server that it communicates with.
-   * @param configurer How to configure InfoArchive
-   * @param optionalClient The REST client to use for communication with the server
-   * @param optionalClock The clock to use
-   * @return An ArchiveClient
-   */
-  public static ArchiveClient configuringServerUsing(ApplicationConfigurer configurer, RestClient optionalClient,
-      Clock optionalClock) {
-    ArchiveConnection connection = configurer.getArchiveConnection();
-    Clock clock = Optional.ofNullable(optionalClock).orElseGet(DefaultClock::new);
-    RestClient client = Optional.ofNullable(optionalClient).orElseGet(
-        () -> createRestClient(connection, clock));
-    configurer.configure();
-    return usingAlreadyConfiguredServer(client, connection, configurer.getApplicationName(), clock);
-  }
-
-  private static RestClient createRestClient(ArchiveConnection connection, Clock clock) {
-    HttpClient httpClient = NewInstance.of(connection.getHttpClientClassName(),
-        ApacheHttpClient.class.getName()).as(HttpClient.class);
-    AuthenticationStrategy authentication = new AuthenticationStrategyFactory(connection).getAuthenticationStrategy(
-        () -> httpClient, () -> clock);
-    RestClient result = new RestClient(httpClient);
-    result.init(authentication);
-    return result;
+  public static ArchiveClient configuringServerUsing(ApplicationConfigurer configurer, ArchiveConnection connection) {
+    configurer.configure(connection);
+    return usingAlreadyConfiguredServer(connection, configurer.getApplicationName());
   }
 
   /**
    * Creates a new ArchiveClient instance without installing any artifacts in the archive.
-   * @param restClient The RestClient used to interact with the InfoArchive REST API.
-   * @param connection How to communicate with the InfoArchive Server
+   * @param connection How to communicate with the InfoArchive server
    * @param applicationName The name of the already configured application to use
    * @return An ArchiveClient
    */
-  public static ArchiveClient usingAlreadyConfiguredServer(RestClient restClient, ArchiveConnection connection,
-      String applicationName) {
-    return usingAlreadyConfiguredServer(restClient, connection, applicationName, new DefaultClock());
-  }
-
-  private static ArchiveClient usingAlreadyConfiguredServer(RestClient restClient, ArchiveConnection connection,
-      String applicationName, Clock clock) {
-    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, connection, applicationName), clock);
+  public static ArchiveClient usingAlreadyConfiguredServer(ArchiveConnection connection, String applicationName) {
+    RestClient restClient = connection.getRestClient();
+    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, connection, applicationName));
   }
 
   private static ApplicationIngestionResourcesCache appResourceCache(RestClient restClient,
@@ -140,18 +91,6 @@ public final class ArchiveClients {
     resourceCache.setCiResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_CI));
     resourceCache.setAipResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_AIPS));
     resourceCache.setAipIngestDirectResourceUri(aips.getUri(InfoArchiveLinkRelations.LINK_INGEST_DIRECT));
-  }
-
-  /**
-   * Creates a new ArchiveClient instance without installing any artifacts in the archive using the default RestClient.
-   * @param connection How to communicate with the server
-   * @param applicationName The name of the already configured application to use
-   * @return An ArchiveClient
-   */
-  public static ArchiveClient usingAlreadyConfiguredServer(ArchiveConnection connection, String applicationName) {
-    Clock clock = new DefaultClock();
-    RestClient restClient = createRestClient(connection, clock);
-    return usingAlreadyConfiguredServer(restClient, connection, applicationName, clock);
   }
 
 }

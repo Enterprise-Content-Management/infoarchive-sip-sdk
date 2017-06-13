@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
+import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedConfigurer;
 import com.opentext.ia.sdk.sip.*;
 import com.opentext.ia.sdk.support.io.FileSupplier;
@@ -87,8 +88,9 @@ public class SipIngester {
     // the SIP we've just assembled.
     // Use ArchiveClients.usingAlreadyConfiguredServer() instead if you already configured the server with application,
     // holding, etc.
-    ArchiveClient archiveClient = ArchiveClients.configuringServerUsing(
-        new PropertiesBasedConfigurer(sampleHoldingConfiguration()));
+    Map<String, String> configuration = sampleHoldingConfiguration();
+    ArchiveClient archiveClient = ArchiveClients.configuringServerUsing(new PropertiesBasedConfigurer(configuration),
+        new PropertiesBasedArchiveConnection(configuration));
 
     // Ingest the SIP into InfoArchive
     try (InputStream sip = new FileInputStream(assembledSip)) {

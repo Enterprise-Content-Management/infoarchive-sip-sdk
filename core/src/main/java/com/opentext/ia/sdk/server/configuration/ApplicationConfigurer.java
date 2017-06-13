@@ -12,12 +12,6 @@ import com.opentext.ia.sdk.client.api.ArchiveConnection;
 public interface ApplicationConfigurer {
 
   /**
-   * Returns details about how to connect to the Archive.
-   * @return details about how to connect to the Archive
-   */
-  ArchiveConnection getArchiveConnection();
-
-  /**
    * Returns the name of the application to configure.
    * @return the name of the application to configure
    */
@@ -25,7 +19,8 @@ public interface ApplicationConfigurer {
 
   /**
    * Configure the Archive for the application.
+   * @param connection How to communicate with the InfoArchive server
    */
-  void configure();
+  void configure(ArchiveConnection connection);
 
 }
