@@ -241,6 +241,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put(InfoArchiveConfigurationProperties.SEARCH_DEFAULT_RESULT_MASTER, "");
     configuration.put(InfoArchiveConfigurationProperties.SEARCH_DEFAULT_SEARCH, "");
 
+    configuration.put(InfoArchiveConfigurationProperties.PROXY_HOST, "localhost");
+    configuration.put(InfoArchiveConfigurationProperties.PROXY_PORT, "8080");
+
     configuration.put("ia.aic.name", "MyAic");
     configuration.put("ia.aic.criteria.name", "name");
     configuration.put("ia.aic.criteria.label", "name");

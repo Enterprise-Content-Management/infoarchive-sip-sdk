@@ -11,9 +11,11 @@ import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
@@ -54,12 +56,31 @@ public class ApacheHttpClient implements HttpClient {
     this(MAX_HTTP_CONNECTIONS, DEFAULT_CONNECTIONS_PER_ROUTE);
   }
 
+  public ApacheHttpClient(String proxyHost, int proxyPort) {
+    this(MAX_HTTP_CONNECTIONS, DEFAULT_CONNECTIONS_PER_ROUTE, proxyHost, proxyPort);
+  }
+
   public ApacheHttpClient(int maxHttpConnections, int maxConnectionsPerRoute) {
     PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
     manager.setMaxTotal(maxHttpConnections);
     manager.setDefaultMaxPerRoute(maxConnectionsPerRoute);
     client = HttpClients.custom()
       .setConnectionManager(manager)
+      .build();
+    mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+  }
+
+  public ApacheHttpClient(int maxHttpConnections, int maxConnectionsPerRoute, String proxyHost, int proxyPort) {
+    PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
+    manager.setMaxTotal(maxHttpConnections);
+    manager.setDefaultMaxPerRoute(maxConnectionsPerRoute);
+    RequestConfig defaultRequestConfig = RequestConfig.custom()
+      .setProxy(new HttpHost(proxyHost, proxyPort))
+      .build();
+    client = HttpClients.custom()
+      .setConnectionManager(manager)
+      .setDefaultRequestConfig(defaultRequestConfig)
       .build();
     mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
