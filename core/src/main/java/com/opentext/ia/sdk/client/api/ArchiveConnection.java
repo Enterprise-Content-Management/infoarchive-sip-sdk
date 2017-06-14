@@ -5,6 +5,8 @@ package com.opentext.ia.sdk.client.api;
 
 import java.util.Optional;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.datetime.DefaultClock;
@@ -121,8 +123,13 @@ public class ArchiveConnection {
 
   public RestClient getRestClient() {
     if (restClient == null) {
-      HttpClient httpClient = NewInstance.of(getHttpClientClassName(), ApacheHttpClient.class.getName())
-          .as(HttpClient.class);
+      HttpClient httpClient;
+      if (StringUtils.isBlank(proxyHost) && StringUtils.isBlank(proxyPort)) {
+        httpClient = NewInstance.of(getHttpClientClassName(), ApacheHttpClient.class.getName())
+            .as(HttpClient.class);
+      } else {
+        httpClient = new ApacheHttpClient(proxyHost, Integer.parseInt(proxyPort));
+      }
       restClient = new RestClient(httpClient);
       AuthenticationStrategy authentication = new AuthenticationStrategyFactory(this).getAuthenticationStrategy(
           () -> httpClient, () -> clock);
