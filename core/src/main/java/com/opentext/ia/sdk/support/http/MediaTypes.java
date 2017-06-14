@@ -13,5 +13,6 @@ public interface MediaTypes {
   String HAL = "application/hal+json";
   String XML = "application/xml";
   String TEXT = "text/plain";
+  String YAML = "text/yaml"; // NOTE: No IANA registration exists, but most people seem to use this
 
 }

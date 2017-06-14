@@ -3,9 +3,11 @@
  */
 package com.opentext.ia.sdk.server.configuration.yaml;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.function.Consumer;
 
 import com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties;
+import com.opentext.ia.sdk.support.yaml.YamlMap;
 
 
 class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveConfigurationProperties {
@@ -28,64 +30,64 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
   private static final String MAIN = "main";
 
 
-  YamlPropertiesMap(Map<String, Object> yaml) {
-    expand(yaml);
+  YamlPropertiesMap(YamlMap yaml) {
+    flatten(yaml);
   }
 
   @SuppressWarnings("PMD.UnusedFormalParameter")
-  private void expand(Map<String, Object> source) {
-    put(SERVER_URI, getString(source, SERVER, "uri"));
+  private void flatten(YamlMap yaml) {
+    put(SERVER_URI, getString(yaml, SERVER, "uri"));
 
-    filter(SERVER_AUTENTICATON_TOKEN, source, SERVER, AUTHENTICATION, "token");
-    filter(SERVER_AUTHENTICATION_USER, source, SERVER, AUTHENTICATION, "user");
-    filter(SERVER_AUTHENTICATION_PASSWORD, source, SERVER, AUTHENTICATION, "password");
-    filter(SERVER_AUTHENTICATION_GATEWAY, source, SERVER, AUTHENTICATION, "gateway");
-    filter(SERVER_CLIENT_ID, source, SERVER, AUTHENTICATION, "client_id");
-    filter(SERVER_CLIENT_SECRET, source, SERVER, AUTHENTICATION, "client_secret");
+    filter(SERVER_AUTENTICATON_TOKEN, yaml, SERVER, AUTHENTICATION, "token");
+    filter(SERVER_AUTHENTICATION_USER, yaml, SERVER, AUTHENTICATION, "user");
+    filter(SERVER_AUTHENTICATION_PASSWORD, yaml, SERVER, AUTHENTICATION, "password");
+    filter(SERVER_AUTHENTICATION_GATEWAY, yaml, SERVER, AUTHENTICATION, "gateway");
+    filter(SERVER_CLIENT_ID, yaml, SERVER, AUTHENTICATION, "client_id");
+    filter(SERVER_CLIENT_SECRET, yaml, SERVER, AUTHENTICATION, "client_secret");
 
-    put(TENANT_NAME, getString(source, "tenant"));
+    put(TENANT_NAME, getString(yaml, "tenant"));
 
-    put(FEDERATION_NAME, getString(source, XDB, FEDERATION, NAME));
-    put(FEDERATION_BOOTSTRAP, getString(source, XDB, FEDERATION, "uri"));
-    put(FEDERATION_SUPERUSER_PASSWORD, getString(source, XDB, FEDERATION, "password"));
-    put(DATABASE_NAME, getString(source, XDB, "database", NAME));
-    put(DATABASE_ADMIN_PASSWORD, getString(source, XDB, "database", "password"));
+    put(FEDERATION_NAME, getString(yaml, XDB, FEDERATION, NAME));
+    put(FEDERATION_BOOTSTRAP, getString(yaml, XDB, FEDERATION, "uri"));
+    put(FEDERATION_SUPERUSER_PASSWORD, getString(yaml, XDB, FEDERATION, "password"));
+    put(DATABASE_NAME, getString(yaml, XDB, "database", NAME));
+    put(DATABASE_ADMIN_PASSWORD, getString(yaml, XDB, "database", "password"));
 
-    put(APPLICATION_NAME, getString(source, APPLICATION, NAME));
-    put(APPLICATION_CATEGORY, getString(source, APPLICATION, "category"));
-    put(APPLICATION_DESCRIPTION, getString(source, APPLICATION, DESCRIPTION));
+    put(APPLICATION_NAME, getString(yaml, APPLICATION, NAME));
+    put(APPLICATION_CATEGORY, getString(yaml, APPLICATION, "category"));
+    put(APPLICATION_DESCRIPTION, getString(yaml, APPLICATION, DESCRIPTION));
 
-    put(HOLDING_NAME, getString(source, "holding", NAME));
+    put(HOLDING_NAME, getString(yaml, "holding", NAME));
 
-    filter(FILE_SYSTEM_FOLDER, source, "file-system-folder", NAME);
+    filter(FILE_SYSTEM_FOLDER, yaml, "file-system-folder", NAME);
 
-    filter(STORE_NAME, source, STORE, NAME);
-    filter(STORE_STORETYPE, source, STORE, "store-type");
-    filter(STORE_FOLDER, source, STORE, "folder");
-    filter(STORE_TYPE, source, STORE, TYPE);
+    filter(STORE_NAME, yaml, STORE, NAME);
+    filter(STORE_STORETYPE, yaml, STORE, "store-type");
+    filter(STORE_FOLDER, yaml, STORE, "folder");
+    filter(STORE_TYPE, yaml, STORE, TYPE);
 
-    put(AIC_NAME, getString(source, AIC, NAME));
-    put(CRITERIA_NAME, getString(source, AIC, CRITERIA, NAME));
-    put(CRITERIA_LABEL, getString(source, AIC, CRITERIA, "label"));
-    put(CRITERIA_TYPE, getString(source, AIC, CRITERIA, TYPE));
-    put(CRITERIA_PKEYMINATTR, getString(source, AIC, CRITERIA, "pkeyminattr"));
-    put(CRITERIA_PKEYMAXATTR, getString(source, AIC, CRITERIA, "pkeymaxattr"));
-    put(CRITERIA_PKEYVALUESATTR, getString(source, AIC, CRITERIA, "pkeyvaluesattr"));
-    put(CRITERIA_INDEXED, getString(source, AIC, CRITERIA, "indexed"));
+    put(AIC_NAME, getString(yaml, AIC, NAME));
+    put(CRITERIA_NAME, getString(yaml, AIC, CRITERIA, NAME));
+    put(CRITERIA_LABEL, getString(yaml, AIC, CRITERIA, "label"));
+    put(CRITERIA_TYPE, getString(yaml, AIC, CRITERIA, TYPE));
+    put(CRITERIA_PKEYMINATTR, getString(yaml, AIC, CRITERIA, "pkeyminattr"));
+    put(CRITERIA_PKEYMAXATTR, getString(yaml, AIC, CRITERIA, "pkeymaxattr"));
+    put(CRITERIA_PKEYVALUESATTR, getString(yaml, AIC, CRITERIA, "pkeyvaluesattr"));
+    put(CRITERIA_INDEXED, getString(yaml, AIC, CRITERIA, "indexed"));
 
-    put(QUOTA_NAME, getString(source, QUOTA, NAME));
-    put(QUOTA_AIU, getString(source, QUOTA, "aiu"));
-    put(QUOTA_AIP, getString(source, QUOTA, "aip"));
-    put(QUOTA_DIP, getString(source, QUOTA, "dip"));
+    put(QUOTA_NAME, getString(yaml, QUOTA, NAME));
+    put(QUOTA_AIU, getString(yaml, QUOTA, "aiu"));
+    put(QUOTA_AIP, getString(yaml, QUOTA, "aip"));
+    put(QUOTA_DIP, getString(yaml, QUOTA, "dip"));
 
-    put(RETENTION_POLICY_NAME, getString(source, "retention-policy", NAME));
+    put(RETENTION_POLICY_NAME, getString(yaml, "retention-policy", NAME));
 
-    put(PDI_SCHEMA_NAME, getString(source, "pdi", SCHEMA, NAME));
-    put(PDI_SCHEMA, getString(source, "pdi", SCHEMA, "xsd"));
-    put(PDI_XML, getString(source, "pdi", XML));
-    put(INGEST_XML, getString(source, "ingest", XML));
+    put(PDI_SCHEMA_NAME, getString(yaml, "pdi", SCHEMA, NAME));
+    put(PDI_SCHEMA, getString(yaml, "pdi", SCHEMA, "xsd"));
+    put(PDI_XML, getString(yaml, "pdi", XML));
+    put(INGEST_XML, getString(yaml, "ingest", XML));
 
-    for (Map<String, Object> query: getList(source, "query")) {
+    forEachMapItem(yaml, "query", query -> {
       String name = getString(query, NAME);
       append(QUERY_NAME, name);
       put(String.format(QUERY_NAMESPACE_PREFIX_TEMPLATE, name), getString(query, "namespace", "prefix"));
@@ -101,16 +103,16 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
       put(String.format(QUERY_XDBPDI_OPERAND_PATH, name, schema), getString(query, XDBPDI, OPERAND, "path"));
       put(String.format(QUERY_XDBPDI_OPERAND_TYPE, name, schema), getString(query, XDBPDI, OPERAND, TYPE));
       put(String.format(QUERY_XDBPDI_OPERAND_INDEX, name, schema), getString(query, XDBPDI, OPERAND, "index"));
-    }
+    });
 
-    for (Map<String, Object> resultHelper: getList(source, "result-helper")) {
+    forEachMapItem(yaml, "result-helper", resultHelper -> {
       String name = getString(resultHelper, NAME);
       append(RESULT_HELPER_NAME, name);
       put(String.format(RESULT_HELPER_SCHEMA_TEMPLATE, name), getString(resultHelper, SCHEMA));
       put(String.format(RESULT_HELPER_XML, name), getString(resultHelper, XML));
-    }
+    });
 
-    for (Map<String, Object> search: getList(source, "search")) {
+    forEachMapItem(yaml, "search", search -> {
       String searchName = getString(search, NAME);
       append(SEARCH_NAME, searchName);
       put(String.format(SEARCH_DESCRIPTION, searchName), getString(search, DESCRIPTION));
@@ -120,7 +122,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
       put(String.format(SEARCH_AIC, searchName), getString(search, "aic"));
       put(String.format(SEARCH_QUERY, searchName), getString(search, "query"));
 
-      for (Map<String, Object> composition: getList(search, "composition")) {
+      forEachMapItem(search, "composition", composition -> {
         String compositionName = getString(composition, NAME);
         append(SEARCH_COMPOSITION_NAME, compositionName);
         put(String.format(SEARCH_COMPOSITION_XFORM_NAME, searchName), getString(composition, "xform", NAME));
@@ -132,61 +134,34 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
         put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT, searchName, compositionName), getString(composition, RESULT, MAIN, "sort"));
         put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE, searchName), getString(composition, "export", "enabled"));
         put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName), getString(composition, "export", "configs"));
-      }
-    }
+      });
+    });
   }
 
-  private void filter(String key, Map<String, Object> source, String... vars) {
-    String value = getString(source, vars);
-    if (value != null && !value.isEmpty()) {
+  private void forEachMapItem(YamlMap yaml, String name, Consumer<YamlMap> action) {
+    yaml.get(name).toList().stream()
+        .map(item -> item.toMap())
+        .forEach(action);
+  }
+
+  private String getString(YamlMap yaml, String... names) {
+    return yaml.get(names).toString();
+  }
+
+  private void filter(String key, YamlMap yaml, String... names) {
+    String value = getString(yaml, names);
+    if (!value.isEmpty()) {
       put(key, value);
     }
   }
 
-  private void append(String name, String newValue) {
-    String value = get(name);
-    if (value == null) {
-      put(name, newValue);
+  private void append(String name, String value) {
+    String oldValue = get(name);
+    if (oldValue == null) {
+      put(name, value);
     } else {
-      put(name, value + "," + newValue);
+      put(name, oldValue + "," + value);
     }
-  }
-
-  private String getString(Map<String, Object> source, String... vars) {
-    if (vars.length == 0) {
-      throw new IllegalArgumentException("There is no second argument.");
-    } else if (vars.length == 1) {
-      Object obj = source.get(vars[0]);
-      return (obj == null) ? "" : String.valueOf(obj);
-    } else {
-      Map<String, String> nearestMap = getMap(source, Arrays.copyOfRange(vars, 0, vars.length - 1));
-      if (nearestMap == null || nearestMap.isEmpty()) {
-        return "";
-      }
-      Object obj = nearestMap.get(vars[vars.length - 1]);
-      return (obj == null) ? "" : String.valueOf(obj);
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private Map<String, String> getMap(Map<String, Object> source, String... vars) {
-    if (vars.length == 0) {
-      throw new IllegalArgumentException("There is no second argument.");
-    } else if (vars.length == 1) {
-      if (source == null) {
-        return Collections.EMPTY_MAP;
-      } else {
-        return (Map<String, String>)source.get(vars[0]);
-      }
-    } else {
-      return getMap((Map<String, Object>)source.get(vars[0]), Arrays.copyOfRange(vars, 1, vars.length));
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private List<Map<String, Object>> getList(Map<String, Object> source, String var) {
-    Object obj = source.get(var);
-    return (obj == null) ? Collections.EMPTY_LIST : (List<Map<String, Object>>)obj;
   }
 
 }

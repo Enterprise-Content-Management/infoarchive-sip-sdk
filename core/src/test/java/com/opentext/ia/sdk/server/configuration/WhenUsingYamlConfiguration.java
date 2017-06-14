@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.atteo.evo.inflector.English;
 import org.junit.Before;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
@@ -19,9 +20,10 @@ import org.yaml.snakeyaml.Yaml;
 import com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties;
 import com.opentext.ia.sdk.server.configuration.yaml.YamlConfiguration;
 import com.opentext.ia.sdk.support.resource.ResourceResolver;
+import com.opentext.ia.sdk.support.test.TestCase;
 
 
-public class WhenUsingYamlConfiguration implements InfoArchiveConfigurationProperties {
+public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveConfigurationProperties {
 
   private static final String EXPECTED_TENANT_NAME = "myTenant";
   private static final String EXPECTED_APPLICATION_NAME = "myApplication";
@@ -74,9 +76,77 @@ public class WhenUsingYamlConfiguration implements InfoArchiveConfigurationPrope
   @Test
   public void shouldInlineResources() throws Exception {
     try (InputStream configuration = getClass().getResourceAsStream("/config/configuration.yml")) {
-      String text = new YamlConfiguration(configuration, ResourceResolver.fromClasspath("/config")).toString();
+      YamlConfiguration yamlConfiguration = new YamlConfiguration(configuration, ResourceResolver.fromClasspath("/config"));
+      String text = yamlConfiguration.toString();
       assertTrue("Resource not inlined:\n" + text, text.contains("foo"));
     }
+  }
+
+  @Test
+  public void shouldFindSingularTopLevelObject() throws IOException {
+    String name = someName();
+    String type = someType();
+    YamlConfiguration configuration = new YamlConfiguration(String.format("%s:%n  name: %s", type, name));
+
+    assertName(name, type, configuration);
+  }
+
+  private String someName() {
+    return randomString(16);
+  }
+
+  private String someType() {
+    return randomString(8);
+  }
+
+  private void assertName(String name, String type, YamlConfiguration configuration) {
+    assertEquals("Name", name, configuration.nameOfSingle(type));
+  }
+
+  @Test
+  public void shouldFindPluralTopLevelObjectWithOneItemInSequence() throws IOException {
+    String name = someName();
+    String type = someType();
+    YamlConfiguration configuration = new YamlConfiguration(String.format("%s:%n- name: %s", English.plural(type), name));
+
+    assertName(name, type, configuration);
+  }
+
+  @Test
+  public void shouldFindPluralTopLevelObjectWithItemMarkedAsDefaultInSequence() throws IOException {
+    String name = someName();
+    String type = someType();
+    YamlConfiguration configuration = new YamlConfiguration(String.format("%s:%n- name: %s%n- name: %s%n  default: true",
+        English.plural(type), someName(), name));
+
+    assertName(name, type, configuration);
+  }
+
+  @Test
+  public void shouldFindPluralTopLevelObjectWithOneItemInMap() throws IOException {
+    String name = someName();
+    String type = someType();
+    YamlConfiguration configuration = new YamlConfiguration(String.format("%s:%n  %s: ~", English.plural(type), name));
+
+    assertName(name, type, configuration);
+  }
+
+  @Test
+  public void shouldFindPluralTopLevelObjectWithItemMarkedAsDefaultInMap() throws IOException {
+    String name = someName();
+    String type = someType();
+    YamlConfiguration configuration = new YamlConfiguration(String.format(
+        "%s:%n  %s: ~%n  %s:%n    default: false%n  %s:%n    default: true", English.plural(type), someName(), someName(),
+        name));
+
+    assertName(name, type, configuration);
+  }
+
+  @Test
+  public void shouldNotFindNonExistingTopLevelObject() {
+    YamlConfiguration configuration = new YamlConfiguration("foo: bar");
+
+    assertTrue("Non-existing item found", configuration.nameOfSingle(someType()).isEmpty());
   }
 
 }

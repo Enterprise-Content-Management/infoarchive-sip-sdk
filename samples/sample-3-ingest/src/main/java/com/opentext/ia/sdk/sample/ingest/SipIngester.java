@@ -89,7 +89,7 @@ public class SipIngester {
     // Use ArchiveClients.usingAlreadyConfiguredServer() instead if you already configured the server with application,
     // holding, etc.
     Map<String, String> configuration = sampleHoldingConfiguration();
-    ArchiveClient archiveClient = ArchiveClients.configuringServerUsing(new PropertiesBasedConfigurer(configuration),
+    ArchiveClient archiveClient = ArchiveClients.configuringApplicationUsing(new PropertiesBasedConfigurer(configuration),
         new PropertiesBasedArchiveConnection(configuration));
 
     // Ingest the SIP into InfoArchive
