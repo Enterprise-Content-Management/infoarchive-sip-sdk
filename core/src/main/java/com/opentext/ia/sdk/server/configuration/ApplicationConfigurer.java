@@ -3,6 +3,8 @@
  */
 package com.opentext.ia.sdk.server.configuration;
 
+import java.io.IOException;
+
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 
 
@@ -20,7 +22,8 @@ public interface ApplicationConfigurer {
   /**
    * Configure the Archive for the application.
    * @param connection How to communicate with the InfoArchive server
+   * @throws IOException When an I/O error occurs
    */
-  void configure(ArchiveConnection connection);
+  void configure(ArchiveConnection connection) throws IOException;
 
 }

@@ -21,7 +21,9 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Matchers;
 import org.mockito.stubbing.OngoingStubbing;
 
@@ -56,9 +58,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private static final String APPLICATION_NAME = "ApPlIcAtIoN";
   private static final String TENANT_NAME = "TeNaNt";
   private static final String NAMESPACE = "urn:SoMeNaMeSpAcE";
-
   private static final String SOURCE = "This is the source of my input stream";
 
+  @Rule
+  public final ExpectedException thrown = ExpectedException.none();
   private final Map<String, Link> links = new HashMap<>();
   private final Map<String, String> configuration = new HashMap<>();
   private final RestClient restClient = mock(RestClient.class);
@@ -376,12 +379,12 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configureServer();
   }
 
-  private void configureServer() {
+  private void configureServer() throws IOException {
     configureServer(configuration);
   }
 
-  private ArchiveClient configureServer(Map<String, String> config) {
-    return archiveClient = ArchiveClients.configuringServerUsing(new PropertiesBasedConfigurer(config), connection);
+  private ArchiveClient configureServer(Map<String, String> config) throws IOException {
+    return archiveClient = ArchiveClients.configuringApplicationUsing(new PropertiesBasedConfigurer(config), connection);
   }
 
   @Test
@@ -502,7 +505,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void configure() {
+  public void configure() throws IOException {
     configureServer();
 
     // Verify no exceptions are thrown
@@ -516,7 +519,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
       throw new HttpException(503, "");
     });
 
-    ArchiveClients.configuringServerUsing(new PropertiesBasedConfigurer(configuration), connection);
+    ArchiveClients.configuringApplicationUsing(new PropertiesBasedConfigurer(configuration), connection);
 
     verify(restClient, times(5)).createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD),
         eq(LINK_SELF));

@@ -179,9 +179,10 @@ search:
 retention-policy:
   name: Animals2
 
-pdi:
-  schema:
-    name: "urn:opentext:ia:schema:sample:animal:1.0"
+pdiSchema:
+  namespace: n
+  content:
+    format: xsd
     xsd: |
       <?xml version="1.0" encoding="UTF-8"?>
       <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
@@ -204,74 +205,79 @@ pdi:
         <xs:element name="animal_name" type="xs:string"/>
         <xs:element name="file_path" type="xs:string"/>
       </xs:schema>
-  xml: |
-    <?xml version="1.0" encoding="UTF-8"?>
-    <datas>
-      <data>
-        <id>pdi.index.creator</id>
-        <key.document.name>xdb.pdi.name</key.document.name>
-        <indexes>
-          <path.value.index>
-            <name>animal_name</name>
-            <path>/{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal/animal_name&lt;STRING>
-            </path>
-            <compressed>false</compressed>
-            <unique.keys>false</unique.keys>
-            <concurrent>false</concurrent>
-            <build.without.logging>true</build.without.logging>
-          </path.value.index>
-          <path.value.index>
-            <name>file_path</name>
-            <path>/{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal/file_path&lt;STRING>
-            </path>
-            <compressed>false</compressed>
-            <unique.keys>false</unique.keys>
-            <concurrent>false</concurrent>
-            <build.without.logging>true</build.without.logging>
-          </path.value.index>
-        </indexes>
-      </data>
-      <data>
-        <id>pdi.aiu.id</id>
-        <select.query>
-          <![CDATA[
-            declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
-            for $animal in /n:animals/n:animal
-            return ($animal, $animal/text())
-          ]]>
-        </select.query>
-      </data>
-      <data>
-        <id>pdi.aiu.cnt</id>
-        <select.query>
-          <![CDATA[
-            declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
-            count(/n:animals/n:animal)
-          ]]>
-        </select.query>
-      </data>
-      <data>
-        <id>pdi.pkeys</id>
-        <pkey attr="string01">
-          <![CDATA[
-            declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
-            let $animals := (for $animal in /n:animals/n:animal/text()
-            order by $animal
-            return $animal)
-            return fn:upper-case(fn:substring($animals[1], 1, 1))
-          ]]>
-        </pkey>
-        <pkey attr="string02">
-          <![CDATA[
-            declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
-            let $animals := (for $animal in /n:animals/n:animal/text()
-            order by $animal descending
-            return $animal)
-            return fn:upper-case(fn:substring($animals[1], 1, 1))
-          ]]>
-        </pkey>
-      </data>
-    </datas>
+
+pdi:
+  name: Animals-pdi
+  content:
+    format: xml
+    xml: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <datas>
+        <data>
+          <id>pdi.index.creator</id>
+          <key.document.name>xdb.pdi.name</key.document.name>
+          <indexes>
+            <path.value.index>
+              <name>animal_name</name>
+              <path>/{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal/animal_name&lt;STRING>
+              </path>
+              <compressed>false</compressed>
+              <unique.keys>false</unique.keys>
+              <concurrent>false</concurrent>
+              <build.without.logging>true</build.without.logging>
+            </path.value.index>
+            <path.value.index>
+              <name>file_path</name>
+              <path>/{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal/file_path&lt;STRING>
+              </path>
+              <compressed>false</compressed>
+              <unique.keys>false</unique.keys>
+              <concurrent>false</concurrent>
+              <build.without.logging>true</build.without.logging>
+            </path.value.index>
+          </indexes>
+        </data>
+        <data>
+          <id>pdi.aiu.id</id>
+          <select.query>
+            <![CDATA[
+              declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
+              for $animal in /n:animals/n:animal
+              return ($animal, $animal/text())
+            ]]>
+          </select.query>
+        </data>
+        <data>
+          <id>pdi.aiu.cnt</id>
+          <select.query>
+            <![CDATA[
+              declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
+              count(/n:animals/n:animal)
+            ]]>
+          </select.query>
+        </data>
+        <data>
+          <id>pdi.pkeys</id>
+          <pkey attr="string01">
+            <![CDATA[
+              declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
+              let $animals := (for $animal in /n:animals/n:animal/text()
+              order by $animal
+              return $animal)
+              return fn:upper-case(fn:substring($animals[1], 1, 1))
+            ]]>
+          </pkey>
+          <pkey attr="string02">
+            <![CDATA[
+              declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
+              let $animals := (for $animal in /n:animals/n:animal/text()
+              order by $animal descending
+              return $animal)
+              return fn:upper-case(fn:substring($animals[1], 1, 1))
+            ]]>
+          </pkey>
+        </data>
+      </datas>
 
 ingest:
   xml: |

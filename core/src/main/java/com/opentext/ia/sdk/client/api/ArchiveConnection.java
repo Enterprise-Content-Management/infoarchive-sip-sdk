@@ -3,8 +3,10 @@
  */
 package com.opentext.ia.sdk.client.api;
 
+import java.io.IOException;
 import java.util.Optional;
 
+import com.opentext.ia.sdk.dto.Services;
 import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.datetime.DefaultClock;
@@ -133,6 +135,10 @@ public class ArchiveConnection {
 
   public void setRestClient(RestClient restClient) {
     this.restClient = restClient;
+  }
+
+  public Services getServices() throws IOException {
+    return getRestClient().get(getBillboardUri(), Services.class);
   }
 
 }

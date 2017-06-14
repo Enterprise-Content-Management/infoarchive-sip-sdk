@@ -3,8 +3,6 @@
  */
 package com.opentext.ia.sdk.sample.ingest;
 
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.*;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -49,12 +47,12 @@ public class YamlSipIngester {
     }
 
     // Tell InfoArchive where and how to archive the data
-    URI entityUri = URI.create(configuration.get(PDI_SCHEMA_NAME));
+    URI entityUri = URI.create(configuration.getPdiSchemaName());
     String entityName = "animal";
     PackagingInformation prototype = PackagingInformation.builder()
         .dss()
-        .application(configuration.get(APPLICATION_NAME))
-        .holding(configuration.get(HOLDING_NAME))
+        .application(configuration.getApplicationName())
+        .holding(configuration.getHoldingName())
         .producer("SIP-SDK")
         .entity(entityName)
         .schema(entityUri.toString())
@@ -63,7 +61,7 @@ public class YamlSipIngester {
 
     // Define a mapping from our domain object to the PDI XML
     XmlPdiAssembler<File> pdiAssembler;
-    try (InputStream schema = new StringStream(configuration.get(PDI_SCHEMA))) {
+    try (InputStream schema = new StringStream(configuration.getPdiSchema())) {
       pdiAssembler = new XmlPdiAssembler<File>(entityUri, entityName, schema) {
         @Override
         protected void doAdd(File value, Map<String, ContentInfo> ignored) {
@@ -94,7 +92,7 @@ public class YamlSipIngester {
     // the SIP we've just assembled.
     // Use ArchiveClients.usingAlreadyConfiguredServer() instead if you already configured the server with application,
     // holding, etc.
-    ArchiveClient archiveClient = ArchiveClients.configuringServerUsing(new YamlBasedConfigurer(configuration),
+    ArchiveClient archiveClient = ArchiveClients.configuringApplicationUsing(new YamlBasedConfigurer(configuration),
         newArchiveConnection());
 
     // Ingest the SIP into InfoArchive

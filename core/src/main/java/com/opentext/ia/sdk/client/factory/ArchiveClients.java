@@ -17,7 +17,6 @@ import com.opentext.ia.sdk.dto.*;
 import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 import com.opentext.ia.sdk.support.http.rest.RestClient;
-import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
 
 /**
@@ -30,40 +29,39 @@ public final class ArchiveClients {
   }
 
   /**
-   * Returns an ArchiveClient instance and configures the InfoArchive server that it communicates with.
-   * @param configurer How to configure InfoArchive
+   * Returns an {@linkplain ArchiveClient} for an application that it first configures.
+   * @param configurer How to configure the InfoArchive application
    * @param connection How to communicate with the InfoArchive server
    * @return An ArchiveClient
+   * @throws IOException When an I/O error occurs
    */
-  public static ArchiveClient configuringServerUsing(ApplicationConfigurer configurer, ArchiveConnection connection) {
+  public static ArchiveClient configuringApplicationUsing(ApplicationConfigurer configurer,
+      ArchiveConnection connection) throws IOException {
     configurer.configure(connection);
-    return usingAlreadyConfiguredServer(connection, configurer.getApplicationName());
+    return usingAlreadyConfiguredApplication(configurer.getApplicationName(), connection);
   }
 
   /**
-   * Creates a new ArchiveClient instance without installing any artifacts in the archive.
-   * @param connection How to communicate with the InfoArchive server
+   * Returns an {@linkplain ArchiveClient} for an already configured application.
    * @param applicationName The name of the already configured application to use
+   * @param connection How to communicate with the InfoArchive server
    * @return An ArchiveClient
+   * @throws IOException When an I/O error occurs
    */
-  public static ArchiveClient usingAlreadyConfiguredServer(ArchiveConnection connection, String applicationName) {
+  public static ArchiveClient usingAlreadyConfiguredApplication(String applicationName, ArchiveConnection connection)
+      throws IOException {
     RestClient restClient = connection.getRestClient();
-    return new InfoArchiveRestClient(restClient, appResourceCache(restClient, connection, applicationName));
+    return new InfoArchiveRestClient(restClient, appResourceCache(applicationName, connection, restClient));
   }
 
-  private static ApplicationIngestionResourcesCache appResourceCache(RestClient restClient,
-      ArchiveConnection connection, String applicationName) {
-    try {
-      ApplicationIngestionResourcesCache resourceCache = new ApplicationIngestionResourcesCache(
-          applicationName);
-      Services services = restClient.get(connection.getBillboardUri(), Services.class);
-      Tenant tenant = getTenant(restClient, services);
-      Application application = getApplication(restClient, tenant, applicationName);
-      cacheResourceUris(restClient, application, resourceCache);
-      return resourceCache;
-    } catch (IOException e) {
-      throw new RuntimeIoException(e);
-    }
+  private static ApplicationIngestionResourcesCache appResourceCache(String applicationName,
+      ArchiveConnection connection, RestClient restClient) throws IOException {
+    ApplicationIngestionResourcesCache resourceCache = new ApplicationIngestionResourcesCache(applicationName);
+    Services services = connection.getServices();
+    Tenant tenant = getTenant(restClient, services);
+    Application application = getApplication(restClient, tenant, applicationName);
+    cacheResourceUris(restClient, application, resourceCache);
+    return resourceCache;
   }
 
   private static Tenant getTenant(RestClient restClient, Services services) throws IOException {
@@ -76,20 +74,20 @@ public final class ArchiveClients {
     Applications applications = restClient.follow(tenant, InfoArchiveLinkRelations.LINK_APPLICATIONS,
         Applications.class);
     return Objects.requireNonNull(applications.byName(applicationName),
-        "Application named " + applicationName + " not found.");
+        "Application " + applicationName + " not found.");
   }
 
-  private static void cacheResourceUris(RestClient restClient,
-      Application application, ApplicationIngestionResourcesCache resourceCache) throws IOException {
+  private static void cacheResourceUris(RestClient restClient, Application application,
+      ApplicationIngestionResourcesCache resourceCache) throws IOException {
+    Map<String, String> dipResourceUrisByAicName = new HashMap<>();
     Aics aics = restClient.follow(application, InfoArchiveLinkRelations.LINK_AICS, Aics.class);
-    LinkContainer aips = restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class);
+    aics.getItems().forEach(aic ->
+      dipResourceUrisByAicName.put(aic.getName(), aic.getUri(InfoArchiveLinkRelations.LINK_DIP)));
+    resourceCache.setDipResourceUriByAicName(dipResourceUrisByAicName);
 
-    Map<String, String> dipResourceUriByAicName = new HashMap<>();
-    aics.getItems()
-        .forEach(aic -> dipResourceUriByAicName.put(aic.getName(), aic.getUri(InfoArchiveLinkRelations.LINK_DIP)));
-    resourceCache.setDipResourceUriByAicName(dipResourceUriByAicName);
     resourceCache.setCiResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_CI));
     resourceCache.setAipResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_AIPS));
+    LinkContainer aips = restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class);
     resourceCache.setAipIngestDirectResourceUri(aips.getUri(InfoArchiveLinkRelations.LINK_INGEST_DIRECT));
   }
 
