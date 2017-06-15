@@ -68,11 +68,13 @@ public class YamlMap {
     YamlMap map = this;
     int i = 0;
     while (i < keys.length - 1) {
-      Value value = map.get(keys[i]);
+      Value value = map.get(keys[i++]);
       if (value.isList()) {
-        map = value.toList().get((int)keys[++i]).toMap();
+        int index = (int)keys[i++];
+        map = value.toList().get(index).toMap();
+      } else {
+        map = value.toMap();
       }
-      i++;
     }
     return new Value(map.data.get(keys[keys.length - 1]));
   }
