@@ -29,7 +29,7 @@ public class PropertiesBasedArchiveConnection extends ArchiveConnection implemen
   public PropertiesBasedArchiveConnection(Map<String, String> configuration) {
     setAuthenticationGateway(configuration.get(SERVER_AUTHENTICATION_GATEWAY));
     setAuthenticationPassword(configuration.get(SERVER_AUTHENTICATION_PASSWORD));
-    setAuthenticationToken(configuration.get(SERVER_AUTENTICATON_TOKEN));
+    setAuthenticationToken(configuration.get(SERVER_AUTENTICATION_TOKEN));
     setAuthenticationUser(configuration.get(SERVER_AUTHENTICATION_USER));
     setBillboardUri(configuration.get(SERVER_URI));
     setClientId(configuration.get(SERVER_CLIENT_ID));

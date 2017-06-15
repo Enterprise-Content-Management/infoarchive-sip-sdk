@@ -76,6 +76,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put(key, v);
 
     assertValue();
+    assertValue(v);
   }
 
   @Test

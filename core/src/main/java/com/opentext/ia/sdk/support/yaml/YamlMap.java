@@ -59,14 +59,20 @@ public class YamlMap {
     return data.containsKey(key);
   }
 
-  public void remove(String key) {
+  public YamlMap remove(String key) {
     data.remove(key);
+    return this;
   }
 
-  public Value get(String... keys) {
+  public Value get(Object... keys) {
     YamlMap map = this;
-    for (int i = 0; i < keys.length - 1; i++) {
-      map = map.get(keys[i]).toMap();
+    int i = 0;
+    while (i < keys.length - 1) {
+      Value value = map.get(keys[i]);
+      if (value.isList()) {
+        map = value.toList().get((int)keys[++i]).toMap();
+      }
+      i++;
     }
     return new Value(map.data.get(keys[keys.length - 1]));
   }

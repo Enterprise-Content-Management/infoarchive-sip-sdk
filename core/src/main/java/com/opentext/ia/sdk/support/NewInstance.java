@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.support;
 
+import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.Optional;
 
@@ -29,8 +30,11 @@ public class NewInstance {
 
   public <T> T as(Class<T> type) {
     try {
-      return type.cast(Class.forName(className).newInstance());
-    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+      Class<?> implementationType = Class.forName(className);
+      Constructor<?> constructor = implementationType.getDeclaredConstructor();
+      constructor.setAccessible(true);
+      return type.cast(constructor.newInstance());
+    } catch (ReflectiveOperationException e) {
       throw new IllegalArgumentException("Failed to instantiate " + className, e);
     }
   }

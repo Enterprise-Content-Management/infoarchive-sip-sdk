@@ -89,6 +89,10 @@ public class SipIngester {
     // Use ArchiveClients.usingAlreadyConfiguredServer() instead if you already configured the server with application,
     // holding, etc.
     Map<String, String> configuration = sampleHoldingConfiguration();
+    configuration.entrySet().stream()
+        .map(entry -> entry.getKey() + " = " + entry.getValue())
+        .sorted()
+        .forEach(System.out::println);
     ArchiveClient archiveClient = ArchiveClients.configuringApplicationUsing(new PropertiesBasedConfigurer(configuration),
         new PropertiesBasedArchiveConnection(configuration));
 

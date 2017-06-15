@@ -7,13 +7,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.atteo.evo.inflector.English;
 import org.yaml.snakeyaml.Yaml;
 
+import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.io.StringStream;
 import com.opentext.ia.sdk.support.resource.ResourceResolver;
 import com.opentext.ia.sdk.support.yaml.Entry;
@@ -28,13 +31,14 @@ import com.opentext.ia.sdk.support.yaml.YamlMap;
 @SuppressWarnings("unchecked")
 public class YamlConfiguration {
 
+  private static final Collection<Class<? extends Consumer<YamlMap>>> YAML_TRANSLATION_CLASSES = Arrays.asList(
+      EnsureVersion.class,
+      ConvertSingularObjectsToSequences.class
+  );
   private static final String NAME = "name";
   private static final String DEFAULT = "default";
-  private static final String RESOURCE = "resource";
-  private static final String TEXT = "text";
 
-  private final YamlMap yaml = new YamlMap();
-  private Map<String, String> properties;
+  private YamlMap yaml = new YamlMap();
 
   /**
    * Load configuration from a file in YAML format.
@@ -51,10 +55,15 @@ public class YamlConfiguration {
    * @param resolver How to resolve resources to text
    */
   public YamlConfiguration(InputStream yaml, ResourceResolver resolver) {
+    this(parse(yaml), resolver);
+  }
+
+  private static YamlMap parse(InputStream yaml) {
+    YamlMap result = new YamlMap();
     for (Object data : new Yaml().loadAll(yaml)) {
-      this.yaml.putAll(new YamlMap(data));
+      result.putAll(new YamlMap(data));
     }
-    inlineResources(this.yaml, resolver);
+    return result;
   }
 
   /**
@@ -65,16 +74,20 @@ public class YamlConfiguration {
     this(new StringStream(yaml), ResourceResolver.none());
   }
 
-  private void inlineResources(YamlMap map, ResourceResolver resolver) {
-    if (map.containsKey(RESOURCE)) {
-      map.put(TEXT, resolver.apply(map.get(RESOURCE).toString()));
-      map.remove(RESOURCE);
-    } else {
-      map.values()
-          .filter(Value::isMap)
-          .map(Value::toMap)
-          .forEach(nestedMap -> inlineResources(nestedMap, resolver));
-    }
+  YamlConfiguration(YamlMap yaml, ResourceResolver resolver) {
+    this.yaml = yaml;
+    translations(resolver).forEach(translation -> translation.accept(this.yaml));
+  }
+
+  private Stream<Consumer<YamlMap>> translations(ResourceResolver resolver) {
+    return Stream.concat(
+        Stream.of(new InlineResources(resolver)),
+        YAML_TRANSLATION_CLASSES.stream()
+            .map(type -> (Consumer<YamlMap>)NewInstance.of(type.getName(), null).as(Consumer.class)));
+  }
+
+  YamlMap getMap() {
+    return yaml;
   }
 
   /**
@@ -136,17 +149,6 @@ public class YamlConfiguration {
   }
 
   /**
-   * Flatten the YAML structure to a properties map.
-   * @return the flattened properties map
-   */
-  public Map<String, String> toMap() {
-    if (properties == null) {
-      properties = new YamlPropertiesMap(yaml);
-    }
-    return properties;
-  }
-
-  /**
    * Returns the name of the application.
    * @return the name of the application
    */
@@ -167,17 +169,17 @@ public class YamlConfiguration {
    * @return the namespace of the PDI
    */
   public String getPdiSchemaName() {
-    return lookup("namespace", "prefix", pdiSchema().get("namespace"));
+    return lookup("namespace", "prefix", pdiSchema().get("namespace"), "uri");
   }
 
   private YamlMap pdiSchema() {
     return singleInstanceOf("pdiSchema");
   }
 
-  private String lookup(String type, String property, Value value) {
+  private String lookup(String type, String lookupProperty, Value lookupValue, String resultProperty) {
     return allInstancesOf(type)
-        .filter(instance -> value.isEmpty() ? isDefault(instance) : value.equals(instance.get(property)))
-        .map(instance -> instance.get(property).toString())
+        .filter(instance -> lookupValue.isEmpty() ? isDefault(instance) : lookupValue.equals(instance.get(lookupProperty)))
+        .map(instance -> instance.get(resultProperty).toString())
         .findAny()
         .orElse("");
   }
@@ -215,7 +217,7 @@ public class YamlConfiguration {
    * @return the contents of the XML Schema for the PDI
    */
   public String getPdiSchema() {
-    return pdiSchema().get("content", "resource").toString();
+    return pdiSchema().get("content", "text").toString();
   }
 
   /**

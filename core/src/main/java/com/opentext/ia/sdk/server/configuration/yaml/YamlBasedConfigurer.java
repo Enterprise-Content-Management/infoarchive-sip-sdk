@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.server.configuration.yaml;
 
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.*;
+
 import java.io.IOException;
+import java.util.Map;
 
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
@@ -53,8 +56,32 @@ public class YamlBasedConfigurer implements ApplicationConfigurer {
   }
 
   private void applyConfigurationFromClient(ArchiveConnection connection) {
-    // Flatten the YAML to a properties map and re-use the properties-based configurer
-    new PropertiesBasedConfigurer(yaml.toMap()).configure(connection);
+    // Flatten the YAML to properties and re-use the properties-based configurer
+    new PropertiesBasedConfigurer(yamlToMap(connection)).configure(connection);
+  }
+
+  private Map<String, String> yamlToMap(ArchiveConnection connection) {
+    Map<String, String> properties = new YamlPropertiesMap(yaml.getMap());
+    setConnectionProperties(connection, properties);
+    properties.entrySet().stream()
+        .filter(entry -> entry.getValue() != null)
+        .map(entry -> entry.getKey() + " = " + entry.getValue())
+        .sorted()
+        .forEach(System.out::println);
+    return properties;
+  }
+
+  private void setConnectionProperties(ArchiveConnection connection, Map<String, String> properties) {
+    properties.put(SERVER_AUTHENTICATION_GATEWAY, connection.getAuthenticationGateway());
+    properties.put(SERVER_AUTHENTICATION_PASSWORD, connection.getAuthenticationPassword());
+    properties.put(SERVER_AUTENTICATION_TOKEN, connection.getAuthenticationToken());
+    properties.put(SERVER_AUTHENTICATION_USER, connection.getAuthenticationUser());
+    properties.put(SERVER_URI, connection.getBillboardUri());
+    properties.put(SERVER_CLIENT_ID, connection.getClientId());
+    properties.put(SERVER_CLIENT_SECRET, connection.getClientSecret());
+    properties.put(HTTP_CLIENT_CLASSNAME, connection.getHttpClientClassName());
+    properties.put(PROXY_HOST, connection.getProxyHost());
+    properties.put(PROXY_PORT, connection.getProxyPort());
   }
 
 }

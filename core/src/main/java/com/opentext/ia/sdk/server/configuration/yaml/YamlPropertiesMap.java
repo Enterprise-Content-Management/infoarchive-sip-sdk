@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 import com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties;
+import com.opentext.ia.sdk.support.yaml.Value;
 import com.opentext.ia.sdk.support.yaml.YamlMap;
 
 
@@ -38,7 +39,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
   private void flatten(YamlMap yaml) {
     put(SERVER_URI, getString(yaml, SERVER, "uri"));
 
-    filter(SERVER_AUTENTICATON_TOKEN, yaml, SERVER, AUTHENTICATION, "token");
+    filter(SERVER_AUTENTICATION_TOKEN, yaml, SERVER, AUTHENTICATION, "token");
     filter(SERVER_AUTHENTICATION_USER, yaml, SERVER, AUTHENTICATION, "user");
     filter(SERVER_AUTHENTICATION_PASSWORD, yaml, SERVER, AUTHENTICATION, "password");
     filter(SERVER_AUTHENTICATION_GATEWAY, yaml, SERVER, AUTHENTICATION, "gateway");
@@ -82,10 +83,10 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
 
     put(RETENTION_POLICY_NAME, getString(yaml, "retention-policy", NAME));
 
-    put(PDI_SCHEMA_NAME, getString(yaml, "pdi", SCHEMA, NAME));
-    put(PDI_SCHEMA, getString(yaml, "pdi", SCHEMA, "xsd"));
-    put(PDI_XML, getString(yaml, "pdi", XML));
-    put(INGEST_XML, getString(yaml, "ingest", XML));
+    put(PDI_SCHEMA_NAME, getString(yaml, "pdiSchema", "namespace"));
+    put(PDI_SCHEMA, getString(yaml, "pdiSchema", "content", "text"));
+    put(PDI_XML, getString(yaml, "pdi", "content", "text"));
+    put(INGEST_XML, getString(yaml, "ingest", "content", "text"));
 
     forEachMapItem(yaml, "query", query -> {
       String name = getString(query, NAME);
@@ -139,16 +140,21 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
   }
 
   private void forEachMapItem(YamlMap yaml, String name, Consumer<YamlMap> action) {
-    yaml.get(name).toList().stream()
-        .map(item -> item.toMap())
-        .forEach(action);
+    Value value = yaml.get(name);
+    if (value.isMap()) {
+      action.accept(value.toMap());
+    } else {
+      value.toList().stream()
+          .map(item -> item.toMap())
+          .forEach(action);
+    }
   }
 
-  private String getString(YamlMap yaml, String... names) {
+  private String getString(YamlMap yaml, Object... names) {
     return yaml.get(names).toString();
   }
 
-  private void filter(String key, YamlMap yaml, String... names) {
+  private void filter(String key, YamlMap yaml, Object... names) {
     String value = getString(yaml, names);
     if (!value.isEmpty()) {
       put(key, value);
