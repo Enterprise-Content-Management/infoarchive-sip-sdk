@@ -21,9 +21,12 @@ import com.opentext.ia.sdk.support.yaml.YamlMap;
 public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveConfigurationProperties {
 
   private static final String NAME = "name";
+  private static final String DEFAULT = "default";
   private static final String CONTENT = "content";
   private static final String RESOURCE = "resource";
+  private static final String TENANTS = "tenants";
   private static final String APPLICATIONS = "applications";
+  private static final String SPACES = "spaces";
 
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
@@ -126,6 +129,24 @@ public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveC
 
     assertValue("Type", "ACTIVE_ARCHIVING", yaml.get(APPLICATIONS, 0, "type"));
     assertValue("Types", "RECEIPT", yaml.get("confirmations", 0, "types", 0));
+  }
+
+  @Test
+  public void shouldInsertDefaultReferences() {
+    String tenant = someName();
+    String application = someName();
+    String space = someName();
+    yaml.put(TENANTS, Arrays.asList(new YamlMap().put(NAME, tenant)));
+    yaml.put(APPLICATIONS, Arrays.asList(
+        new YamlMap().put(NAME, someName()),
+        new YamlMap().put(NAME, application)
+            .put(DEFAULT, true)));
+    yaml.put(SPACES, Arrays.asList(new YamlMap().put(NAME, space)));
+
+    normalizeYaml();
+
+    assertValue("Tenant", tenant, yaml.get(APPLICATIONS, 0, "tenant"));
+    assertValue("Application", application, yaml.get(SPACES, 0, "application"));
   }
 
 }

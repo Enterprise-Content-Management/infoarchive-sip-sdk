@@ -10,18 +10,24 @@ public class Visit {
 
   private static final String SEPARATOR = "/";
 
+  private final YamlMap rootMap;
   private final YamlMap map;
   private final String path;
   private final int level;
 
   Visit(YamlMap map) {
-    this(map, "", 0);
+    this(map, map, "", 0);
   }
 
-  Visit(YamlMap map, String path, int level) {
+  Visit(YamlMap rootMap, YamlMap map, String path, int level) {
+    this.rootMap = rootMap;
     this.map = map;
     this.path = path;
     this.level = level;
+  }
+
+  public YamlMap getRootMap() {
+    return rootMap;
   }
 
   public YamlMap getMap() {
@@ -37,7 +43,7 @@ public class Visit {
   }
 
   Visit descend(Object... keys) {
-    return new Visit(map.get(keys).toMap(), appendPath(keys), level + keys.length);
+    return new Visit(rootMap, map.get(keys).toMap(), appendPath(keys), level + keys.length);
   }
 
   private String appendPath(Object... keys) {

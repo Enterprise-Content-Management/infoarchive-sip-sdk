@@ -5,15 +5,13 @@ package com.opentext.ia.sdk.server.configuration.yaml;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.opentext.ia.sdk.support.yaml.Value;
 import com.opentext.ia.sdk.support.yaml.Visit;
-import com.opentext.ia.sdk.support.yaml.Visitor;
 import com.opentext.ia.sdk.support.yaml.YamlMap;
 
 
-class ConvertEnumValue implements Visitor {
+class EnsureEnumConstant extends PropertyVisitor {
 
   private static final Collection<String> TYPE = Arrays.asList("type");
   @SuppressWarnings({ "serial", "rawtypes", "unchecked" })
@@ -34,26 +32,13 @@ class ConvertEnumValue implements Visitor {
     put("/appExportTransformations/\\d/", TYPE);
   }};
 
-  @Override
-  public boolean test(Visit visit) {
-    return pathRegexesMatching(visit)
-        .findAny()
-        .isPresent();
-  }
-
-  private Stream<String> pathRegexesMatching(Visit visit) {
-    return ENUM_PROPERTIES_BY_PATH_REGEX.keySet().stream()
-        .filter(regex -> visit.getPath().matches('^' + regex + '$'));
+  EnsureEnumConstant() {
+    super(ENUM_PROPERTIES_BY_PATH_REGEX);
   }
 
   @Override
-  public void accept(Visit visit) {
-    pathRegexesMatching(visit)
-        .flatMap(regex -> ENUM_PROPERTIES_BY_PATH_REGEX.get(regex).stream())
-        .forEach(property -> toEnum(visit.getMap(), property));
-  }
-
-  private void toEnum(YamlMap map, String property) {
+  protected void visitProperty(Visit visit, String property) {
+    YamlMap map = visit.getMap();
     Value value = map.get(property);
     Object newValue = null;
     if (value.isScalar()) {
