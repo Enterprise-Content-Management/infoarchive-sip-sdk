@@ -3,8 +3,8 @@
  */
 package com.opentext.ia.sdk.support.yaml;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 
@@ -37,9 +37,15 @@ public class YamlMap {
     return this;
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private Object unpack(Object value) {
     if (value instanceof YamlMap) {
       return ((YamlMap)value).getRawData();
+    }
+    if (value instanceof Iterable) {
+      Collection<Object> result = new ArrayList<>();
+      ((Iterable)value).forEach(v -> result.add(unpack(v)));
+      return result;
     }
     if (value instanceof Value) {
       return ((Value)value).getRawData();
@@ -71,7 +77,12 @@ public class YamlMap {
       Value value = map.get(keys[i++]);
       if (value.isList()) {
         int index = (int)keys[i++];
-        map = value.toList().get(index).toMap();
+        value = value.toList().get(index);
+        if (i < keys.length) {
+          map = value.toMap();
+        } else {
+          return value;
+        }
       } else {
         map = value.toMap();
       }
@@ -89,9 +100,42 @@ public class YamlMap {
         .sorted();
   }
 
+  public void visit(Visitor visitor) {
+    visit(visitor, new Visit(this));
+  }
+
+  private void visit(Visitor visitor, Visit visit) {
+    if (visitor.test(visit)) {
+      visitor.accept(visit);
+    }
+    if (visitor.maxNesting() > visit.getLevel()) {
+      visit.getMap().entries().forEach(entry -> {
+        String key = entry.getKey();
+        Value value = entry.getValue();
+        if (value.isMap()) {
+          visit(visitor, visit.descend(key));
+        } else if (isListOfMaps(value)) {
+          IntStream.range(0, value.toList().size())
+              .forEach(index -> visit(visitor, visit.descend(key, index)));
+        }
+      });
+    }
+  }
+
+  private boolean isListOfMaps(Value value) {
+    List<Value> values = value.toList();
+    if (values.isEmpty()) {
+      return false;
+    }
+    return values.size() == values.stream()
+        .filter(Value::isMap)
+        .count();
+  }
+
   @Override
   public String toString() {
     return data.toString();
   }
+
 
 }

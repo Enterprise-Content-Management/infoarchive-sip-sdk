@@ -17,6 +17,8 @@ import com.opentext.ia.sdk.support.test.TestCase;
 
 public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
+  private static final String EMPTY = "Empty";
+
   private final YamlMap yaml = new YamlMap();
   private final String key = someValue();
   private final String value = someValue();
@@ -36,7 +38,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   public void shouldBeAbleToAddItems() {
     yaml.put(key, value);
 
-    assertFalse("Empty", yaml.isEmpty());
+    assertFalse(EMPTY, yaml.isEmpty());
     assertEquals("Size", 1, yaml.size());
     assertValue();
   }
@@ -167,13 +169,47 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldConvertValueToBoolean() {
-    assertFalse("Empty", yaml.get(key).toBoolean());
+    assertFalse(EMPTY, yaml.get(key).toBoolean());
 
     yaml.put(key, true);
     assertTrue("Boolean", yaml.get(key).toBoolean());
 
     yaml.put(key, Boolean.toString(true));
     assertTrue("Boolean string", yaml.get(key).toBoolean());
+  }
+
+  @Test
+  public void shouldConvertValueToInt() {
+    assertEquals(EMPTY, 0, yaml.get(key).toInt());
+
+    yaml.put(key, 42);
+    assertEquals("Int", 42, yaml.get(key).toInt());
+
+    yaml.put(key, Integer.toString(313));
+    assertEquals("Integer string", 313, yaml.get(key).toInt());
+  }
+
+  @Test
+  public void shouldConvertValueToDouble() {
+    assertEquals(EMPTY, 0.0, yaml.get(key).toDouble(), 1e-6);
+
+    yaml.put(key, Math.PI);
+    assertEquals("Double", Math.PI, yaml.get(key).toDouble(), 1e-6);
+
+    yaml.put(key, Double.toString(Math.E));
+    assertEquals("Double string", Math.E, yaml.get(key).toDouble(), 1e-6);
+  }
+
+  @Test
+  public void shouldTestForScalarValue() {
+    assertFalse(EMPTY, new Value(null).isScalar());
+    assertFalse("List", new Value(Collections.singletonList(randomString())).isScalar());
+    assertFalse("Map", new Value(Collections.singletonMap(randomString(), randomString())).isScalar());
+
+    assertTrue("Boolean", new Value(true).isScalar());
+    assertTrue("String", new Value(randomString()).isScalar());
+    assertTrue("Int", new Value(313).isScalar());
+    assertTrue("Double", new Value(Math.PI).isScalar());
   }
 
 }

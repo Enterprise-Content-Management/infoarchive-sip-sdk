@@ -27,6 +27,9 @@ public class Value {
   }
 
   public YamlMap toMap() {
+    if (!isMap()) {
+      return new YamlMap();
+    }
     return new YamlMap(data);
   }
 
@@ -36,7 +39,10 @@ public class Value {
 
   @SuppressWarnings("unchecked")
   public List<Value> toList() {
-    return data == null ? Collections.emptyList() : ((List<?>)data).stream()
+    if (!isList()) {
+      return Collections.emptyList();
+    }
+    return ((List<?>)data).stream()
         .map(item -> new Value(item))
         .collect(Collectors.toList());
   }
@@ -48,6 +54,22 @@ public class Value {
   @Override
   public String toString() {
     return data == null ? "" : data.toString();
+  }
+
+  public int toInt() {
+    try {
+      return Integer.parseInt(toString());
+    } catch (NumberFormatException e) {
+      return 0;
+    }
+  }
+
+  public double toDouble() {
+    try {
+      return Double.parseDouble(toString());
+    } catch (NumberFormatException e) {
+      return 0.0;
+    }
   }
 
   public Object getRawData() {
@@ -66,6 +88,10 @@ public class Value {
       return Objects.equals(data, other.data);
     }
     return Objects.equals(data, obj);
+  }
+
+  public boolean isScalar() {
+    return !isEmpty() && !isList() && !isMap();
   }
 
 }

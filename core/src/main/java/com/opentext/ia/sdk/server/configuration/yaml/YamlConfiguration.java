@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.atteo.evo.inflector.English;
@@ -21,6 +20,7 @@ import com.opentext.ia.sdk.support.io.StringStream;
 import com.opentext.ia.sdk.support.resource.ResourceResolver;
 import com.opentext.ia.sdk.support.yaml.Entry;
 import com.opentext.ia.sdk.support.yaml.Value;
+import com.opentext.ia.sdk.support.yaml.Visitor;
 import com.opentext.ia.sdk.support.yaml.YamlMap;
 
 
@@ -31,9 +31,10 @@ import com.opentext.ia.sdk.support.yaml.YamlMap;
 @SuppressWarnings("unchecked")
 public class YamlConfiguration {
 
-  private static final Collection<Class<? extends Consumer<YamlMap>>> YAML_TRANSLATION_CLASSES = Arrays.asList(
+  private static final Collection<Class<? extends Visitor>> YAML_NORMALIZATION_CLASSES = Arrays.asList(
       EnsureVersion.class,
-      ConvertSingularObjectsToSequences.class
+      ConvertTopLevelSingularObjectsToSequences.class,
+      ConvertEnumValue.class
   );
   private static final String NAME = "name";
   private static final String DEFAULT = "default";
@@ -76,14 +77,14 @@ public class YamlConfiguration {
 
   YamlConfiguration(YamlMap yaml, ResourceResolver resolver) {
     this.yaml = yaml;
-    translations(resolver).forEach(translation -> translation.accept(this.yaml));
+    normalizations(resolver).forEach(normalizer -> this.yaml.visit(normalizer));
   }
 
-  private Stream<Consumer<YamlMap>> translations(ResourceResolver resolver) {
+  private Stream<Visitor> normalizations(ResourceResolver resolver) {
     return Stream.concat(
-        Stream.of(new InlineResources(resolver)),
-        YAML_TRANSLATION_CLASSES.stream()
-            .map(type -> (Consumer<YamlMap>)NewInstance.of(type.getName(), null).as(Consumer.class)));
+        Stream.of(new InlineExternalContent(resolver)),
+        YAML_NORMALIZATION_CLASSES.stream()
+            .map(type -> NewInstance.of(type.getName(), null).as(Visitor.class)));
   }
 
   YamlMap getMap() {
