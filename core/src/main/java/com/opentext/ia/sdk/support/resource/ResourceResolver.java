@@ -18,15 +18,15 @@ public interface ResourceResolver extends Function<String, String> {
     };
   }
 
-  static FileResolver fromFile(File file) {
+  static ResourceResolver fromFile(File file) {
     return new FileResolver(file);
   }
 
-  static ClasspathResolver fromClasspath() {
+  static ResourceResolver fromClasspath() {
     return fromClasspath("");
   }
 
-  static ClasspathResolver fromClasspath(String prefix) {
+  static ResourceResolver fromClasspath(String prefix) {
     return new ClasspathResolver(prefix);
   }
 

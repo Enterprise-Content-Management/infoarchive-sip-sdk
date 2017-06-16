@@ -162,4 +162,20 @@ public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveC
     assertTrue("Explicit null is overridden with default", yaml.get(APPLICATIONS, 0, TENANT).isEmpty());
   }
 
+  @Test
+  public void shouldInsertDefaultValues() {
+    yaml.put("appExportPipelines", Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put("holdings", Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put("ingests", Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put("receiverNodes", Arrays.asList(new YamlMap().put(NAME, someName())));
+
+    normalizeYaml();
+
+    assertTrue("appExportPipeline.includesContent", yaml.get("appExportPipelines", 0, "includesContent").toBoolean());
+    assertValue("holding.xdbMode", "PRIVATE", yaml.get("holdings", 0, "xdbMode"));
+    assertValue("ingest.processors.format", "xml", yaml.get("ingests", 0, "content", "format"));
+    assertTrue("ingest.processors.xml", yaml.get("ingests", 0, "content", "text").toString().contains("sip.download"));
+    assertValue("receiverNode.sips.format", "sip_zip", yaml.get("receiverNodes", 0, "sips", 0, "format"));
+  }
+
 }
