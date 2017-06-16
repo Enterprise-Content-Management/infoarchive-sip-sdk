@@ -9,9 +9,10 @@ import org.atteo.evo.inflector.English;
 
 import com.opentext.ia.sdk.support.yaml.Value;
 import com.opentext.ia.sdk.support.yaml.Visit;
+import com.opentext.ia.sdk.support.yaml.YamlMap;
 
 
-public class InsertDefaultReferences extends InsertDefaultVisitor {
+public class InsertDefaultReferences extends PropertyVisitor {
 
   private static final String TENANT = "tenant";
   private static final String APPLICATION = "application";
@@ -75,7 +76,14 @@ public class InsertDefaultReferences extends InsertDefaultVisitor {
   }
 
   @Override
-  protected String getDefaultValueFor(Visit visit, String type) {
+  protected void visitProperty(Visit visit, String property) {
+    YamlMap yaml = visit.getMap();
+    if (!yaml.containsKey(property)) {
+      yaml.put(property, getDefaultValueFor(visit, property));
+    }
+  }
+
+  private String getDefaultValueFor(Visit visit, String type) {
     List<Value> instances = visit.getRootMap().get(English.plural(type)).toList();
     if (instances.size() == 1) {
       return instances.get(0).toMap().get(NAME).toString();
