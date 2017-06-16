@@ -19,7 +19,7 @@ public abstract class InsertDefaultVisitor extends PropertyVisitor {
   @Override
   protected void visitProperty(Visit visit, String property) {
     YamlMap yaml = visit.getMap();
-    if (yaml.get(property).isEmpty()) {
+    if (!yaml.containsKey(property)) {
       yaml.put(property, getDefaultValueFor(visit, property));
     }
   }

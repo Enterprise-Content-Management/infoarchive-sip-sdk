@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.server.configuration.yaml;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -20,6 +20,7 @@ import com.opentext.ia.sdk.support.yaml.YamlMap;
 
 public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveConfigurationProperties {
 
+  private static final String TENANT = "tenant";
   private static final String NAME = "name";
   private static final String DEFAULT = "default";
   private static final String CONTENT = "content";
@@ -145,8 +146,20 @@ public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveC
 
     normalizeYaml();
 
-    assertValue("Tenant", tenant, yaml.get(APPLICATIONS, 0, "tenant"));
+    assertValue("Tenant", tenant, yaml.get(APPLICATIONS, 0, TENANT));
     assertValue("Application", application, yaml.get(SPACES, 0, "application"));
+  }
+
+  @Test
+  public void shouldNotInsertDefaultForExplicitNull() {
+    yaml.put(TENANTS, Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put(APPLICATIONS, Arrays.asList(new YamlMap()
+        .put(NAME, someName())
+        .put(TENANT, null)));
+
+    normalizeYaml();
+
+    assertTrue("Explicit null is overridden with default", yaml.get(APPLICATIONS, 0, TENANT).isEmpty());
   }
 
 }
