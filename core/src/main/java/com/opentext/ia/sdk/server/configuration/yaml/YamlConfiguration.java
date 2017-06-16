@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.atteo.evo.inflector.English;
@@ -18,7 +19,6 @@ import org.yaml.snakeyaml.Yaml;
 import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.io.StringStream;
 import com.opentext.ia.sdk.support.resource.ResourceResolver;
-import com.opentext.ia.sdk.support.yaml.Entry;
 import com.opentext.ia.sdk.support.yaml.Value;
 import com.opentext.ia.sdk.support.yaml.Visitor;
 import com.opentext.ia.sdk.support.yaml.YamlMap;
@@ -34,6 +34,7 @@ public class YamlConfiguration {
   private static final Collection<Class<? extends Visitor>> YAML_NORMALIZATION_CLASSES = Arrays.asList(
       EnsureVersion.class,
       ConvertTopLevelSingularObjectsToSequences.class,
+      ConvertTopLevelMapOfMapsToSequences.class,
       ConvertEnumValue.class
   );
   private static final String NAME = "name";
@@ -92,69 +93,23 @@ public class YamlConfiguration {
   }
 
   /**
-   * Returns the name of the single or default item of the given type.
-   * @param type The type of object to search
-   * @return the name of the single or default item of the given type, or <code>null</code> if there is none
-   */
-  public String nameOfSingle(String type) {
-    return singleInstanceOf(type).get(NAME).toString();
-  }
-
-  /**
-   * Returns the single or default item of the given type.
-   * @param type The type of object to search
-   * @return the single or default item of the given type, or <code>null</code> if there is none
-   */
-  public YamlMap singleInstanceOf(String type) {
-    Value instance = yaml.get(type);
-    if (instance.isMap()) {
-      return instance.toMap();
-    }
-    Value instances = yaml.get(English.plural(type));
-    if (instances.isList()) {
-      return singleInstanceIn(instances.toList());
-    } else if (instances.isMap()) {
-      return singleInstanceIn(instances.toMap());
-    }
-    return new YamlMap();
-  }
-
-  private YamlMap singleInstanceIn(List<Value> items) {
-    if (items.size() == 1) {
-      return items.get(0).toMap();
-    }
-    return items.stream()
-        .filter(this::isDefault)
-        .findAny()
-        .map(value -> value.toMap())
-        .orElseGet(YamlMap::new);
-  }
-
-  private boolean isDefault(Value value) {
-    return isDefault(value.toMap());
-  }
-
-  private boolean isDefault(YamlMap map) {
-    return map.get(DEFAULT).toBoolean();
-  }
-
-  private YamlMap singleInstanceIn(YamlMap items) {
-    if (items.size() == 1) {
-      return items.entries().findFirst().get().toMap();
-    }
-    return items.entries()
-        .filter(entry -> isDefault(entry.getValue()))
-        .map(entry -> entry.toMap())
-        .findAny()
-        .orElseGet(YamlMap::new);
-  }
-
-  /**
    * Returns the name of the application.
    * @return the name of the application
    */
   public String getApplicationName() {
     return nameOfSingle("application");
+  }
+
+  private String nameOfSingle(String type) {
+    return singleInstanceOf(type).get(NAME).toString();
+  }
+
+  private YamlMap singleInstanceOf(String type) {
+    List<Value> instances = yaml.get(English.plural(type)).toList();
+    if (instances.size() != 1) {
+      throw new IllegalArgumentException("Expected 1 " + type + ", but got " + instances.size());
+    }
+    return instances.get(0).toMap();
   }
 
   /**
@@ -178,39 +133,22 @@ public class YamlConfiguration {
   }
 
   private String lookup(String type, String lookupProperty, Value lookupValue, String resultProperty) {
+    Predicate<YamlMap> lookup = lookupValue.isEmpty() ? this::isDefault
+        : instance -> lookupValue.equals(instance.get(lookupProperty));
     return allInstancesOf(type)
-        .filter(instance -> lookupValue.isEmpty() ? isDefault(instance) : lookupValue.equals(instance.get(lookupProperty)))
+        .filter(lookup)
         .map(instance -> instance.get(resultProperty).toString())
         .findAny()
         .orElse("");
   }
 
+  private boolean isDefault(YamlMap map) {
+    return map.get(DEFAULT).toBoolean();
+  }
+
   private Stream<YamlMap> allInstancesOf(String type) {
-    Value instances = yaml.get(English.plural(type));
-    return Stream.concat(Stream.concat(
-        onlyInstanceOf(type),
-        listOf(instances)),
-        mapsOf(instances));
-  }
-
-  private Stream<YamlMap> onlyInstanceOf(String type) {
-    Value value = yaml.get(type);
-    return value.isMap() ? Stream.of(value.toMap()) : Stream.empty();
-  }
-
-  private Stream<YamlMap> listOf(Value instances) {
-    return Stream.of(instances)
-        .filter(Value::isList)
-        .flatMap(item -> item.toList().stream())
+    return yaml.get(English.plural(type)).toList().stream()
         .map(Value::toMap);
-  }
-
-  private Stream<YamlMap> mapsOf(Value instances) {
-    return Stream.of(instances)
-        .filter(Value::isMap)
-        .map(Value::toMap)
-        .flatMap(YamlMap::entries)
-        .map(Entry::toMap);
   }
 
   /**

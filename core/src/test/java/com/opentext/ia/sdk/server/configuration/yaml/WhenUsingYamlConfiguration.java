@@ -23,6 +23,7 @@ public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveC
   private static final String NAME = "name";
   private static final String CONTENT = "content";
   private static final String RESOURCE = "resource";
+  private static final String APPLICATIONS = "applications";
 
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
@@ -59,7 +60,9 @@ public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveC
   }
 
   private YamlMap externalContentTo(String resource) {
-    return new YamlMap().put(CONTENT, externalResourceTo(resource));
+    return new YamlMap()
+        .put(NAME, someName())
+        .put(CONTENT, externalResourceTo(resource));
   }
 
   private void assertContentIsInlined(String type, String expected, Value owner) {
@@ -105,13 +108,23 @@ public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveC
   }
 
   @Test
+  public void shouldReplaceTopLevelMapOfMapsWithSequence() {
+    String name = someName();
+    yaml.put(APPLICATIONS, new YamlMap().put(name, new YamlMap().put("type", "ACTIVE_ARCHIVING")));
+
+    normalizeYaml();
+
+    assertValue("Application", name, yaml.get(APPLICATIONS, 0, "name"));
+  }
+
+  @Test
   public void shouldConvertEnumValue() {
-    yaml.put("applications", Arrays.asList(new YamlMap().put("type", "active archiving")));
+    yaml.put(APPLICATIONS, Arrays.asList(new YamlMap().put("type", "active archiving")));
     yaml.put("confirmations", Arrays.asList(new YamlMap().put("types", Arrays.asList("receipt", "invalid"))));
 
     normalizeYaml();
 
-    assertValue("Type", "ACTIVE_ARCHIVING", yaml.get("applications", 0, "type"));
+    assertValue("Type", "ACTIVE_ARCHIVING", yaml.get(APPLICATIONS, 0, "type"));
     assertValue("Types", "RECEIPT", yaml.get("confirmations", 0, "types", 0));
   }
 
