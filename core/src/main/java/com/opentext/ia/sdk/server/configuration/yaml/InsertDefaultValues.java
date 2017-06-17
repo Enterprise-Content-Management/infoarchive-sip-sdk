@@ -47,7 +47,8 @@ public class InsertDefaultValues extends PathVisitor {
         "compressed", false,
         "concurrent", false,
         "uniqueKeys", true));
-    result.put("/queries/\\d", Default.of("resultRootElement", "result"));
+    result.put("/queries/\\d", Default.of("resultRootElement", "result",
+        "resultRootNsEnabled", true));
     result.put("/queryQuota", Default.of("aipQuota", 0,
         "aiuQuota", 0,
         "dipQuota", 0));

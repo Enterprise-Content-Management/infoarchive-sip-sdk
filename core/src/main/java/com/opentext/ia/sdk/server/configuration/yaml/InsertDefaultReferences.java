@@ -49,7 +49,7 @@ public class InsertDefaultReferences extends PropertyVisitor {
     result.put("/orders/\\d", Arrays.asList(APPLICATION));
     result.put("/pdis/\\d", Arrays.asList(APPLICATION));
     result.put("/pdiCryptoes/\\d", Arrays.asList(APPLICATION));
-    result.put("/pdiSchemas/\\d", Arrays.asList(APPLICATION));
+    result.put("/pdiSchemas/\\d", Arrays.asList(APPLICATION, "namespace"));
     result.put("/queries/\\d", Arrays.asList(APPLICATION, "order", "queryQuota"));
     result.put("/queryQuotas/\\d", Arrays.asList(APPLICATION));
     result.put("/receiverNodes/\\d", Arrays.asList(APPLICATION));
@@ -90,16 +90,21 @@ public class InsertDefaultReferences extends PropertyVisitor {
   }
 
   private String getDefaultValueFor(Visit visit, String type) {
+    String idProperty = idPropertyFor(type);
     List<Value> instances = visit.getRootMap().get(English.plural(type)).toList();
     if (instances.size() == 1) {
-      return instances.get(0).toMap().get(NAME).toString();
+      return instances.get(0).toMap().get(idProperty).toString();
     }
     return instances.stream()
         .map(Value::toMap)
         .filter(map -> map.get(DEFAULT).toBoolean())
-        .map(map -> map.get(NAME).toString())
+        .map(map -> map.get(idProperty).toString())
         .findAny()
         .orElse(null);
+  }
+
+  public static String idPropertyFor(String type) {
+    return "namespace".equals(type) ? "uri" : NAME;
   }
 
 }

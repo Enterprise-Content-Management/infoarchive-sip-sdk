@@ -41,14 +41,14 @@ public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveC
     String resource = someName() + ".txt";
     yaml.put(singularType, Arrays.asList(externalContentTo(resource)));
     yaml.put(pluralType, externalContentTo(resource));
-    String nonContent = someName();
-    yaml.put(nonContent, new YamlMap().put(CONTENT, Arrays.asList(externalResourceTo(resource))));
+    String nonContent = English.plural(someName());
+    yaml.put(nonContent, Arrays.asList(new YamlMap().put(CONTENT, Arrays.asList(externalResourceTo(resource)))));
 
     normalizeYaml();
 
     assertContentIsInlined("list", expected, yaml.get(singularType, 0));
     assertContentIsInlined("map", expected, yaml.get(pluralType));
-    assertValue("Invalid content structure inlined\n" + yaml, resource, yaml.get(nonContent, CONTENT, 0, RESOURCE));
+    assertValue("Invalid content structure inlined\n" + yaml, resource, yaml.get(nonContent, 0, CONTENT, 0, RESOURCE));
   }
 
   private String someName() {

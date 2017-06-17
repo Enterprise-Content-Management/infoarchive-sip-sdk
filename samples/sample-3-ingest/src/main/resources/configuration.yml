@@ -1,13 +1,14 @@
-tenant: TENANT
+tenant:
+  name: TENANT
 
-xdb:
-  federation:
-    name: animal
-    password: test
-    uri: xhive://localhost:2910
-  database:
-    name: animal
-    password: test
+xdbFederation:
+  name: animal
+  password: test
+  uri: xhive://localhost:2910
+
+xdbDatabase:
+  name: animal
+  password: test
 
 application:
   name: Animals
@@ -33,25 +34,21 @@ namespace:
   uri: urn:opentext:ia:schema:sample:animal:1.0
   
 query:
-  - name: DefaultQuery
-    result:
-      root:
-        element: result
-        ns-enabled: true
-    xdbpdi:
-      entity:
-        path: /n:animals/n:animal
-      template: return $aiu
-      operand:
-        name: animalName,filePath
-        path: n:animal_name,n:file_path
-        type: STRING,STRING
-        index: true,true
+  name: DefaultQuery
+  xdbpdis:
+  - entity:
+      path: /n:animals/n:animal
+    template: return $aiu
+    operands:
+    - name: animalName,filePath
+      path: n:animal_name,n:file_path
+      type: STRING,STRING
+      index: true,true
 
 quota:
   name: DefaultQuota
 
-result-helper:
+resultHelper:
   name: result_helper
   content:
     format: xml
@@ -62,28 +59,25 @@ search:
     nested: false
     state: DRAFT
     inuse: true
-    aic: Animals
-    query: DefaultQuery
-    composition:
-      - name: Set 1
-        xform:
-          name: form
-          content:
-            format: xml
-            resource: FindAnimals.form.xml
-        result:
-          main:
-            name: animalName,filePath
-            label: Animal Name,File Path
-            path: n:animal_name,n:file_path
-            type: STRING,STRING
-            sort: NONE,NONE
+    compositions:
+    - name: Set 1
+      xform:
+        name: form
+        content:
+          format: xml
+          resource: FindAnimals.form.xml
+      result:
+        main:
+          name: animalName,filePath
+          label: Animal Name,File Path
+          path: n:animal_name,n:file_path
+          type: STRING,STRING
+          sort: NONE,NONE
 
 retention-policy:
   name: Animals
 
 pdiSchema:
-  namespace: n
   content:
     format: xsd
     resource: pdi-schema.xsd
@@ -98,3 +92,21 @@ ingest:
   content:
     format: xml
     resource: ingest.xml
+
+fileSystemFolder:
+  name: Animals-folder
+  subPath: stores/file_store_01
+
+store:
+  name: file_store_01
+
+retentionPolicy:
+  name: PhoneCalls-policy
+  agingStrategy:
+    type: duration
+    agingPeriod:
+      units: days
+      value: 89
+  dispositionStrategy:
+    type: destroy all
+ 

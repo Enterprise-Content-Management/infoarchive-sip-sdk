@@ -63,27 +63,25 @@ public class YamlBasedConfigurer implements ApplicationConfigurer {
   private Map<String, String> yamlToMap(ArchiveConnection connection) {
     Map<String, String> properties = new YamlPropertiesMap(yaml.getMap());
     setConnectionProperties(connection, properties);
-    /*
     properties.entrySet().stream()
         .filter(entry -> entry.getValue() != null)
         .map(entry -> entry.getKey() + " = " + entry.getValue())
         .sorted()
         .forEach(System.out::println);
-    */
     return properties;
   }
 
   private void setConnectionProperties(ArchiveConnection connection, Map<String, String> properties) {
+    properties.put(HTTP_CLIENT_CLASSNAME, connection.getHttpClientClassName());
+    properties.put(PROXY_HOST, connection.getProxyHost());
+    properties.put(PROXY_PORT, connection.getProxyPort());
     properties.put(SERVER_AUTHENTICATION_GATEWAY, connection.getAuthenticationGateway());
     properties.put(SERVER_AUTHENTICATION_PASSWORD, connection.getAuthenticationPassword());
-    properties.put(SERVER_AUTENTICATION_TOKEN, connection.getAuthenticationToken());
+    properties.put(SERVER_AUTHENTICATION_TOKEN, connection.getAuthenticationToken());
     properties.put(SERVER_AUTHENTICATION_USER, connection.getAuthenticationUser());
     properties.put(SERVER_URI, connection.getBillboardUri());
     properties.put(SERVER_CLIENT_ID, connection.getClientId());
     properties.put(SERVER_CLIENT_SECRET, connection.getClientSecret());
-    properties.put(HTTP_CLIENT_CLASSNAME, connection.getHttpClientClassName());
-    properties.put(PROXY_HOST, connection.getProxyHost());
-    properties.put(PROXY_PORT, connection.getProxyPort());
   }
 
 }

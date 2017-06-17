@@ -4,7 +4,10 @@
 package com.opentext.ia.sdk.server.configuration.yaml;
 
 import java.util.HashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import org.atteo.evo.inflector.English;
 
 import com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties;
 import com.opentext.ia.sdk.support.yaml.Value;
@@ -13,92 +16,78 @@ import com.opentext.ia.sdk.support.yaml.YamlMap;
 
 class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveConfigurationProperties {
 
-  private static final String TEXT = "text";
-  private static final String CONTENT = "content";
+  private static final long serialVersionUID = 3429860978620277558L;
   private static final String NAMESPACE = "namespace";
-  private static final String PASSWORD = "password";
-  private static final long serialVersionUID = -3961784010133931113L;
-  private static final String SERVER = "server";
-  private static final String AUTHENTICATION = "authentication";
-  private static final String APPLICATION = "application";
-  private static final String FEDERATION = "federation";
-  private static final String STORE = "store";
-  private static final String QUOTA = "quota";
-  private static final String AIC = "aic";
-  private static final String CRITERIA = "criteria";
-  private static final String XDB = "xdb";
   private static final String SCHEMA = "schema";
-  private static final String XML = "xml";
   private static final String RESULT = "result";
   private static final String XDBPDI = "xdbpdi";
   private static final String OPERAND = "operand";
   private static final String MAIN = "main";
 
+  private final transient YamlMap yaml;
+
 
   YamlPropertiesMap(YamlMap yaml) {
-    flatten(yaml);
+    this.yaml = yaml;
+    flatten();
   }
 
-  @SuppressWarnings("PMD.UnusedFormalParameter")
-  private void flatten(YamlMap yaml) {
-    put(SERVER_URI, getString(yaml, SERVER, "uri"));
+  private void flatten() {
+    putFrom("tenant",
+        TENANT_NAME, NAME);
+    putFrom("xdbFederation",
+        FEDERATION_NAME, NAME,
+        FEDERATION_BOOTSTRAP, "uri",
+        FEDERATION_SUPERUSER_PASSWORD, "password");
+    putFrom("xdbDatabase",
+        DATABASE_NAME, NAME,
+        DATABASE_ADMIN_PASSWORD, "password");
+    putFrom("application",
+        APPLICATION_NAME, NAME,
+        APPLICATION_CATEGORY, "category",
+        APPLICATION_DESCRIPTION, DESCRIPTION);
+    putFrom("holding",
+        HOLDING_NAME, NAME);
+    putFrom("fileSystemFolder",
+        FILE_SYSTEM_FOLDER, NAME);
+    putFrom("store",
+        STORE_NAME, NAME,
+        STORE_STORETYPE, "store-type",
+        STORE_FOLDER, "folder",
+        STORE_TYPE, TYPE);
+    putFrom("aic",
+        AIC_NAME, NAME);
+    putFrom(yaml.get("aics", 0, "criteria").toMap(),
+        CRITERIA_NAME, NAME,
+        CRITERIA_LABEL, "label",
+        CRITERIA_TYPE, TYPE,
+        CRITERIA_PKEYMINATTR, "pkeyminattr",
+        CRITERIA_PKEYMAXATTR, "pkeymaxattr",
+        CRITERIA_PKEYVALUESATTR, "pkeyvaluesattr",
+        CRITERIA_INDEXED, "indexed");
+    putFrom("quota",
+        QUOTA_NAME, NAME,
+        QUOTA_AIU, "aiu",
+        QUOTA_AIP, "aip",
+        QUOTA_DIP, "dip");
+    putFrom("retentionPolicy",
+        RETENTION_POLICY_NAME, NAME);
+    putFrom("pdiSchema",
+        PDI_SCHEMA_NAME, NAMESPACE);
+    putContentFrom("pdiSchema", PDI_SCHEMA);
+    putContentFrom("pdi", PDI_XML);
+    putContentFrom("ingest", INGEST_XML);
 
-    filter(SERVER_AUTENTICATION_TOKEN, yaml, SERVER, AUTHENTICATION, "token");
-    filter(SERVER_AUTHENTICATION_USER, yaml, SERVER, AUTHENTICATION, "user");
-    filter(SERVER_AUTHENTICATION_PASSWORD, yaml, SERVER, AUTHENTICATION, PASSWORD);
-    filter(SERVER_AUTHENTICATION_GATEWAY, yaml, SERVER, AUTHENTICATION, "gateway");
-    filter(SERVER_CLIENT_ID, yaml, SERVER, AUTHENTICATION, "client_id");
-    filter(SERVER_CLIENT_SECRET, yaml, SERVER, AUTHENTICATION, "client_secret");
+    putManyFrom("query", QUERY_NAME, (name, map) -> {
+      putTemplatedFrom(map, name, QUERY_NAMESPACE_URI_TEMPLATE, NAMESPACE,
+          QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, "resultRootElement",
+          QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, "resultRootNsEnabled");
+      putTemplated(QUERY_NAMESPACE_PREFIX_TEMPLATE, name, lookup(NAMESPACE, "uri", map.get(NAMESPACE), "prefix"));
+    });
 
-    put(TENANT_NAME, getString(yaml, "tenant"));
-
-    put(FEDERATION_NAME, getString(yaml, XDB, FEDERATION, NAME));
-    put(FEDERATION_BOOTSTRAP, getString(yaml, XDB, FEDERATION, "uri"));
-    put(FEDERATION_SUPERUSER_PASSWORD, getString(yaml, XDB, FEDERATION, PASSWORD));
-    put(DATABASE_NAME, getString(yaml, XDB, "database", NAME));
-    put(DATABASE_ADMIN_PASSWORD, getString(yaml, XDB, "database", PASSWORD));
-
-    put(APPLICATION_NAME, getString(yaml, APPLICATION, NAME));
-    put(APPLICATION_CATEGORY, getString(yaml, APPLICATION, "category"));
-    put(APPLICATION_DESCRIPTION, getString(yaml, APPLICATION, DESCRIPTION));
-
-    put(HOLDING_NAME, getString(yaml, "holding", NAME));
-
-    filter(FILE_SYSTEM_FOLDER, yaml, "file-system-folder", NAME);
-
-    filter(STORE_NAME, yaml, STORE, NAME);
-    filter(STORE_STORETYPE, yaml, STORE, "store-type");
-    filter(STORE_FOLDER, yaml, STORE, "folder");
-    filter(STORE_TYPE, yaml, STORE, TYPE);
-
-    put(AIC_NAME, getString(yaml, AIC, NAME));
-    put(CRITERIA_NAME, getString(yaml, AIC, CRITERIA, NAME));
-    put(CRITERIA_LABEL, getString(yaml, AIC, CRITERIA, "label"));
-    put(CRITERIA_TYPE, getString(yaml, AIC, CRITERIA, TYPE));
-    put(CRITERIA_PKEYMINATTR, getString(yaml, AIC, CRITERIA, "pkeyminattr"));
-    put(CRITERIA_PKEYMAXATTR, getString(yaml, AIC, CRITERIA, "pkeymaxattr"));
-    put(CRITERIA_PKEYVALUESATTR, getString(yaml, AIC, CRITERIA, "pkeyvaluesattr"));
-    put(CRITERIA_INDEXED, getString(yaml, AIC, CRITERIA, "indexed"));
-
-    put(QUOTA_NAME, getString(yaml, QUOTA, NAME));
-    put(QUOTA_AIU, getString(yaml, QUOTA, "aiu"));
-    put(QUOTA_AIP, getString(yaml, QUOTA, "aip"));
-    put(QUOTA_DIP, getString(yaml, QUOTA, "dip"));
-
-    put(RETENTION_POLICY_NAME, getString(yaml, "retention-policy", NAME));
-
-    put(PDI_SCHEMA_NAME, getString(yaml, "pdiSchema", NAMESPACE));
-    put(PDI_SCHEMA, getString(yaml, "pdiSchema", CONTENT, TEXT));
-    put(PDI_XML, getString(yaml, "pdi", CONTENT, TEXT));
-    put(INGEST_XML, getString(yaml, "ingest", CONTENT, TEXT));
-
+    // TODO: Fix the code below
     forEachMapItem(yaml, "query", query -> {
       String name = getString(query, NAME);
-      append(QUERY_NAME, name);
-      put(String.format(QUERY_NAMESPACE_PREFIX_TEMPLATE, name), getString(query, NAMESPACE, "prefix"));
-      put(String.format(QUERY_NAMESPACE_URI_TEMPLATE, name), getString(query, NAMESPACE, "uri"));
-      put(String.format(QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, name), getString(query, RESULT, "root", "element"));
-      put(String.format(QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, name), getString(query, RESULT, "root", "ns-enabled"));
       String schema = getString(query, RESULT, SCHEMA);
       put(String.format(QUERY_RESULT_SCHEMA_TEMPLATE, name), schema);
       put(String.format(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name), getString(query, XDBPDI, "entity", "path"));
@@ -114,7 +103,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
       String name = getString(resultHelper, NAME);
       append(RESULT_HELPER_NAME, name);
       put(String.format(RESULT_HELPER_SCHEMA_TEMPLATE, name), getString(resultHelper, SCHEMA));
-      put(String.format(RESULT_HELPER_XML, name), getString(resultHelper, XML));
+      put(String.format(RESULT_HELPER_XML, name), getString(resultHelper, "xml"));
     });
 
     forEachMapItem(yaml, "search", search -> {
@@ -131,7 +120,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
         String compositionName = getString(composition, NAME);
         append(SEARCH_COMPOSITION_NAME, compositionName);
         put(String.format(SEARCH_COMPOSITION_XFORM_NAME, searchName), getString(composition, "xform", NAME));
-        put(String.format(SEARCH_COMPOSITION_XFORM, searchName), getString(composition, "xform", XML));
+        put(String.format(SEARCH_COMPOSITION_XFORM, searchName), getString(composition, "xform", "xml"));
         put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, searchName, compositionName), getString(composition, RESULT, MAIN, NAME));
         put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, searchName, compositionName), getString(composition, RESULT, MAIN, "label"));
         put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName, compositionName), getString(composition, RESULT, MAIN, "path"));
@@ -143,26 +132,36 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
     });
   }
 
-  private void forEachMapItem(YamlMap yaml, String name, Consumer<YamlMap> action) {
-    Value value = yaml.get(name);
-    if (value.isMap()) {
-      action.accept(value.toMap());
-    } else {
-      value.toList().stream()
-          .map(Value::toMap)
-          .forEach(action);
+  private void putFrom(String type, String... destinationAndSourceNames) {
+    putFrom(yaml.get(English.plural(type), 0).toMap(), destinationAndSourceNames);
+  }
+
+  private void putFrom(YamlMap map, String... destinationAndSourceNames) {
+    int i = 0;
+    while (i < destinationAndSourceNames.length) {
+      String destination = destinationAndSourceNames[i++];
+      String source = destinationAndSourceNames[i++];
+      put(destination, map.get(source).toString());
     }
   }
 
-  private String getString(YamlMap yaml, Object... names) {
-    return yaml.get(names).toString();
+  private void putContentFrom(String type, String property) {
+    putFrom(yaml.get(English.plural(type), 0, "content").toMap(),
+        property, "text");
   }
 
-  private void filter(String key, YamlMap yaml, Object... names) {
-    String value = getString(yaml, names);
-    if (!value.isEmpty()) {
-      put(key, value);
-    }
+  private void putManyFrom(String type, String property, BiConsumer<String, YamlMap> consumer) {
+    putManyFrom(yaml.get(English.plural(type)), property, consumer);
+  }
+
+  private void putManyFrom(Value value, String property, BiConsumer<String, YamlMap> consumer) {
+    value.toList().stream()
+        .map(Value::toMap)
+        .forEach(map -> {
+          String name = map.get(NAME).toString();
+          append(property, name);
+          consumer.accept(name, map);
+        });
   }
 
   private void append(String name, String value) {
@@ -172,6 +171,43 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
     } else {
       put(name, oldValue + "," + value);
     }
+  }
+
+  private void putTemplatedFrom(YamlMap map, String name, String... destinationAndSourceNames) {
+    int i = 0;
+    while (i < destinationAndSourceNames.length) {
+      String destination = destinationAndSourceNames[i++];
+      String source = destinationAndSourceNames[i++];
+      putTemplated(destination, name, map.get(source));
+    }
+  }
+
+  private String putTemplated(String template, String name, Value value) {
+    return put(String.format(template, name), value.toString());
+  }
+
+  private Value lookup(String type, String lookupProperty, Value lookupValue, String resultProperty) {
+    return yaml.get(English.plural(type)).toList().stream()
+        .map(Value::toMap)
+        .filter(map -> lookupValue.equals(map.get(lookupProperty)))
+        .map(map -> map.get(resultProperty))
+        .findAny()
+        .orElse(new Value());
+  }
+
+  private void forEachMapItem(YamlMap map, String name, Consumer<YamlMap> action) {
+    Value value = map.get(name);
+    if (value.isMap()) {
+      action.accept(value.toMap());
+    } else {
+      value.toList().stream()
+          .map(Value::toMap)
+          .forEach(action);
+    }
+  }
+
+  private String getString(YamlMap map, Object... names) {
+    return map.get(names).toString();
   }
 
 }

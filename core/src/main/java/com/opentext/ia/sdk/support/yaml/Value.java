@@ -14,6 +14,10 @@ public class Value {
 
   private final Object data;
 
+  public Value() {
+    this(null);
+  }
+
   public Value(Object data) {
     this.data = data;
   }

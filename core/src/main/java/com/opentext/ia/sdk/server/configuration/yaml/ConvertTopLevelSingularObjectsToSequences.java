@@ -7,7 +7,10 @@ import java.util.Arrays;
 
 import org.atteo.evo.inflector.English;
 
-import com.opentext.ia.sdk.support.yaml.*;
+import com.opentext.ia.sdk.support.yaml.Entry;
+import com.opentext.ia.sdk.support.yaml.Visit;
+import com.opentext.ia.sdk.support.yaml.Visitor;
+import com.opentext.ia.sdk.support.yaml.YamlMap;
 
 
 class ConvertTopLevelSingularObjectsToSequences implements Visitor {
@@ -29,11 +32,7 @@ class ConvertTopLevelSingularObjectsToSequences implements Visitor {
     if (type.endsWith("s") || "version".equals(type)) {
       return false;
     }
-    Value value = entry.getValue();
-    if (!value.isMap()) {
-      return false;
-    }
-    return value.toMap().containsKey("name");
+    return entry.getValue().isMap();
   }
 
   private void convertToSequence(Entry entry, YamlMap yaml) {

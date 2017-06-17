@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.atteo.evo.inflector.English;
@@ -40,9 +39,8 @@ public class YamlConfiguration {
       InsertDefaultValues.class
   );
   private static final String NAME = "name";
-  private static final String DEFAULT = "default";
 
-  private YamlMap yaml = new YamlMap();
+  private final YamlMap yaml;
 
   /**
    * Load configuration from a file in YAML format.
@@ -109,7 +107,7 @@ public class YamlConfiguration {
   private YamlMap singleInstanceOf(String type) {
     List<Value> instances = yaml.get(English.plural(type)).toList();
     if (instances.size() != 1) {
-      throw new IllegalArgumentException("Expected 1 " + type + ", but got " + instances.size());
+      throw new IllegalArgumentException("Expected 1 " + type + ", but got " + instances.size() + " in:\n" + yaml);
     }
     return instances.get(0).toMap();
   }
@@ -127,30 +125,11 @@ public class YamlConfiguration {
    * @return the namespace of the PDI
    */
   public String getPdiSchemaName() {
-    return lookup("namespace", "prefix", pdiSchema().get("namespace"), "uri");
+    return pdiSchema().get("namespace").toString();
   }
 
   private YamlMap pdiSchema() {
     return singleInstanceOf("pdiSchema");
-  }
-
-  private String lookup(String type, String lookupProperty, Value lookupValue, String resultProperty) {
-    Predicate<YamlMap> lookup = lookupValue.isEmpty() ? this::isDefault
-        : instance -> lookupValue.equals(instance.get(lookupProperty));
-    return allInstancesOf(type)
-        .filter(lookup)
-        .map(instance -> instance.get(resultProperty).toString())
-        .findAny()
-        .orElse("");
-  }
-
-  private boolean isDefault(YamlMap map) {
-    return map.get(DEFAULT).toBoolean();
-  }
-
-  private Stream<YamlMap> allInstancesOf(String type) {
-    return yaml.get(English.plural(type)).toList().stream()
-        .map(Value::toMap);
   }
 
   /**

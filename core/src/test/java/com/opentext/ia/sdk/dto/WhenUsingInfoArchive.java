@@ -220,7 +220,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   private void prepareConfiguration() {
     configuration.put(InfoArchiveConfigurationProperties.SERVER_URI, BILLBOARD_URI);
-    configuration.put(InfoArchiveConfigurationProperties.SERVER_AUTENTICATION_TOKEN, AUTH_TOKEN);
+    configuration.put(InfoArchiveConfigurationProperties.SERVER_AUTHENTICATION_TOKEN, AUTH_TOKEN);
     configuration.put(InfoArchiveConfigurationProperties.TENANT_NAME, TENANT_NAME);
     configuration.put(InfoArchiveConfigurationProperties.DATABASE_NAME, APPLICATION_NAME);
     configuration.put(InfoArchiveConfigurationProperties.DATABASE_ADMIN_PASSWORD, APPLICATION_NAME);
