@@ -1,7 +1,7 @@
 image:https://img.shields.io/badge/license-mpl2-ff69b4.svg[title="License: MPL2", link="https://www.mozilla.org/en-US/MPL/2.0/"]
 image:https://img.shields.io/travis/Enterprise-Content-Management/infoarchive-sip-sdk.svg[title="Travis", link="https://travis-ci.org/Enterprise-Content-Management/infoarchive-sip-sdk"]
 image:https://img.shields.io/codecov/c/github/Enterprise-Content-Management/infoarchive-sip-sdk.svg[title="Code coverage", link="https://codecov.io/github/Enterprise-Content-Management/infoarchive-sip-sdk"]
-image:https://sonarqube.com/api/badges/measure?key=com.opentext.ia:infoarchive-sip-sdk&metric=sqale_debt_ratio[title="Technical Debt", link="https://sonarqube.com/dashboard?id=com.opentext.ia:infoarchive-sip-sdk"]
+image:https://sonarcloud.io/api/badges/measure?key=com.opentext.ia:infoarchive-sip-sdk&metric=sqale_debt_ratio[title="Technical Debt", link="https://sonarcloud.io/dashboard?id=com.opentext.ia:infoarchive-sdk"]
 image:https://img.shields.io/maven-central/v/com.emc.ia/infoarchive-sip-sdk-core.svg[title="Maven Central", link="https://repo1.maven.org/maven2/com/emc/ia/"]
 image:https://javadoc-emblem.rhcloud.com/doc/com.emc.ia/infoarchive-sip-sdk-core/badge.svg[title="Javadoc", link="http://www.javadoc.io/doc/com.emc.ia/infoarchive-sip-sdk-core"]
 
