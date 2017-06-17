@@ -20,7 +20,7 @@ class ConvertTopLevelSingularObjectsToSequences implements Visitor {
   @Override
   public void accept(Visit visit) {
     visit.getMap().entries()
-        .filter(entry -> isSingular(entry))
+        .filter(this::isSingular)
         .forEach(entry -> convertToSequence(entry, visit.getMap()));
   }
 

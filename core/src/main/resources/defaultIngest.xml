@@ -5,7 +5,7 @@
     <id>sip.download</id>
   </processor>
   <processor>
-    <transaction/>
+    <transaction />
     <name>XDB Library creator processor</name>
     <class>com.emc.ia.ingestion.processor.library.LibraryCreatorProcessor</class>
     <id>xdb.lib.create</id>
@@ -59,7 +59,7 @@
     <id>pdi.index.creator</id>
     <data>
       <key.document.name>xdb.pdi.name</key.document.name>
-      <indexes/>
+      <indexes />
     </data>
   </processor>
   <processor>
@@ -161,7 +161,8 @@
       <select.query>
         declare namespace ri = "urn:x-emc:ia:schema:ri";
         let $toc as document-node(element(ri:ris))
-        := doc(concat('aip_', xhive:metadata(., 'aip_id'), '.ri'))
+        :=
+        doc(concat('aip_', xhive:metadata(., 'aip_id'), '.ri'))
         return
         $toc/ri:ris/ri:ri/@key/string(.)
       </select.query>
@@ -175,11 +176,10 @@
     <data>
       <select.query>
         <![CDATA[
-				        declare namespace ri = "urn:x-emc:ia:schema:ri";
-                        let $toc as document-node(element(ri:ris))
-						    := doc(concat("aip_",xhive:metadata(., 'aip_id'),'.ri'))
-				        return $toc/ri:ris/ri:ri/string(@key)
-			        ]]>
+          declare namespace ri = "urn:x-emc:ia:schema:ri";
+          let $toc as document-node(element(ri:ris)) := doc(concat("aip_",xhive:metadata(., 'aip_id'),'.ri'))
+          return $toc/ri:ris/ri:ri/string(@key)
+        ]]>
       </select.query>
     </data>
   </processor>
@@ -189,7 +189,7 @@
     <id>ri.content</id>
   </processor>
   <processor>
-    <transaction/>
+    <transaction />
     <name>Aggregate Updator processor</name>
     <class>com.emc.ia.ingestion.processor.library.AggregateUpdaterProcessor</class>
     <id>aip.aggregate.update</id>
@@ -198,7 +198,7 @@
     <name>Add CI IDs in PDI</name>
     <class>com.emc.ia.ingestion.processor.content.PdiContentIdProcessor</class>
     <id>xdb.pdi.ci.id</id>
-    <data/>
+    <data />
   </processor>
   <processor>
     <name>PDI CI indexes</name>
@@ -213,8 +213,8 @@
           <unique.keys>false</unique.keys>
           <concurrent>false</concurrent>
           <value.index.type>STRING</value.index.type>
-          <element.uri/>
-          <element.name/>
+          <element.uri />
+          <element.name />
           <attribute.uri>urn:x-emc:ia:schema:pdi</attribute.uri>
           <attribute.name>cid</attribute.name>
         </value.index>
@@ -239,8 +239,8 @@
           <unique.keys>true</unique.keys>
           <concurrent>false</concurrent>
           <value.index.type>STRING</value.index.type>
-          <element.uri/>
-          <element.name/>
+          <element.uri />
+          <element.name />
           <attribute.uri>urn:x-emc:ia:schema:pdi</attribute.uri>
           <attribute.name>id</attribute.name>
         </value.index>
@@ -253,7 +253,7 @@
     <id>contents.upload</id>
   </processor>
   <processor>
-    <transaction/>
+    <transaction />
     <name>XDB library backup</name>
     <class>com.emc.ia.ingestion.processor.backup.BackupProcessor</class>
     <id>xdb.lib.backup</id>
@@ -263,7 +263,7 @@
     <class>com.emc.ia.ingestion.processor.transformer.PdiTransformerProcessor</class>
     <id>pdi.transformer</id>
     <data>
-      <resultSchema/>
+      <resultSchema />
     </data>
   </processor>
   <processor>

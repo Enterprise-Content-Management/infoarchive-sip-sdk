@@ -13,6 +13,10 @@ import com.opentext.ia.sdk.support.yaml.YamlMap;
 
 class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveConfigurationProperties {
 
+  private static final String TEXT = "text";
+  private static final String CONTENT = "content";
+  private static final String NAMESPACE = "namespace";
+  private static final String PASSWORD = "password";
   private static final long serialVersionUID = -3961784010133931113L;
   private static final String SERVER = "server";
   private static final String AUTHENTICATION = "authentication";
@@ -41,7 +45,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
 
     filter(SERVER_AUTENTICATION_TOKEN, yaml, SERVER, AUTHENTICATION, "token");
     filter(SERVER_AUTHENTICATION_USER, yaml, SERVER, AUTHENTICATION, "user");
-    filter(SERVER_AUTHENTICATION_PASSWORD, yaml, SERVER, AUTHENTICATION, "password");
+    filter(SERVER_AUTHENTICATION_PASSWORD, yaml, SERVER, AUTHENTICATION, PASSWORD);
     filter(SERVER_AUTHENTICATION_GATEWAY, yaml, SERVER, AUTHENTICATION, "gateway");
     filter(SERVER_CLIENT_ID, yaml, SERVER, AUTHENTICATION, "client_id");
     filter(SERVER_CLIENT_SECRET, yaml, SERVER, AUTHENTICATION, "client_secret");
@@ -50,9 +54,9 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
 
     put(FEDERATION_NAME, getString(yaml, XDB, FEDERATION, NAME));
     put(FEDERATION_BOOTSTRAP, getString(yaml, XDB, FEDERATION, "uri"));
-    put(FEDERATION_SUPERUSER_PASSWORD, getString(yaml, XDB, FEDERATION, "password"));
+    put(FEDERATION_SUPERUSER_PASSWORD, getString(yaml, XDB, FEDERATION, PASSWORD));
     put(DATABASE_NAME, getString(yaml, XDB, "database", NAME));
-    put(DATABASE_ADMIN_PASSWORD, getString(yaml, XDB, "database", "password"));
+    put(DATABASE_ADMIN_PASSWORD, getString(yaml, XDB, "database", PASSWORD));
 
     put(APPLICATION_NAME, getString(yaml, APPLICATION, NAME));
     put(APPLICATION_CATEGORY, getString(yaml, APPLICATION, "category"));
@@ -83,16 +87,16 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
 
     put(RETENTION_POLICY_NAME, getString(yaml, "retention-policy", NAME));
 
-    put(PDI_SCHEMA_NAME, getString(yaml, "pdiSchema", "namespace"));
-    put(PDI_SCHEMA, getString(yaml, "pdiSchema", "content", "text"));
-    put(PDI_XML, getString(yaml, "pdi", "content", "text"));
-    put(INGEST_XML, getString(yaml, "ingest", "content", "text"));
+    put(PDI_SCHEMA_NAME, getString(yaml, "pdiSchema", NAMESPACE));
+    put(PDI_SCHEMA, getString(yaml, "pdiSchema", CONTENT, TEXT));
+    put(PDI_XML, getString(yaml, "pdi", CONTENT, TEXT));
+    put(INGEST_XML, getString(yaml, "ingest", CONTENT, TEXT));
 
     forEachMapItem(yaml, "query", query -> {
       String name = getString(query, NAME);
       append(QUERY_NAME, name);
-      put(String.format(QUERY_NAMESPACE_PREFIX_TEMPLATE, name), getString(query, "namespace", "prefix"));
-      put(String.format(QUERY_NAMESPACE_URI_TEMPLATE, name), getString(query, "namespace", "uri"));
+      put(String.format(QUERY_NAMESPACE_PREFIX_TEMPLATE, name), getString(query, NAMESPACE, "prefix"));
+      put(String.format(QUERY_NAMESPACE_URI_TEMPLATE, name), getString(query, NAMESPACE, "uri"));
       put(String.format(QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, name), getString(query, RESULT, "root", "element"));
       put(String.format(QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, name), getString(query, RESULT, "root", "ns-enabled"));
       String schema = getString(query, RESULT, SCHEMA);
@@ -145,7 +149,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
       action.accept(value.toMap());
     } else {
       value.toList().stream()
-          .map(item -> item.toMap())
+          .map(Value::toMap)
           .forEach(action);
     }
   }

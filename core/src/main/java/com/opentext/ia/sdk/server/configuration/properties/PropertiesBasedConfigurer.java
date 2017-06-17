@@ -226,7 +226,7 @@ public class PropertiesBasedConfigurer implements ApplicationConfigurer, InfoArc
             throw e;
           }
         } catch (InterruptedException ignored) {
-          Thread.interrupted();
+          Thread.currentThread().interrupt();
         }
       }
     }

@@ -63,11 +63,13 @@ public class YamlBasedConfigurer implements ApplicationConfigurer {
   private Map<String, String> yamlToMap(ArchiveConnection connection) {
     Map<String, String> properties = new YamlPropertiesMap(yaml.getMap());
     setConnectionProperties(connection, properties);
+    /*
     properties.entrySet().stream()
         .filter(entry -> entry.getValue() != null)
         .map(entry -> entry.getKey() + " = " + entry.getValue())
         .sorted()
         .forEach(System.out::println);
+    */
     return properties;
   }
 

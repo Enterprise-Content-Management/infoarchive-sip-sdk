@@ -48,7 +48,7 @@ public class Visit {
 
   private String appendPath(Object... keys) {
     return path + SEPARATOR + Arrays.asList(keys).stream()
-        .map(key -> key.toString())
+        .map(Object::toString)
         .collect(Collectors.joining(SEPARATOR));
   }
 

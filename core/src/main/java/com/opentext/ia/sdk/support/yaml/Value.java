@@ -43,7 +43,7 @@ public class Value {
       return Collections.emptyList();
     }
     return ((List<?>)data).stream()
-        .map(item -> new Value(item))
+        .map(Value::new)
         .collect(Collectors.toList());
   }
 
