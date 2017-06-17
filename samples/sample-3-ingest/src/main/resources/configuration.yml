@@ -2,24 +2,24 @@ tenant:
   name: TENANT
 
 xdbFederation:
-  name: animal
+  name: animal2
   password: test
   uri: xhive://localhost:2910
 
 xdbDatabase:
-  name: animal
+  name: animal2
   password: test
 
 application:
-  name: Animals
+  name: Animals2
   description: Sample application
   category: Sample category
 
 holding:
-  name: Animals
+  name: Animals2
 
 aic:
-  name: Animals
+  name: Animals2
   criteria:
     name: animalName,filePath
     label: Animal Name,File Path
@@ -75,7 +75,7 @@ search:
           sort: NONE,NONE
 
 retention-policy:
-  name: Animals
+  name: Animals2
 
 pdiSchema:
   content:
@@ -83,7 +83,7 @@ pdiSchema:
     resource: pdi-schema.xsd
 
 pdi:
-  name: Animals-pdi
+  name: Animals2-pdi
   content:
     format: xml
     resource: pdi.xml
@@ -94,7 +94,7 @@ ingest:
     resource: ingest.xml
 
 fileSystemFolder:
-  name: Animals-folder
+  name: Animals2-folder
   subPath: stores/file_store_01
 
 store:
