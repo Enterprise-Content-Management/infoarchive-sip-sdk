@@ -37,7 +37,8 @@ public class YamlConfiguration {
       ConvertSingularReferenceToSequenceForCollectionReferences.class,
       ConvertNestedMapOfMapsToSequences.class,
       AddNamespaceDeclarationsToQueries.class,
-      ReplacePdiSchemaNamespaceWithName.class
+      ReplacePdiSchemaNamespaceWithName.class,
+      ReplacePdiIndexNamespaceWithUri.class
   );
   private static final String NAME = "name";
 

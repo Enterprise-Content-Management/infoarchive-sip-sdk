@@ -14,9 +14,13 @@ final class NamespaceUri {
   }
 
   static String byPrefix(YamlMap yaml, Value prefix) {
+    return byPrefix(yaml, prefix.toString());
+  }
+
+  static String byPrefix(YamlMap yaml, String prefix) {
     return yaml.get("namespaces").toList().stream()
         .map(Value::toMap)
-        .filter(m -> prefix.equals(m.get("prefix")))
+        .filter(m -> m.get("prefix").equals(prefix))
         .map(m -> m.get("uri").toString())
         .findAny()
         .orElseThrow(() -> new IllegalArgumentException("Missing namespace with prefix " + prefix));

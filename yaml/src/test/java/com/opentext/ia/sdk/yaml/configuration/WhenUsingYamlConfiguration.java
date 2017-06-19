@@ -23,6 +23,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String DEFAULT = "default";
   private static final String CONTENT = "content";
   private static final String RESOURCE = "resource";
+  private static final String TEXT = "text";
   private static final String TYPE = "type";
   private static final String TENANTS = "tenants";
   private static final String TENANT = "tenant";
@@ -33,6 +34,10 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String QUERIES = "queries";
   private static final String XDB_PDI_CONFIGS = "xdbPdiConfigs";
   private static final String OPERANDS = "operands";
+  private static final String PDIS = "pdis";
+  private static final String DATA = "data";
+  private static final String INDEXES = "indexes";
+  private static final String PATH = "path";
 
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
@@ -76,7 +81,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
   private void assertContentIsInlined(String type, String expected, Value owner) {
     assertValue("Content in " + type + " not inlined:\n" + yaml, expected,
-        owner.toMap().get(CONTENT, "text"));
+        owner.toMap().get(CONTENT, TEXT));
   }
 
   private void normalizeYaml() {
@@ -179,7 +184,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
     assertTrue("appExportPipeline.includesContent", yaml.get("appExportPipelines", 0, "includesContent").toBoolean());
     assertValue("holding.xdbMode", "PRIVATE", yaml.get(HOLDINGS, 0, "xdbMode"));
     assertValue("ingest.processors.format", "xml", yaml.get("ingests", 0, "content", "format"));
-    assertTrue("ingest.processors.xml", yaml.get("ingests", 0, "content", "text").toString().contains("sip.download"));
+    assertTrue("ingest.processors.xml", yaml.get("ingests", 0, "content", TEXT).toString().contains("sip.download"));
     assertValue("receiverNode.sips.format", "sip_zip", yaml.get("receiverNodes", 0, "sips", 0, "format"));
   }
 
@@ -205,13 +210,13 @@ public class WhenUsingYamlConfiguration extends TestCase {
         .put(XDB_PDI_CONFIGS, new YamlMap()
             .put(OPERANDS, new YamlMap()
                 .put(operand, new YamlMap()
-                    .put("path", path))))));
+                    .put(PATH, path))))));
 
     normalizeYaml();
 
     assertValue("Name", query, yaml.get(QUERIES, 0, NAME));
     assertValue("Operand", operand, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, NAME));
-    assertValue("Path", path, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, "path"));
+    assertValue("Path", path, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, PATH));
   }
 
   @Test
@@ -224,7 +229,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
             .put("uri", uri)))
         .put("xdbLibraryPolicies", Arrays.asList(new YamlMap()
             .put("closeHintDateQuery", new YamlMap()
-                .put("text", text))));
+                .put(TEXT, text))));
 
     normalizeYaml();
 
@@ -248,6 +253,35 @@ public class WhenUsingYamlConfiguration extends TestCase {
     normalizeYaml();
 
     assertValue("Name\n" + yaml, uri, yaml.get("pdiSchemas", 0, NAME));
+  }
+
+  @Test
+  public void shouldReplaceNamespacePrefixesInXdbIndexDefinitions() throws Exception {
+    String prefix = "n";
+    String uri = someUri();
+    String name1 = 'a' + someName();
+    String name2 = 'z' + someName();
+    yaml.put("namespaces", Arrays.asList(new YamlMap()
+            .put("prefix", prefix)
+            .put("uri", uri)))
+        .put(PDIS, Arrays.asList(new YamlMap()
+            .put(NAME, someName())
+            .put(CONTENT, new YamlMap()
+                .put("format", "yaml")
+                .put(TEXT, new YamlMap()
+                    .put(DATA, Arrays.asList(new YamlMap()
+                        .put(INDEXES, new YamlMap()
+                            .put(name1, new YamlMap()
+                                .put(PATH, "/n:gnu/n:gnat"))
+                            .put(name2, new YamlMap()
+                                .put(PATH, "/n:foo/n:bar[n:baz]")))))))));
+
+    normalizeYaml();
+
+    assertValue("path #1", String.format("/{%1$s}:gnu/{%1$s}:gnat", uri),
+        yaml.get(PDIS, 0, CONTENT, TEXT, DATA, 0, INDEXES, 0, PATH));
+    assertValue("path #2", String.format("/{%1$s}:foo/{%1$s}:bar[{%1$s}:baz]", uri),
+        yaml.get(PDIS, 0, CONTENT, TEXT, DATA, 0, INDEXES, 1, PATH));
   }
 
 }
