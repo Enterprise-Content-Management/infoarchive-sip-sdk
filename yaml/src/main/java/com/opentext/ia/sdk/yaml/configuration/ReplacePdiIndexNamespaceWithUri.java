@@ -8,30 +8,22 @@ import java.util.stream.Collectors;
 
 import com.opentext.ia.sdk.yaml.core.Value;
 import com.opentext.ia.sdk.yaml.core.Visit;
-import com.opentext.ia.sdk.yaml.core.Visitor;
 import com.opentext.ia.sdk.yaml.core.YamlMap;
 
 
-class ReplacePdiIndexNamespaceWithUri implements Visitor {
+class ReplacePdiIndexNamespaceWithUri extends YamlContentVisitor {
 
   private static final String PATH_SEPARATOR = "/";
   private static final String INDEXES = "indexes";
   private static final String PATH = "path";
 
-  @Override
-  public int maxNesting() {
-    return 0;
+  ReplacePdiIndexNamespaceWithUri() {
+    super("pdi");
   }
 
   @Override
-  public void accept(Visit visit) {
-    visit.getMap().get("pdis").toList().stream()
-        .map(Value::toMap)
-        .map(map -> map.get("content"))
-        .map(Value::toMap)
-        .filter(map -> map.get("format").equals("yaml"))
-        .map(map -> map.get("text", "data"))
-        .flatMap(v -> v.toList().stream())
+  void visitContent(Visit visit, YamlMap content) {
+    content.get("text", "data").toList().stream()
         .map(Value::toMap)
         .filter(map -> map.containsKey(INDEXES))
         .flatMap(map -> map.get(INDEXES).toList().stream())
@@ -52,7 +44,7 @@ class ReplacePdiIndexNamespaceWithUri implements Visitor {
     if (index < 0) {
       return result;
     }
-    return result.substring(0,  index + 1) + replacePrefix(root, result.substring(index + 1));
+    return result.substring(0, index + 1) + replacePrefix(root, result.substring(index + 1));
   }
 
   private String replacePrefix(YamlMap root, String pathPart) {
