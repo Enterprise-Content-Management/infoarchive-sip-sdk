@@ -6,6 +6,7 @@ package com.opentext.ia.sdk.server.configuration.yaml;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.opentext.ia.sdk.support.yaml.PropertyVisitor;
 import com.opentext.ia.sdk.support.yaml.Value;
 import com.opentext.ia.sdk.support.yaml.Visit;
 import com.opentext.ia.sdk.support.yaml.YamlMap;

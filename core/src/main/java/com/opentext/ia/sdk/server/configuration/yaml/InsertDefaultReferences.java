@@ -7,6 +7,7 @@ import java.util.*;
 
 import org.atteo.evo.inflector.English;
 
+import com.opentext.ia.sdk.support.yaml.PropertyVisitor;
 import com.opentext.ia.sdk.support.yaml.Value;
 import com.opentext.ia.sdk.support.yaml.Visit;
 import com.opentext.ia.sdk.support.yaml.YamlMap;

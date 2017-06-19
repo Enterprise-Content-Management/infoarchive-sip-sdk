@@ -6,6 +6,7 @@ package com.opentext.ia.sdk.server.configuration.yaml;
 import java.util.*;
 
 import com.opentext.ia.sdk.support.resource.ResourceResolver;
+import com.opentext.ia.sdk.support.yaml.PathVisitor;
 import com.opentext.ia.sdk.support.yaml.Visit;
 import com.opentext.ia.sdk.support.yaml.YamlMap;
 

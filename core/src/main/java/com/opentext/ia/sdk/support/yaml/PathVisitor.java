@@ -1,13 +1,10 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.server.configuration.yaml;
+package com.opentext.ia.sdk.support.yaml;
 
 import java.util.Collection;
 import java.util.stream.Stream;
-
-import com.opentext.ia.sdk.support.yaml.Visit;
-import com.opentext.ia.sdk.support.yaml.Visitor;
 
 
 public abstract class PathVisitor implements Visitor {
