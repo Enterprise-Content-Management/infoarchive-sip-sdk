@@ -4,7 +4,7 @@ include 'core'
 project(':core').name = 'infoarchive-sdk-core'
 
 include 'yaml'
-project(':yaml').name = 'infoarchive-sdk-yaml'
+project(':yaml').name = 'infoarchive-yaml'
 
 include 'stringtemplate'
 project(':stringtemplate').name = 'infoarchive-sdk-stringtemplate'
