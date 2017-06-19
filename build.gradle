@@ -146,11 +146,22 @@ subprojects {
 }
 
 
+project(':infoarchive-sdk-yaml') {
+  configurations {
+    compile.extendsFrom commonsIo, evoInflector, yaml
+  }
+}
+
+
 project(':infoarchive-sdk-core') {
   configurations {
     compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, commonsLang, evoInflector, 
         httpclient, httpmime, jacksonCore, jacksonDatabind, validation, yaml
-
+  }
+  
+  dependencies {
+    compile project(':infoarchive-sdk-yaml')
+    testCompile project(':infoarchive-sdk-yaml').sourceSets.test.output
   }
 
   javadoc {
@@ -171,7 +182,7 @@ project(':infoarchive-sdk-stringtemplate') {
   dependencies {
     stringtemplate "org.antlr:ST4:$stringTemplateVersion"
     compile project(':infoarchive-sdk-core')
-    testCompile project(':infoarchive-sdk-core').sourceSets.test.output
+    testCompile project(':infoarchive-sdk-yaml').sourceSets.test.output
   }
 }
 
@@ -197,7 +208,7 @@ project(':infoarchive-sdk-velocity') {
     velocity "org.apache.velocity:velocity:$velocityVersion"
     velocityTools "org.apache.velocity:velocity-tools:$velocityToolsVersion"
     compile project(':infoarchive-sdk-core')
-    testCompile project(':infoarchive-sdk-core').sourceSets.test.output
+    testCompile project(':infoarchive-sdk-yaml').sourceSets.test.output
   }
 }
 

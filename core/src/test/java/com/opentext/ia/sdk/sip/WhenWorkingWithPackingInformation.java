@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.junit.Test;
 
 import com.opentext.ia.sdk.support.io.EncodedHash;
-import com.opentext.ia.sdk.support.test.TestCase;
+import com.opentext.ia.sdk.test.TestCase;
 
 
 public class WhenWorkingWithPackingInformation extends TestCase {

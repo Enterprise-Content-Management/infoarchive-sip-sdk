@@ -12,7 +12,7 @@ import java.util.Collection;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
-import com.opentext.ia.sdk.support.test.TestCase;
+import com.opentext.ia.sdk.test.TestCase;
 
 
 public class WhenHashing extends TestCase {

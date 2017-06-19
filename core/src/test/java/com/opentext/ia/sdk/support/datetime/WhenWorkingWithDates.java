@@ -11,7 +11,7 @@ import java.util.TimeZone;
 
 import org.junit.Test;
 
-import com.opentext.ia.sdk.support.test.RandomData;
+import com.opentext.ia.sdk.test.RandomData;
 
 
 public class WhenWorkingWithDates {

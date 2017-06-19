@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.opentext.ia.sdk.support.test.TestCase;
+import com.opentext.ia.sdk.test.TestCase;
 
 
 public class WhenTiming extends TestCase {

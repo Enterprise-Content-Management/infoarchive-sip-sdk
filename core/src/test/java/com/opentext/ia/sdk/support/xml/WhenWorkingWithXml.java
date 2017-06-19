@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.w3c.dom.Document;
 
-import com.opentext.ia.sdk.support.test.TestCase;
+import com.opentext.ia.sdk.test.TestCase;
 
 
 public class WhenWorkingWithXml extends TestCase {

@@ -13,7 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.opentext.ia.sdk.support.test.RandomData;
+import com.opentext.ia.sdk.test.RandomData;
 
 
 public class WhenCopyingFiles {

@@ -3,6 +3,9 @@ rootProject.name = 'infoarchive-sdk'
 include 'core'
 project(':core').name = 'infoarchive-sdk-core'
 
+include 'yaml'
+project(':yaml').name = 'infoarchive-sdk-yaml'
+
 include 'stringtemplate'
 project(':stringtemplate').name = 'infoarchive-sdk-stringtemplate'
 

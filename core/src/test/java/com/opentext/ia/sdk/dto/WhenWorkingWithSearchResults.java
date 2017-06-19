@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentext.ia.sdk.support.test.RandomData;
+import com.opentext.ia.sdk.test.RandomData;
 
 
 public class WhenWorkingWithSearchResults {

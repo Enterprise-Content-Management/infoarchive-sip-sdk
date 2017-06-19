@@ -11,7 +11,7 @@ import java.util.function.Function;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentext.ia.sdk.support.test.TestCase;
+import com.opentext.ia.sdk.test.TestCase;
 
 
 public class WhenSegmentingDomainObjectsIntoSips extends TestCase {

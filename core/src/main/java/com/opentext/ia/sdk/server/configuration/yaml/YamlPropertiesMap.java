@@ -10,8 +10,8 @@ import java.util.function.Consumer;
 import org.atteo.evo.inflector.English;
 
 import com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties;
-import com.opentext.ia.sdk.support.yaml.Value;
-import com.opentext.ia.sdk.support.yaml.YamlMap;
+import com.opentext.ia.sdk.yaml.core.Value;
+import com.opentext.ia.sdk.yaml.core.YamlMap;
 
 
 class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveConfigurationProperties {

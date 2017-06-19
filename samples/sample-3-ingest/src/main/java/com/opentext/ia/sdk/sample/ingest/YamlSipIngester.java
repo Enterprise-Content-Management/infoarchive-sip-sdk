@@ -17,11 +17,11 @@ import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
 import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedConfigurer;
-import com.opentext.ia.sdk.server.configuration.yaml.YamlConfiguration;
 import com.opentext.ia.sdk.sip.*;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 import com.opentext.ia.sdk.support.io.StringStream;
-import com.opentext.ia.sdk.support.resource.ResourceResolver;
+import com.opentext.ia.sdk.yaml.configuration.YamlConfiguration;
+import com.opentext.ia.sdk.yaml.resource.ResourceResolver;
 
 
 public class YamlSipIngester {

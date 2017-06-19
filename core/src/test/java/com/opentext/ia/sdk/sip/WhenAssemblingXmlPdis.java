@@ -17,9 +17,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.opentext.ia.sdk.support.io.MemoryBuffer;
-import com.opentext.ia.sdk.support.test.TestCase;
 import com.opentext.ia.sdk.support.xml.XmlBuilder;
 import com.opentext.ia.sdk.support.xml.XmlUtil;
+import com.opentext.ia.sdk.test.TestCase;
 
 
 public class WhenAssemblingXmlPdis extends TestCase {

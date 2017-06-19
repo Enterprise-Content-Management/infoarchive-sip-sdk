@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import com.opentext.ia.sdk.sip.Template;
 import com.opentext.ia.sdk.support.datetime.Dates;
-import com.opentext.ia.sdk.support.test.TestCase;
+import com.opentext.ia.sdk.test.TestCase;
 
 
 public class WhenReplacingPatternsUsingVelocity extends TestCase {

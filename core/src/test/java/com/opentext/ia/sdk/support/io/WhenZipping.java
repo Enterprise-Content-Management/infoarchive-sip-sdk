@@ -19,7 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.opentext.ia.sdk.support.test.TestCase;
+import com.opentext.ia.sdk.test.TestCase;
 
 
 public class WhenZipping extends TestCase {

@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import com.opentext.ia.sdk.support.test.RandomData;
+import com.opentext.ia.sdk.test.RandomData;
 
 
 public class WhenReadingRepeatableInputStreamMultipleTimes {

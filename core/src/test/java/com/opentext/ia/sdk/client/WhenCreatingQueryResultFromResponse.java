@@ -15,7 +15,7 @@ import org.junit.Test;
 import com.opentext.ia.sdk.client.api.QueryResult;
 import com.opentext.ia.sdk.client.impl.QueryResultFactory;
 import com.opentext.ia.sdk.support.http.Response;
-import com.opentext.ia.sdk.support.test.RandomData;
+import com.opentext.ia.sdk.test.RandomData;
 
 
 public class WhenCreatingQueryResultFromResponse {
