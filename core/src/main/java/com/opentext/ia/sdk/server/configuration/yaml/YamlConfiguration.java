@@ -36,6 +36,7 @@ public class YamlConfiguration {
       ConvertTopLevelMapOfMapsToSequences.class,
       EnsureEnumConstant.class,
       InsertDefaultReferences.class,
+      ConvertSingularCollectionReferencesToSequences.class,
       InsertDefaultValues.class
   );
   private static final String NAME = "name";

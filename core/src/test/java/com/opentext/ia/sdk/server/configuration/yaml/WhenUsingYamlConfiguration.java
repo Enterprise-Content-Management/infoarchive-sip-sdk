@@ -20,14 +20,16 @@ import com.opentext.ia.sdk.support.yaml.YamlMap;
 
 public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveConfigurationProperties {
 
-  private static final String TENANT = "tenant";
   private static final String NAME = "name";
   private static final String DEFAULT = "default";
   private static final String CONTENT = "content";
   private static final String RESOURCE = "resource";
   private static final String TENANTS = "tenants";
+  private static final String TENANT = "tenant";
   private static final String APPLICATIONS = "applications";
   private static final String SPACES = "spaces";
+  private static final String HOLDINGS = "holdings";
+  private static final String CONFIRMATIONS = "confirmations";
 
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
@@ -114,7 +116,7 @@ public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveC
   @Test
   public void shouldReplaceTopLevelMapOfMapsWithSequence() {
     String name = someName();
-    yaml.put(APPLICATIONS, new YamlMap().put(name, new YamlMap().put("type", "ACTIVE_ARCHIVING")));
+    yaml.put(APPLICATIONS, new YamlMap().put(name, new YamlMap().put(TYPE, "ACTIVE_ARCHIVING")));
 
     normalizeYaml();
 
@@ -123,13 +125,13 @@ public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveC
 
   @Test
   public void shouldConvertEnumValue() {
-    yaml.put(APPLICATIONS, Arrays.asList(new YamlMap().put("type", "active archiving")));
-    yaml.put("confirmations", Arrays.asList(new YamlMap().put("types", Arrays.asList("receipt", "invalid"))));
+    yaml.put(APPLICATIONS, Arrays.asList(new YamlMap().put(TYPE, "active archiving")));
+    yaml.put(CONFIRMATIONS, Arrays.asList(new YamlMap().put("types", Arrays.asList("receipt", "invalid"))));
 
     normalizeYaml();
 
-    assertValue("Type", "ACTIVE_ARCHIVING", yaml.get(APPLICATIONS, 0, "type"));
-    assertValue("Types", "RECEIPT", yaml.get("confirmations", 0, "types", 0));
+    assertValue(TYPE, "ACTIVE_ARCHIVING", yaml.get(APPLICATIONS, 0, TYPE));
+    assertValue("Types", "RECEIPT", yaml.get(CONFIRMATIONS, 0, "types", 0));
   }
 
   @Test
@@ -165,17 +167,29 @@ public class WhenUsingYamlConfiguration extends TestCase implements InfoArchiveC
   @Test
   public void shouldInsertDefaultValues() {
     yaml.put("appExportPipelines", Arrays.asList(new YamlMap().put(NAME, someName())));
-    yaml.put("holdings", Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put(HOLDINGS, Arrays.asList(new YamlMap().put(NAME, someName())));
     yaml.put("ingests", Arrays.asList(new YamlMap().put(NAME, someName())));
     yaml.put("receiverNodes", Arrays.asList(new YamlMap().put(NAME, someName())));
 
     normalizeYaml();
 
     assertTrue("appExportPipeline.includesContent", yaml.get("appExportPipelines", 0, "includesContent").toBoolean());
-    assertValue("holding.xdbMode", "PRIVATE", yaml.get("holdings", 0, "xdbMode"));
+    assertValue("holding.xdbMode", "PRIVATE", yaml.get(HOLDINGS, 0, "xdbMode"));
     assertValue("ingest.processors.format", "xml", yaml.get("ingests", 0, "content", "format"));
     assertTrue("ingest.processors.xml", yaml.get("ingests", 0, "content", "text").toString().contains("sip.download"));
     assertValue("receiverNode.sips.format", "sip_zip", yaml.get("receiverNodes", 0, "sips", 0, "format"));
+  }
+
+  @Test
+  public void shouldReplaceSingularObjectReferenceWithSequence() throws IOException {
+    String name = someName();
+    yaml.put(HOLDINGS, Arrays.asList(new YamlMap().put(NAME, name)))
+        .put(CONFIRMATIONS, Arrays.asList(new YamlMap().put("holding", name)));
+
+    normalizeYaml();
+
+    assertValue("Sequence of references not created", name, yaml.get(CONFIRMATIONS, 0, HOLDINGS, 0));
+    assertFalse("Singular reference not removed", yaml.get(CONFIRMATIONS, 0).toMap().containsKey("holding"));
   }
 
 }

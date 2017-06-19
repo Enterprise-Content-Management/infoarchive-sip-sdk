@@ -53,7 +53,8 @@ class EnsureEnumConstant extends PropertyVisitor {
           .map(this::toEnum)
           .collect(Collectors.toList());
     }
-    map.put(property, newValue);
+    Optional.ofNullable(newValue)
+        .ifPresent(v -> map.put(property, v));
   }
 
   private String toEnum(String text) {

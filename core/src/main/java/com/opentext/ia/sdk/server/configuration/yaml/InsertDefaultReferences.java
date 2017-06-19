@@ -86,22 +86,22 @@ public class InsertDefaultReferences extends PropertyVisitor {
   protected void visitProperty(Visit visit, String property) {
     YamlMap yaml = visit.getMap();
     if (!yaml.containsKey(property)) {
-      yaml.put(property, getDefaultValueFor(visit, property));
+      getDefaultValueFor(visit, property)
+          .ifPresent(defaultValue -> yaml.put(property, defaultValue));
     }
   }
 
-  private String getDefaultValueFor(Visit visit, String type) {
+  private Optional<String> getDefaultValueFor(Visit visit, String type) {
     String idProperty = idPropertyFor(type);
     List<Value> instances = visit.getRootMap().get(English.plural(type)).toList();
     if (instances.size() == 1) {
-      return instances.get(0).toMap().get(idProperty).toString();
+      return Optional.of(instances.get(0).toMap().get(idProperty).toString());
     }
     return instances.stream()
         .map(Value::toMap)
         .filter(map -> map.get(DEFAULT).toBoolean())
         .map(map -> map.get(idProperty).toString())
-        .findAny()
-        .orElse(null);
+        .findAny();
   }
 
   public static String idPropertyFor(String type) {
