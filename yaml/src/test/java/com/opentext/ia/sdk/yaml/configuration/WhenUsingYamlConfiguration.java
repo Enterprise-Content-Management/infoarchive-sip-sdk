@@ -215,7 +215,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   @Test
-  public void shouldAddNamespacesToXquery() throws Exception {
+  public void shouldAddNamespaceDeclarationsToXquery() throws Exception {
     String prefix = "n";
     String uri = someUri();
     String text = "current-dateTime()";
@@ -224,7 +224,6 @@ public class WhenUsingYamlConfiguration extends TestCase {
             .put("uri", uri)))
         .put("xdbLibraryPolicies", Arrays.asList(new YamlMap()
             .put("closeHintDateQuery", new YamlMap()
-                .put("namespaces", Arrays.asList(prefix))
                 .put("text", text))));
 
     normalizeYaml();

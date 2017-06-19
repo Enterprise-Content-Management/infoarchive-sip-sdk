@@ -23,11 +23,13 @@ class InsertDefaultReferences extends PropertyVisitor {
   private static final String XDB_STORE = "xdbStore";
   private static final String SEARCH = "search";
   private static final String SEARCH_COMPOSITION = "searchComposition";
+  private static final String NAMESPACE = "namespace";
   private static final Map<String, Collection<String>> REFERENCE_PROPERTIES_BY_PATH_REGEX = referencePropertiesByPathRegex();
 
   private static Map<String, Collection<String>> referencePropertiesByPathRegex() {
     Map<String, Collection<String>> result = new HashMap<>();
     result.put("/.*/content", Arrays.asList(APPLICATION, "store"));
+    result.put("/.+/(q|.+Q)uery", Arrays.asList(NAMESPACE));
     result.put("/aics/\\d", Arrays.asList(APPLICATION));
     result.put("/aips/\\d", Arrays.asList(APPLICATION, "xdbLibrary"));
     result.put("/applicationCategories/\\d", Arrays.asList(TENANT));
@@ -49,8 +51,9 @@ class InsertDefaultReferences extends PropertyVisitor {
     result.put("/ingestNodes/\\d", Arrays.asList(APPLICATION));
     result.put("/orders/\\d", Arrays.asList(APPLICATION));
     result.put("/pdis/\\d", Arrays.asList(APPLICATION));
+    result.put("/pdis/\\d/context/text/data/\\d/indexes", Arrays.asList(NAMESPACE));
     result.put("/pdiCryptoes/\\d", Arrays.asList(APPLICATION));
-    result.put("/pdiSchemas/\\d", Arrays.asList(APPLICATION, "namespace"));
+    result.put("/pdiSchemas/\\d", Arrays.asList(APPLICATION, NAMESPACE));
     result.put("/queries/\\d", Arrays.asList(APPLICATION, "order", "queryQuota"));
     result.put("/queryQuotas/\\d", Arrays.asList(APPLICATION));
     result.put("/receiverNodes/\\d", Arrays.asList(APPLICATION));
@@ -92,8 +95,15 @@ class InsertDefaultReferences extends PropertyVisitor {
   }
 
   private Optional<String> getDefaultValueFor(Visit visit, String type) {
-    String idProperty = idPropertyFor(type);
-    List<Value> instances = visit.getRootMap().get(English.plural(type)).toList();
+    return getDefaultInstance(visit, English.plural(type), idPropertyFor(type));
+  }
+
+  private String idPropertyFor(String type) {
+    return NAMESPACE.equals(type) ? "prefix" : NAME;
+  }
+
+  private Optional<String> getDefaultInstance(Visit visit, String collection, String idProperty) {
+    List<Value> instances = visit.getRootMap().get(collection).toList();
     if (instances.size() == 1) {
       return Optional.of(instances.get(0).toMap().get(idProperty).toString());
     }
@@ -102,10 +112,6 @@ class InsertDefaultReferences extends PropertyVisitor {
         .filter(map -> map.get(DEFAULT).toBoolean())
         .map(map -> map.get(idProperty).toString())
         .findAny();
-  }
-
-  public static String idPropertyFor(String type) {
-    return "namespace".equals(type) ? "uri" : NAME;
   }
 
 }

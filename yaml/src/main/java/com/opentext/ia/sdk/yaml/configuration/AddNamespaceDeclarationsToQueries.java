@@ -35,13 +35,13 @@ class AddNamespaceDeclarationsToQueries implements Visitor {
     return String.format("declare namespace %s = \"%s\";", prefix, namespaceUriByPrefix(root, prefix));
   }
 
-  private String namespaceUriByPrefix(YamlMap root, Value uri) {
+  private String namespaceUriByPrefix(YamlMap root, Value prefix) {
     return root.get(NAMESPACES).toList().stream()
         .map(Value::toMap)
-        .filter(m -> uri.equals(m.get("prefix")))
+        .filter(m -> prefix.equals(m.get("prefix")))
         .map(m -> m.get("uri").toString())
         .findAny()
-        .orElse(uri.toString());
+        .orElse(prefix.toString());
   }
 
 }
