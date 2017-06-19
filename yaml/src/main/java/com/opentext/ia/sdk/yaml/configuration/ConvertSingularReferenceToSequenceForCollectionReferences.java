@@ -23,6 +23,9 @@ class ConvertSingularReferenceToSequenceForCollectionReferences extends PathVisi
   private static Map<String, Collection<String>> collectionReferencesByPathRegex() {
     Map<String, Collection<String>> result = new HashMap<>();
     result.put("/confirmations/\\d", Arrays.asList("holding"));
+    result.put("/holdings/\\d", Arrays.asList("ingestNode"));
+    result.put("/holdingCryptoes/\\d", Arrays.asList("pdiCrypto"));
+    result.put("/queries/\\d", Arrays.asList("aic"));
     return result;
   }
 

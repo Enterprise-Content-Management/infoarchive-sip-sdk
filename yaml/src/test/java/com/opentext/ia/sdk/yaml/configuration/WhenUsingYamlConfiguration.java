@@ -23,13 +23,16 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String DEFAULT = "default";
   private static final String CONTENT = "content";
   private static final String RESOURCE = "resource";
+  private static final String TYPE = "type";
   private static final String TENANTS = "tenants";
   private static final String TENANT = "tenant";
   private static final String APPLICATIONS = "applications";
   private static final String SPACES = "spaces";
   private static final String HOLDINGS = "holdings";
   private static final String CONFIRMATIONS = "confirmations";
-  private static final String TYPE = "type";
+  private static final String QUERIES = "queries";
+  private static final String XDB_PDI_CONFIGS = "xdbPdiConfigs";
+  private static final String OPERANDS = "operands";
 
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
@@ -190,6 +193,25 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
     assertValue("Sequence of references not created", name, yaml.get(CONFIRMATIONS, 0, HOLDINGS, 0));
     assertFalse("Singular reference not removed", yaml.get(CONFIRMATIONS, 0).toMap().containsKey("holding"));
+  }
+
+  @Test
+  public void shouldReplaceNestedMapOfMapsWithSequence() throws Exception {
+    String query = someName();
+    String operand = someName();
+    String path = someName();
+    yaml.put(QUERIES, Arrays.asList(new YamlMap()
+        .put(NAME, query)
+        .put(XDB_PDI_CONFIGS, new YamlMap()
+            .put(OPERANDS, new YamlMap()
+                .put(operand, new YamlMap()
+                    .put("path", path))))));
+
+    normalizeYaml();
+
+    assertValue("Name", query, yaml.get(QUERIES, 0, NAME));
+    assertValue("Operand", operand, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, NAME));
+    assertValue("Path", path, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, "path"));
   }
 
 }

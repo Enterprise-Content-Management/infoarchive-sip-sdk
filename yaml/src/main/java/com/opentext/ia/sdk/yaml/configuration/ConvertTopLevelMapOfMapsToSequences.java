@@ -3,8 +3,7 @@
  */
 package com.opentext.ia.sdk.yaml.configuration;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 import com.opentext.ia.sdk.yaml.core.*;
 
@@ -21,9 +20,10 @@ class ConvertTopLevelMapOfMapsToSequences implements Visitor {
   @Override
   public void accept(Visit visit) {
     YamlMap yaml = visit.getMap();
+    Consumer<Entry> replaceMapOfMapsWithSequence = new MapOfMapsToSequence(yaml);
     yaml.entries()
         .filter(entry -> isMapOfMaps(entry.getValue().toMap()))
-        .forEach(entry -> replaceWithSequence(entry, yaml));
+        .forEach(replaceMapOfMapsWithSequence);
   }
 
   private boolean isMapOfMaps(YamlMap yaml) {
@@ -33,16 +33,6 @@ class ConvertTopLevelMapOfMapsToSequences implements Visitor {
         .filter(nestedMap -> !nestedMap.containsKey(NAME))
         .count();
     return numChildMapsWithoutName > 0 && numChildMapsWithoutName == yaml.values().count();
-  }
-
-  private void replaceWithSequence(Entry entry, YamlMap yaml) {
-    yaml.put(entry.getKey(), toSequence(entry.getValue().toMap()));
-  }
-
-  private List<?> toSequence(YamlMap map) {
-    return map.entries()
-        .map(Entry::toMap)
-        .collect(Collectors.toList());
   }
 
 }
