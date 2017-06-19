@@ -174,7 +174,9 @@ public class PropertiesBasedConfigurer implements ApplicationConfigurer, InfoArc
       if (result == null) {
         result = restClient.refresh(collection).byName(name);
       }
-      Objects.requireNonNull(result, "Could not create item in " + nameOf(collectionType));
+      if (result == null) {
+        throw new IllegalStateException("Could not create item in " + nameOf(collectionType));
+      }
     }
     return result;
   }

@@ -2,7 +2,7 @@ tenant:
   name: TENANT
 
 xdbFederation:
-  name: animal2
+  name: animal
   password: test
   uri: xhive://localhost:2910
 
