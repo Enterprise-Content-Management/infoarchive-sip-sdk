@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import com.opentext.ia.sdk.yaml.core.*;
 
 
-public class ConvertTopLevelMapOfMapsToSequences implements Visitor {
+class ConvertTopLevelMapOfMapsToSequences implements Visitor {
 
   private static final String NAME = "name";
 

@@ -11,7 +11,7 @@ import com.opentext.ia.sdk.yaml.core.YamlMap;
 import com.opentext.ia.sdk.yaml.resource.ResourceResolver;
 
 
-public class InsertDefaultValues extends PathVisitor {
+class InsertDefaultValues extends PathVisitor {
 
   private static final String FORMAT = "format";
   private static final Map<String, Collection<Default>> DEFAULT_PROPERTIES_BY_PATH_REGEX = defaultValuesByPathRegex();
@@ -67,7 +67,7 @@ public class InsertDefaultValues extends PathVisitor {
     return result;
   }
 
-  public InsertDefaultValues() {
+  InsertDefaultValues() {
     super(DEFAULT_PROPERTIES_BY_PATH_REGEX.keySet());
   }
 

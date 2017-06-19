@@ -13,7 +13,7 @@ import com.opentext.ia.sdk.yaml.core.Visit;
 import com.opentext.ia.sdk.yaml.core.YamlMap;
 
 
-public class InsertDefaultReferences extends PropertyVisitor {
+class InsertDefaultReferences extends PropertyVisitor {
 
   private static final String NAME = "name";
   private static final String DEFAULT = "default";
@@ -78,7 +78,7 @@ public class InsertDefaultReferences extends PropertyVisitor {
     return result;
   }
 
-  public InsertDefaultReferences() {
+  InsertDefaultReferences() {
     super(REFERENCE_PROPERTIES_BY_PATH_REGEX);
   }
 

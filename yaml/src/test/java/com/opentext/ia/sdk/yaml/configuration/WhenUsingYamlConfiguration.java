@@ -181,7 +181,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   @Test
-  public void shouldReplaceSingularObjectReferenceWithSequence() throws IOException {
+  public void shouldReplaceSingularObjectReferenceWithSequenceForReferenceCollections() throws IOException {
     String name = someName();
     yaml.put(HOLDINGS, Arrays.asList(new YamlMap().put(NAME, name)))
         .put(CONFIRMATIONS, Arrays.asList(new YamlMap().put("holding", name)));

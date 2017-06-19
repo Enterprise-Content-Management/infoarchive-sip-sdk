@@ -15,7 +15,7 @@ import com.opentext.ia.sdk.yaml.core.Visit;
 import com.opentext.ia.sdk.yaml.core.YamlMap;
 
 
-public class ConvertSingularCollectionReferencesToSequences extends PathVisitor {
+class ConvertSingularReferenceToSequenceForCollectionReferences extends PathVisitor {
 
   private static final Map<String, Collection<String>> COLLECTION_REFERENCES_BY_PATH_REGEX
       = collectionReferencesByPathRegex();
@@ -27,7 +27,7 @@ public class ConvertSingularCollectionReferencesToSequences extends PathVisitor 
   }
 
 
-  public ConvertSingularCollectionReferencesToSequences() {
+  ConvertSingularReferenceToSequenceForCollectionReferences() {
     super(COLLECTION_REFERENCES_BY_PATH_REGEX.keySet());
   }
 
