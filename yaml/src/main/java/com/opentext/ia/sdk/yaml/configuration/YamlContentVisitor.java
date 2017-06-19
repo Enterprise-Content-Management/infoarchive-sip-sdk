@@ -10,6 +10,8 @@ import com.opentext.ia.sdk.yaml.core.YamlMap;
 
 abstract class YamlContentVisitor implements Visitor {
 
+  protected static final String DATA = "data";
+  protected static final String TEXT = "text";
   private final String type;
 
   YamlContentVisitor(String type) {
@@ -33,6 +35,6 @@ abstract class YamlContentVisitor implements Visitor {
     });
   }
 
-  abstract void visitContent(Visit visit, YamlMap contentMap);
+  abstract void visitContent(Visit visit, YamlMap content);
 
 }

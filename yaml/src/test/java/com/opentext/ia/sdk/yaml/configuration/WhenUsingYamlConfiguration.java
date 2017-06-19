@@ -256,32 +256,44 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   @Test
-  public void shouldReplaceNamespacePrefixesInXdbIndexDefinitions() throws Exception {
-    String prefix = "n";
-    String uri = someUri();
+  public void shouldTranslatePdiYamlToXml() {
+    String prefix1 = "n";
+    String uri1 = someUri();
+    String prefix2 = "ex";
+    String uri2 = someUri();
     String name1 = 'a' + someName();
     String name2 = 'z' + someName();
     yaml.put("namespaces", Arrays.asList(new YamlMap()
-            .put("prefix", prefix)
-            .put("uri", uri)))
+            .put("prefix", prefix1)
+            .put("uri", uri1),
+        new YamlMap()
+            .put("prefix", prefix2)
+            .put("uri", uri2)))
         .put(PDIS, Arrays.asList(new YamlMap()
             .put(NAME, someName())
             .put(CONTENT, new YamlMap()
                 .put("format", "yaml")
                 .put(TEXT, new YamlMap()
                     .put(DATA, Arrays.asList(new YamlMap()
+                        .put("id", "pdi.index.creator")
+                        .put("key.document.name", "xdb.pdi.name")
                         .put(INDEXES, new YamlMap()
                             .put(name1, new YamlMap()
                                 .put(PATH, "/n:gnu/n:gnat"))
                             .put(name2, new YamlMap()
-                                .put(PATH, "/n:foo/n:bar[n:baz]")))))))));
+                                .put(PATH, "/n:foo/n:bar[n:baz]"))),
+                    new YamlMap()
+                        .put("id", "pdi.transformer")
+                        .put("result.schema", prefix2)
+                        .put("level", 2)))))));
 
     normalizeYaml();
 
-    assertValue("path #1", String.format("/{%1$s}:gnu/{%1$s}:gnat", uri),
+    assertValue("path #1", String.format("/{%1$s}:gnu/{%1$s}:gnat", uri1),
         yaml.get(PDIS, 0, CONTENT, TEXT, DATA, 0, INDEXES, 0, PATH));
-    assertValue("path #2", String.format("/{%1$s}:foo/{%1$s}:bar[{%1$s}:baz]", uri),
+    assertValue("path #2", String.format("/{%1$s}:foo/{%1$s}:bar[{%1$s}:baz]", uri1),
         yaml.get(PDIS, 0, CONTENT, TEXT, DATA, 0, INDEXES, 1, PATH));
+    assertValue("Schema", uri2, yaml.get(PDIS, 0, CONTENT, TEXT, DATA, 1, "result.schema"));
   }
 
 }

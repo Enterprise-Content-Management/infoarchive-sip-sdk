@@ -23,7 +23,7 @@ class ReplacePdiIndexNamespaceWithUri extends YamlContentVisitor {
 
   @Override
   void visitContent(Visit visit, YamlMap content) {
-    content.get("text", "data").toList().stream()
+    content.get(TEXT, DATA).toList().stream()
         .map(Value::toMap)
         .filter(map -> map.containsKey(INDEXES))
         .flatMap(map -> map.get(INDEXES).toList().stream())
