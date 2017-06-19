@@ -214,4 +214,27 @@ public class WhenUsingYamlConfiguration extends TestCase {
     assertValue("Path", path, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, "path"));
   }
 
+  @Test
+  public void shouldAddNamespacesToXquery() throws Exception {
+    String prefix = "n";
+    String uri = someUri();
+    String text = "current-dateTime()";
+    yaml.put("namespaces", Arrays.asList(new YamlMap()
+            .put("prefix", prefix)
+            .put("uri", uri)))
+        .put("xdbLibraryPolicies", Arrays.asList(new YamlMap()
+            .put("closeHintDateQuery", new YamlMap()
+                .put("namespaces", Arrays.asList(prefix))
+                .put("text", text))));
+
+    normalizeYaml();
+
+    assertValue("Query", String.format("declare namespace %s = \"%s\";%n%s", prefix, uri, text),
+        yaml.get("xdbLibraryPolicies", 0, "closeHintDateQuery"));
+  }
+
+  private String someUri() {
+    return String.format("http://%s.com/%s", someName(), someName());
+  }
+
 }

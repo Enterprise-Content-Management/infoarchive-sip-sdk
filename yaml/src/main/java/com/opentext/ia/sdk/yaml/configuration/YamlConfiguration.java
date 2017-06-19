@@ -35,7 +35,8 @@ public class YamlConfiguration {
       InsertDefaultReferences.class,
       InsertDefaultValues.class,
       ConvertSingularReferenceToSequenceForCollectionReferences.class,
-      ConvertNestedMapOfMapsToSequences.class
+      ConvertNestedMapOfMapsToSequences.class,
+      AddNamespaceDeclarationsToQueries.class
   );
   private static final String NAME = "name";
 

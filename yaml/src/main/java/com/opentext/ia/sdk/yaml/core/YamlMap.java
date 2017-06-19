@@ -96,7 +96,7 @@ public class YamlMap {
 
   public Stream<Entry> entries() {
     return data.entrySet().stream()
-        .map(entry -> new Entry(entry.getKey(), new Value(entry.getValue())))
+        .map(entry -> new Entry(this, entry.getKey(), new Value(entry.getValue())))
         .sorted();
   }
 

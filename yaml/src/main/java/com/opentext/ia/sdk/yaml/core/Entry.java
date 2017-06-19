@@ -5,14 +5,21 @@ package com.opentext.ia.sdk.yaml.core;
 
 import java.util.Objects;
 
+
 public class Entry implements Comparable<Entry> {
 
   private final String key;
   private final Value value;
+  private final YamlMap parent;
 
-  public Entry(String key, Value value) {
+  public Entry(YamlMap parent, String key, Value value) {
+    this.parent = parent;
     this.key = key;
     this.value = value;
+  }
+
+  public YamlMap getParent() {
+    return parent;
   }
 
   public String getKey() {
