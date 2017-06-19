@@ -36,7 +36,8 @@ public class YamlConfiguration {
       InsertDefaultValues.class,
       ConvertSingularReferenceToSequenceForCollectionReferences.class,
       ConvertNestedMapOfMapsToSequences.class,
-      AddNamespaceDeclarationsToQueries.class
+      AddNamespaceDeclarationsToQueries.class,
+      ReplacePdiSchemaNamespaceWithName.class
   );
   private static final String NAME = "name";
 
@@ -134,7 +135,7 @@ public class YamlConfiguration {
    * @return the namespace of the PDI
    */
   public String getPdiSchemaName() {
-    return pdiSchema().get("namespace").toString();
+    return pdiSchema().get("name").toString();
   }
 
   private YamlMap pdiSchema() {

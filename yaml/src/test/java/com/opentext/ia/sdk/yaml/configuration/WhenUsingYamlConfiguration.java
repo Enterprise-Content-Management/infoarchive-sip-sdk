@@ -236,4 +236,18 @@ public class WhenUsingYamlConfiguration extends TestCase {
     return String.format("http://%s.com/%s", someName(), someName());
   }
 
+  @Test
+  public void shouldReplacePdiSchemaNamespaceWithName() throws Exception {
+    String prefix = "n";
+    String uri = someUri();
+    yaml.put("namespaces", Arrays.asList(new YamlMap()
+            .put("prefix", prefix)
+            .put("uri", uri)))
+        .put("pdiSchemas", Arrays.asList(new YamlMap()));
+
+    normalizeYaml();
+
+    assertValue("Name\n" + yaml, uri, yaml.get("pdiSchemas", 0, NAME));
+  }
+
 }

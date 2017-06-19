@@ -73,7 +73,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
     putFrom("retentionPolicy",
         RETENTION_POLICY_NAME, NAME);
     putFrom("pdiSchema",
-        PDI_SCHEMA_NAME, NAMESPACE);
+        PDI_SCHEMA_NAME, NAME);
     putContentFrom("pdiSchema", PDI_SCHEMA);
     putContentFrom("pdi", PDI_XML);
     putContentFrom("ingest", INGEST_XML);

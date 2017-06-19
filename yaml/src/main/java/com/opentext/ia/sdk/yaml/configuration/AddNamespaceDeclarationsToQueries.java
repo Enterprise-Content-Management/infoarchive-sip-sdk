@@ -11,7 +11,7 @@ import com.opentext.ia.sdk.yaml.core.*;
 class AddNamespaceDeclarationsToQueries implements Visitor {
 
   private static final String NL = System.getProperty("line.separator");
-  private static final String NAMESPACES = "namespaces";
+  static final String NAMESPACES = "namespaces";
 
   @Override
   public void accept(Visit visit) {
@@ -32,16 +32,7 @@ class AddNamespaceDeclarationsToQueries implements Visitor {
   }
 
   private String namespaceDeclarationFor(YamlMap root, Value prefix) {
-    return String.format("declare namespace %s = \"%s\";", prefix, namespaceUriByPrefix(root, prefix));
-  }
-
-  private String namespaceUriByPrefix(YamlMap root, Value prefix) {
-    return root.get(NAMESPACES).toList().stream()
-        .map(Value::toMap)
-        .filter(m -> prefix.equals(m.get("prefix")))
-        .map(m -> m.get("uri").toString())
-        .findAny()
-        .orElse(prefix.toString());
+    return String.format("declare namespace %s = \"%s\";", prefix, NamespaceUri.byPrefix(root, prefix));
   }
 
 }
