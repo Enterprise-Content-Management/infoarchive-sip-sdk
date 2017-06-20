@@ -7,10 +7,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.opentext.ia.sdk.yaml.core.Entry;
 import com.opentext.ia.sdk.yaml.core.PathVisitor;
 import com.opentext.ia.sdk.yaml.core.Visit;
 import com.opentext.ia.sdk.yaml.core.YamlMap;
@@ -36,12 +34,12 @@ class ConvertNestedMapOfMapsToSequences extends PathVisitor {
   @Override
   public void accept(Visit visit) {
     YamlMap yaml = visit.getMap();
-    Consumer<Entry> replaceMapOfMapsWithSequence = new MapOfMapsToSequence(yaml);
+    MapOfMapsToSequence replaceMapOfMapsWithSequence = new MapOfMapsToSequence(yaml);
     Collection<String> properties = pathRegexesMatching(visit)
         .flatMap(regex -> NESTED_SEQUENCES_BY_PATH_REGEX.get(regex).stream())
         .collect(Collectors.toList());
     yaml.entries()
-        .filter(entry -> properties.contains(entry.getKey()))
+        .filter(entry -> properties.contains(entry.getKey()) && replaceMapOfMapsWithSequence.test(entry))
         .forEach(replaceMapOfMapsWithSequence);
   }
 

@@ -39,7 +39,8 @@ public class YamlConfiguration {
       AddNamespaceDeclarationsToQueries.class,
       ReplacePdiSchemaNamespaceWithName.class,
       ReplacePdiIndexNamespaceWithUri.class,
-      ReplacePdiResultSchemaNamespaceWithUri.class
+      ReplacePdiResultSchemaNamespaceWithUri.class,
+      ReplacePdiYamlWithXml.class
   );
   private static final String NAME = "name";
 

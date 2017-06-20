@@ -3,14 +3,12 @@
  */
 package com.opentext.ia.sdk.yaml.configuration;
 
-import java.util.function.Consumer;
-
-import com.opentext.ia.sdk.yaml.core.*;
+import com.opentext.ia.sdk.yaml.core.Visit;
+import com.opentext.ia.sdk.yaml.core.Visitor;
+import com.opentext.ia.sdk.yaml.core.YamlMap;
 
 
 class ConvertTopLevelMapOfMapsToSequences implements Visitor {
-
-  private static final String NAME = "name";
 
   @Override
   public int maxNesting() {
@@ -20,19 +18,10 @@ class ConvertTopLevelMapOfMapsToSequences implements Visitor {
   @Override
   public void accept(Visit visit) {
     YamlMap yaml = visit.getMap();
-    Consumer<Entry> replaceMapOfMapsWithSequence = new MapOfMapsToSequence(yaml);
+    MapOfMapsToSequence replaceMapOfMapsWithSequence = new MapOfMapsToSequence(yaml);
     yaml.entries()
-        .filter(entry -> isMapOfMaps(entry.getValue().toMap()))
+        .filter(replaceMapOfMapsWithSequence)
         .forEach(replaceMapOfMapsWithSequence);
-  }
-
-  private boolean isMapOfMaps(YamlMap yaml) {
-    long numChildMapsWithoutName = yaml.values()
-        .filter(Value::isMap)
-        .map(Value::toMap)
-        .filter(nestedMap -> !nestedMap.containsKey(NAME))
-        .count();
-    return numChildMapsWithoutName > 0 && numChildMapsWithoutName == yaml.values().count();
   }
 
 }

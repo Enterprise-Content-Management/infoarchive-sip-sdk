@@ -18,7 +18,7 @@ class ReplacePdiResultSchemaNamespaceWithUri extends YamlContentVisitor {
 
   @Override
   void visitContent(Visit visit, YamlMap content) {
-    content.get(TEXT, DATA).toList().stream()
+    content.get(DATA).toList().stream()
         .map(Value::toMap)
         .filter(map -> map.containsKey(RESULT_SCHEMA))
         .forEach(map -> replaceResultSchemaNamespaceWithUri(visit.getRootMap(), map));

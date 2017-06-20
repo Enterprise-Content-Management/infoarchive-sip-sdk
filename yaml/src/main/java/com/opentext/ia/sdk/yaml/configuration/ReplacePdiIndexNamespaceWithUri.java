@@ -6,6 +6,7 @@ package com.opentext.ia.sdk.yaml.configuration;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import com.opentext.ia.sdk.yaml.core.Entry;
 import com.opentext.ia.sdk.yaml.core.Value;
 import com.opentext.ia.sdk.yaml.core.Visit;
 import com.opentext.ia.sdk.yaml.core.YamlMap;
@@ -23,10 +24,14 @@ class ReplacePdiIndexNamespaceWithUri extends YamlContentVisitor {
 
   @Override
   void visitContent(Visit visit, YamlMap content) {
-    content.get(TEXT, DATA).toList().stream()
+    content.get(DATA).toList().stream()
         .map(Value::toMap)
         .filter(map -> map.containsKey(INDEXES))
         .flatMap(map -> map.get(INDEXES).toList().stream())
+        .map(Value::toMap)
+        .filter(map -> map.entries().count() == 1)
+        .flatMap(map -> map.entries())
+        .map(Entry::getValue)
         .map(Value::toMap)
         .filter(map -> map.containsKey(PATH))
         .forEach(map -> replaceNamespacePrefixInPath(visit.getRootMap(), map));

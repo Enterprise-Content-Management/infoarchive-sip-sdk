@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
+ */
 package com.opentext.ia.sdk.yaml.configuration;
 
 import org.atteo.evo.inflector.English;
@@ -19,6 +22,7 @@ abstract class YamlContentVisitor implements Visitor {
   }
 
   @Override
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract") // This *is* the implementation!
   public int maxNesting() {
     return 0;
   }

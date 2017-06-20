@@ -31,6 +31,9 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String SPACES = "spaces";
   private static final String HOLDINGS = "holdings";
   private static final String CONFIRMATIONS = "confirmations";
+  private static final String NAMESPACES = "namespaces";
+  private static final String PREFIX = "prefix";
+  private static final String URI = "uri";
   private static final String QUERIES = "queries";
   private static final String XDB_PDI_CONFIGS = "xdbPdiConfigs";
   private static final String OPERANDS = "operands";
@@ -224,9 +227,9 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String prefix = "n";
     String uri = someUri();
     String text = "current-dateTime()";
-    yaml.put("namespaces", Arrays.asList(new YamlMap()
-            .put("prefix", prefix)
-            .put("uri", uri)))
+    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+            .put(PREFIX, prefix)
+            .put(URI, uri)))
         .put("xdbLibraryPolicies", Arrays.asList(new YamlMap()
             .put("closeHintDateQuery", new YamlMap()
                 .put(TEXT, text))));
@@ -245,9 +248,9 @@ public class WhenUsingYamlConfiguration extends TestCase {
   public void shouldReplacePdiSchemaNamespaceWithName() throws Exception {
     String prefix = "n";
     String uri = someUri();
-    yaml.put("namespaces", Arrays.asList(new YamlMap()
-            .put("prefix", prefix)
-            .put("uri", uri)))
+    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+            .put(PREFIX, prefix)
+            .put(URI, uri)))
         .put("pdiSchemas", Arrays.asList(new YamlMap()));
 
     normalizeYaml();
@@ -263,37 +266,37 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String uri2 = someUri();
     String name1 = 'a' + someName();
     String name2 = 'z' + someName();
-    yaml.put("namespaces", Arrays.asList(new YamlMap()
-            .put("prefix", prefix1)
-            .put("uri", uri1),
+    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+            .put(PREFIX, prefix1)
+            .put(URI, uri1),
         new YamlMap()
-            .put("prefix", prefix2)
-            .put("uri", uri2)))
+            .put(PREFIX, prefix2)
+            .put(URI, uri2)))
         .put(PDIS, Arrays.asList(new YamlMap()
             .put(NAME, someName())
             .put(CONTENT, new YamlMap()
                 .put("format", "yaml")
-                .put(TEXT, new YamlMap()
-                    .put(DATA, Arrays.asList(new YamlMap()
-                        .put("id", "pdi.index.creator")
-                        .put("key.document.name", "xdb.pdi.name")
-                        .put(INDEXES, new YamlMap()
-                            .put(name1, new YamlMap()
-                                .put(PATH, "/n:gnu/n:gnat"))
-                            .put(name2, new YamlMap()
-                                .put(PATH, "/n:foo/n:bar[n:baz]"))),
-                    new YamlMap()
-                        .put("id", "pdi.transformer")
-                        .put("result.schema", prefix2)
-                        .put("level", 2)))))));
+                .put(DATA, Arrays.asList(new YamlMap()
+                    .put("id", "pdi.index.creator")
+                    .put("key.document.name", "xdb.pdi.name")
+                    .put(INDEXES, Arrays.asList(new YamlMap()
+                        .put("path.value.index", new YamlMap()
+                            .put(NAME, name1)
+                            .put(PATH, "/n:gnu/n:gnat")), new YamlMap()
+                        .put("path.value.index", new YamlMap()
+                            .put(NAME, name2)
+                            .put(PATH, "/n:foo/n:bar[n:baz]")))),
+                new YamlMap()
+                    .put("id", "pdi.transformer")
+                    .put("result.schema", prefix2)
+                    .put("level", 2))))));
 
     normalizeYaml();
 
-    assertValue("path #1", String.format("/{%1$s}:gnu/{%1$s}:gnat", uri1),
-        yaml.get(PDIS, 0, CONTENT, TEXT, DATA, 0, INDEXES, 0, PATH));
-    assertValue("path #2", String.format("/{%1$s}:foo/{%1$s}:bar[{%1$s}:baz]", uri1),
-        yaml.get(PDIS, 0, CONTENT, TEXT, DATA, 0, INDEXES, 1, PATH));
-    assertValue("Schema", uri2, yaml.get(PDIS, 0, CONTENT, TEXT, DATA, 1, "result.schema"));
+    String xml = yaml.get(PDIS, 0, CONTENT, TEXT).toString();
+    assertTrue("Schema\n" + xml, xml.contains(String.format("<result.schema>%s</result.schema>", uri2)));
+    assertTrue("path #1", xml.contains(String.format("/{%1$s}:gnu/{%1$s}:gnat", uri1)));
+    assertTrue("path #2", xml.contains(String.format("/{%1$s}:foo/{%1$s}:bar[{%1$s}:baz]", uri1)));
   }
 
 }
