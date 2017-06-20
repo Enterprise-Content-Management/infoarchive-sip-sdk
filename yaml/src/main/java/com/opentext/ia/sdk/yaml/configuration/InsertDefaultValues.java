@@ -18,6 +18,18 @@ class InsertDefaultValues extends PathVisitor {
 
   private static Map<String, Collection<Default>> defaultValuesByPathRegex() {
     Map<String, Collection<Default>> result = new HashMap<>();
+    result.put("/.+/path.value.index", Default.of("buildWithoutLogging", false,
+        "compressed", false,
+        "concurrent", false,
+        "uniqueKeys", true));
+    result.put("/.+/full.text.index", Default.of("convert.terms.to.lowercase", true,
+        "filter.english.stop.words", false,
+        "include.attributes", false,
+        "index.all.text", true,
+        "optimize.leading.wildcard.search", true,
+        "support.phrases", false,
+        "support.scoring", false,
+        "support.start.end.token.flags", false));
     result.put("/appExportPipelines/\\d", Default.of("envelopeFormat", "gzip",
         "includesContent", true,
         "inputFormat", "ROW_COLUMN"));

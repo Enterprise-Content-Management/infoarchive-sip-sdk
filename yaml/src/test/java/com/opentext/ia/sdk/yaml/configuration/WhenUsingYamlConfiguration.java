@@ -40,6 +40,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String PDIS = "pdis";
   private static final String DATA = "data";
   private static final String INDEXES = "indexes";
+  private static final String PATH_VALUE_INDEX = "path.value.index";
   private static final String PATH = "path";
 
   private final YamlMap yaml = new YamlMap();
@@ -264,8 +265,6 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String uri1 = someUri();
     String prefix2 = "ex";
     String uri2 = someUri();
-    String name1 = 'a' + someName();
-    String name2 = 'z' + someName();
     yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
             .put(PREFIX, prefix1)
             .put(URI, uri1),
@@ -280,12 +279,14 @@ public class WhenUsingYamlConfiguration extends TestCase {
                     .put("id", "pdi.index.creator")
                     .put("key.document.name", "xdb.pdi.name")
                     .put(INDEXES, Arrays.asList(new YamlMap()
-                        .put("path.value.index", new YamlMap()
-                            .put(NAME, name1)
+                        .put(someName(), new YamlMap()
+                            .put(TYPE, PATH_VALUE_INDEX)
                             .put(PATH, "/n:gnu/n:gnat")), new YamlMap()
-                        .put("path.value.index", new YamlMap()
-                            .put(NAME, name2)
-                            .put(PATH, "/n:foo/n:bar[n:baz]")))),
+                        .put(someName(), new YamlMap()
+                            .put(TYPE, PATH_VALUE_INDEX)
+                            .put(PATH, "/n:foo/n:bar[n:baz]")), new YamlMap()
+                        .put(someName(), new YamlMap()
+                            .put(TYPE, "full.text.index")))),
                 new YamlMap()
                     .put("id", "pdi.transformer")
                     .put("result.schema", prefix2)
@@ -294,9 +295,11 @@ public class WhenUsingYamlConfiguration extends TestCase {
     normalizeYaml();
 
     String xml = yaml.get(PDIS, 0, CONTENT, TEXT).toString();
-    assertTrue("Schema\n" + xml, xml.contains(String.format("<result.schema>%s</result.schema>", uri2)));
     assertTrue("path #1", xml.contains(String.format("/{%1$s}:gnu/{%1$s}:gnat", uri1)));
     assertTrue("path #2", xml.contains(String.format("/{%1$s}:foo/{%1$s}:bar[{%1$s}:baz]", uri1)));
+    assertTrue("Default compressed", xml.contains("<compressed>false</compressed>"));
+    assertTrue("Default filter.english.stop.words", xml.contains("<filter.english.stop.words>false</filter.english.stop.words>"));
+    assertTrue("Schema", xml.contains(String.format("<result.schema>%s</result.schema>", uri2)));
   }
 
 }
