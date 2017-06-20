@@ -35,6 +35,7 @@ public class YamlConfiguration {
       ConvertSingularReferenceToSequenceForCollectionReferences.class,
       ConvertNestedMapOfMapsToSequences.class,
       ConvertPdiIndexes.class,
+      ConvertIngestProcessors.class,
       EnsureEnumConstant.class,
       InsertDefaultValues.class,
       AddNamespaceDeclarationsToQueries.class,
@@ -42,7 +43,8 @@ public class YamlConfiguration {
       ReplacePdiIndexNamespaceWithUri.class,
       ReplacePdiResultSchemaNamespaceWithUri.class,
       ReplacePdiYamlWithXml.class,
-      ReplaceResultConfigurationHelperYamlWithXml.class
+      ReplaceResultConfigurationHelperYamlWithXml.class,
+      ReplaceIngestYamlWithXml.class
   );
   private static final String NAME = "name";
 

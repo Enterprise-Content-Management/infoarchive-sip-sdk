@@ -88,13 +88,20 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
   private void appendEntry(Entry entry, String indent, StringBuilder xml) {
     String property = entry.getKey();
     Value value = entry.getValue();
-    if (value.isScalar()) {
+    if (value.isEmpty()) {
+      appendEmpty(property, indent, xml);
+    } else if (value.isScalar()) {
       appendScalar(property, value.toString(), indent, xml);
     } else if (value.isList()) {
       appendList(property, value.toList(), indent, xml);
     } else {
       appendMap(property, value.toMap(), indent, xml);
     }
+  }
+
+  private void appendEmpty(String property, String indent, StringBuilder xml) {
+    startTag(property, indent, EnumSet.noneOf(StartTagOptions.class), xml);
+    xml.append("/>").append(NL);
   }
 
   private void appendScalar(String property, String value, String indent, StringBuilder xml) {

@@ -39,6 +39,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String QUERIES = "queries";
   private static final String XDB_PDI_CONFIGS = "xdbPdiConfigs";
   private static final String OPERANDS = "operands";
+  private static final String INGESTS = "ingests";
+  private static final String INGEST = "ingest";
   private static final String PDIS = "pdis";
   private static final String DATA = "data";
   private static final String INDEXES = "indexes";
@@ -182,15 +184,15 @@ public class WhenUsingYamlConfiguration extends TestCase {
   public void shouldInsertDefaultValues() {
     yaml.put("appExportPipelines", Arrays.asList(new YamlMap().put(NAME, someName())));
     yaml.put(HOLDINGS, Arrays.asList(new YamlMap().put(NAME, someName())));
-    yaml.put("ingests", Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put(INGESTS, Arrays.asList(new YamlMap().put(NAME, someName())));
     yaml.put("receiverNodes", Arrays.asList(new YamlMap().put(NAME, someName())));
 
     normalizeYaml();
 
     assertTrue("appExportPipeline.includesContent", yaml.get("appExportPipelines", 0, "includesContent").toBoolean());
     assertValue("holding.xdbMode", "PRIVATE", yaml.get(HOLDINGS, 0, "xdbMode"));
-    assertValue("ingest.processors.format", XML, yaml.get("ingests", 0, "content", FORMAT));
-    assertTrue("ingest.processors.xml", yaml.get("ingests", 0, "content", TEXT).toString().contains("sip.download"));
+    assertValue("ingest.processors.format", XML, yaml.get(INGESTS, 0, "content", FORMAT));
+    assertTrue("ingest.processors.xml", yaml.get(INGESTS, 0, "content", TEXT).toString().contains("sip.download"));
     assertValue("receiverNode.sips.format", "sip_zip", yaml.get("receiverNodes", 0, "sips", 0, FORMAT));
   }
 
@@ -354,6 +356,45 @@ public class WhenUsingYamlConfiguration extends TestCase {
         + "    <type>DATE_TIME</type>\n"
         + "  </element>\n"
         + "</resultConfigurationHelper>\n", xml);
+  }
+
+
+  @Test
+  public void shouldTranslateIngestYamlToXml() {
+    yaml.put(INGEST, new YamlMap()
+            .put(NAME, "PhoneCalls-ingest")
+            .put(CONTENT, new YamlMap()
+                .put(FORMAT, "yaml")
+                .put("processors", Arrays.asList(
+                    new YamlMap()
+                        .put("id", "sip.download"),
+                    new YamlMap()
+                        .put("id", "pdi.index.creator")
+                        .put(DATA, new YamlMap()
+                            .put("key.document.name", "xdb.pdi.name")
+                            .put("indexes", null))))));
+
+    normalizeYaml();
+
+    YamlMap content = yaml.get(INGESTS, 0, CONTENT).toMap();
+    assertValue("Format", XML, content.get(FORMAT));
+    String xml = content.get(TEXT).toString();
+    assertEquals("XML", "<processors>\n"
+        + "  <processor>\n"
+        + "    <class>com.emc.ia.ingestion.processor.downloader.SipContentDownloader</class>\n"
+        + "    <id>sip.download</id>\n"
+        + "    <name>SIP downloader processor</name>\n"
+        + "  </processor>\n"
+        + "  <processor>\n"
+        + "    <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>\n"
+        + "    <data>\n"
+        + "      <indexes/>\n"
+        + "      <key.document.name>xdb.pdi.name</key.document.name>\n"
+        + "    </data>\n"
+        + "    <id>pdi.index.creator</id>\n"
+        + "    <name>XDB PDI index processor</name>\n"
+        + "  </processor>\n"
+        + "</processors>\n", xml);
   }
 
 }
