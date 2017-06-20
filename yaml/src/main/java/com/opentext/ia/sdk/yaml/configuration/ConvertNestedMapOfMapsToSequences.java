@@ -24,6 +24,7 @@ class ConvertNestedMapOfMapsToSequences extends PathVisitor {
 
   private static Map<String, Collection<String>> nestedSequencesByPathRegex() {
     Map<String, Collection<String>> result = new HashMap<>();
+    result.put("/ingests/\\d/content/processors/\\d/data", Arrays.asList("indexes"));
     result.put("/pdis/\\d/content/data/\\d", Arrays.asList("indexes"));
     result.put("/queries/\\d/xdbPdiConfigs", Arrays.asList("operands"));
     result.put("/resultConfigurationHelpers/\\d/content", Arrays.asList("data"));

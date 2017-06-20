@@ -18,10 +18,10 @@ class InsertDefaultValues extends PathVisitor {
 
   private static Map<String, Collection<Default>> defaultValuesByPathRegex() {
     Map<String, Collection<Default>> result = new HashMap<>();
-    result.put("/.+/path.value.index", Default.of("buildWithoutLogging", false,
+    result.put("/.+/path.value.index", Default.of("build.without.logging", false,
         "compressed", false,
         "concurrent", false,
-        "uniqueKeys", true));
+        "unique.keys", true));
     result.put("/.+/full.text.index", Default.of("convert.terms.to.lowercase", true,
         "filter.english.stop.words", false,
         "include.attributes", false,
@@ -34,14 +34,6 @@ class InsertDefaultValues extends PathVisitor {
         "includesContent", true,
         "inputFormat", "ROW_COLUMN"));
     result.put("/appExportConfigurations/\\d", Default.of("exportType", "asynchronous"));
-    result.put("/fullTextIndexes/\\d", Default.of("convert.terms.to.lowercase", true,
-        "filter.english.stop.words", false,
-        "include.attributes", false,
-        "index.all.text", true,
-        "optimize.leading.wildcard.search", true,
-        "support.phrases", false,
-        "support.scoring", false,
-        "support.start.end.token.flags", false));
     result.put("/holdings/\\d", Default.of("ciHashValidationEnabled", true,
         "keepSipAfterCommitEnabled", false,
         "logStoreEnabled", true,
@@ -56,10 +48,6 @@ class InsertDefaultValues extends PathVisitor {
        "enumerationMaxResultCount", 10,
        "enumerationMinusRunning", true,
        "logLevel", "INFO"));
-    result.put("/.*/pathValueIndex", Default.of("buildWithoutLogging", false,
-        "compressed", false,
-        "concurrent", false,
-        "uniqueKeys", true));
     result.put("/queries/\\d", Default.of("resultRootElement", "result",
         "resultRootNsEnabled", true));
     result.put("/queryQuota", Default.of("aipQuota", 0,

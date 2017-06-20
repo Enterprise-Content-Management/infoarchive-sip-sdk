@@ -300,8 +300,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
     normalizeYaml();
 
     String xml = yaml.get(PDIS, 0, CONTENT, TEXT).toString();
-    assertTrue("path #1", xml.contains(String.format("/{%1$s}:gnu/{%1$s}:gnat", uri1)));
-    assertTrue("path #2", xml.contains(String.format("/{%1$s}:foo/{%1$s}:bar[{%1$s}:baz]", uri1)));
+    assertTrue("path #1", xml.contains(String.format("/{%1$s}gnu/{%1$s}gnat", uri1)));
+    assertTrue("path #2", xml.contains(String.format("/{%1$s}foo/{%1$s}bar[{%1$s}baz]", uri1)));
     assertTrue("Default compressed", xml.contains("<compressed>false</compressed>"));
     assertTrue("Default filter.english.stop.words", xml.contains("<filter.english.stop.words>false</filter.english.stop.words>"));
     assertTrue("Schema", xml.contains(String.format("<result.schema>%s</result.schema>", uri2)));
@@ -361,7 +361,10 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
   @Test
   public void shouldTranslateIngestYamlToXml() {
-    yaml.put(INGEST, new YamlMap()
+    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+            .put(PREFIX, "ri")
+            .put(URI, "urn:x-emc:ia:schema:ri")))
+        .put(INGEST, new YamlMap()
             .put(NAME, "PhoneCalls-ingest")
             .put(CONTENT, new YamlMap()
                 .put(FORMAT, "yaml")
@@ -372,7 +375,15 @@ public class WhenUsingYamlConfiguration extends TestCase {
                         .put("id", "pdi.index.creator")
                         .put(DATA, new YamlMap()
                             .put("key.document.name", "xdb.pdi.name")
-                            .put("indexes", null))))));
+                            .put(INDEXES, null)),
+                    new YamlMap()
+                        .put("id", "ri.index")
+                        .put(DATA, new YamlMap()
+                            .put("key.document.name", "xdb.ri.name")
+                            .put(INDEXES, new YamlMap()
+                                .put("key", new YamlMap()
+                                    .put(TYPE, PATH_VALUE_INDEX)
+                                    .put(PATH, "/ri:ris/ri:ri[@key<STRING>]"))))))));
 
     normalizeYaml();
 
@@ -393,6 +404,24 @@ public class WhenUsingYamlConfiguration extends TestCase {
         + "    </data>\n"
         + "    <id>pdi.index.creator</id>\n"
         + "    <name>XDB PDI index processor</name>\n"
+        + "  </processor>\n"
+        + "  <processor>\n"
+        + "    <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>\n"
+        + "    <data>\n"
+        + "      <indexes>\n"
+        + "        <path.value.index>\n"
+        + "          <build.without.logging>false</build.without.logging>\n"
+        + "          <compressed>false</compressed>\n"
+        + "          <concurrent>false</concurrent>\n"
+        + "          <name>key</name>\n"
+        + "          <path>/{urn:x-emc:ia:schema:ri}ris/{urn:x-emc:ia:schema:ri}ri[@key&lt;STRING&gt;]</path>\n"
+        + "          <unique.keys>true</unique.keys>\n"
+        + "        </path.value.index>\n"
+        + "      </indexes>\n"
+        + "      <key.document.name>xdb.ri.name</key.document.name>\n"
+        + "    </data>\n"
+        + "    <id>ri.index</id>\n"
+        + "    <name>RI XDB indexes</name>\n"
         + "  </processor>\n"
         + "</processors>\n", xml);
   }

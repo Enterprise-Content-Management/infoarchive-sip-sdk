@@ -9,15 +9,17 @@ import com.opentext.ia.sdk.yaml.core.Value;
 import com.opentext.ia.sdk.yaml.core.YamlMap;
 
 
-public class ConvertPdiIndexes extends ConvertIndexes {
+class ReplaceIngestIndexNamespaceWithUri extends ReplaceIndexNamespaceWithUri {
 
-  ConvertPdiIndexes() {
-    super("pdi");
+  ReplaceIngestIndexNamespaceWithUri() {
+    super("ingest");
   }
 
   @Override
   Stream<Value> getIndexParents(YamlMap content) {
-    return content.get("data").toList().stream();
+    return content.get("processors").toList().stream()
+        .map(Value::toMap)
+        .map(map -> map.get("data"));
   }
 
 }
