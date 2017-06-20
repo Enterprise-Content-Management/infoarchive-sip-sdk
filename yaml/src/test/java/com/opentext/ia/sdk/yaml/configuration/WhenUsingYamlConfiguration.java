@@ -42,6 +42,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String OPERANDS = "operands";
   private static final String INGESTS = "ingests";
   private static final String INGEST = "ingest";
+  private static final String START_PROCESSOR = "  <processor>\n";
+  private static final String END_PROCESSOR = "  </processor>\n";
   private static final String PDIS = "pdis";
   private static final String DATA = "data";
   private static final String INDEXES = "indexes";
@@ -402,12 +404,12 @@ public class WhenUsingYamlConfiguration extends TestCase {
     assertValue("Format", XML, content.get(FORMAT));
     String xml = content.get(TEXT).toString();
     assertEquals("XML", "<processors>\n"
-        + "  <processor>\n"
+        + START_PROCESSOR
         + "    <class>com.emc.ia.ingestion.processor.downloader.SipContentDownloader</class>\n"
         + "    <id>sip.download</id>\n"
         + "    <name>SIP downloader processor</name>\n"
-        + "  </processor>\n"
-        + "  <processor>\n"
+        + END_PROCESSOR
+        + START_PROCESSOR
         + "    <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>\n"
         + "    <data>\n"
         + "      <indexes/>\n"
@@ -415,8 +417,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
         + "    </data>\n"
         + "    <id>pdi.index.creator</id>\n"
         + "    <name>XDB PDI index processor</name>\n"
-        + "  </processor>\n"
-        + "  <processor>\n"
+        + END_PROCESSOR
+        + START_PROCESSOR
         + "    <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>\n"
         + "    <data>\n"
         + "      <indexes>\n"
@@ -433,8 +435,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
         + "    </data>\n"
         + "    <id>ri.index</id>\n"
         + "    <name>RI XDB indexes</name>\n"
-        + "  </processor>\n"
-        + "  <processor>\n"
+        + END_PROCESSOR
+        + START_PROCESSOR
         + "    <class>com.emc.ia.ingestion.processor.content.CiHashProcessor</class>\n"
         + "    <data>\n"
         + "      <select.query><![CDATA[\n"
@@ -448,7 +450,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
         + "    </data>\n"
         + "    <id>ci.hash</id>\n"
         + "    <name>CI hash generator and validator</name>\n"
-        + "  </processor>\n"
+        + END_PROCESSOR
         + "</processors>\n", xml);
   }
 
