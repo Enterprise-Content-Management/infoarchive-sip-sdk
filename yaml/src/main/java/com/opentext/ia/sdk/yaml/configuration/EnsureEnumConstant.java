@@ -19,20 +19,20 @@ class EnsureEnumConstant extends PropertyVisitor {
 
   private static Map<String, Collection<String>> enumPropertiesByPathRegex() {
     Map<String, Collection<String>> result = new HashMap<>();
+    result.put("/aics/\\d/criteria/\\d/", TYPE);
+    result.put("/appExportPipelines/\\d", Arrays.asList("inputFormat"));
+    result.put("/appExportTransformations/\\d/", TYPE);
     result.put("/applications/\\d", Arrays.asList("type", "archiveType"));
     result.put("/audits/\\d", Arrays.asList("eventName", "eventType"));
-    result.put("/xdbLibraryPolicies/\\d", Arrays.asList("closeMode"));
+    result.put("/confirmations/\\d", Arrays.asList("types"));
+    result.put("/holds/\\d/holdType", TYPE);
+    result.put("/queries/\\d/xdbPdiConfigs/\\d/operands/\\d", TYPE);
+    result.put("/resultConfigurationHelpers/\\d/content/data/\\d", TYPE);
+    result.put("/resultConfigurationHelpers/\\d/content/data/\\d/items/\\d", TYPE);
     result.put("/retentionPolicies/\\d/agingStrategy", TYPE);
     result.put("/retentionPolicies/\\d/agingStrategy/agingPeriod", Arrays.asList("units"));
     result.put("/retentionPolicies/\\d/dispositionStrategy", TYPE);
-    result.put("/holds/\\d/holdType", TYPE);
-    result.put("/aics/\\d/criteria/\\d/", TYPE);
-    result.put("/queries/\\d/xdbPdiConfigs/\\d/operands/\\d", TYPE);
-    result.put("/resultConfigurationHelpers/\\d/content/text/data/\\d/", TYPE);
-    result.put("/resultConfigurationHelpers/\\d/content/text/data/\\d/items/\\d", TYPE);
-    result.put("/confirmations/\\d", Arrays.asList("types"));
-    result.put("/appExportPipelines/\\d", Arrays.asList("inputFormat"));
-    result.put("/appExportTransformations/\\d/", TYPE);
+    result.put("/xdbLibraryPolicies/\\d", Arrays.asList("closeMode"));
     return result;
   }
 

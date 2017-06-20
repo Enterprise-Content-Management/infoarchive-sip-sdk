@@ -16,6 +16,8 @@ import com.opentext.ia.sdk.yaml.core.YamlMap;
 
 abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
 
+  private static final String NAMESPACES = "namespaces";
+
   enum StartTagOptions {
     CLOSE_TAG, NEW_LINE
   }
@@ -36,9 +38,10 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
   @Override
   void visitContent(Visit visit, YamlMap content) {
     String xml = translateToXml(visit.getRootMap(), content.get(itemProperties).toList(),
-        content.get("namespaces").toList());
+        content.get(NAMESPACES).toList());
     content
         .put("format", "xml")
+        .remove(NAMESPACES)
         .put(TEXT, xml);
   }
 

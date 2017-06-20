@@ -31,17 +31,18 @@ public class YamlConfiguration {
       EnsureVersion.class,
       ConvertTopLevelSingularObjectsToSequences.class,
       ConvertTopLevelMapOfMapsToSequences.class,
-      EnsureEnumConstant.class,
       InsertDefaultReferences.class,
       ConvertSingularReferenceToSequenceForCollectionReferences.class,
       ConvertNestedMapOfMapsToSequences.class,
       ConvertPdiIndexes.class,
+      EnsureEnumConstant.class,
       InsertDefaultValues.class,
       AddNamespaceDeclarationsToQueries.class,
       ReplacePdiSchemaNamespaceWithName.class,
       ReplacePdiIndexNamespaceWithUri.class,
       ReplacePdiResultSchemaNamespaceWithUri.class,
-      ReplacePdiYamlWithXml.class
+      ReplacePdiYamlWithXml.class,
+      ReplaceResultConfigurationHelperYamlWithXml.class
   );
   private static final String NAME = "name";
 

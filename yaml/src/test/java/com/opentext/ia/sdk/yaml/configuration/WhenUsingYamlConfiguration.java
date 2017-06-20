@@ -20,11 +20,13 @@ import com.opentext.ia.sdk.yaml.resource.ResourceResolver;
 public class WhenUsingYamlConfiguration extends TestCase {
 
   private static final String NAME = "name";
+  private static final String TYPE = "type";
   private static final String DEFAULT = "default";
   private static final String CONTENT = "content";
+  private static final String FORMAT = "format";
+  private static final String XML = "xml";
   private static final String RESOURCE = "resource";
   private static final String TEXT = "text";
-  private static final String TYPE = "type";
   private static final String TENANTS = "tenants";
   private static final String TENANT = "tenant";
   private static final String APPLICATIONS = "applications";
@@ -187,9 +189,9 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
     assertTrue("appExportPipeline.includesContent", yaml.get("appExportPipelines", 0, "includesContent").toBoolean());
     assertValue("holding.xdbMode", "PRIVATE", yaml.get(HOLDINGS, 0, "xdbMode"));
-    assertValue("ingest.processors.format", "xml", yaml.get("ingests", 0, "content", "format"));
+    assertValue("ingest.processors.format", XML, yaml.get("ingests", 0, "content", FORMAT));
     assertTrue("ingest.processors.xml", yaml.get("ingests", 0, "content", TEXT).toString().contains("sip.download"));
-    assertValue("receiverNode.sips.format", "sip_zip", yaml.get("receiverNodes", 0, "sips", 0, "format"));
+    assertValue("receiverNode.sips.format", "sip_zip", yaml.get("receiverNodes", 0, "sips", 0, FORMAT));
   }
 
   @Test
@@ -232,6 +234,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
             .put(PREFIX, prefix)
             .put(URI, uri)))
         .put("xdbLibraryPolicies", Arrays.asList(new YamlMap()
+            .put(NAME, someName())
             .put("closeHintDateQuery", new YamlMap()
                 .put(TEXT, text))));
 
@@ -274,7 +277,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
         .put(PDIS, Arrays.asList(new YamlMap()
             .put(NAME, someName())
             .put(CONTENT, new YamlMap()
-                .put("format", "yaml")
+                .put(FORMAT, "yaml")
                 .put(DATA, Arrays.asList(new YamlMap()
                     .put("id", "pdi.index.creator")
                     .put("key.document.name", "xdb.pdi.name")
@@ -300,6 +303,57 @@ public class WhenUsingYamlConfiguration extends TestCase {
     assertTrue("Default compressed", xml.contains("<compressed>false</compressed>"));
     assertTrue("Default filter.english.stop.words", xml.contains("<filter.english.stop.words>false</filter.english.stop.words>"));
     assertTrue("Schema", xml.contains(String.format("<result.schema>%s</result.schema>", uri2)));
+  }
+
+  @Test
+  public void shouldTranslateResultConfigurationHelperYamlToXml() {
+    yaml.put(NAMESPACES, Arrays.asList(
+        new YamlMap()
+            .put(PREFIX, "n")
+            .put(URI, "urn:eas-samples:en:xsd:phonecalls.1.0")
+            .put(DEFAULT, true),
+        new YamlMap()
+            .put(PREFIX, "pdi")
+            .put(URI, "urn:x-emc:ia:schema:pdi")))
+        .put("resultConfigurationHelper", new YamlMap()
+            .put(NAME, "PhoneCalls-result-configuration-helper")
+            .put("propagateChanges", false)
+            .put(CONTENT, new YamlMap()
+                .put(FORMAT, "yaml")
+                .put(NAMESPACES, Arrays.asList("n", "pdi"))
+                .put(DATA, Arrays.asList(
+                    new YamlMap()
+                        .put("id", new YamlMap()
+                            .put("label", "ID")
+                            .put(PATH, "@pdi:id")
+                            .put(TYPE, "id")),
+                    new YamlMap()
+                        .put("SentToArchiveDate", new YamlMap()
+                            .put("label", "Sent to")
+                            .put(PATH, "n:SentToArchiveDate")
+                            .put(TYPE, "date time"))))));
+
+    normalizeYaml();
+
+    YamlMap content = yaml.get("resultConfigurationHelpers", 0, CONTENT).toMap();
+    assertValue("Format", XML, content.get(FORMAT));
+    assertTrue("Namespaces are still there", content.get(NAMESPACES).isEmpty());
+    String xml = content.get(TEXT).toString();
+    assertEquals("XML",
+        "<resultConfigurationHelper xmlns:n=\"urn:eas-samples:en:xsd:phonecalls.1.0\" xmlns:pdi=\"urn:x-emc:ia:schema:pdi\">\n"
+        + "  <element>\n"
+        + "    <label>ID</label>\n"
+        + "    <name>id</name>\n"
+        + "    <path>@pdi:id</path>\n"
+        + "    <type>ID</type>\n"
+        + "  </element>\n"
+        + "  <element>\n"
+        + "    <label>Sent to</label>\n"
+        + "    <name>SentToArchiveDate</name>\n"
+        + "    <path>n:SentToArchiveDate</path>\n"
+        + "    <type>DATE_TIME</type>\n"
+        + "  </element>\n"
+        + "</resultConfigurationHelper>\n", xml);
   }
 
 }

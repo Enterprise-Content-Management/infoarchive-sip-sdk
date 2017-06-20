@@ -24,9 +24,15 @@ class MapOfMapsToSequence implements Predicate<Entry>, Consumer<Entry> {
   @Override
   public boolean test(Entry entry) {
     Value value = entry.getValue();
-    if (!value.isMap()) {
-      return false;
+    if (value.isList()) {
+      return value.toList().stream()
+          .map(this::isMapOfMaps)
+          .reduce(true, (a, b) -> a && b);
     }
+    return isMapOfMaps(value);
+  }
+
+  private boolean isMapOfMaps(Value value) {
     YamlMap map = value.toMap();
     long numChildMapsWithoutName = map.values()
         .filter(Value::isMap)
@@ -42,7 +48,15 @@ class MapOfMapsToSequence implements Predicate<Entry>, Consumer<Entry> {
   }
 
   private static List<?> toSequence(Entry entry) {
-    return entry.getValue().toMap().entries()
+    Value value = entry.getValue();
+    if (value.isList()) {
+      return value.toList().stream()
+          .map(Value::toMap)
+          .flatMap(YamlMap::entries)
+          .map(Entry::toMap)
+          .collect(Collectors.toList());
+    }
+    return value.toMap().entries()
         .map(Entry::toMap)
         .collect(Collectors.toList());
   }

@@ -6,7 +6,6 @@ package com.opentext.ia.sdk.yaml.configuration;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.opentext.ia.sdk.yaml.core.Entry;
 import com.opentext.ia.sdk.yaml.core.Value;
 import com.opentext.ia.sdk.yaml.core.Visit;
 import com.opentext.ia.sdk.yaml.core.YamlMap;
@@ -37,22 +36,20 @@ public class ConvertPdiIndexes extends YamlContentVisitor {
   private boolean hasIndexMaps(List<Value> indexes) {
     return !indexes.isEmpty() && indexes.stream()
         .map(Value::toMap)
-        .filter(map -> map.entries().count() == 1 && !map.entries().findAny().get().getKey().endsWith(".index"))
+        .filter(map -> map.get(TYPE).toString().endsWith(".index"))
         .count() == indexes.size();
   }
 
   private List<YamlMap> convertIndexes(List<Value> indexes) {
     return indexes.stream()
         .map(Value::toMap)
-        .flatMap(YamlMap::entries)
-        .map(Entry::toMap)
         .map(this::convertIndex)
         .collect(Collectors.toList());
   }
 
   private YamlMap convertIndex(YamlMap index) {
     String type = index.get(TYPE).toString();
-    index.remove(type);
+    index.remove(TYPE);
     return new YamlMap().put(type, index);
   }
 

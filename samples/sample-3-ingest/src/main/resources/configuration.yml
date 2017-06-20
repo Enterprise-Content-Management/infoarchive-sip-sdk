@@ -1,5 +1,6 @@
 tenant:
   name: TENANT
+  configure: false
 
 xdbFederation:
   name: animal
