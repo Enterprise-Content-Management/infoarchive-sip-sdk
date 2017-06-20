@@ -34,6 +34,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String HOLDINGS = "holdings";
   private static final String CONFIRMATIONS = "confirmations";
   private static final String NAMESPACES = "namespaces";
+  private static final String NAMESPACE = "namespace";
   private static final String PREFIX = "prefix";
   private static final String URI = "uri";
   private static final String QUERIES = "queries";
@@ -383,7 +384,17 @@ public class WhenUsingYamlConfiguration extends TestCase {
                             .put(INDEXES, new YamlMap()
                                 .put("key", new YamlMap()
                                     .put(TYPE, PATH_VALUE_INDEX)
-                                    .put(PATH, "/ri:ris/ri:ri[@key<STRING>]"))))))));
+                                    .put(PATH, "/ri:ris/ri:ri[@key<STRING>]")))),
+                    new YamlMap()
+                        .put("id", "ci.hash")
+                        .put(DATA, new YamlMap()
+                            .put("select.query", new YamlMap()
+                                .put(NAMESPACE, "ri")
+                                .put(TEXT, "let $uri := replace(document-uri(.), '\\.pdi$', '.ri')\n"
+                                    + "for $c in doc($uri)/ri:ris/ri:ri\n"
+                                    + "return <content filename=\"{ $c/@key }\">\n"
+                                    + "  <hash encoding=\"hex\" algorithm=\"SHA-1\" provided=\"false\" />\n"
+                                    + "</content>")))))));
 
     normalizeYaml();
 
@@ -414,7 +425,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
         + "          <compressed>false</compressed>\n"
         + "          <concurrent>false</concurrent>\n"
         + "          <name>key</name>\n"
-        + "          <path>/{urn:x-emc:ia:schema:ri}ris/{urn:x-emc:ia:schema:ri}ri[@key&lt;STRING&gt;]</path>\n"
+        + "          <path>/{urn:x-emc:ia:schema:ri}ris/{urn:x-emc:ia:schema:ri}ri[@key&lt;STRING>]</path>\n"
         + "          <unique.keys>true</unique.keys>\n"
         + "        </path.value.index>\n"
         + "      </indexes>\n"
@@ -422,6 +433,21 @@ public class WhenUsingYamlConfiguration extends TestCase {
         + "    </data>\n"
         + "    <id>ri.index</id>\n"
         + "    <name>RI XDB indexes</name>\n"
+        + "  </processor>\n"
+        + "  <processor>\n"
+        + "    <class>com.emc.ia.ingestion.processor.content.CiHashProcessor</class>\n"
+        + "    <data>\n"
+        + "      <select.query><![CDATA[\n"
+        + "        declare namespace ri = \"urn:x-emc:ia:schema:ri\";\n"
+        + "        let $uri := replace(document-uri(.), '\\.pdi$', '.ri')\n"
+        + "        for $c in doc($uri)/ri:ris/ri:ri\n"
+        + "        return <content filename=\"{ $c/@key }\">\n"
+        + "          <hash encoding=\"hex\" algorithm=\"SHA-1\" provided=\"false\" />\n"
+        + "        </content>\n"
+        + "      ]]></select.query>\n"
+        + "    </data>\n"
+        + "    <id>ci.hash</id>\n"
+        + "    <name>CI hash generator and validator</name>\n"
         + "  </processor>\n"
         + "</processors>\n", xml);
   }

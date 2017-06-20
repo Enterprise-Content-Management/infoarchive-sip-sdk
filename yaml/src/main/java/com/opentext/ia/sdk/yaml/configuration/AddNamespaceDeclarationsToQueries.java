@@ -28,7 +28,8 @@ class AddNamespaceDeclarationsToQueries implements Visitor {
         .map(prefix -> namespaceDeclarationFor(root, prefix))
         .collect(Collectors.joining(NL)) + NL;
     entry.getParent()
-        .put(entry.getKey(), namespaceDeclarations + entry.getValue().toMap().get("text"));
+        .put(entry.getKey(), namespaceDeclarations + entry.getValue().toMap().get("text"))
+        .remove(NAMESPACES);
   }
 
   private String namespaceDeclarationFor(YamlMap root, Value prefix) {

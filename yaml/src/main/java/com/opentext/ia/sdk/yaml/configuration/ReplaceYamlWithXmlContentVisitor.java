@@ -16,6 +16,8 @@ import com.opentext.ia.sdk.yaml.core.YamlMap;
 
 abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
 
+  private static final String INDENT = "  ";
+
   private static final String NAMESPACES = "namespaces";
 
   enum StartTagOptions {
@@ -49,10 +51,10 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
     StringBuilder result = new StringBuilder();
     startTagWithNamespaces(root, rootTag, namespaces, result);
     items.forEach(item -> {
-      startTag(itemTag, "  ", EnumSet.allOf(StartTagOptions.class), result);
+      startTag(itemTag, INDENT, EnumSet.allOf(StartTagOptions.class), result);
       item.toMap().entries().forEach(entry ->
           appendEntry(entry, "    ", result));
-      endTag(itemTag, "  ", result);
+      endTag(itemTag, INDENT, result);
     });
     endTag(rootTag, "", result);
     return result.toString();
@@ -91,7 +93,7 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
     if (value.isEmpty()) {
       appendEmpty(property, indent, xml);
     } else if (value.isScalar()) {
-      appendScalar(property, value.toString(), indent, xml);
+      appendScalar(property, value.toString().trim(), indent, xml);
     } else if (value.isList()) {
       appendList(property, value.toList(), indent, xml);
     } else {
@@ -106,17 +108,20 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
 
   private void appendScalar(String property, String value, String indent, StringBuilder xml) {
     startTag(property, indent, EnumSet.of(StartTagOptions.CLOSE_TAG), xml);
-    xml.append(toXml(value));
-    endTag(property, "", xml);
+    if (value.contains("\n")) {
+      xml.append("<![CDATA[").append(NL);
+      for (String s : value.split("\\n")) {
+        xml.append(indent).append(INDENT).append(s).append(NL);
+      }
+      xml.append(indent).append("]]></").append(property).append('>').append(NL);
+    } else {
+      xml.append(toXml(value));
+      endTag(property, "", xml);
+    }
   }
 
   private String toXml(String text) {
-    return text.trim()
-        .replaceAll("&", "&amp")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll("'", "&apos;")
-        .replaceAll("\"", "&quot;");
+    return text.trim().replaceAll("<", "&lt;");
   }
 
   private void appendList(String property, List<Value> items, String indent, StringBuilder xml) {
@@ -124,14 +129,14 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
     items.stream()
         .map(Value::toMap)
         .flatMap(YamlMap::entries)
-        .forEach(entry -> appendEntry(entry, indent + "  ", xml));
+        .forEach(entry -> appendEntry(entry, indent + INDENT, xml));
     endTag(property, indent, xml);
   }
 
   private void appendMap(String property, YamlMap map, String indent, StringBuilder xml) {
     startTag(property, indent, EnumSet.allOf(StartTagOptions.class), xml);
     map.entries()
-        .forEach(entry -> appendEntry(entry, indent + "  ", xml));
+        .forEach(entry -> appendEntry(entry, indent + INDENT, xml));
     endTag(property, indent, xml);
   }
 
