@@ -260,7 +260,9 @@ public class WhenUsingYamlConfiguration extends TestCase {
     yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
             .put(PREFIX, prefix)
             .put(URI, uri)))
-        .put("pdiSchemas", Arrays.asList(new YamlMap()));
+        .put("pdiSchemas", Arrays.asList(new YamlMap()
+            .put(CONTENT, new YamlMap()
+                .put(FORMAT, XML))));
 
     normalizeYaml();
 
