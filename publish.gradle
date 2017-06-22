@@ -2,7 +2,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'io.codearte.nexus-staging'
 
-ext.publishProjects = subprojects.findAll { it.name.startsWith('infoarchive-sdk-') }
+ext.publishProjects = subprojects.findAll { it.name.startsWith('infoarchive-') }
 
 // OSSRH requires both javadoc and sources jars
 publishProjects.each { prj ->
@@ -21,6 +21,15 @@ publishProjects.each { prj ->
   artifacts {
     archives prj.jar, prj.javadocJar, prj.sourcesJar
   }
+  
+  
+  prj.task('installLocally') {
+    dependsOn prj.jar
+    doLast {
+      "mvn install:install-file -Dfile=$prj.jar.archivePath -DgroupId=$prj.group -DartifactId=$prj.name -Dversion=$version -Dpackaging=jar".execute()
+    }
+  }
+  
 }
 
 // OSSRH also requires everything to be signed
