@@ -16,7 +16,7 @@ import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
 import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
-import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedConfigurer;
+import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedApplicationConfigurer;
 import com.opentext.ia.sdk.sip.*;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 import com.opentext.ia.sdk.support.io.StringStream;
@@ -92,7 +92,7 @@ public class YamlSipIngester {
     // the SIP we've just assembled.
     // Use ArchiveClients.usingAlreadyConfiguredServer() instead if you already configured the server with application,
     // holding, etc.
-    ArchiveClient archiveClient = ArchiveClients.configuringApplicationUsing(new YamlBasedConfigurer(configuration),
+    ArchiveClient archiveClient = ArchiveClients.configuringApplicationUsing(new YamlBasedApplicationConfigurer(configuration),
         newArchiveConnection());
 
     // Ingest the SIP into InfoArchive

@@ -27,7 +27,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   private final HttpClient httpClient = mock(HttpClient.class);
   private final ArchiveConnection connection = new ArchiveConnection();
   private final ApplicationConfigurer clientSideConfigurer = mock(ApplicationConfigurer.class);
-  private final YamlBasedConfigurer configurer = new YamlBasedConfigurer(
+  private final YamlBasedApplicationConfigurer configurer = new YamlBasedApplicationConfigurer(
       new YamlConfiguration("application:\n  name: foo"), (yaml, conn) -> clientSideConfigurer);
 
   @Before

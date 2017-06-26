@@ -3,7 +3,7 @@
  */
 
 /**
- * Library for {@linkplain com.opentext.ia.sdk.server.configuration.yaml.YamlBasedConfigurer configuring} an
+ * Library for {@linkplain com.opentext.ia.sdk.server.configuration.yaml.YamlBasedApplicationConfigurer configuring} an
  * InfoArchive application (or entire server) based on configuration in YAML format.
  */
 package com.opentext.ia.sdk.server.configuration.yaml;

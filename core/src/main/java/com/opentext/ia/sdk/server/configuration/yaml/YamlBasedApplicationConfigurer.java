@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
-import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedConfigurer;
+import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer;
 import com.opentext.ia.sdk.support.http.MediaTypes;
 import com.opentext.ia.sdk.yaml.configuration.YamlConfiguration;
 
@@ -23,20 +23,20 @@ import com.opentext.ia.sdk.yaml.configuration.YamlConfiguration;
  * newer).
  * @since 6.0.0
  */
-public class YamlBasedConfigurer implements ApplicationConfigurer {
+public class YamlBasedApplicationConfigurer implements ApplicationConfigurer {
 
   private final YamlConfiguration yaml;
   private final BiFunction<YamlConfiguration, ArchiveConnection, ApplicationConfigurer>
       clientSideApplicationConfigurerFactory;
 
-  public YamlBasedConfigurer(YamlConfiguration configuration) {
-    this(configuration, YamlBasedConfigurer::defaultClientSideApplicationConfigurer);
+  public YamlBasedApplicationConfigurer(YamlConfiguration configuration) {
+    this(configuration, YamlBasedApplicationConfigurer::defaultClientSideApplicationConfigurer);
   }
 
   private static ApplicationConfigurer defaultClientSideApplicationConfigurer(YamlConfiguration yaml,
       ArchiveConnection connection) {
     // Flatten the YAML to properties and re-use the properties-based configurer
-    return new PropertiesBasedConfigurer(yamlToMap(yaml, connection));
+    return new PropertiesBasedApplicationConfigurer(yamlToMap(yaml, connection));
   }
 
   private static Map<String, String> yamlToMap(YamlConfiguration yaml, ArchiveConnection connection) {
@@ -63,7 +63,7 @@ public class YamlBasedConfigurer implements ApplicationConfigurer {
     properties.put(SERVER_CLIENT_SECRET, connection.getClientSecret());
   }
 
-  YamlBasedConfigurer(YamlConfiguration configuration,
+  YamlBasedApplicationConfigurer(YamlConfiguration configuration,
       BiFunction<YamlConfiguration, ArchiveConnection, ApplicationConfigurer> clientSideApplicationConfigurerFactory) {
     this.yaml = configuration;
     this.clientSideApplicationConfigurerFactory = clientSideApplicationConfigurerFactory;

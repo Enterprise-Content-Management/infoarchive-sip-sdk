@@ -17,7 +17,7 @@ import org.apache.commons.io.IOUtils;
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
 import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
-import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedConfigurer;
+import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer;
 import com.opentext.ia.sdk.sip.*;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 
@@ -93,7 +93,7 @@ public class SipIngester {
         .map(entry -> entry.getKey() + " = " + entry.getValue())
         .sorted()
         .forEach(System.out::println);
-    ArchiveClient archiveClient = ArchiveClients.configuringApplicationUsing(new PropertiesBasedConfigurer(configuration),
+    ArchiveClient archiveClient = ArchiveClients.configuringApplicationUsing(new PropertiesBasedApplicationConfigurer(configuration),
         new PropertiesBasedArchiveConnection(configuration));
 
     // Ingest the SIP into InfoArchive

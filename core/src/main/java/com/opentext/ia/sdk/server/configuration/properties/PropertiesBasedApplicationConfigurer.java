@@ -26,7 +26,7 @@ import com.opentext.ia.sdk.dto.result.Column.DefaultSort;
 import com.opentext.ia.sdk.dto.result.ResultMaster;
 import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.server.configuration.ApplicationResourcesCache;
-import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedConfigurer;
+import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedApplicationConfigurer;
 import com.opentext.ia.sdk.support.RepeatingConfigReader;
 import com.opentext.ia.sdk.support.http.BinaryPart;
 import com.opentext.ia.sdk.support.http.HttpException;
@@ -40,10 +40,10 @@ import com.opentext.ia.sdk.support.io.RuntimeIoException;
 /**
  * Configure an InfoArchive application based on properties in a map. This is less convenient for repeating and/or
  * hierarchical configuration. For a more convenient way of specifying the configuration, see
- * {@linkplain YamlBasedConfigurer}.
+ * {@linkplain YamlBasedApplicationConfigurer}.
  */
 @SuppressWarnings("PMD.ExcessiveClassLength")
-public class PropertiesBasedConfigurer implements ApplicationConfigurer, InfoArchiveLinkRelations,
+public class PropertiesBasedApplicationConfigurer implements ApplicationConfigurer, InfoArchiveLinkRelations,
     InfoArchiveConfigurationProperties {
 
   private static final String EXPORT_CONFIGURATION = "export-configuration";
@@ -65,7 +65,7 @@ public class PropertiesBasedConfigurer implements ApplicationConfigurer, InfoArc
   private Map<String, String> configuration;
   private RestClient restClient;
 
-  public PropertiesBasedConfigurer(Map<String, String> configuration) {
+  public PropertiesBasedApplicationConfigurer(Map<String, String> configuration) {
     this.configuration = configuration;
   }
 

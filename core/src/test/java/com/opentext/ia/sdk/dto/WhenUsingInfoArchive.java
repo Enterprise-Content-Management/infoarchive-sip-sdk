@@ -41,7 +41,7 @@ import com.opentext.ia.sdk.dto.query.SearchQuery;
 import com.opentext.ia.sdk.dto.result.AllSearchComponents;
 import com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties;
 import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
-import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedConfigurer;
+import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer;
 import com.opentext.ia.sdk.support.http.*;
 import com.opentext.ia.sdk.support.http.rest.Link;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
@@ -387,7 +387,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   private ArchiveClient configureServer(Map<String, String> config) throws IOException {
-    return archiveClient = ArchiveClients.configuringApplicationUsing(new PropertiesBasedConfigurer(config), connection);
+    return archiveClient = ArchiveClients.configuringApplicationUsing(new PropertiesBasedApplicationConfigurer(config), connection);
   }
 
   @Test
@@ -522,7 +522,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
       throw new HttpException(503, "");
     });
 
-    ArchiveClients.configuringApplicationUsing(new PropertiesBasedConfigurer(configuration), connection);
+    ArchiveClients.configuringApplicationUsing(new PropertiesBasedApplicationConfigurer(configuration), connection);
 
     verify(restClient, times(5)).createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD),
         eq(LINK_SELF));

@@ -3,7 +3,7 @@
  */
 
 /**
- * Library for {@linkplain com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedConfigurer configuring} an
+ * Library for {@linkplain com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer configuring} an
  * InfoArchive application based on properties.
  */
 package com.opentext.ia.sdk.server.configuration.properties;
