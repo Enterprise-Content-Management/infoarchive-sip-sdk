@@ -45,7 +45,7 @@ public class WhenCopyingFiles {
 
   private String getContents(File destination) throws IOException {
     try (InputStream stream = new FileInputStream(destination)) {
-      return IOUtils.toString(stream);
+      return IOUtils.toString(stream, StandardCharsets.UTF_8);
     }
   }
 

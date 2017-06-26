@@ -6,6 +6,7 @@ package com.opentext.ia.sdk.sip;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 
@@ -31,7 +32,7 @@ public abstract class FixedHeaderAndFooterTemplate<D> implements Template<D> {
 
   protected static String toString(InputStream stream) {
     try {
-      return IOUtils.toString(stream);
+      return IOUtils.toString(stream, StandardCharsets.UTF_8);
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     } finally {

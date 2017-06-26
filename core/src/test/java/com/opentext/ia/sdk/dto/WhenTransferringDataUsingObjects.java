@@ -12,7 +12,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.atteo.evo.inflector.English;
 import org.junit.Test;
 import org.junit.runner.RunWith;

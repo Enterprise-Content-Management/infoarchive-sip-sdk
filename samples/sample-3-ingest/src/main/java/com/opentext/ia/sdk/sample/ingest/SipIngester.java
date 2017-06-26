@@ -10,14 +10,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
-import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer;
+import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.sip.*;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 
@@ -159,7 +160,7 @@ public class SipIngester {
 
   private String getResource(String name) throws IOException {
     try (InputStream input = getClass().getResourceAsStream("/" + name)) {
-      return IOUtils.toString(input);
+      return IOUtils.toString(input, StandardCharsets.UTF_8);
     }
   }
 

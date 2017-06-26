@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 
@@ -22,7 +23,7 @@ class FileResolver implements ResourceResolver {
   @Override
   public String apply(String name) {
     try (InputStream input = new FileInputStream(new File(dir, name))) {
-      return IOUtils.toString(input);
+      return IOUtils.toString(input, StandardCharsets.UTF_8);
     } catch (IOException e) {
       throw new UnknownResourceException(name, e);
     }

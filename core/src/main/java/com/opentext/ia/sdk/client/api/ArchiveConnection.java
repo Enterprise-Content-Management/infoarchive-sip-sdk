@@ -6,7 +6,7 @@ package com.opentext.ia.sdk.client.api;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.opentext.ia.sdk.dto.Services;
 import com.opentext.ia.sdk.support.NewInstance;

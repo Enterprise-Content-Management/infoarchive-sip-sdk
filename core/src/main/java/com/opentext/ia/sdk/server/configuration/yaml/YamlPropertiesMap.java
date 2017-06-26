@@ -79,6 +79,11 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
     putContentFrom("pdi", PDI_XML);
     putContentFrom("ingest", INGEST_XML);
 
+    putManyFrom("resultConfigurationHelper", RESULT_HELPER_NAME, (name, map) -> {
+      putTemplated(map.get("content", "text"), RESULT_HELPER_XML, name);
+      putTemplated(lookupNamespace(map), RESULT_HELPER_SCHEMA_TEMPLATE, name);
+    });
+
     putManyFrom("query", QUERY_NAME, (name, map) -> {
       putTemplatedFrom(map, name, QUERY_NAMESPACE_URI_TEMPLATE, NAMESPACE,
           QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, "resultRootElement",
@@ -101,11 +106,6 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
       putTemplated(QUERY_XDBPDI_OPERAND_TYPE, name, schema), getString(query, XDBPDI, OPERAND, TYPE));
       putTemplated(QUERY_XDBPDI_OPERAND_INDEX, name, schema), getString(query, XDBPDI, OPERAND, "index"));
       */
-    });
-
-    putManyFrom("resultConfigurationHelper", RESULT_HELPER_NAME, (name, map) -> {
-      putTemplated(map.get("content", "text"), RESULT_HELPER_XML, name);
-      putTemplated(lookupNamespace(map), RESULT_HELPER_SCHEMA_TEMPLATE, name);
     });
 
     forEachMapItem(yaml, "search", search -> {
