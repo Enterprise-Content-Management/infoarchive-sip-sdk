@@ -233,7 +233,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldAddNamespaceDeclarationsToXquery() throws Exception {
     String prefix = "n";
-    String uri = someUri();
+    String uri = randomUri();
     String text = "current-dateTime()";
     yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
             .put(PREFIX, prefix)
@@ -249,14 +249,10 @@ public class WhenUsingYamlConfiguration extends TestCase {
         yaml.get("xdbLibraryPolicies", 0, "closeHintDateQuery"));
   }
 
-  private String someUri() {
-    return String.format("http://%s.com/%s", someName(), someName());
-  }
-
   @Test
   public void shouldReplacePdiSchemaNamespaceWithName() throws Exception {
     String prefix = "n";
-    String uri = someUri();
+    String uri = randomUri();
     yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
             .put(PREFIX, prefix)
             .put(URI, uri)))
@@ -272,9 +268,9 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldTranslatePdiYamlToXml() {
     String prefix1 = "n";
-    String uri1 = someUri();
+    String uri1 = randomUri();
     String prefix2 = "ex";
-    String uri2 = someUri();
+    String uri2 = randomUri();
     yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
             .put(PREFIX, prefix1)
             .put(URI, uri1),

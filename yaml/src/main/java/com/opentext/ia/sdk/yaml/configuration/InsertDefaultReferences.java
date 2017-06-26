@@ -57,7 +57,7 @@ class InsertDefaultReferences extends PropertyVisitor {
     result.put("/queries/\\d", Arrays.asList(APPLICATION, "order", "queryQuota"));
     result.put("/queryQuotas/\\d", Arrays.asList(APPLICATION));
     result.put("/receiverNodes/\\d", Arrays.asList(APPLICATION));
-    result.put("/resultConfigurationHelpers/\\d", Arrays.asList(APPLICATION));
+    result.put("/resultConfigurationHelpers/\\d", Arrays.asList(APPLICATION, NAMESPACE));
     result.put("/resultMasters/\\d", Arrays.asList(SEARCH, SEARCH_COMPOSITION));
     result.put("/schemas/\\d", Arrays.asList("database", XDB_STORE));
     result.put("/searches/\\d", Arrays.asList(APPLICATION, "searchGroup"));

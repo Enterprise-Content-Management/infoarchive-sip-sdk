@@ -7,6 +7,7 @@ import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveCon
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
@@ -25,9 +26,47 @@ import com.opentext.ia.sdk.yaml.configuration.YamlConfiguration;
 public class YamlBasedConfigurer implements ApplicationConfigurer {
 
   private final YamlConfiguration yaml;
+  private final BiFunction<YamlConfiguration, ArchiveConnection, ApplicationConfigurer>
+      clientSideApplicationConfigurerFactory;
 
   public YamlBasedConfigurer(YamlConfiguration configuration) {
+    this(configuration, YamlBasedConfigurer::defaultClientSideApplicationConfigurer);
+  }
+
+  private static ApplicationConfigurer defaultClientSideApplicationConfigurer(YamlConfiguration yaml,
+      ArchiveConnection connection) {
+    // Flatten the YAML to properties and re-use the properties-based configurer
+    return new PropertiesBasedConfigurer(yamlToMap(yaml, connection));
+  }
+
+  private static Map<String, String> yamlToMap(YamlConfiguration yaml, ArchiveConnection connection) {
+    Map<String, String> properties = new YamlPropertiesMap(yaml.getMap());
+    setConnectionProperties(connection, properties);
+    properties.entrySet().stream()
+        .filter(entry -> entry.getValue() != null)
+        .map(entry -> entry.getKey() + " = " + entry.getValue())
+        .sorted()
+        .forEach(System.out::println);
+    return properties;
+  }
+
+  private static void setConnectionProperties(ArchiveConnection connection, Map<String, String> properties) {
+    properties.put(HTTP_CLIENT_CLASSNAME, connection.getHttpClientClassName());
+    properties.put(PROXY_HOST, connection.getProxyHost());
+    properties.put(PROXY_PORT, connection.getProxyPort());
+    properties.put(SERVER_AUTHENTICATION_GATEWAY, connection.getAuthenticationGateway());
+    properties.put(SERVER_AUTHENTICATION_PASSWORD, connection.getAuthenticationPassword());
+    properties.put(SERVER_AUTHENTICATION_TOKEN, connection.getAuthenticationToken());
+    properties.put(SERVER_AUTHENTICATION_USER, connection.getAuthenticationUser());
+    properties.put(SERVER_URI, connection.getBillboardUri());
+    properties.put(SERVER_CLIENT_ID, connection.getClientId());
+    properties.put(SERVER_CLIENT_SECRET, connection.getClientSecret());
+  }
+
+  YamlBasedConfigurer(YamlConfiguration configuration,
+      BiFunction<YamlConfiguration, ArchiveConnection, ApplicationConfigurer> clientSideApplicationConfigurerFactory) {
     this.yaml = configuration;
+    this.clientSideApplicationConfigurerFactory = clientSideApplicationConfigurerFactory;
   }
 
   @Override
@@ -56,33 +95,8 @@ public class YamlBasedConfigurer implements ApplicationConfigurer {
     connection.getRestClient().put(getConfigurationUri(connection), String.class, yaml.toString(), MediaTypes.YAML);
   }
 
-  private void applyConfigurationFromClient(ArchiveConnection connection) {
-    // Flatten the YAML to properties and re-use the properties-based configurer
-    new PropertiesBasedConfigurer(yamlToMap(connection)).configure(connection);
-  }
-
-  private Map<String, String> yamlToMap(ArchiveConnection connection) {
-    Map<String, String> properties = new YamlPropertiesMap(yaml.getMap());
-    setConnectionProperties(connection, properties);
-    properties.entrySet().stream()
-        .filter(entry -> entry.getValue() != null)
-        .map(entry -> entry.getKey() + " = " + entry.getValue())
-        .sorted()
-        .forEach(System.out::println);
-    return properties;
-  }
-
-  private void setConnectionProperties(ArchiveConnection connection, Map<String, String> properties) {
-    properties.put(HTTP_CLIENT_CLASSNAME, connection.getHttpClientClassName());
-    properties.put(PROXY_HOST, connection.getProxyHost());
-    properties.put(PROXY_PORT, connection.getProxyPort());
-    properties.put(SERVER_AUTHENTICATION_GATEWAY, connection.getAuthenticationGateway());
-    properties.put(SERVER_AUTHENTICATION_PASSWORD, connection.getAuthenticationPassword());
-    properties.put(SERVER_AUTHENTICATION_TOKEN, connection.getAuthenticationToken());
-    properties.put(SERVER_AUTHENTICATION_USER, connection.getAuthenticationUser());
-    properties.put(SERVER_URI, connection.getBillboardUri());
-    properties.put(SERVER_CLIENT_ID, connection.getClientId());
-    properties.put(SERVER_CLIENT_SECRET, connection.getClientSecret());
+  private void applyConfigurationFromClient(ArchiveConnection connection) throws IOException {
+    clientSideApplicationConfigurerFactory.apply(yaml, connection).configure(connection);
   }
 
 }

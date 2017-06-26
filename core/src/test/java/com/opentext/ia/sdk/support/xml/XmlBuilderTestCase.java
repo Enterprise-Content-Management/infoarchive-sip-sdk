@@ -78,8 +78,8 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
 
   @Test
   public void shouldPrintNamespace() {
-    String ns1 = aUri();
-    String ns2 = aUri();
+    String ns1 = randomUri();
+    String ns2 = randomUri();
     String parent = aName();
     String child1 = aName();
     String child2 = aName();
@@ -100,13 +100,9 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
     assertXml();
   }
 
-  private String aUri() {
-    return "http://" + aName() + ".com/" + aName();
-  }
-
   @Test
   public void shouldPrintAttribute() {
-    String namespace = aUri();
+    String namespace = randomUri();
     String parent = aName();
     String child = aName();
     String name1 = 'a' + aName();

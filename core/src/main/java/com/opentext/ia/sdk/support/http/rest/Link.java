@@ -11,11 +11,19 @@ public class Link {
 
   private String href;
 
+  public Link() {
+    this(null);
+  }
+
+  public Link(String href) {
+    setHref(href);
+  }
+
   public String getHref() {
     return href;
   }
 
-  public void setHref(String href) {
+  public final void setHref(String href) {
     this.href = href;
   }
 

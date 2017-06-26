@@ -14,6 +14,7 @@ import com.opentext.ia.sdk.yaml.core.Value;
 import com.opentext.ia.sdk.yaml.core.YamlMap;
 
 
+@SuppressWarnings("unused")
 class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveConfigurationProperties {
 
   private static final long serialVersionUID = 3429860978620277558L;
@@ -82,28 +83,29 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
       putTemplatedFrom(map, name, QUERY_NAMESPACE_URI_TEMPLATE, NAMESPACE,
           QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, "resultRootElement",
           QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, "resultRootNsEnabled");
-      putTemplated(QUERY_NAMESPACE_PREFIX_TEMPLATE, name, lookup(NAMESPACE, "uri", map.get(NAMESPACE), "prefix"));
+      Value namespaceUri = lookupNamespace(map);
+      putTemplated(namespaceUri, QUERY_RESULT_SCHEMA_TEMPLATE, name);
+      putTemplated(map.get(NAMESPACE), QUERY_NAMESPACE_PREFIX_TEMPLATE, name);
+      putTemplated(namespaceUri, QUERY_NAMESPACE_URI_TEMPLATE, name);
+      YamlMap xdbPdiConfigs = map.get("xdbPdiConfigs").toMap();
+      putTemplated(xdbPdiConfigs.get("entityPath"), QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name);
+/*
+      putTemplated(String.format(QUERY_XDBPDI_SCHEMA_TEMPLATE, name), SAMPLE_NAMESPACE);
+    result.put(String.format(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name), "return $aiu");
+*/
+    /*
+      putTemplated(QUERY_XDBPDI_SCHEMA_TEMPLATE, name), getString(query, XDBPDI, SCHEMA));
+      putTemplated(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name), getString(query, XDBPDI, "template"));
+      putTemplated(QUERY_XDBPDI_OPERAND_NAME, name, schema), getString(query, XDBPDI, OPERAND, NAME));
+      putTemplated(QUERY_XDBPDI_OPERAND_PATH, name, schema), getString(query, XDBPDI, OPERAND, "path"));
+      putTemplated(QUERY_XDBPDI_OPERAND_TYPE, name, schema), getString(query, XDBPDI, OPERAND, TYPE));
+      putTemplated(QUERY_XDBPDI_OPERAND_INDEX, name, schema), getString(query, XDBPDI, OPERAND, "index"));
+      */
     });
 
-    // TODO: Fix the code below
-    forEachMapItem(yaml, "query", query -> {
-      String name = getString(query, NAME);
-      String schema = getString(query, RESULT, SCHEMA);
-      put(String.format(QUERY_RESULT_SCHEMA_TEMPLATE, name), schema);
-      put(String.format(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name), getString(query, XDBPDI, "entity", "path"));
-      put(String.format(QUERY_XDBPDI_SCHEMA_TEMPLATE, name), getString(query, XDBPDI, SCHEMA));
-      put(String.format(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name), getString(query, XDBPDI, "template"));
-      put(String.format(QUERY_XDBPDI_OPERAND_NAME, name, schema), getString(query, XDBPDI, OPERAND, NAME));
-      put(String.format(QUERY_XDBPDI_OPERAND_PATH, name, schema), getString(query, XDBPDI, OPERAND, "path"));
-      put(String.format(QUERY_XDBPDI_OPERAND_TYPE, name, schema), getString(query, XDBPDI, OPERAND, TYPE));
-      put(String.format(QUERY_XDBPDI_OPERAND_INDEX, name, schema), getString(query, XDBPDI, OPERAND, "index"));
-    });
-
-    forEachMapItem(yaml, "result-helper", resultHelper -> {
-      String name = getString(resultHelper, NAME);
-      append(RESULT_HELPER_NAME, name);
-      put(String.format(RESULT_HELPER_SCHEMA_TEMPLATE, name), getString(resultHelper, SCHEMA));
-      put(String.format(RESULT_HELPER_XML, name), getString(resultHelper, "xml"));
+    putManyFrom("resultConfigurationHelper", RESULT_HELPER_NAME, (name, map) -> {
+      putTemplated(map.get("content", "text"), RESULT_HELPER_XML, name);
+      putTemplated(lookupNamespace(map), RESULT_HELPER_SCHEMA_TEMPLATE, name);
     });
 
     forEachMapItem(yaml, "search", search -> {
@@ -178,12 +180,16 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
     while (i < destinationAndSourceNames.length) {
       String destination = destinationAndSourceNames[i++];
       String source = destinationAndSourceNames[i++];
-      putTemplated(destination, name, map.get(source));
+      putTemplated(map.get(source), destination, name);
     }
   }
 
-  private String putTemplated(String template, String name, Value value) {
-    return put(String.format(template, name), value.toString());
+  private String putTemplated(Value value, String template, Object... args) {
+    return put(String.format(template, args), value.toString());
+  }
+
+  private Value lookupNamespace(YamlMap map) {
+    return lookup(NAMESPACE, "uri", map.get(NAMESPACE), "prefix");
   }
 
   private Value lookup(String type, String lookupProperty, Value lookupValue, String resultProperty) {

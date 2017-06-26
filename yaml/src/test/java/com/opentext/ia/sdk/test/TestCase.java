@@ -46,4 +46,8 @@ public class TestCase {
     return random.integer(min, max);
   }
 
+  protected String randomUri() {
+    return String.format("http://%s.com/%s", randomString(5), randomString(8));
+  }
+
 }
