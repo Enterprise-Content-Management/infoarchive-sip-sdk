@@ -35,6 +35,7 @@ public class YamlConfiguration {
       ReplacePdiSchemaNamespaceWithName.class,
       ConvertTopLevelMapOfMapsToSequences.class,
       ConvertNestedMapOfMapsToSequences.class,
+      InsertDefaultReferences.class,
       ConvertPdiIndexes.class,
       ConvertIngestIndexes.class,
       ConvertIngestProcessors.class,

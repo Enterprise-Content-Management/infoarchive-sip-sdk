@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.server.configuration.yaml;
 
-import java.util.HashMap;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -19,14 +19,18 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
 
   private static final long serialVersionUID = 3429860978620277558L;
   private static final String NAMESPACE = "namespace";
+  private static final String NAMESPACES = English.plural(NAMESPACE);
+  private static final String CONTENT = "content";
+  private static final String TEXT = "text";
   private static final String SCHEMA = "schema";
   private static final String RESULT = "result";
   private static final String XDBPDI = "xdbpdi";
   private static final String OPERAND = "operand";
   private static final String MAIN = "main";
+  private static final String PATH = "path";
+  private static final String LABEL = "label";
 
   private final transient YamlMap yaml;
-
 
   YamlPropertiesMap(YamlMap yaml) {
     this.yaml = yaml;
@@ -53,20 +57,20 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
         FILE_SYSTEM_FOLDER, NAME);
     putFrom("store",
         STORE_NAME, NAME,
-        STORE_STORETYPE, "store-type",
-        STORE_FOLDER, "folder",
+        STORE_STORETYPE, "storeType",
+        STORE_FOLDER, "fileSystemFolder",
         STORE_TYPE, TYPE);
     putFrom("aic",
         AIC_NAME, NAME);
     putFrom(yaml.get("aics", 0, "criteria").toMap(),
         CRITERIA_NAME, NAME,
-        CRITERIA_LABEL, "label",
+        CRITERIA_LABEL, LABEL,
         CRITERIA_TYPE, TYPE,
         CRITERIA_PKEYMINATTR, "pkeyminattr",
         CRITERIA_PKEYMAXATTR, "pkeymaxattr",
         CRITERIA_PKEYVALUESATTR, "pkeyvaluesattr",
         CRITERIA_INDEXED, "indexed");
-    putFrom("quota",
+    putFrom("queryQuota",
         QUOTA_NAME, NAME,
         QUOTA_AIU, "aiu",
         QUOTA_AIP, "aip",
@@ -75,63 +79,140 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
         RETENTION_POLICY_NAME, NAME);
     putFrom("pdiSchema",
         PDI_SCHEMA_NAME, NAME);
-    putContentFrom("pdiSchema", PDI_SCHEMA);
-    putContentFrom("pdi", PDI_XML);
-    putContentFrom("ingest", INGEST_XML);
+    putContentFrom(PDI_SCHEMA, "pdiSchema");
+    putContentFrom(PDI_XML, "pdi");
+    putContentFrom(INGEST_XML, "ingest");
 
-    putManyFrom("resultConfigurationHelper", RESULT_HELPER_NAME, (name, map) -> {
-      putTemplated(map.get("content", "text"), RESULT_HELPER_XML, name);
-      putTemplated(lookupNamespace(map), RESULT_HELPER_SCHEMA_TEMPLATE, name);
+    putManyFrom("exportConfiguration", EXPORT_CONFIG_NAME, (name, exportConfiguration) -> {
+      putTemplatedFrom(exportConfiguration, name, EXPORT_CONFIG_TYPE_TEMPLATE, "exportType",
+          EXPORT_CONFIG_OPTIONS_TEMPLATE_XSL_RESULTFORMAT_TEMPLATE, "xslResultFormat",
+          EXPORT_CONFIG_PIPELINE_TEMPLATE, "pipeline");
+      putValueList(exportConfiguration, "options",
+          String.format(EXPORT_CONFIG_OPTIONS_TEMPLATE_NAME, name),
+          EXPORT_CONFIG_OPTIONS_TEMPLATE_VALUE_TEMPLATE, name);
+      putValueList(exportConfiguration, "encryptedOptions",
+          String.format(EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_NAME, name),
+          EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_VALUE_TEMPLATE, name);
+
+      YamlMap transformation = exportConfiguration.get("transformation").toMap();
+      Value transformationName = transformation.get(NAME);
+      appendTemplated(transformationName, EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_NAME, name);
+      putTemplated(transformation.get("portName"), EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_PORTNAME_TEMPLATE,
+          name, transformationName);
+      putTemplated(transformation.get(NAME), EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_TRANSFORMATION_TEMPLATE,
+          name, transformationName);
     });
 
-    putManyFrom("query", QUERY_NAME, (name, map) -> {
-      putTemplatedFrom(map, name, QUERY_NAMESPACE_URI_TEMPLATE, NAMESPACE,
+    putManyFrom("exportPipeline", EXPORT_PIPELINE_NAME, (name, exportPipeline) -> {
+      putTemplatedFrom(exportPipeline, name, EXPORT_PIPELINE_COLLECTION_BASED_TEMPLATE, "collectionBased",
+          EXPORT_PIPELINE_COMPOSITE_TEMPLATE, "composite",
+          EXPORT_PIPELINE_DESCRIPTION_TEMPLATE, "description",
+          EXPORT_PIPELINE_ENVELOPE_FORMAT_TEMPLATE, "envelopeFormat",
+          EXPORT_PIPELINE_INCLUDES_CONTENT_TEMPLATE, "includesContent",
+          EXPORT_PIPELINE_INPUT_FORMAT_TEMPLATE, "inputFormat",
+          EXPORT_PIPELINE_OUTPUT_FORMAT_TEMPLATE, "outputFormat",
+          EXPORT_PIPELINE_TYPE_TEMPLATE, TYPE);
+      putContentFrom(String.format(EXPORT_PIPELINE_CONTENT_TEMPLATE, name), exportPipeline, CONTENT);
+    });
+
+    putManyFrom("exportTransformation", EXPORT_TRANSFORMATION_NAME, (name, exportTransformation) -> {
+      putTemplatedFrom(exportTransformation, name, EXPORT_TRANSFORMATION_DESCRIPTION_TEMPLATE, "description",
+          EXPORT_TRANSFORMATION_MAIN_PATH_TEMPLATE, "mainPath",
+          EXPORT_TRANSFORMATION_TYPE_TEMPLATE, TYPE);
+    });
+
+    putManyFrom("resultConfigurationHelper", RESULT_HELPER_NAME, (name, resultConfigurationHelper) -> {
+      putTemplated(resultConfigurationHelper.get(CONTENT, TEXT), RESULT_HELPER_XML, name);
+      Value prefix = resultConfigurationHelper.get(NAMESPACES).toList().get(0);
+      Value namespaceUri = lookupNamespace("prefix", prefix, "uri");
+      putTemplated(namespaceUri, RESULT_HELPER_SCHEMA_TEMPLATE, name);
+    });
+
+    putManyFrom("query", QUERY_NAME, (name, query) -> {
+      putTemplatedFrom(query, name, QUERY_NAMESPACE_URI_TEMPLATE, NAMESPACE,
           QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, "resultRootElement",
           QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, "resultRootNsEnabled");
-      Value namespaceUri = lookupNamespace(map);
-      putTemplated(namespaceUri, QUERY_RESULT_SCHEMA_TEMPLATE, name);
-      putTemplated(map.get(NAMESPACE), QUERY_NAMESPACE_PREFIX_TEMPLATE, name);
-      putTemplated(namespaceUri, QUERY_NAMESPACE_URI_TEMPLATE, name);
-      YamlMap xdbPdiConfigs = map.get("xdbPdiConfigs").toMap();
-      putTemplated(xdbPdiConfigs.get("entityPath"), QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name);
-/*
-      putTemplated(String.format(QUERY_XDBPDI_SCHEMA_TEMPLATE, name), SAMPLE_NAMESPACE);
-    result.put(String.format(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name), "return $aiu");
-*/
-    /*
-      putTemplated(QUERY_XDBPDI_SCHEMA_TEMPLATE, name), getString(query, XDBPDI, SCHEMA));
-      putTemplated(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name), getString(query, XDBPDI, "template"));
-      putTemplated(QUERY_XDBPDI_OPERAND_NAME, name, schema), getString(query, XDBPDI, OPERAND, NAME));
-      putTemplated(QUERY_XDBPDI_OPERAND_PATH, name, schema), getString(query, XDBPDI, OPERAND, "path"));
-      putTemplated(QUERY_XDBPDI_OPERAND_TYPE, name, schema), getString(query, XDBPDI, OPERAND, TYPE));
-      putTemplated(QUERY_XDBPDI_OPERAND_INDEX, name, schema), getString(query, XDBPDI, OPERAND, "index"));
-      */
+      Map<Value, Value> namespaceUriByPrefix = new LinkedHashMap<>();
+      query.get(NAMESPACES).toList().stream()
+          .forEach(prefix -> {
+            Value namespaceUri = lookupNamespace("prefix", prefix, "uri");
+            namespaceUriByPrefix.put(prefix, namespaceUri);
+            appendTemplated(prefix, QUERY_NAMESPACE_PREFIX_TEMPLATE, name);
+            appendTemplated(namespaceUri, QUERY_NAMESPACE_URI_TEMPLATE, name);
+          });
+      putTemplated(namespaceUriByPrefix.values().iterator().next(), QUERY_RESULT_SCHEMA_TEMPLATE, name);
+      YamlMap xdbPdiConfigs = query.get("xdbPdiConfigs").toMap();
+      putTemplatedFrom(xdbPdiConfigs, name, QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, "entityPath",
+          QUERY_XDBPDI_TEMPLATE_TEMPLATE, "template");
+      Value prefix = xdbPdiConfigs.get(NAMESPACE);
+      Value namespaceUri = namespaceUriByPrefix.get(prefix);
+      putTemplated(namespaceUri, QUERY_XDBPDI_SCHEMA_TEMPLATE, name);
+      xdbPdiConfigs.get("operands").toList().stream()
+          .map(Value::toMap)
+          .forEach(operand -> {
+            appendTemplated(operand.get(NAME), QUERY_XDBPDI_OPERAND_NAME, name, namespaceUri);
+            appendTemplated(operand.get("index"), QUERY_XDBPDI_OPERAND_INDEX, name, namespaceUri);
+            appendTemplated(operand.get(TYPE), QUERY_XDBPDI_OPERAND_TYPE, name, namespaceUri);
+            appendTemplated(operand.get(PATH), QUERY_XDBPDI_OPERAND_PATH, name, namespaceUri);
+          });
     });
 
-    forEachMapItem(yaml, "search", search -> {
-      String searchName = getString(search, NAME);
-      append(SEARCH_NAME, searchName);
-      put(String.format(SEARCH_DESCRIPTION, searchName), getString(search, DESCRIPTION));
-      put(String.format(SEARCH_NESTED, searchName), getString(search, "nested"));
-      put(String.format(SEARCH_STATE, searchName), getString(search, "state"));
-      put(String.format(SEARCH_INUSE, searchName), getString(search, "inuse"));
-      put(String.format(SEARCH_AIC, searchName), getString(search, "aic"));
-      put(String.format(SEARCH_QUERY, searchName), getString(search, "query"));
+    List<Value> aics = yaml.get("aics").toList();
+    if (!aics.isEmpty()) {
+      YamlMap aic = aics.get(0).toMap();
+      put(AIC_NAME, aic.get(NAME));
+      aic.get("criteria").toList().stream()
+          .map(Value::toMap)
+          .forEach(criterion -> {
+            append(CRITERIA_NAME, criterion.get(NAME));
+            append(CRITERIA_LABEL, criterion.get(LABEL));
+            append(CRITERIA_TYPE, criterion.get(TYPE));
+            append(CRITERIA_INDEXED, criterion.get("indexed"));
+            append(CRITERIA_PKEYMINATTR, criterion.get("pkeyMinAttr"));
+            append(CRITERIA_PKEYMAXATTR, criterion.get("pkeyMaxAttr"));
+            append(CRITERIA_PKEYVALUESATTR, criterion.get("pkeyValuesAttr"));
+          });
+    }
 
-      forEachMapItem(search, "composition", composition -> {
-        String compositionName = getString(composition, NAME);
-        append(SEARCH_COMPOSITION_NAME, compositionName);
-        put(String.format(SEARCH_COMPOSITION_XFORM_NAME, searchName), getString(composition, "xform", NAME));
-        put(String.format(SEARCH_COMPOSITION_XFORM, searchName), getString(composition, "xform", "xml"));
-        put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, searchName, compositionName), getString(composition, RESULT, MAIN, NAME));
-        put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, searchName, compositionName), getString(composition, RESULT, MAIN, "label"));
-        put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName, compositionName), getString(composition, RESULT, MAIN, "path"));
-        put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName, compositionName), getString(composition, RESULT, MAIN, TYPE));
-        put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT, searchName, compositionName), getString(composition, RESULT, MAIN, "sort"));
-        put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE, searchName), getString(composition, "export", "enabled"));
-        put(String.format(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName), getString(composition, "export", "configs"));
+    putManyFrom("search", SEARCH_NAME, (searchName, search) -> {
+      putTemplatedFrom(search, searchName, SEARCH_DESCRIPTION, DESCRIPTION,
+          SEARCH_NESTED, "nested",
+          SEARCH_STATE, "state",
+          SEARCH_INUSE, "inUse",
+          SEARCH_AIC, "aic",
+          SEARCH_QUERY, "query");
+      with("searchComposition", "search", searchName, searchComposition -> {
+        Value searchCompositionName = searchComposition.get(NAME);
+        putTemplated(searchCompositionName, SEARCH_COMPOSITION_NAME, searchName);
+        with("resultMaster", NAME, searchComposition.get("resultMaster").toString(), resultMaster -> {
+          YamlMap tab = resultMaster.get("panels", 0, "tabs", 0).toMap();
+          putTemplated(tab.get("exportEnabled"), SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE, searchName);
+          tab.get("columns").toList().stream()
+              .map(Value::toMap)
+              .forEach(column -> {
+                appendTemplated(column.get(NAME), SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, searchName,
+                    searchCompositionName);
+                appendTemplated(column.get(LABEL), SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, searchName,
+                    searchCompositionName);
+                appendTemplated(column.get(PATH), SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName,
+                    searchCompositionName);
+                appendTemplated(column.get("sort"), SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT, searchName,
+                    searchCompositionName);
+                appendTemplated(column.get(TYPE), SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName,
+                    searchCompositionName);
+              });
+          tab.get("exportConfigurations").toList().stream()
+              .forEach(exportConfiguration -> {
+                appendTemplated(exportConfiguration, SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName);
+              });
+        });
+        with("xform", NAME, searchComposition.get("xform").toString(), xform -> {
+          putTemplated(xform.get(NAME), SEARCH_COMPOSITION_XFORM_NAME, searchName);
+          putTemplated(xform.get(CONTENT, TEXT), SEARCH_COMPOSITION_XFORM, searchName);
+        });
       });
     });
+
   }
 
   private void putFrom(String type, String... destinationAndSourceNames) {
@@ -143,13 +224,22 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
     while (i < destinationAndSourceNames.length) {
       String destination = destinationAndSourceNames[i++];
       String source = destinationAndSourceNames[i++];
-      put(destination, map.get(source).toString());
+      put(destination, map.get(source));
     }
   }
 
-  private void putContentFrom(String type, String property) {
-    putFrom(yaml.get(English.plural(type), 0, "content").toMap(),
-        property, "text");
+  private void put(String key, Value value) {
+    if (!value.isEmpty()) {
+      put(key, value.toString());
+    }
+  }
+
+  private void putContentFrom(String property, String type) {
+    putContentFrom(property, yaml, English.plural(type), 0, CONTENT);
+  }
+
+  private void putContentFrom(String property, YamlMap map, Object... args) {
+    putFrom(map.get(args).toMap(), property, TEXT);
   }
 
   private void putManyFrom(String type, String property, BiConsumer<String, YamlMap> consumer) {
@@ -166,6 +256,10 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
         });
   }
 
+  private void append(String name, Value value) {
+    append(name, value.toString());
+  }
+
   private void append(String name, String value) {
     String oldValue = get(name);
     if (oldValue == null) {
@@ -173,6 +267,10 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
     } else {
       put(name, oldValue + "," + value);
     }
+  }
+
+  private void appendTemplated(Value value, String format, Object... args) {
+    append(String.format(format, args), value.toString());
   }
 
   private void putTemplatedFrom(YamlMap map, String name, String... destinationAndSourceNames) {
@@ -184,21 +282,37 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
     }
   }
 
-  private String putTemplated(Value value, String template, Object... args) {
-    return put(String.format(template, args), value.toString());
+  private void putTemplated(Value value, String template, Object... args) {
+    put(String.format(template, args), value);
   }
 
-  private Value lookupNamespace(YamlMap map) {
-    return lookup(NAMESPACE, "uri", map.get(NAMESPACE), "prefix");
+  private Value lookupNamespace(String lookupProperty, Value lookupValue, String returnProperty) {
+    return lookup(NAMESPACE, lookupProperty, lookupValue, returnProperty);
   }
 
-  private Value lookup(String type, String lookupProperty, Value lookupValue, String resultProperty) {
+  private Value lookup(String type, String lookupProperty, Value lookupValue, String returnProperty) {
+    return lookup(type, lookupProperty, lookupValue.toString())
+        .map(map -> map.get(returnProperty))
+        .orElse(new Value());
+  }
+
+  private Optional<YamlMap> lookup(String type, String lookupProperty, String lookupValue) {
     return yaml.get(English.plural(type)).toList().stream()
         .map(Value::toMap)
-        .filter(map -> lookupValue.equals(map.get(lookupProperty)))
-        .map(map -> map.get(resultProperty))
-        .findAny()
-        .orElse(new Value());
+        .filter(sc -> sc.get(lookupProperty).equals(lookupValue))
+        .findAny();
+  }
+
+  private void with(String type, String lookupProperty, String lookupValue, Consumer<YamlMap> action) {
+    lookup(type, lookupProperty, lookupValue).ifPresent(action);
+  }
+
+  private void putValueList(YamlMap map, String valueListProperty, String valueListName, String format,
+      String name) {
+    map.get(valueListProperty).toMap().entries().forEach(e -> {
+      append(valueListName, e.getKey());
+      putTemplated(e.getValue(), format, name, e.getKey());
+    });
   }
 
   private void forEachMapItem(YamlMap map, String name, Consumer<YamlMap> action) {

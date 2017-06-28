@@ -24,11 +24,15 @@ class ConvertNestedMapOfMapsToSequences extends PathVisitor {
 
   private static Map<String, Collection<String>> nestedSequencesByPathRegex() {
     Map<String, Collection<String>> result = new HashMap<>();
-    result.put("/ingests/\\d/content/processors/\\d/data", Arrays.asList("indexes"));
-    result.put("/pdis/\\d/content/data/\\d", Arrays.asList("indexes"));
-    result.put("/queries/\\d/xdbPdiConfigs", Arrays.asList("operands"));
-    result.put("/resultConfigurationHelpers/\\d/content", Arrays.asList("data"));
-    result.put("/resultConfigurationHelpers/\\d/content/data/\\d", Arrays.asList("items"));
+    result.put("/aics/\\d+", Arrays.asList("criteria"));
+    result.put("/ingests/\\d+/content/processors/\\d+/data", Arrays.asList("indexes"));
+    result.put("/pdis/\\d+/content/data/\\d+", Arrays.asList("indexes"));
+    result.put("/queries/\\d+/xdbPdiConfigs", Arrays.asList("operands"));
+    result.put("/resultConfigurationHelpers/\\d+/content", Arrays.asList("data"));
+    result.put("/resultConfigurationHelpers/\\d+/content/data/\\d+", Arrays.asList("items"));
+    result.put("/resultMasters/\\d+", Arrays.asList("panels"));
+    result.put("/resultMasters/\\d+/panels/\\d+", Arrays.asList("tabs"));
+    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+", Arrays.asList("columns"));
     return result;
   }
 

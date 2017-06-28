@@ -1,0 +1,461 @@
+<!--
+  Copyright (c) 2015 EMC Corporation. All Rights Reserved.
+  EMC Confidential: Restricted Internal Distribution
+-->
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0"
+    xmlns:message="urn:emc:ia:schema:message:1.0" targetNamespace="urn:emc:ia:schema:message:1.0">
+
+  <xs:element name="messages">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="message" minOccurs="1" maxOccurs="unbounded" type="message:message"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="message">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/Message"/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:creativeWork">
+        <xs:sequence>
+          <xs:element name="sender" type="message:person">
+            <xs:annotation>
+              <xs:documentation>The participant who is at the sending end of the action.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="recipient" type="message:person" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+              <xs:documentation>The participant who is at the receiving end of the action.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="dateSent" type="message:dateTime" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>The date/time the message was sent.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="messageAttachment" minOccurs="0" maxOccurs="unbounded" type="message:creativeWork">
+            <xs:annotation>
+              <xs:documentation>A CreativeWork attached to the message.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="creativeWork">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/CreativeWork"/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:thing">
+        <xs:sequence>
+          <xs:element name="about" minOccurs="0" type="message:text">
+            <xs:annotation>
+              <xs:documentation>The subject matter of the content.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="audio" minOccurs="0" type="message:audioObject">
+            <xs:annotation>
+              <xs:documentation>An embedded audio object.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="encoding" minOccurs="0" maxOccurs="unbounded" type="message:mediaObject">
+            <xs:annotation>
+              <xs:documentation>A media object that encodes this CreativeWork.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="fileFormat" minOccurs="0" type="message:text">
+            <xs:annotation>
+              <xs:documentation>Media type (aka MIME format, see IANA site) of the content.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="hasPart" minOccurs="0" maxOccurs="unbounded" type="message:creativeWork">
+            <xs:annotation>
+              <xs:documentation>Indicates a CreativeWork that is (in some sense) a part of this CreativeWork.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="inLanguage" minOccurs="0" type="message:language">
+            <xs:annotation>
+              <xs:documentation>The language of the content.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="isBasedOn" minOccurs="0" type="message:creativeWork">
+            <xs:annotation>
+              <xs:documentation>A resource that was used in the creation of this resource.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="isPartOf" minOccurs="0" type="message:creativeWork">
+            <xs:annotation>
+              <xs:documentation>Indicates a CreativeWork that this CreativeWork is (in some sense) part of.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="keywords" minOccurs="0" type="message:text">
+            <xs:annotation>
+              <xs:documentation>
+                Keywords or tags used to describe this content. Multiple entries in a keywords list are typically
+                delimited by commas.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="mentions" minOccurs="0" maxOccurs="unbounded" type="message:thing">
+            <xs:annotation>
+              <xs:documentation>
+                Indicates that the CreativeWork contains a reference to, but is not necessarily about a concept.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="producer" minOccurs="0" type="message:thing">
+            <xs:annotation>
+              <xs:documentation>The person or organization who produced the work.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="text" minOccurs="0" type="message:text">
+            <xs:annotation>
+              <xs:documentation>The textual content of this CreativeWork.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="video" minOccurs="0" type="message:videoObject">
+            <xs:annotation>
+              <xs:documentation>An embedded video object.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="thing">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/Thing"/>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="additionalType" minOccurs="0" maxOccurs="unbounded" type="message:url">
+        <xs:annotation>
+          <xs:documentation>
+            An additional type for the item, typically used for adding more specific types from external vocabularies.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="alternateName" minOccurs="0" type="message:text">
+        <xs:annotation>
+          <xs:documentation>An alias for the item.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="name" minOccurs="0" type="message:text">
+        <xs:annotation>
+          <xs:documentation>The name of the item.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="description" minOccurs="0" type="message:text">
+        <xs:annotation>
+          <xs:documentation>A description of the item.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="url" minOccurs="0" type="message:url">
+        <xs:annotation>
+          <xs:documentation>URL of the item.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="custom" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Extension point. Anything can go in here.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:any processContents="skip"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="url">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/URL"/>
+    </xs:annotation>
+    <xs:restriction base="xs:anyURI"/>
+  </xs:simpleType>
+
+  <xs:complexType name="person">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/Person"/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:thing">
+        <xs:sequence>
+          <xs:element name="account" minOccurs="0" type="message:onlineAccount">
+            <xs:annotation>
+              <xs:documentation>Indicates an account held by this person.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="affiliation" minOccurs="0" type="message:organization">
+            <xs:annotation>
+              <xs:documentation>An organization that this person is affiliated with.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="email" minOccurs="0" type="message:text">
+            <xs:annotation>
+              <xs:documentation>Email address.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="jobTitle" minOccurs="0" type="message:text">
+            <xs:annotation>
+              <xs:documentation>The job title of the person.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="memberOf" minOccurs="0" type="message:programMembership">
+            <xs:annotation>
+              <xs:documentation>An Organization (or ProgramMembership) to which this Person or Organization belongs.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="nationality" minOccurs="0" type="message:text">
+            <xs:annotation>
+              <xs:documentation>Nationality of the person.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="telephone" minOccurs="0" type="message:text">
+            <xs:annotation>
+              <xs:documentation>The telephone number.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="workLocation" minOccurs="0" type="message:place">
+            <xs:annotation>
+              <xs:documentation>A contact location for a person's place of work.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="worksFor" minOccurs="0" type="message:organization">
+            <xs:annotation>
+              <xs:documentation>Organization that the person works for.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="programMembership">
+    <xs:annotation>
+      <xs:appinfo source="https://schema.org/ProgramMembership"/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:thing">
+        <xs:sequence>
+          <xs:element name="programName">
+            <xs:annotation>
+              <xs:documentation>The program providing the membership.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="address">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/PostalAddress"/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:thing">
+        <xs:sequence>
+          <xs:element name="addressCountry" type="message:country" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>The 2- or 3-letter ISO 3166 country code.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="addressLocality" type="message:text" minOccurs="0"/>
+          <xs:element name="addressRegion" type="message:text" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="dateTime">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/DateTime"/>
+    </xs:annotation>
+    <xs:restriction base="xs:dateTime"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="text">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/Text"/>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="language">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Z]{2}(-[A-Z]{2})?"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="country">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Z]{2,3}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="mediaObject">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/MediaObject"/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:creativeWork">
+        <xs:sequence>
+          <xs:element name="contentSize" minOccurs="0" type="message:text">
+            <xs:annotation>
+              <xs:documentation>File size in (mega/kilo) bytes.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="contentUrl" minOccurs="0" type="message:url">
+            <xs:annotation>
+              <xs:documentation>Actual bytes of the media object.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="encodingFormat" minOccurs="0" type="message:text">
+            <xs:annotation>
+              <xs:documentation>Media type (aka MIME format, see IANA site) of the content.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="organization">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/Organization"/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:thing">
+        <xs:sequence>
+          <xs:element name="address" type="message:address" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>Physical address of the person.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="department" type="message:organization" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>
+                A relationship between an organization and a department of that organization.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="audioObject">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/AudioObject"/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:mediaObject">
+        <xs:sequence>
+          <xs:element name="transcript" minOccurs="0" type="message:text">
+            <xs:annotation>
+              <xs:documentation>The transcript of the audio.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="videoObject">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/VideoObject"/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:mediaObject">
+        <xs:sequence>
+          <xs:element name="thumbnail" minOccurs="0" type="message:imageObject">
+            <xs:annotation>
+              <xs:documentation>Thumbnail image for the video.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="transcript" minOccurs="0" type="message:text">
+            <xs:annotation>
+              <xs:documentation>The transcript of the audio.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="imageObject">
+    <xs:annotation>
+      <xs:appinfo source="http://schema.org/ImageObject"/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:mediaObject"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="onlineAccount">
+    <xs:annotation>
+      <xs:appinfo source="http://xmlns.com/foaf/spec/#term_account"/>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:thing">
+		    <xs:sequence>
+		      <xs:element name="accountName" type="message:text">
+		        <xs:annotation>
+		          <xs:documentation>Indicates the name (identifier) associated with this online account.</xs:documentation>
+		        </xs:annotation>
+		      </xs:element>
+		    </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="place">
+    <xs:annotation>
+      <xs:documentation>Entities that have a somewhat fixed, physical extension.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:thing">
+        <xs:sequence>
+          <xs:element name="additionalProperty" type="message:propertyValue" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+              <xs:documentation>
+                A property-value pair representing an additional characteristics of the entitity.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="branchCode" type="message:text" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>A short textual code that uniquely identifies a place of business.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="propertyValue">
+    <xs:annotation>
+      <xs:documentation>
+        A property-value pair, e.g. representing a feature of a product or place. Use the 'name' property for the name
+        of the property.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="message:thing">
+        <xs:sequence>
+          <xs:element name="value" type="message:text">
+            <xs:annotation>
+              <xs:documentation>The value of the quantitative value or property value node.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>

@@ -14,25 +14,30 @@ import com.opentext.ia.sdk.yaml.core.YamlMap;
 
 class EnsureEnumConstant extends PropertyVisitor {
 
-  private static final Collection<String> TYPE = Arrays.asList("type");
+  private static final String TYPE = "type";
+  private static final Collection<String> JUST_TYPE = Arrays.asList(TYPE);
   private static final Map<String, Collection<String>> ENUM_PROPERTIES_BY_PATH_REGEX = enumPropertiesByPathRegex();
 
   private static Map<String, Collection<String>> enumPropertiesByPathRegex() {
     Map<String, Collection<String>> result = new HashMap<>();
-    result.put("/aics/\\d/criteria/\\d/", TYPE);
-    result.put("/appExportPipelines/\\d", Arrays.asList("inputFormat"));
-    result.put("/appExportTransformations/\\d/", TYPE);
-    result.put("/applications/\\d", Arrays.asList("type", "archiveType"));
-    result.put("/audits/\\d", Arrays.asList("eventName", "eventType"));
-    result.put("/confirmations/\\d", Arrays.asList("types"));
-    result.put("/holds/\\d/holdType", TYPE);
-    result.put("/queries/\\d/xdbPdiConfigs/\\d/operands/\\d", TYPE);
-    result.put("/resultConfigurationHelpers/\\d/content/data/\\d", TYPE);
-    result.put("/resultConfigurationHelpers/\\d/content/data/\\d/items/\\d", TYPE);
-    result.put("/retentionPolicies/\\d/agingStrategy", TYPE);
-    result.put("/retentionPolicies/\\d/agingStrategy/agingPeriod", Arrays.asList("units"));
-    result.put("/retentionPolicies/\\d/dispositionStrategy", TYPE);
-    result.put("/xdbLibraryPolicies/\\d", Arrays.asList("closeMode"));
+    result.put("/aics/\\d+/criteria/\\d+", JUST_TYPE);
+    result.put("/exportConfigurations/\\d+", JUST_TYPE);
+    result.put("/exportPipelines/\\d+", Arrays.asList("inputFormat", TYPE));
+    result.put("/exportTransformations/\\d+", JUST_TYPE);
+    result.put("/applications/\\d+", Arrays.asList(TYPE, "archiveType"));
+    result.put("/audits/\\d+", Arrays.asList("eventName", "eventType"));
+    result.put("/confirmations/\\d+", Arrays.asList("types"));
+    result.put("/holds/\\d+/holdType", JUST_TYPE);
+    result.put("/queries/\\d+/xdbPdiConfigs/operands/\\d+", JUST_TYPE);
+    result.put("/resultConfigurationHelpers/\\d+/content/data/\\d+", JUST_TYPE);
+    result.put("/resultConfigurationHelpers/\\d+/content/data/\\d+/items/\\d+", JUST_TYPE);
+    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+", Arrays.asList("sort", TYPE));
+    result.put("/retentionPolicies/\\d+/agingStrategy", JUST_TYPE);
+    result.put("/retentionPolicies/\\d+/agingStrategy/agingPeriod", Arrays.asList("units"));
+    result.put("/retentionPolicies/\\d+/dispositionStrategy", JUST_TYPE);
+    result.put("/searches/\\d+", Arrays.asList("state"));
+    result.put("/stores/\\d+", Arrays.asList("storeType"));
+    result.put("/xdbLibraryPolicies/\\d+", Arrays.asList("closeMode"));
     return result;
   }
 

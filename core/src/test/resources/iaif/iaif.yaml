@@ -1,0 +1,221 @@
+application:
+  name: Communication Archive
+
+holding:
+  name: Messages
+
+fileSystemFolder:
+  name: export
+
+store:
+  name: export
+  storeType: result
+  
+xdbDatabase:
+  name: Messages
+
+ingest:
+  content:
+    format: xml
+    resource: ingest.xml
+
+namespaces:
+- prefix: n
+  uri: urn:emc:ia:schema:message:1.0
+  default: true
+- prefix: c
+  uri: urn:emc:ia:schema:message-confirmation:1.0
+
+pdi:
+  content:
+    format: xml
+    resource: pdi.xml
+      
+pdiSchema:
+  content:
+    format: xsd
+    resource: message.xsd
+
+queries:
+  ConfirmationQuery:
+    namespaces:
+    - c
+    - n
+    resultRootElement: confirmations
+    xdbPdiConfigs:
+      entityPath: /n:messages/n:message
+      template: |
+        return <c:confirmation>
+          <c:timeStamp>{$aiu/n:dateSent/text()}</c:timeStamp>
+          <c:origin>{$aiu/n:producer/n:name/text()}</c:origin>
+          <c:containerId>{$aiu/n:isPartOf/n:name/text()}</c:containerId>
+          <c:id>{$aiu/n:name/text()}</c:id>
+          <c:externalId>{$aiu/n:alternateName/text()}</c:externalId>
+        </c:confirmation>
+  DefaultQuery:
+    default: true
+    xdbPdiConfigs:
+      entityPath: /n:messages/n:message
+      template: return $aiu
+      operands:
+        bcc:
+          index: false
+          path: n:recipient[n:additionalType = 'bcc']/n:email
+        cc:
+          index: false
+          path: n:recipient[n:additionalType = 'cc']/n:email
+        distributionList:
+          index: true
+          path: n:recipient/n:memberOf/n:programName
+          type: string
+        from:
+          index: true
+          path: n:sender/n:email
+        fromCountry:
+          index: true
+          path: n:sender/n:worksFor/n:address/n:addressCountry
+        receivedDate:
+          index: true
+          path: n:dateReceived
+          type: datetime
+        recipient:
+          index: true
+          path: n:recipient/n:email
+        sentDate:
+          index: true
+          path: n:dateSent
+          type: datetime
+        subject:
+          index: false
+          path: n:about
+        to:
+          index: false
+          path: n:recipient[not(n:additionalType)]/n:email
+        toCountry:
+          index: true
+          path: n:recipient[not(n:additionalType)]/n:worksFor/n:address/n:addressCountry
+
+queryQuota:
+  name: DefaultQuota
+  
+resultConfigurationHelper:
+  name: result_helper
+  content:
+    format: xml
+    resource: DefaultResultHelper.xml
+    
+retentionPolicy:
+  name: Messages
+  
+aic:
+  name: Messages
+  criteria:
+    aipId:
+      pkeyValuesAttr: aipId
+      label: AIP ID
+    bcc:
+      label: Bcc
+    cc:
+      label: Cc
+    distributionList:
+      label: Distribution list
+    from:
+      label: From
+    fromCountry:
+      label: Sent from country
+    receivedDate:
+      type: datetime
+      label: Received date
+      pkeyMinAttr: pkeys.dateTime01
+      pkeyMaxAttr: pkeys.dateTime02
+    recipient:
+      label: Recipient
+    sentDate:
+      type: datetime
+      label: Sent date
+    subject:
+      label: Subject
+    to:
+      label: To
+    toCountry:
+      label: Sent to country
+  
+search:
+  name: Find emails
+  state: draft
+    
+searchComposition:
+  name: Set 1
+  
+resultMaster:
+  name: default
+  panels:
+    Main:
+      tabs:
+        _ia_Default_Main_tab_:
+          exportEnabled: true
+          exportConfigurations:
+          - PST Export
+          columns:
+            dateSent:
+              label: Date Sent
+              path: n:dateSent
+              sort: ascending
+              type: datetime
+            sender:
+              label: Sender
+              path: n:sender/n:email   
+            subject:
+              label: Subject
+              path: n:about
+    
+xform:
+  name: form
+  content:
+    format: xml
+    resource: FindEmails.form.xml
+  
+
+exportPipelines:
+  PST Export Pipeline:
+    description: Exports PST
+    content:
+      format: xml
+      resource: PstExportPipeline.xpl
+    inputFormat: raw xml
+    outputFormat: pst
+    type: xproc
+  PST Export Collection Pipeline:
+    description: Exports PDF
+    collectionBased: true
+    content:
+      format: xml
+      resource: CollectionExportPipeline.xpl
+    inputFormat: raw xml
+    outputFormat: pdf
+    type: xproc
+
+exportTransformations:
+  PST Export Collection Transformation:
+    description: pdf xsl transformation
+    type: xslt
+    mainPath: manifest.xsl
+  
+exportConfigurations:
+  PST Export:
+    description: Export to PST
+    pipeline: PST Export Pipeline
+  PST Export Collection:
+    description: Export a collection to PST
+    encryptedOptions:
+      sftpUser: test
+      sftpPassword: test
+    options:
+      sftpHost: localhost
+      sftpPath: test
+      sftpPort: 2222
+    xslResultFormat: pdf
+    pipeline: PST Export Collection Pipeline
+    transformation:
+      name: PST Export Collection Transformation
+      portName: stylesheet

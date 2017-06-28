@@ -22,14 +22,14 @@ public final class TestUtil {
     Iterator<T> gotten = actual.iterator();
     while (wanted.hasNext()) {
       T wantedItem = wanted.next();
-      Assert.assertTrue("Missing item: " + wantedItem + details, gotten.hasNext());
+      Assert.assertTrue(message + " - missing item: " + wantedItem + details, gotten.hasNext());
 
       T gottenItem = gotten.next();
       if (!Objects.equals(wantedItem, gottenItem)) {
-        Assert.assertEquals("Wrong item" + details, String.valueOf(wantedItem), String.valueOf(gottenItem));
+        Assert.assertEquals(message + " - wrong item" + details, String.valueOf(wantedItem), String.valueOf(gottenItem));
       }
     }
-    Assert.assertFalse("Extra items" + details, gotten.hasNext());
+    Assert.assertFalse(message + " - extra items" + details, gotten.hasNext());
   }
 
   private static <T> String join(Collection<T> items) {

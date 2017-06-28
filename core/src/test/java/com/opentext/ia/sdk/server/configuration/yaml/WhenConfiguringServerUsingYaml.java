@@ -3,10 +3,15 @@
  */
 package com.opentext.ia.sdk.server.configuration.yaml;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +24,10 @@ import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.http.rest.Link;
 import com.opentext.ia.sdk.support.http.rest.RestClient;
 import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.sdk.test.TestUtil;
 import com.opentext.ia.sdk.yaml.configuration.YamlConfiguration;
+import com.opentext.ia.sdk.yaml.core.YamlMap;
+import com.opentext.ia.sdk.yaml.resource.ResourceResolver;
 
 
 public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArchiveLinkRelations {
@@ -28,7 +36,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   private final ArchiveConnection connection = new ArchiveConnection();
   private final ApplicationConfigurer clientSideConfigurer = mock(ApplicationConfigurer.class);
   private final YamlBasedApplicationConfigurer configurer = new YamlBasedApplicationConfigurer(
-      new YamlConfiguration("application:\n  name: foo"), (yaml, conn) -> clientSideConfigurer);
+      new YamlConfiguration("version: 1.0.0"), (yaml, conn) -> clientSideConfigurer);
 
   @Before
   @SuppressWarnings("unchecked")
@@ -58,6 +66,55 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
 
     verify(clientSideConfigurer).configure(anyObject());
     verify(httpClient, never()).put(anyString(), anyObject(), anyObject(), anyString());
+  }
+
+  @Test
+  public void shouldConvertYamlToProperties() throws IOException {
+    Map<String, String> expected = loadProperties();
+    Map<String, String> actual = yamlToProperties();
+    assertEqual(expected, actual);
+  }
+
+  private Map<String, String> loadProperties() throws IOException {
+    Map<String, String> result = new HashMap<>();
+    Properties properties = new Properties();
+    try (InputStream input = getClass().getResourceAsStream("/iaif/iaif.properties")) {
+      properties.load(input);
+    }
+    for (String name : properties.stringPropertyNames()) {
+      result.put(name, properties.getProperty(name));
+    }
+    return result;
+  }
+
+  private Map<String, String> yamlToProperties() throws IOException {
+    try (InputStream input = getClass().getResourceAsStream("/iaif/iaif.yaml")) {
+      YamlConfiguration configuration = new YamlConfiguration(input, ResourceResolver.fromClasspath("/iaif"));
+      YamlMap yaml = configuration.getMap();
+      return new YamlPropertiesMap(yaml);
+    }
+  }
+
+  private void assertEqual(Map<String, String> expected, Map<String, String> actual) {
+    expected.entrySet().stream()
+        .sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+        .forEach(e -> assertEqual(e, actual));
+  }
+
+  private void assertEqual(Entry<String, String> expected, Map<String, String> actual) {
+    if (!actual.containsKey(expected.getKey())) {
+      fail("Missing key: " + expected.getKey() + "\nGot:\n"
+          + actual.keySet().stream().collect(Collectors.joining("\n")));
+    }
+    TestUtil.assertEquals(expected.getKey(), normalize(expected.getValue()), normalize(actual.get(expected.getKey())));
+  }
+
+  private List<String> normalize(String value) {
+    return Arrays.asList(value
+        .replaceAll("\\n\\s*", " ")
+        .replaceAll("\\s+<", "<")
+        .replaceAll(">\\s+", ">")
+        .split(","));
   }
 
 }

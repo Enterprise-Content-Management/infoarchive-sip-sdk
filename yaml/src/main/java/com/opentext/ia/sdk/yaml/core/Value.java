@@ -51,6 +51,10 @@ public class Value {
         .collect(Collectors.toList());
   }
 
+  public boolean isScalar() {
+    return !isEmpty() && !isList() && !isMap();
+  }
+
   public boolean toBoolean() {
     return Boolean.parseBoolean(toString());
   }
@@ -92,10 +96,6 @@ public class Value {
       return Objects.equals(data, other.data);
     }
     return Objects.equals(data, obj);
-  }
-
-  public boolean isScalar() {
-    return !isEmpty() && !isList() && !isMap();
   }
 
 }

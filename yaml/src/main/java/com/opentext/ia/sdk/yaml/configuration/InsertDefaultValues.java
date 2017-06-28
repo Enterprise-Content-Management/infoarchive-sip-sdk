@@ -14,6 +14,7 @@ import com.opentext.ia.sdk.yaml.resource.ResourceResolver;
 class InsertDefaultValues extends PathVisitor {
 
   private static final String FORMAT = "format";
+  private static final String TYPE = "type";
   private static final Map<String, Collection<Default>> DEFAULT_PROPERTIES_BY_PATH_REGEX = defaultValuesByPathRegex();
 
   private static Map<String, Collection<Default>> defaultValuesByPathRegex() {
@@ -30,30 +31,35 @@ class InsertDefaultValues extends PathVisitor {
         "support.phrases", false,
         "support.scoring", false,
         "support.start.end.token.flags", false));
-    result.put("/appExportPipelines/\\d", Default.of("envelopeFormat", "gzip",
+    result.put("/aics/\\d+/criteria/\\d+", Default.of("indexed", true,
+        TYPE, "STRING"));
+    result.put("/exportPipelines/\\d+", Default.of("collectionBased", false,
+        "composite", true,
+        "envelopeFormat", "zip",
         "includesContent", true,
         "inputFormat", "ROW_COLUMN"));
-    result.put("/appExportConfigurations/\\d", Default.of("exportType", "asynchronous"));
-    result.put("/holdings/\\d", Default.of("ciHashValidationEnabled", true,
+    result.put("/exportConfigurations/\\d+", Default.of("exportType", "ASYNCHRONOUS"));
+    result.put("/holdings/\\d+", Default.of("ciHashValidationEnabled", true,
         "keepSipAfterCommitEnabled", false,
         "logStoreEnabled", true,
         "pdiXmlHashEnforced", false,
         "pdiXmlHashValidationEnabled", true,
         "syncCommitEnabled", true,
         "xdbMode", "PRIVATE"));
-    result.put("/ingests/\\d", Default.of("content", new YamlMap()
+    result.put("/ingests/\\d+", Default.of("content", new YamlMap()
         .put(FORMAT, "xml")
         .put("text", ResourceResolver.fromClasspath().apply("defaultIngest.xml"))));
-    result.put("/ingestNodes/\\d", Default.of("enumerationCutoffDays", 30,
+    result.put("/ingestNodes/\\d+", Default.of("enumerationCutoffDays", 30,
        "enumerationMaxResultCount", 10,
        "enumerationMinusRunning", true,
        "logLevel", "INFO"));
-    result.put("/queries/\\d", Default.of("resultRootElement", "result",
+    result.put("/queries/\\d+", Default.of("resultRootElement", "result",
         "resultRootNsEnabled", true));
+    result.put("/queries/\\d+/xdbPdiConfigs/operands/\\d+", Default.of(TYPE, "STRING"));
     result.put("/queryQuota", Default.of("aipQuota", 0,
         "aiuQuota", 0,
         "dipQuota", 0));
-    result.put("/receiverNodes/\\d", Default.of("logLevel", "INFO",
+    result.put("/receiverNodes/\\d+", Default.of("logLevel", "INFO",
         "sips", Arrays.asList(
             new YamlMap()
                 .put(FORMAT,  "sip_zip")
@@ -61,9 +67,13 @@ class InsertDefaultValues extends PathVisitor {
             new YamlMap()
                 .put(FORMAT, "eas_sip_zip")
                 .put("extractorImpl", "com.emc.ia.reception.sip.extractor.impl.LegacyZipSipExtractor"))));
-    result.put("/stores/\\d", Default.of("status", "ONLINE",
+    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+", Default.of("sort", "NONE",
+        TYPE, "STRING"));
+    result.put("/searches/\\d+", Default.of("nested", false,
+        "inUse", true));
+    result.put("/stores/\\d+", Default.of("status", "ONLINE",
         "storeType", "REGULAR",
-        "type", "FILESYSTEM"));
+        TYPE, "FILESYSTEM"));
     return result;
   }
 

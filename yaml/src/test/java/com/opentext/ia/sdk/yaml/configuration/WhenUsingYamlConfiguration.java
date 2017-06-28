@@ -185,14 +185,14 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
   @Test
   public void shouldInsertDefaultValues() {
-    yaml.put("appExportPipelines", Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put("exportPipelines", Arrays.asList(new YamlMap().put(NAME, someName())));
     yaml.put(HOLDINGS, Arrays.asList(new YamlMap().put(NAME, someName())));
     yaml.put(INGESTS, Arrays.asList(new YamlMap().put(NAME, someName())));
     yaml.put("receiverNodes", Arrays.asList(new YamlMap().put(NAME, someName())));
 
     normalizeYaml();
 
-    assertTrue("appExportPipeline.includesContent", yaml.get("appExportPipelines", 0, "includesContent").toBoolean());
+    assertTrue("exportPipeline.includesContent", yaml.get("exportPipelines", 0, "includesContent").toBoolean());
     assertValue("holding.xdbMode", "PRIVATE", yaml.get(HOLDINGS, 0, "xdbMode"));
     assertValue("ingest.processors.format", XML, yaml.get(INGESTS, 0, "content", FORMAT));
     assertTrue("ingest.processors.xml", yaml.get(INGESTS, 0, "content", TEXT).toString().contains("sip.download"));

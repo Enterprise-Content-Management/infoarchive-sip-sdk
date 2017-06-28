@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resultConfigurationHelper xmlns:n="urn:emc:ia:schema:message:1.0" xmlns:ia="urn:x-emc:ia:schema:pdi">
+  <element>
+    <name>id</name>
+    <label>ID</label>
+    <type>ID</type>
+    <path>@ia:id</path>
+  </element>
+  <element>
+    <name>dateSent</name>
+    <label>Date Sent</label>
+    <type>DATETIME</type>
+    <path>n:dateSent</path>
+  </element>
+  <element>
+    <name>receivedDate</name>
+    <label>Received Date</label>
+    <type>DATETIME</type>
+    <path>n:receivedDate</path>
+  </element>
+  <element>
+    <name>subject</name>
+    <label>Subject</label>
+    <type>STRING</type>
+    <path>n:about</path>
+  </element>
+  <element>
+    <name>sender</name>
+    <label>Sender</label>
+    <type>STRING</type>
+    <path>n:sender/n:email</path>
+  </element>
+  <group>
+    <name>Recipients</name>
+    <label>Recipients</label>
+    <path>n:recipient</path>
+    <element>
+      <name>type</name>
+      <label>Type</label>
+      <type>STRING</type>
+      <path>n:additionalType</path>
+    </element>
+    <element>
+      <name>email</name>
+      <label>Email</label>
+      <type>STRING</type>
+      <path>n:email</path>
+    </element>
+  </group>
+</resultConfigurationHelper>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datas>
+  <data>
+    <id>pdi.index.creator</id>
+    <key.document.name>xdb.pdi.name</key.document.name>
+    <indexes>
+      <path.value.index>
+        <name>dateSent</name>
+        <path>/{urn:emc:ia:schema:message:1.0}messages/{urn:emc:ia:schema:message:1.0}message[{urn:emc:ia:schema:message:1.0}dateSent&lt;DATE_TIME>]
+        </path>
+        <compressed>false</compressed>
+        <unique.keys>false</unique.keys>
+        <concurrent>false</concurrent>
+        <build.without.logging>true</build.without.logging>
+      </path.value.index>
+      <path.value.index>
+        <name>dateReceived</name>
+        <path>/{urn:emc:ia:schema:message:1.0}messages/{urn:emc:ia:schema:message:1.0}message[{urn:emc:ia:schema:message:1.0}dateReceived&lt;DATE_TIME>]
+        </path>
+        <compressed>false</compressed>
+        <unique.keys>false</unique.keys>
+        <concurrent>false</concurrent>
+        <build.without.logging>true</build.without.logging>
+      </path.value.index>
+      <path.value.index>
+        <name>sender</name>
+        <path>/{urn:emc:ia:schema:message:1.0}messages/{urn:emc:ia:schema:message:1.0}message[{urn:emc:ia:schema:message:1.0}sender/{urn:emc:ia:schema:message:1.0}email&lt;STRING>]
+        </path>
+        <compressed>false</compressed>
+        <unique.keys>false</unique.keys>
+        <concurrent>false</concurrent>
+        <build.without.logging>true</build.without.logging>
+      </path.value.index>
+      <path.value.index>
+        <name>recipient</name>
+        <path>/{urn:emc:ia:schema:message:1.0}messages/{urn:emc:ia:schema:message:1.0}message[{urn:emc:ia:schema:message:1.0}recipient/{urn:emc:ia:schema:message:1.0}email&lt;STRING>]
+        </path>
+        <compressed>false</compressed>
+        <unique.keys>false</unique.keys>
+        <concurrent>false</concurrent>
+        <build.without.logging>true</build.without.logging>
+      </path.value.index>
+      <path.value.index>
+        <name>toCountry</name>
+        <path>/{urn:emc:ia:schema:message:1.0}messages/{urn:emc:ia:schema:message:1.0}message[{urn:emc:ia:schema:message:1.0}recipient/{urn:emc:ia:schema:message:1.0}address/{urn:emc:ia:schema:message:1.0}addressCountry&lt;STRING>]
+        </path>
+        <compressed>false</compressed>
+        <unique.keys>false</unique.keys>
+        <concurrent>false</concurrent>
+        <build.without.logging>true</build.without.logging>
+      </path.value.index>
+      <path.value.index>
+        <name>fromCountry</name>
+        <path>/{urn:emc:ia:schema:message:1.0}messages/{urn:emc:ia:schema:message:1.0}message[{urn:emc:ia:schema:message:1.0}sender/{urn:emc:ia:schema:message:1.0}address/{urn:emc:ia:schema:message:1.0}addressCountry&lt;STRING>]
+        </path>
+        <compressed>false</compressed>
+        <unique.keys>false</unique.keys>
+        <concurrent>false</concurrent>
+        <build.without.logging>true</build.without.logging>
+      </path.value.index>
+    </indexes>
+  </data>
+  <data>
+    <id>pdi.aiu.id</id>
+    <select.query>
+      <![CDATA[
+        declare namespace n = "urn:emc:ia:schema:message:1.0";
+        for $message in /n:messages/n:message
+        return ($message, $message/n:name/text())
+      ]]>
+    </select.query>
+  </data>
+  <data>
+    <id>pdi.aiu.cnt</id>
+    <select.query>
+      <![CDATA[
+        declare namespace n = "urn:emc:ia:schema:message:1.0";
+        count(/n:messages/n:message)
+      ]]>
+    </select.query>
+  </data>
+  <data>
+    <id>pdi.pkeys</id>
+    <pkey attr="dateTime01">
+      declare namespace n = "urn:emc:ia:schema:message:1.0";
+      min(/n:messages/n:message/xs:dateTime(n:dateSent))
+    </pkey>
+    <pkey attr="dateTime02">
+      declare namespace n = "urn:emc:ia:schema:message:1.0";
+      max(/n:messages/n:message/xs:dateTime(n:dateSent))
+    </pkey>
+  </data>
+  <data>
+    <id>ri.init</id>
+    <select.query>
+      <![CDATA[
+       declare namespace n = "urn:emc:ia:schema:message:1.0";
+       let $attachments := /n:messages/n:message/n:messageAttachment
+       for $ci in distinct-values($attachments/n:alternateName/text())
+       let $attachment := $attachments[n:alternateName = $ci][1]
+       let $fileFormat := $attachment/n:fileFormat
+       let $type := if ($fileFormat )then $fileFormat
+       else "application/octet-stream"
+       order by $ci
+       return <content type="{$type}">{ $ci }</content>
+      ]]>
+    </select.query>
+  </data>
+  <data>
+    <id>xdb.pdi.ci.id</id>
+    <select.query>
+      <![CDATA[
+        declare namespace n = "urn:emc:ia:schema:message:1.0";
+        declare namespace ri = "urn:x-emc:ia:schema:ri";
+        let $pdi_uri := root(.)
+        let $aip_id := xhive:metadata($pdi_uri, 'aip_id')
+        let $ri_uri := replace(document-uri($pdi_uri), '\.pdi$', '.ri')
+        for $ri in doc($ri_uri)/ri:ris/ri:ri[@key]
+        for $n in /n:messages/n:message/n:messageAttachment/n:alternateName[. = $ri/@key]
+        return ($n,concat($aip_id,":ci:",$ri/@seqno))
+      ]]>
+    </select.query>
+  </data>
+</datas>

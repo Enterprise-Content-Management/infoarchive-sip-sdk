@@ -1,0 +1,138 @@
+<xhtml:html xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xforms="http://www.w3.org/2002/xforms"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xhtml:head>
+    <xforms:model>
+      <xforms:instance xmlns="">
+        <data>
+          <from />
+          <recipient />
+          <distributionList />
+          <sentDate>
+            <from />
+            <to />
+          </sentDate>
+          <fromCountry />
+          <toCountry />
+        </data>
+      </xforms:instance>
+      <xforms:instance xmlns="" id="labels">
+        <labels>
+          <from>Sender</from>
+          <recipient>Recipient</recipient>
+          <distributionList>Distribution list</distributionList>
+          <sentDate>Date Sent</sentDate>
+          <fromCountry>From country</fromCountry>
+          <toCountry>To country</toCountry>
+        </labels>
+      </xforms:instance>
+      <xforms:instance xmlns="" id="hints">
+        <hints>
+          <from />
+          <recipient />
+          <distributionList />
+          <sentDate />
+          <fromCountry />
+          <toCountry />
+        </hints>
+      </xforms:instance>
+      <xforms:instance xmlns="" id="prompts">
+        <prompts>
+          <from />
+          <recipient />
+          <distributionList />
+          <fromCountry />
+          <toCountry />
+        </prompts>
+      </xforms:instance>
+      <xforms:instance xmlns="" id="alerts">
+        <alerts>
+          <from />
+          <recipient />
+          <distributionList />
+          <sentDate />
+          <fromCountry />
+          <toCountry />
+        </alerts>
+      </xforms:instance>
+      <xforms:instance xmlns="" id="range-messages">
+        <rangemessages>
+          <from />
+          <recipient />
+          <distributionList />
+          <fromCountry />
+          <toCountry />
+        </rangemessages>
+      </xforms:instance>
+      <xforms:instance xmlns="" id="pattern-messages">
+        <patternmessages>
+          <from />
+          <recipient />
+          <distributionList />
+          <fromCountry />
+          <toCountry />
+        </patternmessages>
+      </xforms:instance>
+      <xforms:submission id="submit01" method="post" serialization="application/xml" />
+      <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xforms="http://www.w3.org/2002/xforms"
+          targetNamespace="http://www.w3.org/2002/xforms" elementFormDefault="qualified">
+      </xsd:schema>
+      <bind xmlns="http://www.w3.org/2002/xforms" ref="/data/from" />
+      <bind xmlns="http://www.w3.org/2002/xforms" ref="/data/recipient" />
+      <bind xmlns="http://www.w3.org/2002/xforms" ref="/data/distributionList" />
+      <bind xmlns="http://www.w3.org/2002/xforms" ref="/data/fromCountry" />
+      <bind xmlns="http://www.w3.org/2002/xforms" ref="/data/toCountry" />
+      <bind xmlns="http://www.w3.org/2002/xforms" ref="/data/sentDate/from" type="xforms:date"
+          constraint="(string-length(.) = 0 or (days-from-date(.) &lt;= days-from-date(/data/sentDate/to) and string-length(/data/sentDate/to) &gt; 0))"
+          required="true()" />
+      <bind xmlns="http://www.w3.org/2002/xforms" ref="/data/sentDate/to" type="xforms:date"
+          constraint="(string-length(.) = 0 or (days-from-date(.) &gt;= days-from-date(/data/sentDate/from) and string-length(/data/sentDate/from) &gt; 0))"
+          required="true()" />
+    </xforms:model>
+  </xhtml:head>
+  <xhtml:body>
+    <input xmlns="http://www.w3.org/2002/xforms" ref="sentDate/from">
+      <label ref="instance('labels')/sentDate" />
+      <hint ref="instance('hints')/sentDate" />
+      <alert ref="instance('alerts')/sentDate" />
+    </input>
+    <input xmlns="http://www.w3.org/2002/xforms" ref="sentDate/to" />
+    <input xmlns="http://www.w3.org/2002/xforms" ref="recipient">
+      <label ref="instance('labels')/recipient" />
+      <hint ref="instance('hints')/recipient" />
+      <hint appearance="minimal" ref="instance('prompts')/recipient" />
+      <alert ref="instance('alerts')/recipient" />
+      <message class="range" ref="instance('range-messages')/recipient" />
+      <message class="pattern" ref="instance('pattern-messages')/recipient" />
+    </input>
+    <input xmlns="http://www.w3.org/2002/xforms" ref="distributionList">
+      <label ref="instance('labels')/distributionList" />
+      <hint ref="instance('hints')/distributionList" />
+      <hint appearance="minimal" ref="instance('prompts')/distributionList" />
+      <alert ref="instance('alerts')/distributionList" />
+    </input>
+    <input xmlns="http://www.w3.org/2002/xforms" ref="from">
+      <label ref="instance('labels')/from" />
+      <hint ref="instance('hints')/from" />
+      <hint appearance="minimal" ref="instance('prompts')/from" />
+      <alert ref="instance('alerts')/from" />
+      <message class="range" ref="instance('range-messages')/from" />
+      <message class="pattern" ref="instance('pattern-messages')/from" />
+    </input>
+    <input xmlns="http://www.w3.org/2002/xforms" ref="fromCountry">
+      <label ref="instance('labels')/fromCountry" />
+      <hint ref="instance('hints')/fromCountry" />
+      <hint appearance="minimal" ref="instance('prompts')/fromCountry" />
+      <alert ref="instance('alerts')/fromCountry" />
+      <message class="range" ref="instance('range-messages')/fromCountry" />
+      <message class="pattern" ref="instance('pattern-messages')/fromCountry" />
+    </input>
+    <input xmlns="http://www.w3.org/2002/xforms" ref="toCountry">
+      <label ref="instance('labels')/toCountry" />
+      <hint ref="instance('hints')/toCountry" />
+      <hint appearance="minimal" ref="instance('prompts')/toCountry" />
+      <alert ref="instance('alerts')/toCountry" />
+      <message class="range" ref="instance('range-messages')/toCountry" />
+      <message class="pattern" ref="instance('pattern-messages')/toCountry" />
+    </input>
+  </xhtml:body>
+</xhtml:html>

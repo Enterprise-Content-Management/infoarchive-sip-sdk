@@ -17,7 +17,6 @@ import com.opentext.ia.sdk.yaml.core.YamlMap;
 abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
 
   private static final String INDENT = "  ";
-
   private static final String NAMESPACES = "namespaces";
 
   enum StartTagOptions {
