@@ -958,6 +958,7 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   private SearchComposition createSearchComposition(String name) {
     SearchComposition result = createObject(name, SearchComposition.class);
     result.setSearchName(SEARCH_NAME);
+    result.setVersion(1L);
     return result;
   }
 
