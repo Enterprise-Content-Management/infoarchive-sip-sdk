@@ -21,7 +21,7 @@ import com.opentext.ia.sdk.sip.FixedHeaderAndFooterTemplate;
 
 
 /**
- * {@linkplain Template} using the <em>Velocity</em> templating engine.
+ * {@linkplain Template} using the <a href="http://velocity.apache.org/">Apache Velocity</a> template engine.
  * Templates have access to the following objects:<dl>
  * <dt><code>model</code></dt>
  *   <dd>The domain object (of type D)</dd>

@@ -108,12 +108,16 @@ public class YamlConfiguration {
     }
   }
 
+  /**
+   * Returns the underlying {@linkplain YamlMap}.
+   * @return the underlying <code>YamlMap</code>
+   */
   public YamlMap getMap() {
     return yaml;
   }
 
   /**
-   * Returns the name of the application.
+   * Returns the name of the single application.
    * @return the name of the application
    */
   public String getApplicationName() {
@@ -133,7 +137,7 @@ public class YamlConfiguration {
   }
 
   /**
-   * Returns the name of the holding.
+   * Returns the name of the single holding.
    * @return the name of the holding
    */
   public String getHoldingName() {

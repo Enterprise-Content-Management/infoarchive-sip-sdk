@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 
+/**
+ * {@linkplain Visitor} that matches nested maps by path.
+ */
 public abstract class PathVisitor implements Visitor {
 
   private final Collection<String> pathRegexes;

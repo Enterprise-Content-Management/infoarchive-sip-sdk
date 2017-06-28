@@ -9,20 +9,17 @@ import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Map;
 
-import org.stringtemplate.v4.AttributeRenderer;
-import org.stringtemplate.v4.ModelAdaptor;
-import org.stringtemplate.v4.NoIndentWriter;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.*;
 
 import com.opentext.ia.sdk.sip.ContentInfo;
 import com.opentext.ia.sdk.sip.DigitalObject;
 import com.opentext.ia.sdk.sip.FixedHeaderAndFooterTemplate;
 import com.opentext.ia.sdk.sip.Template;
 
+
 /**
- * {@linkplain Template} using the <em>StringTemplate</em> templating engine. Templates have access to the following
- * objects:
+ * {@linkplain Template} using the <a href="http://www.stringtemplate.org/">StringTemplate</a> template engine.
+ * Templates have access to the following objects:
  * <dl>
  * <dt><code>model</code></dt>
  * <dd>The domain object (of type D)</dd>

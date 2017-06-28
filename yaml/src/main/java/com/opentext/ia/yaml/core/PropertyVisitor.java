@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.Map;
 
 
+/**
+ * {@linkplain Visitor} that matches nested maps based on the property (key) they're stored under.
+ */
 public abstract class PropertyVisitor extends PathVisitor {
 
   private final Map<String, Collection<String>> propertiesByPathRegex;

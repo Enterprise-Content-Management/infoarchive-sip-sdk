@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 
 /**
- * Type-safe access to a YAML structure.
+ * Type-safe access to a <a href="http://www.yaml.org/spec/1.2/spec.html">YAML</a> map.
  */
 public class YamlMap {
 

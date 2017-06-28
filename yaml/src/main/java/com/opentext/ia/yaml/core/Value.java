@@ -10,6 +10,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 
+/**
+ * Value in a {@linkplain YamlMap}. It can be empty, a scalar, a list, or a nested map.
+ */
 public class Value {
 
   private final Object data;

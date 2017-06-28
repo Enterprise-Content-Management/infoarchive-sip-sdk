@@ -12,19 +12,19 @@ import org.apache.commons.io.IOUtils;
 
 class ClasspathResolver implements ResourceResolver {
 
-  private final String prefix;
+  private final String path;
 
   ClasspathResolver() {
     this("");
   }
 
-  ClasspathResolver(String prefix) {
-    this.prefix = prefix + '/';
+  ClasspathResolver(String path) {
+    this.path = path + '/';
   }
 
   @Override
   public String apply(String name) {
-    try (InputStream input = getClass().getResourceAsStream(prefix + name)) {
+    try (InputStream input = getClass().getResourceAsStream(path + name)) {
       if (input == null) {
         throw new UnknownResourceException(name, null);
       }

@@ -8,6 +8,9 @@ import org.apache.velocity.tools.ConversionUtils;
 import com.opentext.ia.sdk.support.datetime.Dates;
 
 
+/**
+ * Tools for working with dates in Velocity templates.
+ */
 public class DatesTool {
 
   public String format(Object date) {

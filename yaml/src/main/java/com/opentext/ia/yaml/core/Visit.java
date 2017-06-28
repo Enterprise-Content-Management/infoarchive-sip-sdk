@@ -6,6 +6,10 @@ package com.opentext.ia.yaml.core;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+
+/**
+ * Information about the {@linkplain YamlMap map} being {@linkplain Visitor visited}.
+ */
 public class Visit {
 
   private static final String SEPARATOR = "/";

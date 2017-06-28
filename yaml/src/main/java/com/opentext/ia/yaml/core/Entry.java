@@ -6,6 +6,9 @@ package com.opentext.ia.yaml.core;
 import java.util.Objects;
 
 
+/**
+ * Entry in a {@linkplain YamlMap}.
+ */
 public class Entry implements Comparable<Entry> {
 
   private final String key;

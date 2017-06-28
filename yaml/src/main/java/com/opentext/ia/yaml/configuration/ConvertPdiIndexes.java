@@ -9,7 +9,7 @@ import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
 
 
-public class ConvertPdiIndexes extends ConvertIndexes {
+class ConvertPdiIndexes extends ConvertIndexes {
 
   ConvertPdiIndexes() {
     super("pdi");
