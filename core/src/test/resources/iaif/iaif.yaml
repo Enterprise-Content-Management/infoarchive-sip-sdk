@@ -11,8 +11,14 @@ store:
   name: export
   storeType: result
   
+xdbFederation:
+  name: mainFederation
+  bootstrap: xhive://localhost:2910
+  superUserPassword: secret
+  
 xdbDatabase:
   name: Messages
+  adminPassword: test
 
 ingest:
   content:

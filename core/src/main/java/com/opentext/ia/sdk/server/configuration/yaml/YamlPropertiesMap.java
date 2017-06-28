@@ -42,11 +42,11 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
         TENANT_NAME, NAME);
     putFrom("xdbFederation",
         FEDERATION_NAME, NAME,
-        FEDERATION_BOOTSTRAP, "uri",
-        FEDERATION_SUPERUSER_PASSWORD, "password");
+        FEDERATION_BOOTSTRAP, "bootstrap",
+        FEDERATION_SUPERUSER_PASSWORD, "superUserPassword");
     putFrom("xdbDatabase",
         DATABASE_NAME, NAME,
-        DATABASE_ADMIN_PASSWORD, "password");
+        DATABASE_ADMIN_PASSWORD, "adminPassword");
     putFrom("application",
         APPLICATION_NAME, NAME,
         APPLICATION_CATEGORY, "category",
