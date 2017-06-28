@@ -14,7 +14,6 @@ import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
 
 
-@SuppressWarnings("unused")
 class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveConfigurationProperties {
 
   private static final long serialVersionUID = 3429860978620277558L;
@@ -22,11 +21,6 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
   private static final String NAMESPACES = English.plural(NAMESPACE);
   private static final String CONTENT = "content";
   private static final String TEXT = "text";
-  private static final String SCHEMA = "schema";
-  private static final String RESULT = "result";
-  private static final String XDBPDI = "xdbpdi";
-  private static final String OPERAND = "operand";
-  private static final String MAIN = "main";
   private static final String PATH = "path";
   private static final String LABEL = "label";
 
@@ -115,11 +109,11 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
       putContentFrom(String.format(EXPORT_PIPELINE_CONTENT_TEMPLATE, name), exportPipeline, CONTENT);
     });
 
-    putManyFrom("exportTransformation", EXPORT_TRANSFORMATION_NAME, (name, exportTransformation) -> {
+    putManyFrom("exportTransformation", EXPORT_TRANSFORMATION_NAME, (name, exportTransformation) ->
       putTemplatedFrom(exportTransformation, name, EXPORT_TRANSFORMATION_DESCRIPTION_TEMPLATE, "description",
           EXPORT_TRANSFORMATION_MAIN_PATH_TEMPLATE, "mainPath",
-          EXPORT_TRANSFORMATION_TYPE_TEMPLATE, TYPE);
-    });
+          EXPORT_TRANSFORMATION_TYPE_TEMPLATE, TYPE)
+    );
 
     putManyFrom("resultConfigurationHelper", RESULT_HELPER_NAME, (name, resultConfigurationHelper) -> {
       putTemplated(resultConfigurationHelper.get(CONTENT, TEXT), RESULT_HELPER_XML, name);
@@ -202,9 +196,9 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
                     searchCompositionName);
               });
           tab.get("exportConfigurations").toList().stream()
-              .forEach(exportConfiguration -> {
-                appendTemplated(exportConfiguration, SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName);
-              });
+              .forEach(exportConfiguration ->
+                appendTemplated(exportConfiguration, SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName)
+              );
         });
         with("xform", NAME, searchComposition.get("xform").toString(), xform -> {
           putTemplated(xform.get(NAME), SEARCH_COMPOSITION_XFORM_NAME, searchName);
@@ -299,7 +293,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
   private Optional<YamlMap> lookup(String type, String lookupProperty, String lookupValue) {
     return yaml.get(English.plural(type)).toList().stream()
         .map(Value::toMap)
-        .filter(sc -> sc.get(lookupProperty).equals(lookupValue))
+        .filter(sc -> sc.get(lookupProperty).toString().equals(lookupValue))
         .findAny();
   }
 
@@ -313,21 +307,6 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
       append(valueListName, e.getKey());
       putTemplated(e.getValue(), format, name, e.getKey());
     });
-  }
-
-  private void forEachMapItem(YamlMap map, String name, Consumer<YamlMap> action) {
-    Value value = map.get(name);
-    if (value.isMap()) {
-      action.accept(value.toMap());
-    } else {
-      value.toList().stream()
-          .map(Value::toMap)
-          .forEach(action);
-    }
-  }
-
-  private String getString(YamlMap map, Object... names) {
-    return map.get(names).toString();
   }
 
 }

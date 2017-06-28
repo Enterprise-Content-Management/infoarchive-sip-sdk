@@ -32,7 +32,7 @@ abstract class ReplaceIndexNamespaceWithUri extends YamlContentVisitor {
         .flatMap(map -> map.get(INDEXES).toList().stream())
         .map(Value::toMap)
         .filter(map -> map.entries().count() == 1)
-        .flatMap(map -> map.entries())
+        .flatMap(YamlMap::entries)
         .map(Entry::getValue)
         .map(Value::toMap)
         .filter(map -> map.containsKey(PATH))

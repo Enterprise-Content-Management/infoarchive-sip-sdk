@@ -41,7 +41,7 @@ class ConvertSingularReferenceToSequenceForCollectionReferences extends PathVisi
     YamlMap map = visit.getMap();
     pathRegexesMatching(visit)
         .flatMap(regex -> COLLECTION_REFERENCES_BY_PATH_REGEX.get(regex).stream())
-        .filter(property -> map.containsKey(property))
+        .filter(map::containsKey)
         .forEach(property -> replaceSingleReferenceWithSequence(map, property));
   }
 

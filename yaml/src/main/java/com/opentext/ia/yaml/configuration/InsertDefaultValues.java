@@ -15,6 +15,7 @@ class InsertDefaultValues extends PathVisitor {
 
   private static final String FORMAT = "format";
   private static final String TYPE = "type";
+  private static final String STRING = "STRING";
   private static final Map<String, Collection<Default>> DEFAULT_PROPERTIES_BY_PATH_REGEX = defaultValuesByPathRegex();
 
   private static Map<String, Collection<Default>> defaultValuesByPathRegex() {
@@ -32,7 +33,7 @@ class InsertDefaultValues extends PathVisitor {
         "support.scoring", false,
         "support.start.end.token.flags", false));
     result.put("/aics/\\d+/criteria/\\d+", Default.of("indexed", true,
-        TYPE, "STRING"));
+        TYPE, STRING));
     result.put("/exportPipelines/\\d+", Default.of("collectionBased", false,
         "composite", true,
         "envelopeFormat", "zip",
@@ -55,7 +56,7 @@ class InsertDefaultValues extends PathVisitor {
        "logLevel", "INFO"));
     result.put("/queries/\\d+", Default.of("resultRootElement", "result",
         "resultRootNsEnabled", true));
-    result.put("/queries/\\d+/xdbPdiConfigs/operands/\\d+", Default.of(TYPE, "STRING"));
+    result.put("/queries/\\d+/xdbPdiConfigs/operands/\\d+", Default.of(TYPE, STRING));
     result.put("/queryQuota", Default.of("aipQuota", 0,
         "aiuQuota", 0,
         "dipQuota", 0));
@@ -68,7 +69,7 @@ class InsertDefaultValues extends PathVisitor {
                 .put(FORMAT, "eas_sip_zip")
                 .put("extractorImpl", "com.emc.ia.reception.sip.extractor.impl.LegacyZipSipExtractor"))));
     result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+", Default.of("sort", "NONE",
-        TYPE, "STRING"));
+        TYPE, STRING));
     result.put("/searches/\\d+", Default.of("nested", false,
         "inUse", true));
     result.put("/stores/\\d+", Default.of("status", "ONLINE",

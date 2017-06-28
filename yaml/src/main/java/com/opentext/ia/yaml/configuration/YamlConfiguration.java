@@ -89,7 +89,7 @@ public class YamlConfiguration {
 
   YamlConfiguration(YamlMap yaml, ResourceResolver resolver) {
     this.yaml = yaml;
-    normalizations(resolver).forEach(normalizer -> this.yaml.visit(normalizer));
+    normalizations(resolver).forEach(this.yaml::visit);
   }
 
   private Stream<Visitor> normalizations(ResourceResolver resolver) {
@@ -104,7 +104,7 @@ public class YamlConfiguration {
       constructor.setAccessible(true);
       return constructor.newInstance();
     } catch (ReflectiveOperationException e) {
-      throw new RuntimeException("Failed to create instance of " + type, e);
+      throw new IllegalStateException("Failed to create instance of " + type, e);
     }
   }
 
