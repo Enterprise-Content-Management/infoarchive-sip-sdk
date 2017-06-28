@@ -4,12 +4,12 @@ tenant:
 
 xdbFederation:
   name: animal
-  password: test
-  uri: xhive://localhost:2910
+  superUserPassword: test
+  bootstrap: xhive://localhost:2910
 
 xdbDatabase:
   name: animal2
-  password: test
+  adminPassword: test
 
 application:
   name: Animals2
@@ -46,7 +46,7 @@ query:
       type: STRING,STRING
       index: true,true
 
-quota:
+queryQuota:
   name: DefaultQuota
 
 resultHelper:

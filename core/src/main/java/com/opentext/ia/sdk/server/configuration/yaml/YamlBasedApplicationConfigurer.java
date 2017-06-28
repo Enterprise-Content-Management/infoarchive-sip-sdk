@@ -40,14 +40,9 @@ public class YamlBasedApplicationConfigurer implements ApplicationConfigurer {
   }
 
   private static Map<String, String> yamlToMap(YamlConfiguration yaml, ArchiveConnection connection) {
-    Map<String, String> properties = new YamlPropertiesMap(yaml.getMap());
-    setConnectionProperties(connection, properties);
-    properties.entrySet().stream()
-        .filter(entry -> entry.getValue() != null)
-        .map(entry -> entry.getKey() + " = " + entry.getValue())
-        .sorted()
-        .forEach(System.out::println);
-    return properties;
+    Map<String, String> result = new YamlPropertiesMap(yaml.getMap());
+    setConnectionProperties(connection, result);
+    return result;
   }
 
   private static void setConnectionProperties(ArchiveConnection connection, Map<String, String> properties) {

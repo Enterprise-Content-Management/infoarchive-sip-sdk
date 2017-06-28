@@ -145,7 +145,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
       putTemplatedFrom(xdbPdiConfigs, name, QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, "entityPath",
           QUERY_XDBPDI_TEMPLATE_TEMPLATE, "template");
       Value prefix = xdbPdiConfigs.get(NAMESPACE);
-      Value namespaceUri = namespaceUriByPrefix.get(prefix);
+      Value namespaceUri = namespaceUriByPrefix.getOrDefault(prefix, new Value());
       putTemplated(namespaceUri, QUERY_XDBPDI_SCHEMA_TEMPLATE, name);
       xdbPdiConfigs.get("operands").toList().stream()
           .map(Value::toMap)
