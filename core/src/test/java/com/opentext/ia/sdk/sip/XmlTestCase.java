@@ -12,7 +12,7 @@ import org.w3c.dom.Document;
 
 import com.opentext.ia.sdk.support.io.RepeatableInputStream;
 import com.opentext.ia.sdk.support.xml.XmlUtil;
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.TestCase;
 
 public class XmlTestCase extends TestCase {
 

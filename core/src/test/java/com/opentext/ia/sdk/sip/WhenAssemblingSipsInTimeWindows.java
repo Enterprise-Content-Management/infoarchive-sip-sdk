@@ -19,7 +19,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 
 import com.opentext.ia.sdk.support.datetime.Clock;
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.TestCase;
 
 
 @SuppressWarnings("unchecked")

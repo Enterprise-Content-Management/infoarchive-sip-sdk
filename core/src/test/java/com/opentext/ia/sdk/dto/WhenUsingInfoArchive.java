@@ -47,7 +47,7 @@ import com.opentext.ia.sdk.support.http.rest.Link;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 import com.opentext.ia.sdk.support.http.rest.RestClient;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.TestCase;
 
 
 @SuppressWarnings("PMD.NcssMethodCount")

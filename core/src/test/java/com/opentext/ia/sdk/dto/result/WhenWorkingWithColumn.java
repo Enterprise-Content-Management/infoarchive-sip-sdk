@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.opentext.ia.sdk.dto.result.Column.DataType;
 import com.opentext.ia.sdk.dto.result.Column.DefaultSort;
 import com.opentext.ia.sdk.dto.result.Column.Type;
-import com.opentext.ia.sdk.test.RandomData;
+import com.opentext.ia.test.RandomData;
 
 
 public class WhenWorkingWithColumn {

@@ -18,7 +18,7 @@ import org.junit.rules.TemporaryFolder;
 
 import com.opentext.ia.sdk.support.io.DataBuffer;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.TestCase;
 
 
 @SuppressWarnings("unchecked")

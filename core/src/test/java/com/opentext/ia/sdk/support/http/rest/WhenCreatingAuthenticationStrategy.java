@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.HttpClient;
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.TestCase;
 
 
 public class WhenCreatingAuthenticationStrategy extends TestCase {

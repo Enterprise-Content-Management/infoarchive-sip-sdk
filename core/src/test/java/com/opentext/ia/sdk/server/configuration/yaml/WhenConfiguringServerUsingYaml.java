@@ -23,11 +23,11 @@ import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.http.rest.Link;
 import com.opentext.ia.sdk.support.http.rest.RestClient;
-import com.opentext.ia.sdk.test.TestCase;
-import com.opentext.ia.sdk.test.TestUtil;
-import com.opentext.ia.sdk.yaml.configuration.YamlConfiguration;
-import com.opentext.ia.sdk.yaml.core.YamlMap;
-import com.opentext.ia.sdk.yaml.resource.ResourceResolver;
+import com.opentext.ia.test.TestCase;
+import com.opentext.ia.test.TestUtil;
+import com.opentext.ia.yaml.configuration.YamlConfiguration;
+import com.opentext.ia.yaml.core.YamlMap;
+import com.opentext.ia.yaml.resource.ResourceResolver;
 
 
 public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArchiveLinkRelations {

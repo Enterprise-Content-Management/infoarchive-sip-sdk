@@ -20,8 +20,8 @@ import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedApplicationConfigu
 import com.opentext.ia.sdk.sip.*;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 import com.opentext.ia.sdk.support.io.StringStream;
-import com.opentext.ia.sdk.yaml.configuration.YamlConfiguration;
-import com.opentext.ia.sdk.yaml.resource.ResourceResolver;
+import com.opentext.ia.yaml.configuration.YamlConfiguration;
+import com.opentext.ia.yaml.resource.ResourceResolver;
 
 
 public class YamlSipIngester {

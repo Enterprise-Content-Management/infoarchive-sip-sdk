@@ -13,7 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.opentext.ia.sdk.test.RandomData;
+import com.opentext.ia.test.RandomData;
 
 
 @SuppressWarnings("PMD.LooseCoupling")

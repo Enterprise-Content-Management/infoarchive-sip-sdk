@@ -16,7 +16,7 @@ import com.opentext.ia.sdk.support.http.rest.AuthenticationStrategy;
 import com.opentext.ia.sdk.support.http.rest.BasicAuthentication;
 import com.opentext.ia.sdk.support.http.rest.JwtAuthentication;
 import com.opentext.ia.sdk.support.http.rest.NonExpiringTokenAuthentication;
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.TestCase;
 
 
 public class WhenConfiguringAuthenticationStrategy extends TestCase {

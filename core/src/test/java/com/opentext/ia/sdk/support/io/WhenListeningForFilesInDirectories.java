@@ -15,7 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.opentext.ia.sdk.test.TestUtil;
+import com.opentext.ia.test.TestUtil;
 
 
 public class WhenListeningForFilesInDirectories {

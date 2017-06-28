@@ -24,7 +24,7 @@ import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.Header;
 import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.TestCase;
 
 
 public class WhenMakingJwtAuthentication extends TestCase {

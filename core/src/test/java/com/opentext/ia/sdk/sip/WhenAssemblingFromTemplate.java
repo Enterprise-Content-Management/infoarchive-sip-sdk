@@ -16,7 +16,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.opentext.ia.sdk.support.io.MemoryBuffer;
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.TestCase;
 
 
 public class WhenAssemblingFromTemplate extends TestCase {

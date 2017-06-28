@@ -12,6 +12,9 @@ import java.util.Properties;
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 
 
+/**
+ * {@linkplain ArchiveConnection} that initializes from {@linkplain Properties properties}.
+ */
 public class PropertiesBasedArchiveConnection extends ArchiveConnection implements InfoArchiveConfigurationProperties {
 
   public PropertiesBasedArchiveConnection(InputStream configuration) throws IOException {

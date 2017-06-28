@@ -14,7 +14,7 @@ import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer;
 import com.opentext.ia.sdk.support.http.MediaTypes;
-import com.opentext.ia.sdk.yaml.configuration.YamlConfiguration;
+import com.opentext.ia.yaml.configuration.YamlConfiguration;
 
 
 /**

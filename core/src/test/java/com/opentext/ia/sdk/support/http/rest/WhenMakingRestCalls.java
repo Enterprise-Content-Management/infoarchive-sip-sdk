@@ -20,7 +20,7 @@ import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.http.MediaTypes;
 import com.opentext.ia.sdk.support.http.UriBuilder;
 import com.opentext.ia.sdk.support.http.apache.WhenMakingHttpCallsUsingApache.Foo;
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.TestCase;
 
 
 public class WhenMakingRestCalls extends TestCase {

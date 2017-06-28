@@ -9,6 +9,10 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 
 
+/**
+ * Base class for objects following the <a href="https://docs.oracle.com/javase/tutorial/javabeans/">JavaBeans &reg;</a>
+ * standard.
+ */
 public class JavaBean {
 
   @Override

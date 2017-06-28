@@ -21,7 +21,7 @@ import org.junit.internal.ArrayComparisonFailure;
 
 import com.opentext.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.opentext.ia.sdk.support.io.ByteArrayInputOutputStream;
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.TestCase;
 import com.sun.net.httpserver.HttpServer;
 
 

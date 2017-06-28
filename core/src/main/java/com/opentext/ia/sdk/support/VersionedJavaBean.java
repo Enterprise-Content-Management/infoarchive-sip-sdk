@@ -4,6 +4,9 @@
 package com.opentext.ia.sdk.support;
 
 
+/**
+ * {@linkplain JavaBean} with a version field.
+ */
 public class VersionedJavaBean extends JavaBean {
 
   private Long version;

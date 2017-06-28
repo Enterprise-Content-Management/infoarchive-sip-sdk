@@ -502,14 +502,14 @@ public final class XmlUtil {
 
 
   @SuppressWarnings("serial")
-  public static class Namespaces extends HashMap<String, String> {
+  private static class Namespaces extends HashMap<String, String> {
 
     private static final String XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
 
     private final boolean includeRootNamespace;
     private int counter;
 
-    public Namespaces(boolean includeRootNamespace) {
+    Namespaces(boolean includeRootNamespace) {
       this.includeRootNamespace = includeRootNamespace;
       put("http://www.w3.org/2001/XMLSchema-instance", "xsi");
       put(XML_NAMESPACE, "xml");

@@ -8,8 +8,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentext.ia.sdk.test.RandomData;
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.RandomData;
+import com.opentext.ia.test.TestCase;
 
 
 public class WhenWorkingWithCriterion extends TestCase {

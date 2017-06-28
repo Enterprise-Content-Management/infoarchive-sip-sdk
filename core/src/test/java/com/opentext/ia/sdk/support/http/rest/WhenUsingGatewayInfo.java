@@ -11,7 +11,7 @@ import java.util.Base64;
 import org.junit.Test;
 
 import com.opentext.ia.sdk.support.http.Header;
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.TestCase;
 
 
 public class WhenUsingGatewayInfo extends TestCase {

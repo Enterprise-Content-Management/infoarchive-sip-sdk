@@ -12,7 +12,7 @@ import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentext.ia.sdk.test.TestCase;
+import com.opentext.ia.test.TestCase;
 
 
 public abstract class XmlBuilderTestCase<T> extends TestCase {
