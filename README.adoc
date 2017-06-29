@@ -1,9 +1,9 @@
 image:https://img.shields.io/badge/license-mpl2-ff69b4.svg[title="License: MPL2", link="https://www.mozilla.org/en-US/MPL/2.0/"]
 image:https://img.shields.io/travis/Enterprise-Content-Management/infoarchive-sip-sdk.svg[title="Travis", link="https://travis-ci.org/Enterprise-Content-Management/infoarchive-sip-sdk"]
 image:https://img.shields.io/codecov/c/github/Enterprise-Content-Management/infoarchive-sip-sdk.svg[title="Code coverage", link="https://codecov.io/github/Enterprise-Content-Management/infoarchive-sip-sdk"]
-image:https://sonarcloud.io/api/badges/measure?key=com.opentext.ia:infoarchive-sip-sdk&metric=sqale_debt_ratio[title="Technical Debt", link="https://sonarcloud.io/dashboard?id=com.opentext.ia:infoarchive-sdk"]
-image:https://img.shields.io/maven-central/v/com.emc.ia/infoarchive-sip-sdk-core.svg[title="Maven Central", link="https://repo1.maven.org/maven2/com/emc/ia/"]
-image:https://javadoc-emblem.rhcloud.com/doc/com.emc.ia/infoarchive-sip-sdk-core/badge.svg[title="Javadoc", link="http://www.javadoc.io/doc/com.emc.ia/infoarchive-sip-sdk-core"]
+image:https://sonarcloud.io/api/badges/measure?key=com.opentext.ia:infoarchive-sdk-core&metric=sqale_debt_ratio[title="Technical Debt", link="https://sonarcloud.io/dashboard?id=com.opentext.ia:infoarchive-sdk-core"]
+image:https://img.shields.io/maven-central/v/com.opentext.ia/infoarchive-sdk-core.svg[title="Maven Central", link="https://repo1.maven.org/maven2/com/opentext/ia/"]
+image:https://javadoc-emblem.rhcloud.com/doc/com.opentext.ia/infoarchive-sdk-core/badge.svg[title="Javadoc", link="http://www.javadoc.io/doc/com.opentext.ia/infoarchive-sdk-core"]
 
 = OpenText InfoArchive SDK
 
@@ -28,6 +28,7 @@ The SDK consists of the following jars:
 * `infoarchive-sip-sdk-core` is the core of the SDK
 * `infoarchive-sip-sdk-stringtemplate` contains code for working with the http://www.stringtemplate.org/[StringTemplate] template engine
 * `infoarchive-sip-sdk-velocity` contains code for working with the http://velocity.apache.org/[Velocity] template engine
+* `infoarchive-yaml` contains code for working with YAML configurations
 
 All jars can be found in the https://repo1.maven.org/maven2/com/emc/ia/[Central Repository]. The easiest way to get
 them is through a dependency management system like http://gradle.org/[Gradle] or https://maven.apache.org/[Maven].
@@ -39,7 +40,7 @@ For the latest version, see the `maven-central` button at the top of this page.
 [source,groovy]
 ----
 dependencies { 
-  compile 'com.emc.ia:infoarchive-sip-sdk-core:5.7.0'
+  compile 'com.opentext.ia:infoarchive-sip-sdk-core:6.0.0'
 }
 ----
 
@@ -49,9 +50,9 @@ dependencies {
 ----
 <dependencies>
   <dependency>
-    <groupId>com.emc.ia</groupId>
+    <groupId>com.opentext.ia</groupId>
     <artifactId>infoarchive-sip-sdk-core</artifactId>
-    <version>5.7.0</version>
+    <version>6.0.0</version>
   </dependency>
 </dependencies>
 ----
