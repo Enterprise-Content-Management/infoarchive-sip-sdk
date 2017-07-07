@@ -3,7 +3,9 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -263,6 +265,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
     normalizeYaml();
 
     assertValue("Name\n" + yaml, uri, yaml.get("pdiSchemas", 0, NAME));
+    assertTrue("Leaves namespace:\n" + yaml, yaml.get("pdiSchemas", 0, NAMESPACE).isEmpty());
   }
 
   @Test

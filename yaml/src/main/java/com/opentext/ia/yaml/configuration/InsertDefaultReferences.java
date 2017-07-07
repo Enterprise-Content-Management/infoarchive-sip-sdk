@@ -3,7 +3,12 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.atteo.evo.inflector.English;
 
@@ -57,7 +62,7 @@ class InsertDefaultReferences extends PropertyVisitor {
     result.put("/pdiCryptoes/\\d+", Arrays.asList(APPLICATION));
     result.put("/pdiSchemas/\\d+", Arrays.asList(APPLICATION, NAMESPACE));
     result.put("/queries/\\d+", Arrays.asList(APPLICATION, NAMESPACE, "order", "queryQuota"));
-    result.put("/queries/\\d+/xdbPdiConfigs", Arrays.asList(NAMESPACE));
+    result.put("/queries/[^/]+/xdbPdiConfigs", Arrays.asList(NAMESPACE));
     result.put("/queryQuotas/\\d+", Arrays.asList(APPLICATION));
     result.put("/receiverNodes/\\d+", Arrays.asList(APPLICATION));
     result.put("/resultConfigurationHelpers/\\d+", Arrays.asList(APPLICATION, NAMESPACE));
@@ -99,17 +104,24 @@ class InsertDefaultReferences extends PropertyVisitor {
   @Override
   protected void visitProperty(Visit visit, String property) {
     YamlMap yaml = visit.getMap();
-    if (missesProperty(yaml, property)) {
+    if (missesProperty(visit, property)) {
       getDefaultValueFor(visit, typeOf(property))
           .ifPresent(defaultValue -> yaml.put(property, defaultValue));
     }
   }
 
-  private boolean missesProperty(YamlMap yaml, String property) {
+  private boolean missesProperty(Visit visit, String property) {
+    YamlMap yaml = visit.getMap();
     if (yaml.containsKey(property)) {
       return false;
     }
-    return !NAMESPACE.equals(property) || !yaml.containsKey(English.plural(NAMESPACE));
+    if (NAMESPACE.equals(property)) {
+      if (visit.getPath().startsWith("/pdiSchemas/") && yaml.containsKey(NAME)) {
+        return false;
+      }
+      return !yaml.containsKey(English.plural(NAMESPACE));
+    }
+    return true;
   }
 
   private String typeOf(String property) {

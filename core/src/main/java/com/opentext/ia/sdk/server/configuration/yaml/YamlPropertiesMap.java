@@ -3,7 +3,11 @@
  */
 package com.opentext.ia.sdk.server.configuration.yaml;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -138,7 +142,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
       YamlMap xdbPdiConfigs = query.get("xdbPdiConfigs").toMap();
       putTemplatedFrom(xdbPdiConfigs, name, QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, "entityPath",
           QUERY_XDBPDI_TEMPLATE_TEMPLATE, "template");
-      Value prefix = xdbPdiConfigs.get(NAMESPACE);
+      Value prefix = xdbPdiConfigs.get(NAMESPACES, 0);
       Value namespaceUri = namespaceUriByPrefix.getOrDefault(prefix, new Value());
       putTemplated(namespaceUri, QUERY_XDBPDI_SCHEMA_TEMPLATE, name);
       xdbPdiConfigs.get("operands").toList().stream()
