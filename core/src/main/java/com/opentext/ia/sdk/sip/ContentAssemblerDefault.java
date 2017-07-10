@@ -17,8 +17,9 @@ import com.opentext.ia.sdk.support.io.HashAssembler;
 import com.opentext.ia.sdk.support.io.IOStreams;
 import com.opentext.ia.sdk.support.io.ZipAssembler;
 
+
 /**
- * The default ContentAssembler implementation. Will perform no deduplication and no validation.
+ * The default ContentAssembler implementation. Will perform no de-duplication and no validation.
  * @param <D> The type of domain object to assemble SIPs from
  */
 public class ContentAssemblerDefault<D> implements ContentAssembler<D> {
@@ -37,10 +38,9 @@ public class ContentAssemblerDefault<D> implements ContentAssembler<D> {
   }
 
   @Override
-  public void begin(ZipAssembler aZip, Counters aMetrics) {
+  public synchronized void begin(ZipAssembler aZip, Counters aMetrics) {
     this.zip = aZip;
     this.metrics = aMetrics;
-
   }
 
   public ZipAssembler getZip() {
@@ -65,18 +65,28 @@ public class ContentAssemblerDefault<D> implements ContentAssembler<D> {
     Iterator<? extends DigitalObject> digitalObjects = contentsExtraction.apply(domainObject);
     while (digitalObjects.hasNext()) {
       DigitalObject digitalObject = digitalObjects.next();
-      metrics.inc(SipMetrics.NUM_DIGITAL_OBJECTS);
+      incMetric(SipMetrics.NUM_DIGITAL_OBJECTS, 1);
       String entry = digitalObject.getReferenceInformation();
       result.put(entry, addContent(entry, digitalObject));
     }
     return result;
   }
 
+  private synchronized void incMetric(String metric, long delta) {
+    if (metrics == null) {
+      throw new IllegalStateException("Missing metrics; did youc call begin()?");
+    }
+    metrics.inc(metric, delta);
+  }
+
   protected ContentInfo addContent(String ri, DigitalObject digitalObject) throws IOException {
+    if (zip == null) {
+      throw new IllegalStateException("Missing zip; did youc call begin()?");
+    }
     try (InputStream stream = digitalObject.get()) {
       Collection<EncodedHash> hashes =
           zip.addEntry(digitalObject.getReferenceInformation(), stream, contentHashAssembler);
-      metrics.inc(SipMetrics.SIZE_DIGITAL_OBJECTS, contentHashAssembler.numBytesHashed());
+      incMetric(SipMetrics.SIZE_DIGITAL_OBJECTS, contentHashAssembler.numBytesHashed());
       return new ContentInfo(ri, hashes);
     }
   }

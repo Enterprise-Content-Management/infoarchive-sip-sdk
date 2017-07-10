@@ -11,7 +11,16 @@ import java.util.function.Supplier;
 
 import org.apache.commons.io.IOUtils;
 
-import com.opentext.ia.sdk.support.io.*;
+import com.opentext.ia.sdk.support.io.DataBuffer;
+import com.opentext.ia.sdk.support.io.DataBufferSupplier;
+import com.opentext.ia.sdk.support.io.DefaultZipAssembler;
+import com.opentext.ia.sdk.support.io.EncodedHash;
+import com.opentext.ia.sdk.support.io.FileBuffer;
+import com.opentext.ia.sdk.support.io.HashAssembler;
+import com.opentext.ia.sdk.support.io.MemoryBuffer;
+import com.opentext.ia.sdk.support.io.NoHashAssembler;
+import com.opentext.ia.sdk.support.io.RuntimeIoException;
+import com.opentext.ia.sdk.support.io.ZipAssembler;
 
 /**
  * Assembles a <a href="http://public.ccsds.org/publications/archive/650x0m2.pdf">Submission Information Package</a>
@@ -302,8 +311,13 @@ public class SipAssembler<D> implements Assembler<D> {
   @Override
   public void add(D domainObject) {
     try {
-      Map<String, ContentInfo> contentInfo = contentAssembler.addContentsOf(domainObject);
-      pdiAssembler.add(new HashedContents<>(domainObject, contentInfo));
+      Map<String, ContentInfo> contentInfo;
+      synchronized (contentAssembler) {
+        contentInfo = contentAssembler.addContentsOf(domainObject);
+      }
+      synchronized (pdiAssembler) {
+        pdiAssembler.add(new HashedContents<>(domainObject, contentInfo));
+      }
       metrics.inc(SipMetrics.NUM_AIUS);
       setPdiSize(pdiBuffer.length()); // Approximate PDI size until the end, when we know for sure
     } catch (IOException e) {
