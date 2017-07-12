@@ -3,7 +3,11 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -41,6 +45,7 @@ public class YamlConfiguration {
       ConvertIngestProcessors.class,
       EnsureEnumConstant.class,
       InsertDefaultValues.class,
+      InsertDefaultParentForFileSystemFolder.class,
       AddNamespaceDeclarationsToQueries.class,
       ReplacePdiIndexNamespaceWithUri.class,
       ReplaceIngestIndexNamespaceWithUri.class,

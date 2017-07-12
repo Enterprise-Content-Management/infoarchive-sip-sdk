@@ -3,7 +3,12 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.opentext.ia.yaml.core.PropertyVisitor;
@@ -28,6 +33,7 @@ class EnsureEnumConstant extends PropertyVisitor {
     result.put("/audits/\\d+", Arrays.asList("eventName", "eventType"));
     result.put("/confirmations/\\d+", Arrays.asList("types"));
     result.put("/holds/\\d+/holdType", JUST_TYPE);
+    result.put("/fileSystemRoots/\\d+", JUST_TYPE);
     result.put("/queries/\\d+/xdbPdiConfigs/operands/\\d+", JUST_TYPE);
     result.put("/resultConfigurationHelpers/\\d+/content/data/\\d+", JUST_TYPE);
     result.put("/resultConfigurationHelpers/\\d+/content/data/\\d+/items/\\d+", JUST_TYPE);
@@ -36,7 +42,7 @@ class EnsureEnumConstant extends PropertyVisitor {
     result.put("/retentionPolicies/\\d+/agingStrategy/agingPeriod", Arrays.asList("units"));
     result.put("/retentionPolicies/\\d+/dispositionStrategy", JUST_TYPE);
     result.put("/searches/\\d+", Arrays.asList("state"));
-    result.put("/stores/\\d+", Arrays.asList("storeType"));
+    result.put("/stores/\\d+", Arrays.asList("storeType", TYPE));
     result.put("/xdbLibraryPolicies/\\d+", Arrays.asList("closeMode"));
     return result;
   }

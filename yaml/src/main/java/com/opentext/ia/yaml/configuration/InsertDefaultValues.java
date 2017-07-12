@@ -3,7 +3,11 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.opentext.ia.yaml.core.PathVisitor;
 import com.opentext.ia.yaml.core.Visit;
@@ -40,6 +44,7 @@ class InsertDefaultValues extends PathVisitor {
         "includesContent", true,
         "inputFormat", "ROW_COLUMN"));
     result.put("/exportConfigurations/\\d+", Default.of("exportType", "ASYNCHRONOUS"));
+    result.put("/fileSystemRoots/\\d+", Default.of(TYPE, "FILESYSTEM"));
     result.put("/holdings/\\d+", Default.of("ciHashValidationEnabled", true,
         "keepSipAfterCommitEnabled", false,
         "logStoreEnabled", true,

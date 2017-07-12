@@ -21,6 +21,7 @@ import com.opentext.ia.yaml.resource.ResourceResolver;
 
 public class WhenUsingYamlConfiguration extends TestCase {
 
+  private static final String FILE_SYSTEM_FOLDERS = "fileSystemFolders";
   private static final String NAME = "name";
   private static final String TYPE = "type";
   private static final String DEFAULT = "default";
@@ -160,17 +161,24 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String tenant = someName();
     String application = someName();
     String space = someName();
+    String spaceRootFolder = someName();
+    String fileSystemRoot = someName();
+    String fileSystemFolder = someName();
     yaml.put(TENANTS, Arrays.asList(new YamlMap().put(NAME, tenant)));
     yaml.put(APPLICATIONS, Arrays.asList(
         new YamlMap().put(NAME, someName()),
         new YamlMap().put(NAME, application)
             .put(DEFAULT, true)));
     yaml.put(SPACES, Arrays.asList(new YamlMap().put(NAME, space)));
+    yaml.put("spaceRootFolders", Arrays.asList(new YamlMap().put(NAME, spaceRootFolder)));
+    yaml.put("fileSystemRoots", Arrays.asList(new YamlMap().put(NAME, fileSystemRoot)));
+    yaml.put(FILE_SYSTEM_FOLDERS, Arrays.asList(new YamlMap().put(NAME, fileSystemFolder)));
 
     normalizeYaml();
 
     assertValue("Tenant", tenant, yaml.get(APPLICATIONS, 0, TENANT));
     assertValue("Application", application, yaml.get(SPACES, 0, "application"));
+    assertValue("Space root folder", spaceRootFolder, yaml.get(FILE_SYSTEM_FOLDERS, 0, "parentSpaceRootFolder"));
   }
 
   @Test

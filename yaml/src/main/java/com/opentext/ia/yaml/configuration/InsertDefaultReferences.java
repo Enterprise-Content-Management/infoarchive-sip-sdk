@@ -6,29 +6,24 @@ package com.opentext.ia.yaml.configuration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.atteo.evo.inflector.English;
 
-import com.opentext.ia.yaml.core.PropertyVisitor;
-import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.Visit;
 import com.opentext.ia.yaml.core.YamlMap;
 
 
-class InsertDefaultReferences extends PropertyVisitor {
+class InsertDefaultReferences extends BaseInsertDefaultReferences {
 
   private static final String NAME = "name";
-  private static final String DEFAULT = "default";
+  private static final String NAMESPACE = "namespace";
   private static final String TENANT = "tenant";
   private static final String APPLICATION = "application";
   private static final String SPACE = "space";
   private static final String XDB_STORE = "xdbStore";
   private static final String SEARCH = "search";
   private static final String SEARCH_COMPOSITION = "searchComposition";
-  private static final String NAMESPACE = "namespace";
   private static final Map<String, Collection<String>> REFERENCE_PROPERTIES_BY_PATH_REGEX
       = referencePropertiesByPathRegex();
   private static final Map<String, String> TYPE_BY_REFERENCE_PROPERTY = typeByReferenceProperty();
@@ -50,7 +45,6 @@ class InsertDefaultReferences extends PropertyVisitor {
     result.put("/exportConfigurations/\\d+", Arrays.asList("pipeline", TENANT, "transformation"));
     result.put("/exportPipelines/\\d+", Arrays.asList(APPLICATION, TENANT));
     result.put("/exportTransformations/\\d+", Arrays.asList(APPLICATION, TENANT));
-    result.put("/fileSystemFolders/\\d+", Arrays.asList("spaceRootFolder"));
     result.put("/holdings/\\d+", Arrays.asList(APPLICATION, "ciStore", "ingest", "logStore", "managedItemStore", "pdi",
         "renditionStore", "sipStore", "stagingStore", "xdbLibrary", "xdbLibraryPolicy", XDB_STORE, "xmlStore"));
     result.put("/holdingCryptoes/\\d+", Arrays.asList(APPLICATION, "cryptoObject", "holding", "pdiCrypto"));
@@ -102,15 +96,7 @@ class InsertDefaultReferences extends PropertyVisitor {
   }
 
   @Override
-  protected void visitProperty(Visit visit, String property) {
-    YamlMap yaml = visit.getMap();
-    if (missesProperty(visit, property)) {
-      getDefaultValueFor(visit, typeOf(property))
-          .ifPresent(defaultValue -> yaml.put(property, defaultValue));
-    }
-  }
-
-  private boolean missesProperty(Visit visit, String property) {
+  protected boolean missesProperty(Visit visit, String property) {
     YamlMap yaml = visit.getMap();
     if (yaml.containsKey(property)) {
       return false;
@@ -124,28 +110,9 @@ class InsertDefaultReferences extends PropertyVisitor {
     return true;
   }
 
-  private String typeOf(String property) {
+  @Override
+  protected String typeOf(String property) {
     return TYPE_BY_REFERENCE_PROPERTY.getOrDefault(property, property);
-  }
-
-  private Optional<String> getDefaultValueFor(Visit visit, String type) {
-    return getDefaultInstance(visit, English.plural(type), idPropertyFor(type));
-  }
-
-  private String idPropertyFor(String type) {
-    return NAMESPACE.equals(type) ? "prefix" : NAME;
-  }
-
-  private Optional<String> getDefaultInstance(Visit visit, String collection, String idProperty) {
-    List<Value> instances = visit.getRootMap().get(collection).toList();
-    if (instances.size() == 1) {
-      return Optional.of(instances.get(0).toMap().get(idProperty).toString());
-    }
-    return instances.stream()
-        .map(Value::toMap)
-        .filter(map -> map.get(DEFAULT).toBoolean())
-        .map(map -> map.get(idProperty).toString())
-        .findAny();
   }
 
 }
