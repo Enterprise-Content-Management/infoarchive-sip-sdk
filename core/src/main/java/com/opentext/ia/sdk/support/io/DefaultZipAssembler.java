@@ -3,6 +3,8 @@
  */
 package com.opentext.ia.sdk.support.io;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,13 +17,13 @@ import java.util.zip.ZipOutputStream;
  */
 public class DefaultZipAssembler implements ZipAssembler {
 
-  private static final int BUFFER_SIZE = 65536;
+  private static final int BUFFER_SIZE = 64 * 1024;
 
   private ZipOutputStream zip;
 
   @Override
   public void begin(OutputStream stream) {
-    zip = new ZipOutputStream(stream);
+    zip = new ZipOutputStream(new BufferedOutputStream(stream));
   }
 
   @Override
@@ -30,7 +32,7 @@ public class DefaultZipAssembler implements ZipAssembler {
     hashAssembler.initialize();
     zip.putNextEntry(new ZipEntry(name));
     try {
-      IOStreams.copy(stream, zip, BUFFER_SIZE, hashAssembler);
+      IOStreams.copy(new BufferedInputStream(stream), zip, BUFFER_SIZE, hashAssembler);
     } finally {
       zip.closeEntry();
     }
