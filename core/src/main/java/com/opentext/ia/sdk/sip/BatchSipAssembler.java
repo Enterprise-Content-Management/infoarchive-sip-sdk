@@ -76,7 +76,7 @@ public class BatchSipAssembler<D> {
    * @param domainObject The domain object to add
    * @throws IOException When an I/O error occurs
    */
-  public void add(D domainObject) throws IOException {
+  public synchronized void add(D domainObject) throws IOException {
     if (shouldStartNewSip(domainObject)) {
       startSip();
     }
@@ -117,7 +117,7 @@ public class BatchSipAssembler<D> {
    * End the batch assembly process.
    * @throws IOException When an I/O error occurs
    */
-  public void end() throws IOException {
+  public synchronized void end() throws IOException {
     setFinalSipInDss(true);
     closeCurrentSip();
   }
