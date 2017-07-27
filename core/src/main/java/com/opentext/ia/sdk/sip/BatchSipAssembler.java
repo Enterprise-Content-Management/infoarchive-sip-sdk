@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import com.opentext.ia.sdk.support.io.FileBuffer;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 
+
 /**
  * Assemble a batch of SIPs, based on some sort of {@linkplain SipSegmentationStrategy segmentation strategy} that
  * determines which domain objects go into which SIPs.

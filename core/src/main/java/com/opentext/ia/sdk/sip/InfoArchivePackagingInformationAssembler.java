@@ -51,6 +51,12 @@ public class InfoArchivePackagingInformationAssembler extends PrintWriterAssembl
         .attribute("encoding", hash.getEncoding())
         .text(hash.getValue())
         .end());
+    if (!packagingInformation.getCustomAttributes().isEmpty()) {
+      builder.element("custom").element("attributes");
+      packagingInformation.getCustomAttributes().forEach((name, value) ->
+          builder.element("attribute").attribute("name", name).text(value).end());
+      builder.end().end();
+    }
     builder.build();
   }
 
