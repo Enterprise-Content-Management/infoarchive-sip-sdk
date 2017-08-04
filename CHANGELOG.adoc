@@ -1,0 +1,18 @@
+= Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project adheres to 
+http://semver.org/spec/v2.0.0.html[Semantic Versioning].
+
+
+== 6.1.0 - 2017-08-04
+
+=== Added 
+
+- Support for custom attributes in packaging information in SIPs. Custom attributes show up in the confirmations that
+InfoArchive generates after ingesting the SIPs.
+
+=== Fixed
+
+- Added `synchronized` to some methods in `BatchSipAssembler` to prevent concurrency issues.
