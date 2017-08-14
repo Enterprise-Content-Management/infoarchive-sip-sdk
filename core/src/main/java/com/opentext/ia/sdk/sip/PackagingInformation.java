@@ -130,7 +130,7 @@ public class PackagingInformation {
       .pageCount(prototype.getPageCount())
       .productionDate(prototype.getProductionDate())
       .sequenceNumber(prototype.getSequenceNumber());
-    prototype.getCustomAttributes().forEach((name, value) -> result.customAttribute(name, value));
+    prototype.getCustomAttributes().forEach(result::customAttribute);
     return result;
   }
 

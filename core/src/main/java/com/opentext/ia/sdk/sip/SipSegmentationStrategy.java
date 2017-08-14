@@ -82,9 +82,7 @@ public interface SipSegmentationStrategy<D> {
   @SuppressWarnings("varargs")
   static <D> SipSegmentationStrategy<D> combining(SipSegmentationStrategy<D>... partialStrategies) {
     return (domainObject, metrics) -> Arrays.stream(partialStrategies)
-      .filter(s -> s.shouldStartNewSip(domainObject, metrics))
-      .findAny()
-      .isPresent();
+      .anyMatch(s -> s.shouldStartNewSip(domainObject, metrics));
   }
 
 }

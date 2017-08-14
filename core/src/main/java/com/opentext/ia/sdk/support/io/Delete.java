@@ -4,6 +4,8 @@
 package com.opentext.ia.sdk.support.io;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 /**
  * Delete a file.
@@ -25,8 +27,10 @@ public final class Delete {
   }
 
   private static void deleteFile(File file) {
-    if (!file.delete()) {
-      file.deleteOnExit();
+    try {
+      Files.delete(file.toPath());
+    } catch (IOException e) {
+      throw new RuntimeIoException(e);
     }
   }
 

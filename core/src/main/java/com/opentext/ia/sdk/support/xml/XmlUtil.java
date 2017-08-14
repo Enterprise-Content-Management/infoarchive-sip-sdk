@@ -22,7 +22,11 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.io.IOUtils;
-import org.w3c.dom.*;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -47,17 +51,13 @@ public final class XmlUtil {
   }
 
   private static final DocumentBuilderFactory VALIDATING_DOCUMENT_BUILDER_FACTORY = newSecureDocumentBuilderFactory();
-  private static final ThreadLocal<DocumentBuilder> VALIDATING_DOCUMENT_BUILDER = new ThreadLocal<DocumentBuilder>() {
-
-    @Override
-    protected DocumentBuilder initialValue() {
-      try {
-        return VALIDATING_DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
-      } catch (ParserConfigurationException e) {
-        throw new IllegalStateException(e);
-      }
+  private static final ThreadLocal<DocumentBuilder> VALIDATING_DOCUMENT_BUILDER = ThreadLocal.withInitial(() -> {
+    try {
+      return VALIDATING_DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
+    } catch (ParserConfigurationException e) {
+      throw new IllegalStateException(e);
     }
-  };
+  });
   private static final String INDENT = "  ";
 
   /**

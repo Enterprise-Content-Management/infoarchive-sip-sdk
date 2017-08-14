@@ -32,7 +32,9 @@ public class DefaultZipAssembler implements ZipAssembler {
     hashAssembler.initialize();
     zip.putNextEntry(new ZipEntry(name));
     try {
-      IOStreams.copy(new BufferedInputStream(stream), zip, BUFFER_SIZE, hashAssembler);
+      try (InputStream input = new BufferedInputStream(stream)) {
+        IOStreams.copy(input, zip, BUFFER_SIZE, hashAssembler);
+      }
     } finally {
       zip.closeEntry();
     }
