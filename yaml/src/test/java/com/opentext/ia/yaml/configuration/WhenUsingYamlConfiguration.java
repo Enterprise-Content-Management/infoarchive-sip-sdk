@@ -107,6 +107,22 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   @Test
+  public void shouldInlineCustomPresentationHtmlTemplate() throws Exception {
+    String expected = someName();
+    resourceResolver = name -> expected;
+    String resource = someName() + ".txt";
+    yaml.put("customPresentationConfigurations", Arrays.asList(new YamlMap()
+        .put(NAME, someName())
+        .put("htmlTemplate", new YamlMap()
+            .put(RESOURCE, resource))));
+
+    normalizeYaml();
+
+    assertEquals("Inlined resource", expected,
+        yaml.get("customPresentationConfigurations", 0, "htmlTemplate").toString());
+  }
+
+  @Test
   public void shouldAddDefaultVersionWhenNotSpecified() throws Exception {
     normalizeYaml();
 

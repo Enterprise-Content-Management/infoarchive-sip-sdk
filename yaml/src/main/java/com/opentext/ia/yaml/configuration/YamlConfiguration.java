@@ -52,7 +52,8 @@ public class YamlConfiguration {
       ReplacePdiResultSchemaNamespaceWithUri.class,
       ReplacePdiYamlWithXml.class,
       ReplaceResultConfigurationHelperYamlWithXml.class,
-      ReplaceIngestYamlWithXml.class
+      ReplaceIngestYamlWithXml.class,
+      ReplaceCustomPresentationHtmlTemplate.class
   );
   private static final String NAME = "name";
 

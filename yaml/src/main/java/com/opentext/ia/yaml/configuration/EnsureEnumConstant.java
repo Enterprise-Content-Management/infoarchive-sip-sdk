@@ -30,7 +30,6 @@ class EnsureEnumConstant extends PropertyVisitor {
     result.put("/exportPipelines/\\d+", Arrays.asList("inputFormat", TYPE));
     result.put("/exportTransformations/\\d+", JUST_TYPE);
     result.put("/applications/\\d+", Arrays.asList(TYPE, "archiveType"));
-    result.put("/audits/\\d+", Arrays.asList("eventName", "eventType"));
     result.put("/confirmations/\\d+", Arrays.asList("types"));
     result.put("/holds/\\d+/holdType", JUST_TYPE);
     result.put("/fileSystemRoots/\\d+", JUST_TYPE);
