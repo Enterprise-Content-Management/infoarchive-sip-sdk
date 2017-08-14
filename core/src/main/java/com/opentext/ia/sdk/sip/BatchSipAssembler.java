@@ -93,7 +93,7 @@ public class BatchSipAssembler<D> {
     startNewSip();
   }
 
-  protected final void closeCurrentSip() throws IOException {
+  protected final synchronized void closeCurrentSip() throws IOException {
     if (current != null) {
       assembler.end();
       FileGenerationMetrics metrics = new FileGenerationMetrics(current, assembler.getMetrics());
@@ -106,7 +106,7 @@ public class BatchSipAssembler<D> {
     sipsMetrics.add(metrics);
   }
 
-  private void startNewSip() throws IOException {
+  private synchronized void startNewSip() throws IOException {
     File file = fileSupplier.get();
     assembler.start(new FileBuffer(file));
     // NOTE: Set *after* [assembler] has started, since we check [current] to determine whether

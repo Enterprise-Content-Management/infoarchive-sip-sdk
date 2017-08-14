@@ -10,11 +10,12 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 === Added
 
-- Added ResourceResolver.fromClassPath(Class<?>) to search the classpath in the package in which the provided class 
-lives.
+- Added `ResourceResolver.fromClassPath(Class<?>)` to search the classpath in the package in which the provided
+class lives.
 
 === Fixed
 
+- Added `synchronized` in more places in `SipAssembler` and `BatchSipAssembler`   
 - Minor fix in normalization of YAML configuration
 
 

@@ -293,7 +293,7 @@ public class SipAssembler<D> implements Assembler<D> {
   }
 
   @Override
-  public void start(DataBuffer buffer) throws IOException {
+  public synchronized void start(DataBuffer buffer) throws IOException {
     this.sipFileBuffer = buffer;
     pdiHash = Optional.empty();
     metrics.reset();
@@ -303,21 +303,17 @@ public class SipAssembler<D> implements Assembler<D> {
     startPdi();
   }
 
-  private void startPdi() throws IOException {
+  private synchronized void startPdi() throws IOException {
     pdiBuffer = pdiBufferSupplier.get();
     pdiAssembler.start(pdiBuffer);
   }
 
   @Override
-  public void add(D domainObject) {
+  public synchronized void add(D domainObject) {
     try {
       Map<String, ContentInfo> contentInfo;
-      synchronized (contentAssembler) {
-        contentInfo = contentAssembler.addContentsOf(domainObject);
-      }
-      synchronized (pdiAssembler) {
-        pdiAssembler.add(new HashedContents<>(domainObject, contentInfo));
-      }
+      contentInfo = contentAssembler.addContentsOf(domainObject);
+      pdiAssembler.add(new HashedContents<>(domainObject, contentInfo));
       metrics.inc(SipMetrics.NUM_AIUS);
       setPdiSize(pdiBuffer.length()); // Approximate PDI size until the end, when we know for sure
     } catch (IOException e) {
@@ -331,7 +327,7 @@ public class SipAssembler<D> implements Assembler<D> {
   }
 
   @Override
-  public void end() throws IOException {
+  public synchronized void end() throws IOException {
     try {
       endPdi();
       addPackagingInformation();
@@ -342,7 +338,7 @@ public class SipAssembler<D> implements Assembler<D> {
     }
   }
 
-  private void endPdi() throws IOException {
+  private synchronized void endPdi() throws IOException {
     try {
       pdiAssembler.end();
       addPdiToZip();
