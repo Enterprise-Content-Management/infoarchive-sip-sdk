@@ -48,4 +48,14 @@ public interface ResourceResolver extends Function<String, String> {
     return new ClasspathResolver(path);
   }
 
+  /**
+   * Returns a resolver that resolves resources from a given path in the classpath.
+   * @param type The class in which package resources are searched
+   * @return a resolver that resolves resources from the package of a given class in the classpath
+   * @since 6.2.0
+   */
+  static ResourceResolver fromClasspath(Class<?> type) {
+    return new ClasspathResolver(type);
+  }
+
 }
