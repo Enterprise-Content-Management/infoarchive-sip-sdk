@@ -64,6 +64,9 @@ only occur in major versions. These
 https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/breaking-changes[breaking changes] are
 documented on the wiki.
 
+An overview of changes since version 6.1.0 can be found in the
+https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/blob/master/CHANGELOG.adoc[change log]. 
+
 
 == Usage
 
