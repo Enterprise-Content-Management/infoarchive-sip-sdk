@@ -63,7 +63,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
     resourceResolver = name -> expected;
     String singularType = someType();
     String pluralType = English.plural(someType());
-    String resource = someName() + ".txt";
+    String resource = someTextFileName();
     yaml.put(singularType, Arrays.asList(externalContentTo(resource)));
     yaml.put(pluralType, externalContentTo(resource));
     String nonContent = English.plural(someName());
@@ -82,6 +82,10 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
   private String someType() {
     return randomString(8);
+  }
+
+  private String someTextFileName() {
+    return someName() + ".txt";
   }
 
   private YamlMap externalResourceTo(String resource) {
@@ -108,10 +112,10 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   @Test
-  public void shouldInlineCustomPresentationsHtmlTemplate() throws Exception {
+  public void shouldInlineNormalizedCustomPresentationHtmlTemplate() throws Exception {
     String expected = someName();
     resourceResolver = name -> expected;
-    String resource = someName() + ".txt";
+    String resource = someTextFileName();
     yaml.put("customPresentationConfigurations", Arrays.asList(new YamlMap()
         .put(NAME, someName())
         .put(HTML_TEMPLATE, new YamlMap()
@@ -119,15 +123,34 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
     normalizeYaml();
 
+    assertCustomPresentationHasInlinedHtmlTemplate(expected);
+  }
+
+  private void assertCustomPresentationHasInlinedHtmlTemplate(String expected) {
     assertEquals("Inlined resource", expected,
-        yaml.get("customPresentationConfigurations", 0, HTML_TEMPLATE).toString());
+        yaml.get(English.plural("customPresentationConfiguration"), 0, HTML_TEMPLATE).toString());
   }
 
   @Test
-  public void shouldInlineCustomPresentationHtmlTemplate() throws Exception {
+  public void shouldInlineSingleCustomPresentationHtmlTemplate() throws Exception {
     String expected = someName();
     resourceResolver = name -> expected;
-    String resource = someName() + ".txt";
+    String resource = someTextFileName();
+    yaml.put("customPresentationConfiguration", new YamlMap()
+        .put(NAME, someName())
+        .put(HTML_TEMPLATE, new YamlMap()
+            .put(RESOURCE, resource)));
+
+    normalizeYaml();
+
+    assertCustomPresentationHasInlinedHtmlTemplate(expected);
+  }
+
+  @Test
+  public void shouldInlineNamedCustomPresentationHtmlTemplate() throws Exception {
+    String expected = someName();
+    resourceResolver = name -> expected;
+    String resource = someTextFileName();
     yaml.put("customPresentationConfiguration", new YamlMap()
         .put(someName(), new YamlMap()
             .put(HTML_TEMPLATE, new YamlMap()
@@ -135,8 +158,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
     normalizeYaml();
 
-    assertEquals("Inlined resource", expected,
-        yaml.get("customPresentationConfigurations", 0, HTML_TEMPLATE).toString());
+    assertCustomPresentationHasInlinedHtmlTemplate(expected);
   }
 
   @Test
