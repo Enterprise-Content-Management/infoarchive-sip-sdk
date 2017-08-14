@@ -14,7 +14,9 @@ task jdepend {
   inputs.files sourceSets.main.output
   doLast {
     JDepend jdepend = new JDepend()
-    jdepend.addDirectory(sourceSets.main.output.classesDir.path)
+    sourceSets.main.output.classesDirs.each { dir ->
+      jdepend.addDirectory(dir.path)
+    }
     def packages = jdepend.analyze()
     if (jdepend.containsCycles()) {
       def allCyclicPackages = []
