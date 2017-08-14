@@ -52,6 +52,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String INDEXES = "indexes";
   private static final String PATH_VALUE_INDEX = "path.value.index";
   private static final String PATH = "path";
+  private static final String HTML_TEMPLATE = "htmlTemplate";
 
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
@@ -107,19 +108,35 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   @Test
-  public void shouldInlineCustomPresentationHtmlTemplate() throws Exception {
+  public void shouldInlineCustomPresentationsHtmlTemplate() throws Exception {
     String expected = someName();
     resourceResolver = name -> expected;
     String resource = someName() + ".txt";
     yaml.put("customPresentationConfigurations", Arrays.asList(new YamlMap()
         .put(NAME, someName())
-        .put("htmlTemplate", new YamlMap()
+        .put(HTML_TEMPLATE, new YamlMap()
             .put(RESOURCE, resource))));
 
     normalizeYaml();
 
     assertEquals("Inlined resource", expected,
-        yaml.get("customPresentationConfigurations", 0, "htmlTemplate").toString());
+        yaml.get("customPresentationConfigurations", 0, HTML_TEMPLATE).toString());
+  }
+
+  @Test
+  public void shouldInlineCustomPresentationHtmlTemplate() throws Exception {
+    String expected = someName();
+    resourceResolver = name -> expected;
+    String resource = someName() + ".txt";
+    yaml.put("customPresentationConfiguration", new YamlMap()
+        .put(someName(), new YamlMap()
+            .put(HTML_TEMPLATE, new YamlMap()
+                .put(RESOURCE, resource))));
+
+    normalizeYaml();
+
+    assertEquals("Inlined resource", expected,
+        yaml.get("customPresentationConfigurations", 0, HTML_TEMPLATE).toString());
   }
 
   @Test
