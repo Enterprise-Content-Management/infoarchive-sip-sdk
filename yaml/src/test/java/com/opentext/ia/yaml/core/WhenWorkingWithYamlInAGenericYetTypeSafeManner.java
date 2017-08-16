@@ -261,4 +261,14 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         IOUtils.toString(YamlMap.from(SAMPLE_YAML_STRING).toStream(), StandardCharsets.UTF_8));
   }
 
+  @Test
+  public void shouldDeleteListItem() {
+    yaml.put(key, Arrays.asList(value));
+    List<Value> values = yaml.get(key).toList();
+
+    values.remove(0);
+
+    assertTrue("Sequence should be empty after removing only item", yaml.get(key).toList().isEmpty());
+  }
+
 }

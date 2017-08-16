@@ -6,6 +6,13 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 6.3.1 - 2017-08-16
+
+=== Fixed
+
+- `Value.toList()` now returns a live list that can be directly manipulated to change the YAML
+
+
 == 6.3.0 - 2017-08-16
 
 === Added

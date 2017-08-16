@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 
 /**
@@ -22,7 +21,7 @@ public class Value {
   }
 
   public Value(Object data) {
-    this.data = data;
+    this.data = data instanceof Value ? ((Value)data).data : data;
   }
 
   public boolean isEmpty() {
@@ -49,9 +48,7 @@ public class Value {
     if (!isList()) {
       return Collections.emptyList();
     }
-    return ((List<?>)data).stream()
-        .map(Value::new)
-        .collect(Collectors.toList());
+    return new YamlSequence((List<Object>)data);
   }
 
   public boolean isScalar() {
