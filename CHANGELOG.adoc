@@ -17,8 +17,8 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 === Added
 
-- `YamlMap.from()` to parse YAML from a string, file, or input stream
-- `YamlMap.toStream()` to serialize the YAML to an input stream
+- Added `YamlMap.from()` to parse YAML from a string, file, or input stream
+- Added `YamlMap.toStream()` to consume YAML as an input stream
 
 === Fixed
 
@@ -56,8 +56,8 @@ class lives.
 
 === Added 
 
-- Support for custom attributes in packaging information in SIPs. Custom attributes show up in the confirmations that
-InfoArchive generates after ingesting the SIPs.
+- Added support for custom attributes in packaging information in SIPs. Custom attributes show up in the confirmations
+that InfoArchive generates after ingesting the SIPs.
 
 === Fixed
 
