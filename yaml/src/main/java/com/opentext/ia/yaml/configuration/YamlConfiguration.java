@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.atteo.evo.inflector.English;
-import org.yaml.snakeyaml.Yaml;
 
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.Visitor;
@@ -167,7 +166,7 @@ public class YamlConfiguration {
    */
   @Override
   public String toString() {
-    return new Yaml().dump(yaml.getRawData());
+    return yaml.toString();
   }
 
 }

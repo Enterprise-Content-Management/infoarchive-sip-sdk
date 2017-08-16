@@ -118,7 +118,7 @@ public class YamlMap {
     return value;
   }
 
-  public Map<String, Object> getRawData() {
+  Map<String, Object> getRawData() {
     return data;
   }
 

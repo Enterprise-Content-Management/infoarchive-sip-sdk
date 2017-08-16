@@ -80,7 +80,7 @@ public class Value {
     }
   }
 
-  public Object getRawData() {
+  Object getRawData() {
     return data;
   }
 
