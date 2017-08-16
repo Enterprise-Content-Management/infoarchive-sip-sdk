@@ -38,6 +38,7 @@ public class YamlMap {
 
   /**
    * Parses the given YAML.
+   * @param yaml The YAML string to parse
    * @return A <code>YamlMap</code> corresponding to the provided YAML string
    */
   public static YamlMap from(String yaml) {
@@ -50,6 +51,7 @@ public class YamlMap {
 
   /**
    * Parses the given YAML.
+   * @param yaml The YAML stream to parse
    * @return A <code>YamlMap</code> corresponding to the provided YAML input stream
    */
   public static YamlMap from(InputStream yaml) {
@@ -66,6 +68,7 @@ public class YamlMap {
 
   /**
    * Parses the given YAML.
+   * @param yaml The YAML file to parse
    * @return A <code>YamlMap</code> corresponding to the provided YAML file, or an empty <code>YamlMap</code> if the
    * file does not exist
    */
