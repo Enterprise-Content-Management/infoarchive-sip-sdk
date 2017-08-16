@@ -3,9 +3,29 @@
  */
 package com.opentext.ia.yaml.core;
 
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import org.apache.commons.io.IOUtils;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Represent;
+import org.yaml.snakeyaml.representer.Representer;
 
 
 /**
@@ -13,7 +33,49 @@ import java.util.stream.Stream;
  */
 public class YamlMap {
 
+
   private final Map<String, Object> data;
+
+  /**
+   * Parses the given YAML.
+   * @return A <code>YamlMap</code> corresponding to the provided YAML string
+   */
+  public static YamlMap from(String yaml) {
+    return from(streamOf(yaml));
+  }
+
+  private static ByteArrayInputStream streamOf(String text) {
+    return new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+  }
+
+  /**
+   * Parses the given YAML.
+   * @return A <code>YamlMap</code> corresponding to the provided YAML input stream
+   */
+  public static YamlMap from(InputStream yaml) {
+    try {
+      YamlMap result = new YamlMap();
+      for (Object data : new Yaml().loadAll(yaml)) {
+        result.putAll(new YamlMap(data));
+      }
+      return result;
+    } finally {
+      IOUtils.closeQuietly(yaml);
+    }
+  }
+
+  /**
+   * Parses the given YAML.
+   * @return A <code>YamlMap</code> corresponding to the provided YAML file, or an empty <code>YamlMap</code> if the
+   * file does not exist
+   */
+  public static YamlMap from(File yaml) {
+    try {
+      return from(new FileInputStream(yaml));
+    } catch (FileNotFoundException e) {
+      return new YamlMap();
+    }
+  }
 
   public YamlMap() {
     this(null);
@@ -132,10 +194,50 @@ public class YamlMap {
         .count();
   }
 
-  @Override
-  public String toString() {
-    return data.toString();
+  public InputStream toStream() {
+    return streamOf(toString());
   }
 
+  @Override
+  public String toString() {
+    DumperOptions options = new DumperOptions();
+    options.setDefaultFlowStyle(FlowStyle.BLOCK);
+    options.setPrettyFlow(true);
+    Representer representer = new NullSkippingRepresenter();
+    return new Yaml(representer, options).dump(data);
+  }
+
+
+  private static class NullSkippingRepresenter extends Representer {
+
+    NullSkippingRepresenter() {
+      this.multiRepresenters.put(Map.class, new Represent() {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Node representData(Object data) {
+          return representMapping(getTag(data.getClass(), Tag.MAP), filterNullValues(data), null);
+        }
+
+      });
+    }
+
+    private Map<?, ?> filterNullValues(Object data) {
+      Map<?, ?> result = (Map<?, ?>)data;
+      if (result.containsValue(null)) {
+        result = removePropertiesWithoutValue(result);
+      }
+      return result;
+    }
+
+    private Map<?, ?> removePropertiesWithoutValue(Map<?, ?> source) {
+      Map<?, ?> result = new HashMap<>(source);
+      Collection<?> propertiesWithoutValue = result.keySet().stream()
+          .filter(key -> result.get(key) == null)
+          .collect(Collectors.toList());
+      propertiesWithoutValue.forEach(result::remove);
+      return result;
+    }
+  }
 
 }

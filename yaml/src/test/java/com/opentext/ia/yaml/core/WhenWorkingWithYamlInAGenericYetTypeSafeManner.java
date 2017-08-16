@@ -3,22 +3,36 @@
  */
 package com.opentext.ia.yaml.core;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import com.opentext.ia.test.TestCase;
 
 
 public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
+  private static final String SAMPLE_YAML_STRING = String.format(
+      "root:%n- property: value%n  sequence:%n  - one%n  - two%n  nested:%n    foo: bar%n");
+
   private static final String EMPTY = "Empty";
 
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
   private final YamlMap yaml = new YamlMap();
   private final String key = someValue();
   private final String value = someValue();
@@ -210,6 +224,41 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertTrue("String", new Value(randomString()).isScalar());
     assertTrue("Int", new Value(313).isScalar());
     assertTrue("Double", new Value(Math.PI).isScalar());
+  }
+
+  @Test
+  public void shouldSerializeToAndDeserializeFromString() {
+    assertEquals("String representation", SAMPLE_YAML_STRING, YamlMap.from(SAMPLE_YAML_STRING).toString());
+  }
+
+  @Test
+  public void shouldSkipNullValuesWhenSerializing() {
+    assertEquals("String representation", String.format("foo:%n  ape: bear%n"),
+        new YamlMap().put("foo", new YamlMap().put("ape", "bear").put("cheetah", null)).toString());
+  }
+
+  @Test
+  public void shouldLoadYamlFromFile() throws IOException {
+    File yamlFile = temporaryFolder.newFile();
+    try (PrintWriter writer = new PrintWriter(yamlFile, StandardCharsets.UTF_8.name())) {
+      writer.print(SAMPLE_YAML_STRING);
+    }
+
+    assertEquals("YAML from file", SAMPLE_YAML_STRING, YamlMap.from(yamlFile).toString());
+  }
+
+  @Test
+  public void shouldReturnEmptyMapWhenLoadingFromNonExistingFile() throws IOException {
+    File nonExistingFile = temporaryFolder.newFile();
+    nonExistingFile.delete();
+
+    assertTrue("YAML loaded from non-existing file is not empty", YamlMap.from(nonExistingFile).isEmpty());
+  }
+
+  @Test
+  public void shouldSerializeToStream() throws IOException {
+    assertEquals("YAML from stream", SAMPLE_YAML_STRING,
+        IOUtils.toString(YamlMap.from(SAMPLE_YAML_STRING).toStream(), StandardCharsets.UTF_8));
   }
 
 }

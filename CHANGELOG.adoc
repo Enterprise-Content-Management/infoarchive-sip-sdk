@@ -6,6 +6,18 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 6.3.0 - 2017-08-16
+
+=== Added
+
+- `YamlMap.from()` to parse YAML from a string, file, or input stream
+- `YamlMap.toStream()` to serialize the YAML to an input stream
+
+=== Fixed
+
+- `YamlMap.toString()` now produces correct YAML and also leaves out properties with `null` values
+ 
+
 == 6.2.1 - 2017-08-14
 
 === Fixed

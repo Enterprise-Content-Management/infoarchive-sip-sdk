@@ -74,15 +74,7 @@ public class YamlConfiguration {
    * @param resolver How to resolve resources to text
    */
   public YamlConfiguration(InputStream yaml, ResourceResolver resolver) {
-    this(parse(yaml), resolver);
-  }
-
-  private static YamlMap parse(InputStream yaml) {
-    YamlMap result = new YamlMap();
-    for (Object data : new Yaml().loadAll(yaml)) {
-      result.putAll(new YamlMap(data));
-    }
-    return result;
+    this(YamlMap.from(yaml), resolver);
   }
 
   /**
