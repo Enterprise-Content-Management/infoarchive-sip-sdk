@@ -5,12 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project adheres to 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+
 == 7.0.0 - TBD
 
 === Changed
 
-- `YamlMap.getRawData()` is no longer `public` (BREAKING)
-- `Value.getRawData()` is no longer `public` (BREAKING)
+- `YamlMap.getRawData()` is no longer `public`
+- `Value.getRawData()` is no longer `public`
+
+=== Added
+
+- Added `YamlMap.sort()` (with and without `Comparator` parameter)
+
 
 
 == 6.3.1 - 2017-08-16
@@ -18,6 +24,7 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 === Fixed
 
 - `Value.toList()` now returns a live list that can be directly manipulated to change the YAML
+
 
 
 == 6.3.0 - 2017-08-16
@@ -32,11 +39,13 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 - `YamlMap.toString()` now produces correct YAML and also leaves out properties with `null` values
  
 
+
 == 6.2.1 - 2017-08-14
 
 === Fixed
 
 - Minor fix in normalization of YAML configuration
+
 
 
 == 6.2.0 - 2017-08-14
@@ -52,11 +61,13 @@ class lives.
 - Minor fix in normalization of YAML configuration
 
 
+
 == 6.1.1 - 2017-08-14
 
 === Fixed
 
 - Several minor fixes in normalization of YAML configuration
+
 
 
 == 6.1.0 - 2017-08-04

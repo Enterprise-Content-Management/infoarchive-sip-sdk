@@ -11,9 +11,11 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -86,7 +88,7 @@ public class YamlMap {
 
   @SuppressWarnings("unchecked")
   public YamlMap(Object data) {
-    this.data = data instanceof Map ? (Map<String, Object>)data : new HashMap<>();
+    this.data = data instanceof Map ? (Map<String, Object>)data : new LinkedHashMap<>();
   }
 
   public boolean isEmpty() {
@@ -201,6 +203,34 @@ public class YamlMap {
     return streamOf(toString());
   }
 
+  public YamlMap sort() {
+    return sort((a, b) -> String.valueOf(a).compareTo(String.valueOf(b)));
+  }
+
+  public YamlMap sort(Comparator<String> comparator) {
+    Map<String, Object> sortedMap = sortingCopyOf(data, comparator);
+    sortRecursively(sortedMap, comparator);
+    return new YamlMap(sortedMap);
+  }
+
+  private Map<String, Object> sortingCopyOf(Map<String, Object> source, Comparator<String> comparator) {
+    Map<String, Object> result = new TreeMap<>(comparator);
+    result.putAll(source);
+    return result;
+  }
+
+  @SuppressWarnings("unchecked")
+  private void sortRecursively(Map<String, Object> map, Comparator<String> comparator) {
+    map.keySet().forEach(key -> {
+      Object value = map.get(key);
+      if (value instanceof Map) {
+        Map<String, Object> sortedMap = sortingCopyOf((Map<String, Object>)value, comparator);
+        sortRecursively(sortedMap, comparator);
+        map.put(key, sortedMap);
+      }
+    });
+  }
+
   @Override
   public String toString() {
     DumperOptions options = new DumperOptions();
@@ -234,7 +264,7 @@ public class YamlMap {
     }
 
     private Map<?, ?> removePropertiesWithoutValue(Map<?, ?> source) {
-      Map<?, ?> result = new HashMap<>(source);
+      Map<?, ?> result = new LinkedHashMap<>(source);
       Collection<?> propertiesWithoutValue = result.keySet().stream()
           .filter(key -> result.get(key) == null)
           .collect(Collectors.toList());

@@ -26,6 +26,11 @@ import com.opentext.ia.test.TestCase;
 
 public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
+  private static final String APE = "ape";
+  private static final String BEAR = "bear";
+  private static final String CHEETAH = "cheetah";
+  private static final String DINGO = "dingo";
+  private static final String ELEPHANT = "elephant";
   private static final String SAMPLE_YAML_STRING = String.format(
       "root:%n- property: value%n  sequence:%n  - one%n  - two%n  nested:%n    foo: bar%n");
 
@@ -234,7 +239,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   @Test
   public void shouldSkipNullValuesWhenSerializing() {
     assertEquals("String representation", String.format("foo:%n  ape: bear%n"),
-        new YamlMap().put("foo", new YamlMap().put("ape", "bear").put("cheetah", null)).toString());
+        new YamlMap().put("foo", new YamlMap().put(APE, BEAR).put(CHEETAH, null)).toString());
   }
 
   @Test
@@ -269,6 +274,38 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     values.remove(0);
 
     assertTrue("Sequence should be empty after removing only item", yaml.get(key).toList().isEmpty());
+  }
+
+  @Test
+  public void shouldSortWithDefaultComparator() throws Exception {
+    yaml.put(CHEETAH, DINGO);
+    yaml.put(APE, BEAR);
+    assertEquals("Sanity check: unsorted YAML", String.format("cheetah: dingo%nape: bear%n"), yaml.toString());
+
+    String sorted = yaml.sort().toString();
+
+    assertEquals("Sorted YAML", String.format("ape: bear%ncheetah: dingo%n"), sorted);
+  }
+
+  @Test
+  public void shouldSortWithProvidedComparator() throws Exception {
+    yaml.put(APE, BEAR);
+    yaml.put(CHEETAH, DINGO);
+
+    String sorted = yaml.sort((a, b) -> b.toString().compareTo(a.toString())).toString();
+
+    assertEquals("Sorted YAML", String.format("cheetah: dingo%nape: bear%n"), sorted);
+  }
+
+  @Test
+  public void shouldSortRecursively() throws Exception {
+    yaml.put(APE, new YamlMap()
+        .put(DINGO, ELEPHANT)
+        .put(BEAR, CHEETAH));
+
+    String sorted = yaml.sort().toString();
+
+    assertEquals("Sorted YAML", String.format("ape:%n  bear: cheetah%n  dingo: elephant%n"), sorted);
   }
 
 }
