@@ -39,7 +39,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/audits/\\d+", Arrays.asList(APPLICATION, TENANT));
     result.put("/buckets/\\d+", Arrays.asList("spaceRootObject"));
     result.put("/confirmations/\\d+", Arrays.asList(APPLICATION, "deliveryChannel"));
-    result.put("/customPresentationConfigurations/\\d+", Arrays.asList("exportPipeline", TENANT));
+    result.put("/customPresentationConfigurations/\\d+", Arrays.asList(APPLICATION, "exportPipeline", TENANT));
     result.put("/databases/\\d+", Arrays.asList(APPLICATION, "ciStore", "managedItemStore", XDB_STORE));
     result.put("/databaseCryptoes/\\d+", Arrays.asList(APPLICATION, "database"));
     result.put("/deliveryChannels/\\d+", Arrays.asList(APPLICATION, "store"));
