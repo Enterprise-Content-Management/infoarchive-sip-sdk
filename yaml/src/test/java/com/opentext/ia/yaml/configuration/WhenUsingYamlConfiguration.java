@@ -518,4 +518,22 @@ public class WhenUsingYamlConfiguration extends TestCase {
         + "</processors>\n", xml);
   }
 
+  @Test
+  public void shouldExpandNamespaceInResultMaster() {
+    String prefix = "n";
+    String uri = randomUri();
+    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+            .put(PREFIX, prefix)
+            .put(URI, uri)))
+        .put("resultMasters", Arrays.asList(new YamlMap()
+            .put(NAME, someName())
+            .put(NAMESPACES, Arrays.asList(prefix))));
+
+    normalizeYaml();
+
+    YamlMap namespace = yaml.get("resultMasters", 0, NAMESPACES, 0).toMap();
+    assertValue("Namespace prefix", prefix, namespace.get("prefix"));
+    assertValue("Namespace URI", uri, namespace.get("uri"));
+  }
+
 }
