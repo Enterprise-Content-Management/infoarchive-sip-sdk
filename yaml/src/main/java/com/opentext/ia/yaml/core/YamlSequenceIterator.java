@@ -5,6 +5,7 @@ package com.opentext.ia.yaml.core;
 
 import java.util.List;
 import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 
 class YamlSequenceIterator implements ListIterator<Value> {
@@ -24,6 +25,9 @@ class YamlSequenceIterator implements ListIterator<Value> {
 
   @Override
   public Value next() {
+    if (!hasNext()) {
+      throw new NoSuchElementException();
+    }
     return new Value(data.get(index++));
   }
 

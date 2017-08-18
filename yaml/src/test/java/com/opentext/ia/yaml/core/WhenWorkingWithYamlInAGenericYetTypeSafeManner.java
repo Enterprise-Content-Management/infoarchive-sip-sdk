@@ -26,15 +26,9 @@ import com.opentext.ia.test.TestCase;
 
 public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
-  private static final String APE = "ape";
-  private static final String BEAR = "bear";
-  private static final String CHEETAH = "cheetah";
-  private static final String DINGO = "dingo";
-  private static final String ELEPHANT = "elephant";
+  private static final String EMPTY = "Empty";
   private static final String SAMPLE_YAML_STRING = String.format(
       "root:%n- property: value%n  sequence:%n  - one%n  - two%n  nested:%n    foo: bar%n");
-
-  private static final String EMPTY = "Empty";
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -239,7 +233,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   @Test
   public void shouldSkipNullValuesWhenSerializing() {
     assertEquals("String representation", String.format("foo:%n  ape: bear%n"),
-        new YamlMap().put("foo", new YamlMap().put(APE, BEAR).put(CHEETAH, null)).toString());
+        new YamlMap().put("foo", new YamlMap().put("ape", "bear").put("cheetah", null)).toString());
   }
 
   @Test
@@ -278,8 +272,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldSortWithDefaultComparator() throws Exception {
-    yaml.put(CHEETAH, DINGO);
-    yaml.put(APE, BEAR);
+    yaml.put("cheetah", "dingo");
+    yaml.put("ape", "bear");
     assertEquals("Sanity check: unsorted YAML", String.format("cheetah: dingo%nape: bear%n"), yaml.toString());
 
     String sorted = yaml.sort().toString();
@@ -289,23 +283,27 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldSortWithProvidedComparator() throws Exception {
-    yaml.put(APE, BEAR);
-    yaml.put(CHEETAH, DINGO);
+    yaml.put("elephant", "fox");
+    yaml.put("giraffe", "hyena");
 
     String sorted = yaml.sort((a, b) -> b.toString().compareTo(a.toString())).toString();
 
-    assertEquals("Sorted YAML", String.format("cheetah: dingo%nape: bear%n"), sorted);
+    assertEquals("Sorted YAML", String.format("giraffe: hyena%nelephant: fox%n"), sorted);
   }
 
   @Test
   public void shouldSortRecursively() throws Exception {
-    yaml.put(APE, new YamlMap()
-        .put(DINGO, ELEPHANT)
-        .put(BEAR, CHEETAH));
+    yaml.put("iguana", new YamlMap()
+        .put("leopard", Arrays.asList(new YamlMap()
+            .put("opossum", "parrot")
+            .put("mule", "nightingale")))
+        .put("jaguar", "koala")
+        .put("rhino", Arrays.asList("tiger", "snake")));
 
     String sorted = yaml.sort().toString();
 
-    assertEquals("Sorted YAML", String.format("ape:%n  bear: cheetah%n  dingo: elephant%n"), sorted);
+    assertEquals("Sorted YAML", String.format("iguana:%n  jaguar: koala%n  leopard:%n  - mule: nightingale"
+        + "%n    opossum: parrot%n  rhino:%n  - snake%n  - tiger%n"), sorted);
   }
 
 }

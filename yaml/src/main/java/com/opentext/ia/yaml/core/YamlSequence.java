@@ -57,7 +57,7 @@ public class YamlSequence implements List<Value> {
       index++;
     }
     if (index < result.length) {
-      result[index++] = null;
+      result[index] = null;
     }
     return result;
   }

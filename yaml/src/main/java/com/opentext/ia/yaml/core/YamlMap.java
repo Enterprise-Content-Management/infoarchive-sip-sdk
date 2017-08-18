@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,9 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
 
@@ -227,6 +226,22 @@ public class YamlMap {
         Map<String, Object> sortedMap = sortingCopyOf((Map<String, Object>)value, comparator);
         sortRecursively(sortedMap, comparator);
         map.put(key, sortedMap);
+      } else if (value instanceof List) {
+        List<Object> sortedList = new ArrayList<>((List<?>)value);
+        boolean allScalars = true;
+        for (int i = 0; i < sortedList.size(); i++) {
+          value = sortedList.get(i);
+          if (value instanceof Map) {
+            Map<String, Object> sortedMap = sortingCopyOf((Map<String, Object>)value, comparator);
+            sortRecursively(sortedMap, comparator);
+            sortedList.set(i, sortedMap);
+            allScalars = false;
+          }
+          if (allScalars) {
+            Collections.sort(sortedList, (a, b) -> String.valueOf(a).compareTo(String.valueOf(b)));
+          }
+        }
+        map.put(key, sortedList);
       }
     });
   }
@@ -244,15 +259,8 @@ public class YamlMap {
   private static class NullSkippingRepresenter extends Representer {
 
     NullSkippingRepresenter() {
-      this.multiRepresenters.put(Map.class, new Represent() {
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public Node representData(Object data) {
-          return representMapping(getTag(data.getClass(), Tag.MAP), filterNullValues(data), null);
-        }
-
-      });
+      this.multiRepresenters.put(Map.class, data ->
+          representMapping(getTag(data.getClass(), Tag.MAP), filterNullValues(data), null));
     }
 
     private Map<?, ?> filterNullValues(Object data) {
