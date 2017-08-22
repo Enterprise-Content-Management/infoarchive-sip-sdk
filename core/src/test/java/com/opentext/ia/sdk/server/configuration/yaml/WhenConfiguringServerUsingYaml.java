@@ -4,13 +4,22 @@
 package com.opentext.ia.sdk.server.configuration.yaml;
 
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -26,7 +35,6 @@ import com.opentext.ia.sdk.support.http.rest.RestClient;
 import com.opentext.ia.test.TestCase;
 import com.opentext.ia.test.TestUtil;
 import com.opentext.ia.yaml.configuration.YamlConfiguration;
-import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.resource.ResourceResolver;
 
 
@@ -90,8 +98,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   private Map<String, String> yamlToProperties() throws IOException {
     try (InputStream input = getClass().getResourceAsStream("/iaif/iaif.yaml")) {
       YamlConfiguration configuration = new YamlConfiguration(input, ResourceResolver.fromClasspath("/iaif"));
-      YamlMap yaml = configuration.getMap();
-      return new YamlPropertiesMap(yaml);
+      return new YamlPropertiesMap(configuration.getMap());
     }
   }
 

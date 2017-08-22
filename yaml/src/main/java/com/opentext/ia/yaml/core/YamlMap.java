@@ -6,7 +6,7 @@ package com.opentext.ia.yaml.core;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.Yaml;
@@ -34,7 +33,6 @@ import org.yaml.snakeyaml.representer.Representer;
  */
 public class YamlMap {
 
-
   private final Map<String, Object> data;
 
   /**
@@ -43,10 +41,14 @@ public class YamlMap {
    * @return A <code>YamlMap</code> corresponding to the provided YAML string
    */
   public static YamlMap from(String yaml) {
-    return from(streamOf(yaml));
+    try (InputStream input = streamOf(yaml)) {
+      return from(input);
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to parse YAML string", e);
+    }
   }
 
-  private static ByteArrayInputStream streamOf(String text) {
+  private static InputStream streamOf(String text) {
     return new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
   }
 
@@ -56,15 +58,11 @@ public class YamlMap {
    * @return A <code>YamlMap</code> corresponding to the provided YAML input stream
    */
   public static YamlMap from(InputStream yaml) {
-    try {
-      YamlMap result = new YamlMap();
-      for (Object data : new Yaml().loadAll(yaml)) {
-        result.putAll(new YamlMap(data));
-      }
-      return result;
-    } finally {
-      IOUtils.closeQuietly(yaml);
+    YamlMap result = new YamlMap();
+    for (Object data : new Yaml().loadAll(yaml)) {
+      result.putAll(new YamlMap(data));
     }
+    return result;
   }
 
   /**
@@ -72,12 +70,14 @@ public class YamlMap {
    * @param yaml The YAML file to parse
    * @return A <code>YamlMap</code> corresponding to the provided YAML file, or an empty <code>YamlMap</code> if the
    * file does not exist
+   * @throws IOException When an I/O error occurs
    */
-  public static YamlMap from(File yaml) {
-    try {
-      return from(new FileInputStream(yaml));
-    } catch (FileNotFoundException e) {
+  public static YamlMap from(File yaml) throws IOException {
+    if (!yaml.isFile()) {
       return new YamlMap();
+    }
+    try (InputStream input = new FileInputStream(yaml)) {
+      return from(input);
     }
   }
 
@@ -119,7 +119,7 @@ public class YamlMap {
     return value;
   }
 
-  Map<String, Object> getRawData() {
+  private Map<String, Object> getRawData() {
     return data;
   }
 

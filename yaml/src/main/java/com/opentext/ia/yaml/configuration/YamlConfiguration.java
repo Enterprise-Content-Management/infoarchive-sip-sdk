@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
 import org.atteo.evo.inflector.English;
 
 import com.opentext.ia.yaml.core.Value;
@@ -75,6 +76,7 @@ public class YamlConfiguration {
    */
   public YamlConfiguration(InputStream yaml, ResourceResolver resolver) {
     this(YamlMap.from(yaml), resolver);
+    IOUtils.closeQuietly(yaml);
   }
 
   /**
