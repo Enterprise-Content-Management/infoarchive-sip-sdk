@@ -16,6 +16,7 @@ import com.opentext.ia.yaml.core.YamlMap;
 
 class InsertDefaultReferences extends BaseInsertDefaultReferences {
 
+  private static final String STORE = "store";
   private static final String NAME = "name";
   private static final String NAMESPACE = "namespace";
   private static final String TENANT = "tenant";
@@ -30,7 +31,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
 
   private static Map<String, Collection<String>> referencePropertiesByPathRegex() {
     Map<String, Collection<String>> result = new HashMap<>();
-    result.put("/.*/content", Arrays.asList(APPLICATION, "store"));
+    result.put("/.*/content", Arrays.asList(APPLICATION, STORE));
     result.put("/.+/((.+\\.)?q|.+Q)uery", Arrays.asList(NAMESPACE));
     result.put("/aics/\\d+", Arrays.asList(APPLICATION));
     result.put("/aips/\\d+", Arrays.asList(APPLICATION, "xdbLibrary"));
@@ -42,7 +43,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/customPresentationConfigurations/\\d+", Arrays.asList(APPLICATION, "exportPipeline", TENANT));
     result.put("/databases/\\d+", Arrays.asList(APPLICATION, "ciStore", "managedItemStore", XDB_STORE));
     result.put("/databaseCryptoes/\\d+", Arrays.asList(APPLICATION, "database"));
-    result.put("/deliveryChannels/\\d+", Arrays.asList(APPLICATION, "store"));
+    result.put("/deliveryChannels/\\d+", Arrays.asList(APPLICATION, STORE));
     result.put("/exportConfigurations/\\d+", Arrays.asList("pipeline", TENANT, "transformation"));
     result.put("/exportPipelines/\\d+", Arrays.asList(APPLICATION, TENANT));
     result.put("/exportTransformations/\\d+", Arrays.asList(APPLICATION, TENANT));
@@ -91,6 +92,9 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     Map<String, String> result = new HashMap<>();
     result.put("pipeline", "exportPipeline");
     result.put("transformation", "exportTransformation");
+    result.put("ciStore", STORE);
+    result.put("managedItemStore", STORE);
+    result.put("xdbStore", STORE);
     return result;
   }
 

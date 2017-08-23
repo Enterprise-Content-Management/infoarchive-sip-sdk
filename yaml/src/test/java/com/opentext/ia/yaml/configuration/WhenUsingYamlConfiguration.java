@@ -53,6 +53,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String PATH_VALUE_INDEX = "path.value.index";
   private static final String PATH = "path";
   private static final String HTML_TEMPLATE = "htmlTemplate";
+  private static final String DATABASES = "databases";
+  private static final String METADATA = "metadata";
 
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
@@ -162,6 +164,56 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   @Test
+  public void shouldInlineNormalizedDatabaseMetadata() throws Exception {
+    String expected = someName();
+    resourceResolver = name -> expected;
+    String resource = someTextFileName();
+    yaml.put(DATABASES, Arrays.asList(new YamlMap()
+        .put(NAME, someName())
+        .put(METADATA, Arrays.asList(new YamlMap()
+            .put(RESOURCE, resource)))));
+
+    normalizeYaml();
+
+    assertDatabaseMetadataIsInlined(expected);
+  }
+
+  private void assertDatabaseMetadataIsInlined(String expected) {
+    assertEquals("Inlined resource", expected,
+        yaml.get(DATABASES, 0, METADATA, 0, TEXT).toString());
+  }
+
+  @Test
+  public void shouldInlineSingleDatabaseMetadata() throws Exception {
+    String expected = someName();
+    resourceResolver = name -> expected;
+    String resource = someTextFileName();
+    yaml.put("database", new YamlMap()
+        .put(NAME, someName())
+        .put(METADATA, Arrays.asList(new YamlMap()
+            .put(RESOURCE, resource))));
+
+    normalizeYaml();
+
+    assertDatabaseMetadataIsInlined(expected);
+  }
+
+  @Test
+  public void shouldInlineNamedDatabaseMetadata() throws Exception {
+    String expected = someName();
+    resourceResolver = name -> expected;
+    String resource = someTextFileName();
+    yaml.put(DATABASES, new YamlMap()
+        .put(someName(), new YamlMap()
+            .put(METADATA, Arrays.asList(new YamlMap()
+                .put(RESOURCE, resource)))));
+
+    normalizeYaml();
+
+    assertDatabaseMetadataIsInlined(expected);
+  }
+
+  @Test
   public void shouldAddDefaultVersionWhenNotSpecified() throws Exception {
     normalizeYaml();
 
@@ -219,6 +271,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String spaceRootFolder = someName();
     String fileSystemRoot = someName();
     String fileSystemFolder = someName();
+    String store = someName();
     yaml.put(TENANTS, Arrays.asList(new YamlMap().put(NAME, tenant)));
     yaml.put(APPLICATIONS, Arrays.asList(
         new YamlMap().put(NAME, someName()),
@@ -228,12 +281,21 @@ public class WhenUsingYamlConfiguration extends TestCase {
     yaml.put("spaceRootFolders", Arrays.asList(new YamlMap().put(NAME, spaceRootFolder)));
     yaml.put("fileSystemRoots", Arrays.asList(new YamlMap().put(NAME, fileSystemRoot)));
     yaml.put(FILE_SYSTEM_FOLDERS, Arrays.asList(new YamlMap().put(NAME, fileSystemFolder)));
+    yaml.put("stores", Arrays.asList(new YamlMap().put(NAME, store)));
+    yaml.put(DATABASES, Arrays.asList(new YamlMap().put(NAME, someName())));
 
     normalizeYaml();
 
     assertValue("Tenant", tenant, yaml.get(APPLICATIONS, 0, TENANT));
     assertValue("Application", application, yaml.get(SPACES, 0, "application"));
     assertValue("Space root folder", spaceRootFolder, yaml.get(FILE_SYSTEM_FOLDERS, 0, "parentSpaceRootFolder"));
+    assertDatabaseStore("xdb", store);
+    assertDatabaseStore("ci", store);
+    assertDatabaseStore("managedItem", store);
+  }
+
+  private void assertDatabaseStore(String storeType, String expected) {
+    assertValue(storeType + "Store", expected, yaml.get(DATABASES, 0, storeType + "Store"));
   }
 
   @Test
