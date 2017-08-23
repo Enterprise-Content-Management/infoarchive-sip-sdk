@@ -22,6 +22,8 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
   private static final String TENANT = "tenant";
   private static final String APPLICATION = "application";
   private static final String SPACE = "space";
+  private static final String CI_STORE = "ciStore";
+  private static final String MANAGED_ITEM_STORE = "managedItemStore";
   private static final String XDB_STORE = "xdbStore";
   private static final String SEARCH = "search";
   private static final String SEARCH_COMPOSITION = "searchComposition";
@@ -41,14 +43,14 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/buckets/\\d+", Arrays.asList("spaceRootObject"));
     result.put("/confirmations/\\d+", Arrays.asList(APPLICATION, "deliveryChannel"));
     result.put("/customPresentationConfigurations/\\d+", Arrays.asList(APPLICATION, "exportPipeline", TENANT));
-    result.put("/databases/\\d+", Arrays.asList(APPLICATION, "ciStore", "managedItemStore", XDB_STORE));
+    result.put("/databases/\\d+", Arrays.asList(APPLICATION, CI_STORE, MANAGED_ITEM_STORE, XDB_STORE));
     result.put("/databaseCryptoes/\\d+", Arrays.asList(APPLICATION, "database"));
     result.put("/deliveryChannels/\\d+", Arrays.asList(APPLICATION, STORE));
     result.put("/exportConfigurations/\\d+", Arrays.asList("pipeline", TENANT, "transformation"));
     result.put("/exportPipelines/\\d+", Arrays.asList(APPLICATION, TENANT));
     result.put("/exportTransformations/\\d+", Arrays.asList(APPLICATION, TENANT));
     result.put("/holds/\\d+", Arrays.asList(TENANT));
-    result.put("/holdings/\\d+", Arrays.asList(APPLICATION, "ciStore", "ingest", "logStore", "managedItemStore", "pdi",
+    result.put("/holdings/\\d+", Arrays.asList(APPLICATION, CI_STORE, "ingest", "logStore", MANAGED_ITEM_STORE, "pdi",
         "renditionStore", "sipStore", "stagingStore", "xdbLibrary", "xdbLibraryPolicy", XDB_STORE, "xmlStore"));
     result.put("/holdingCryptoes/\\d+", Arrays.asList(APPLICATION, "holding", "pdiCrypto"));
     result.put("/ingests/\\d+", Arrays.asList(APPLICATION));
@@ -92,8 +94,8 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     Map<String, String> result = new HashMap<>();
     result.put("pipeline", "exportPipeline");
     result.put("transformation", "exportTransformation");
-    result.put("ciStore", STORE);
-    result.put("managedItemStore", STORE);
+    result.put(CI_STORE, STORE);
+    result.put(MANAGED_ITEM_STORE, STORE);
     result.put("xdbStore", STORE);
     return result;
   }
