@@ -3,7 +3,15 @@
  */
 package com.opentext.ia.sdk.sample.ingest;
 
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.*;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_AIC;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_NAME;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_XFORM;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_XFORM_NAME;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_DESCRIPTION;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_NAME;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_NESTED;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_QUERY;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_STATE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +67,6 @@ public class SearchConfigBuilder {
     values.put(resolve(SEARCH_DESCRIPTION), description);
     values.put(resolve(SEARCH_NESTED), "false");
     values.put(resolve(SEARCH_STATE), "DRAFT");
-    values.put(resolve(SEARCH_INUSE), "true");
     values.put(resolve(SEARCH_AIC), aic);
     values.put(resolve(SEARCH_QUERY), query);
     // Only one composition for now

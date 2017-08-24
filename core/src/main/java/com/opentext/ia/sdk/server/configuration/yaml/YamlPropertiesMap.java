@@ -174,9 +174,8 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
 
     putManyFrom("search", SEARCH_NAME, (searchName, search) -> {
       putTemplatedFrom(search, searchName, SEARCH_DESCRIPTION, DESCRIPTION,
-          SEARCH_NESTED, "nested",
+          SEARCH_NESTED, "nestedSearch",
           SEARCH_STATE, "state",
-          SEARCH_INUSE, "inUse",
           SEARCH_AIC, "aic",
           SEARCH_QUERY, "query");
       with("searchComposition", "search", searchName, searchComposition -> {
@@ -204,7 +203,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
                 appendTemplated(exportConfiguration, SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName)
               );
         });
-        with("xform", NAME, searchComposition.get("xform").toString(), xform -> {
+        with("xform", NAME, yaml.get("xforms", 0, NAME).toString(), xform -> {
           putTemplated(xform.get(NAME), SEARCH_COMPOSITION_XFORM_NAME, searchName);
           putTemplated(xform.get(CONTENT, TEXT), SEARCH_COMPOSITION_XFORM, searchName);
         });

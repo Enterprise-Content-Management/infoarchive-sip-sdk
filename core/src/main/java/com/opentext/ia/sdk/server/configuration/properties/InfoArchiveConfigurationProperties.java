@@ -98,7 +98,6 @@ public interface InfoArchiveConfigurationProperties {
   String SEARCH_DESCRIPTION = SEARCH_PREFIX + "%s.description";
   String SEARCH_NESTED = SEARCH_PREFIX + "%s.nestedsearch";
   String SEARCH_STATE = SEARCH_PREFIX + "%s.state";
-  String SEARCH_INUSE = SEARCH_PREFIX + "%s.inuse";
   String SEARCH_AIC = SEARCH_PREFIX + "%s.aic";
   String SEARCH_QUERY = SEARCH_PREFIX + "%s.query";
   String SEARCH_COMPOSITION_PREFIX = SEARCH_PREFIX + "%s.composition.";

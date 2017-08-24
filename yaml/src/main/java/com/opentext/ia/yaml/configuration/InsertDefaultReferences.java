@@ -50,9 +50,9 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/exportPipelines/\\d+", Arrays.asList(APPLICATION, TENANT));
     result.put("/exportTransformations/\\d+", Arrays.asList(APPLICATION, TENANT));
     result.put("/holds/\\d+", Arrays.asList(TENANT));
-    result.put("/holdings/\\d+", Arrays.asList(APPLICATION, CI_STORE, "ingest", "logStore", MANAGED_ITEM_STORE, "pdi",
-        "renditionStore", "sipStore", "stagingStore", "xdbLibrary", "xdbLibraryPolicy", XDB_STORE, "xmlStore"));
-    result.put("/holdingCryptoes/\\d+", Arrays.asList(APPLICATION, "holding", "pdiCrypto"));
+    result.put("/holdings/\\d+", Arrays.asList(APPLICATION, CI_STORE, "ingest", "logStore", MANAGED_ITEM_STORE,
+        "renditionStore", "sipStore", "stagingStore", "xdbLibraryPolicy", XDB_STORE, "xmlStore"));
+    result.put("/holdingCryptoes/\\d+", Arrays.asList(APPLICATION, "holding"));
     result.put("/ingests/\\d+", Arrays.asList(APPLICATION));
     result.put("/ingestNodes/\\d+", Arrays.asList(APPLICATION));
     result.put("/orders/\\d+", Arrays.asList(APPLICATION));
@@ -60,7 +60,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/pdis/\\d+/context/text/data/\\d+/indexes", Arrays.asList(NAMESPACE));
     result.put("/pdiCryptoes/\\d+", Arrays.asList(APPLICATION));
     result.put("/pdiSchemas/\\d+", Arrays.asList(APPLICATION, NAMESPACE));
-    result.put("/queries/\\d+", Arrays.asList(APPLICATION, NAMESPACE, "order", "queryQuota"));
+    result.put("/queries/\\d+", Arrays.asList(APPLICATION, NAMESPACE, "order"));
     result.put("/queries/[^/]+/xdbPdiConfigs", Arrays.asList(NAMESPACE));
     result.put("/queryQuotas/\\d+", Arrays.asList(APPLICATION));
     result.put("/receiverNodes/\\d+", Arrays.asList(APPLICATION));
@@ -71,7 +71,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/schemas/\\d+", Arrays.asList("database", XDB_STORE));
     result.put("/searches/\\d+", Arrays.asList("aic", APPLICATION, "searchGroup", "query"));
     result.put("/searchGroups/\\d+", Arrays.asList(APPLICATION));
-    result.put("/searchCompositions/\\d+", Arrays.asList("resultMaster", SEARCH, "xform"));
+    result.put("/searchCompositions/\\d+", Arrays.asList("resultMaster", SEARCH));
     result.put("/spaces/\\d+", Arrays.asList(APPLICATION));
     result.put("/spaceRootFolders/\\d+", Arrays.asList("fileSystemRoot", SPACE));
     result.put("/spaceRootObjects/\\d+", Arrays.asList(SPACE));
