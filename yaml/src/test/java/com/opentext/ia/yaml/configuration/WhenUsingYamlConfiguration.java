@@ -56,6 +56,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String HTML_TEMPLATE = "htmlTemplate";
   private static final String DATABASES = "databases";
   private static final String METADATA = "metadata";
+  private static final String EXPORT_TRANSFORMATION = "exportTransformation";
+  private static final String EXPORT_PIPELINE = "exportPipeline";
 
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
@@ -601,20 +603,20 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
   @Test
   public void shouldNotAddReferencesToPseudoContent() {
-    addReferables(APPLICATION, "store");
-    addPseudoContent("exportPipeline", "exportTransformation", "valueList");
+    addNamedObjectsFor(APPLICATION, "store");
+    addPseudoContent(EXPORT_PIPELINE, EXPORT_TRANSFORMATION, "valueList");
 
     normalizeYaml();
 
     Arrays.asList(APPLICATION, "store").forEach(ref -> {
-      Arrays.asList("exportPipeline", "exportTransformation", "valueList").forEach(type -> {
+      Arrays.asList(EXPORT_PIPELINE, EXPORT_TRANSFORMATION, "valueList").forEach(type -> {
         assertTrue("Incorrect: " + ref + " in " + type + "'s content",
             yaml.get(English.plural(type), 0, CONTENT, ref).isEmpty());
       });
     });
   }
 
-  private void addReferables(String... types) {
+  private void addNamedObjectsFor(String... types) {
     for (String type : types) {
       yaml.put(English.plural(type), Arrays.asList(new YamlMap().put(NAME, someName())));
     }
@@ -624,6 +626,16 @@ public class WhenUsingYamlConfiguration extends TestCase {
     for (String type : types) {
       yaml.put(English.plural(type), Arrays.asList(new YamlMap().put(CONTENT, new YamlMap().put(TEXT, someName()))));
     }
+  }
+
+  @Test
+  public void shouldInsertDefaultPipelineAndTransformationIntoExportConfiguration() {
+    addNamedObjectsFor(TENANT, APPLICATION, EXPORT_PIPELINE, EXPORT_TRANSFORMATION, "exportConfiguration");
+
+    normalizeYaml();
+
+    Arrays.asList(APPLICATION, TENANT, "pipeline", "transformation").forEach(property ->
+          assertFalse("Missing " + property, yaml.get("exportConfigurations", 0, property).isEmpty()));
   }
 
 }
