@@ -16,22 +16,23 @@ import com.opentext.ia.yaml.core.YamlMap;
 
 class InsertDefaultReferences extends BaseInsertDefaultReferences {
 
-  private static final String STORE = "store";
   private static final String NAME = "name";
   private static final String NAMESPACE = "namespace";
   private static final String TENANT = "tenant";
   private static final String APPLICATION = "application";
   private static final String SPACE = "space";
+  private static final String STORE = "store";
   private static final String CI_STORE = "ciStore";
   private static final String MANAGED_ITEM_STORE = "managedItemStore";
   private static final String XDB_STORE = "xdbStore";
   private static final String SEARCH = "search";
   private static final String SEARCH_COMPOSITION = "searchComposition";
+  private static final String EXPORT_PIPELINE = "exportPipeline";
   private static final Map<String, Collection<String>> REFERENCE_PROPERTIES_BY_PATH_REGEX
       = referencePropertiesByPathRegex();
   private static final Map<String, String> TYPE_BY_REFERENCE_PROPERTY = typeByReferenceProperty();
   private static final Collection<String> PSEUDO_CONTENT
-      = Arrays.asList("exportPipeline", "exportTransformation", "valueList");
+      = Arrays.asList(EXPORT_PIPELINE, "exportTransformation", "valueList");
 
   private static Map<String, Collection<String>> referencePropertiesByPathRegex() {
     Map<String, Collection<String>> result = new HashMap<>();
@@ -44,7 +45,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/audits/\\d+", Arrays.asList(APPLICATION, TENANT));
     result.put("/buckets/\\d+", Arrays.asList("spaceRootObject"));
     result.put("/confirmations/\\d+", Arrays.asList(APPLICATION, "deliveryChannel"));
-    result.put("/customPresentationConfigurations/\\d+", Arrays.asList(APPLICATION, "exportPipeline", TENANT));
+    result.put("/customPresentationConfigurations/\\d+", Arrays.asList(APPLICATION, EXPORT_PIPELINE, TENANT));
     result.put("/databases/\\d+", Arrays.asList(APPLICATION, CI_STORE, MANAGED_ITEM_STORE, XDB_STORE));
     result.put("/databaseCryptoes/\\d+", Arrays.asList(APPLICATION, "database"));
     result.put("/deliveryChannels/\\d+", Arrays.asList(APPLICATION, STORE));
@@ -94,7 +95,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
 
   private static Map<String, String> typeByReferenceProperty() {
     Map<String, String> result = new HashMap<>();
-    result.put("pipeline", "exportPipeline");
+    result.put("pipeline", EXPORT_PIPELINE);
     result.put("transformation", "exportTransformation");
     result.put(CI_STORE, STORE);
     result.put(MANAGED_ITEM_STORE, STORE);
