@@ -274,11 +274,16 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   public void shouldSortWithDefaultComparator() throws Exception {
     yaml.put("cheetah", "dingo");
     yaml.put("ape", "bear");
-    assertEquals("Sanity check: unsorted YAML", String.format("cheetah: dingo%nape: bear%n"), yaml.toString());
 
-    String sorted = yaml.sort().toString();
+    assertSorted("ape: bear%ncheetah: dingo%n");
+  }
 
-    assertEquals("Sorted YAML", String.format("ape: bear%ncheetah: dingo%n"), sorted);
+  private void assertSorted(String expected) {
+    assertSorted(expected, yaml.sort());
+  }
+
+  private void assertSorted(String expected, YamlMap actual) {
+    assertEquals("Sorted YAML", String.format(expected), actual.toString());
   }
 
   @Test
@@ -286,9 +291,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put("elephant", "fox");
     yaml.put("giraffe", "hyena");
 
-    String sorted = yaml.sort((a, b) -> b.toString().compareTo(a.toString())).toString();
-
-    assertEquals("Sorted YAML", String.format("giraffe: hyena%nelephant: fox%n"), sorted);
+    assertSorted("giraffe: hyena%nelephant: fox%n", yaml.sort((a, b) -> b.toString().compareTo(a.toString())));
   }
 
   @Test
@@ -300,10 +303,17 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         .put("jaguar", "koala")
         .put("rhino", Arrays.asList("tiger", "snake")));
 
-    String sorted = yaml.sort().toString();
+    assertSorted("iguana:%n  jaguar: koala%n  leopard:%n  - mule: nightingale"
+        + "%n    opossum: parrot%n  rhino:%n  - snake%n  - tiger%n");
+  }
 
-    assertEquals("Sorted YAML", String.format("iguana:%n  jaguar: koala%n  leopard:%n  - mule: nightingale"
-        + "%n    opossum: parrot%n  rhino:%n  - snake%n  - tiger%n"), sorted);
+  @Test
+  public void shouldSortSequencesByName() {
+    yaml.put("unicorn", Arrays.asList(
+        new YamlMap().put("name", "whale"),
+        new YamlMap().put("name", "velociraptor")));
+
+    assertSorted("unicorn:%n- name: velociraptor%n- name: whale%n");
   }
 
 }

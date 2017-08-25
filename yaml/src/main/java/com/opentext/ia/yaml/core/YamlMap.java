@@ -203,7 +203,7 @@ public class YamlMap {
   }
 
   public YamlMap sort() {
-    return sort((a, b) -> String.valueOf(a).compareTo(String.valueOf(b)));
+    return sort(new DefaultYamlComparator());
   }
 
   public YamlMap sort(Comparator<String> comparator) {
@@ -229,6 +229,7 @@ public class YamlMap {
       } else if (value instanceof List) {
         List<Object> sortedList = new ArrayList<>((List<?>)value);
         boolean allScalars = true;
+        boolean allHaveNames = true;
         for (int i = 0; i < sortedList.size(); i++) {
           value = sortedList.get(i);
           if (value instanceof Map) {
@@ -236,14 +237,27 @@ public class YamlMap {
             sortRecursively(sortedMap, comparator);
             sortedList.set(i, sortedMap);
             allScalars = false;
+            if (!sortedMap.containsKey("name")) {
+              allHaveNames = false;
+            }
+          } else {
+            allHaveNames = false;
           }
           if (allScalars) {
             Collections.sort(sortedList, (a, b) -> String.valueOf(a).compareTo(String.valueOf(b)));
           }
         }
+        if (allHaveNames) {
+          Collections.sort(sortedList, (a, b) -> nameOf(a).compareTo(nameOf(b)));
+        }
         map.put(key, sortedList);
       }
     });
+  }
+
+  @SuppressWarnings("unchecked")
+  private String nameOf(Object object) {
+    return ((Map<String, String>)object).get("name");
   }
 
   @Override
