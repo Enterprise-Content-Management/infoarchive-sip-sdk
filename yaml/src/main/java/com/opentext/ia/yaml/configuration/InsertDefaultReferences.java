@@ -30,6 +30,8 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
   private static final Map<String, Collection<String>> REFERENCE_PROPERTIES_BY_PATH_REGEX
       = referencePropertiesByPathRegex();
   private static final Map<String, String> TYPE_BY_REFERENCE_PROPERTY = typeByReferenceProperty();
+  private static final Collection<String> PSEUDO_CONTENT
+      = Arrays.asList("exportPipeline", "exportTransformation", "valueList");
 
   private static Map<String, Collection<String>> referencePropertiesByPathRegex() {
     Map<String, Collection<String>> result = new HashMap<>();
@@ -82,7 +84,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/tranformations/\\d+", Arrays.asList(APPLICATION));
     result.put("/valueLists/\\d+", Arrays.asList(APPLICATION));
     result.put("/xdbDatabases/\\d+", Arrays.asList("xdbFederation"));
-    result.put("/xdbLibraries/\\d+", Arrays.asList(APPLICATION, "spaceRootXdbLibrary"));
+    result.put("/xdbLibraries/\\d+", Arrays.asList(APPLICATION));
     result.put("/xdbLibraryPolicies/\\d+", Arrays.asList(APPLICATION));
     result.put("/xforms/\\d+", Arrays.asList(SEARCH, SEARCH_COMPOSITION));
     result.put("/xqueries/\\d+", Arrays.asList(SEARCH, SEARCH_COMPOSITION));
@@ -102,6 +104,19 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
 
   InsertDefaultReferences() {
     super(REFERENCE_PROPERTIES_BY_PATH_REGEX);
+  }
+
+  @Override
+  public boolean test(Visit visit) {
+    if (!super.test(visit)) {
+      return false;
+    }
+    if (!visit.getPath().endsWith("/content")) {
+      return true;
+    }
+    return PSEUDO_CONTENT.stream()
+        .map(type -> '/' + English.plural(type) + '/')
+        .noneMatch(path -> visit.getPath().startsWith(path));
   }
 
   @Override

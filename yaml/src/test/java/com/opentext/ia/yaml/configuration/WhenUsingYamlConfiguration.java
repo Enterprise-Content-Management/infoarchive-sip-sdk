@@ -32,6 +32,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String TEXT = "text";
   private static final String TENANTS = "tenants";
   private static final String TENANT = "tenant";
+  private static final String APPLICATION = "application";
   private static final String APPLICATIONS = "applications";
   private static final String SPACES = "spaces";
   private static final String HOLDINGS = "holdings";
@@ -230,7 +231,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldReplaceSingularTopLevelObjectWithSequence() throws IOException {
     String name = someName();
-    String type = "application";
+    String type = APPLICATION;
     String otherType = someType();
     String value = someName();
     yaml.put(type, new YamlMap().put(NAME, name))
@@ -287,7 +288,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
     normalizeYaml();
 
     assertValue("Tenant", tenant, yaml.get(APPLICATIONS, 0, TENANT));
-    assertValue("Application", application, yaml.get(SPACES, 0, "application"));
+    assertValue("Application", application, yaml.get(SPACES, 0, APPLICATION));
     assertValue("Space root folder", spaceRootFolder, yaml.get(FILE_SYSTEM_FOLDERS, 0, "parentSpaceRootFolder"));
     assertDatabaseStore("xdb", store);
     assertDatabaseStore("ci", store);
@@ -596,6 +597,33 @@ public class WhenUsingYamlConfiguration extends TestCase {
     YamlMap namespace = yaml.get("resultMasters", 0, NAMESPACES, 0).toMap();
     assertValue("Namespace prefix", prefix, namespace.get("prefix"));
     assertValue("Namespace URI", uri, namespace.get("uri"));
+  }
+
+  @Test
+  public void shouldNotAddReferencesToPseudoContent() {
+    addReferables(APPLICATION, "store");
+    addPseudoContent("exportPipeline", "exportTransformation", "valueList");
+
+    normalizeYaml();
+
+    Arrays.asList(APPLICATION, "store").forEach(ref -> {
+      Arrays.asList("exportPipeline", "exportTransformation", "valueList").forEach(type -> {
+        assertTrue("Incorrect: " + ref + " in " + type + "'s content",
+            yaml.get(English.plural(type), 0, CONTENT, ref).isEmpty());
+      });
+    });
+  }
+
+  private void addReferables(String... types) {
+    for (String type : types) {
+      yaml.put(English.plural(type), Arrays.asList(new YamlMap().put(NAME, someName())));
+    }
+  }
+
+  private void addPseudoContent(String... types) {
+    for (String type : types) {
+      yaml.put(English.plural(type), Arrays.asList(new YamlMap().put(CONTENT, new YamlMap().put(TEXT, someName()))));
+    }
   }
 
 }

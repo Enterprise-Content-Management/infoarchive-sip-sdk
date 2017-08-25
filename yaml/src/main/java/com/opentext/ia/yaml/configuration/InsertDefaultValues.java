@@ -38,11 +38,12 @@ class InsertDefaultValues extends PathVisitor {
         "support.start.end.token.flags", false));
     result.put("/aics/\\d+/criteria/\\d+", Default.of("indexed", true,
         TYPE, STRING));
-    result.put("/exportPipelines/\\d+", Default.of("collectionBased", false,
+    result.put("/exportPipelines/\\d+", Default.of("collectionBasedExport", false,
         "composite", true,
         "envelopeFormat", "zip",
         "includesContent", true,
-        "inputFormat", "ROW_COLUMN"));
+        "inputFormat", "ROW_COLUMN",
+        "type", "XPROC"));
     result.put("/exportConfigurations/\\d+", Default.of("exportType", "ASYNCHRONOUS"));
     result.put("/fileSystemRoots/\\d+", Default.of(TYPE, "FILESYSTEM"));
     result.put("/holdings/\\d+", Default.of("ciHashValidationEnabled", true,
