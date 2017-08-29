@@ -28,6 +28,7 @@ import com.opentext.ia.test.TestCase;
 public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   private static final String EMPTY = "Empty";
+  private static final String NAME = "name";
   private static final String SAMPLE_YAML_STRING = String.format(
       "root:%n- property: value%n  sequence:%n  - one%n  - two%n  nested:%n    foo: bar%n");
 
@@ -137,7 +138,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         .findFirst()
         .get();
 
-    assertEquals("Name", name, nestedObject.get("name").toString());
+    assertEquals("Name", name, nestedObject.get(NAME).toString());
     assertEquals("Property", value, nestedObject.get(key).toString());
   }
 
@@ -328,9 +329,9 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   @Test
   public void shouldSortSequencesByName() {
     yaml.put("unicorn", Arrays.asList(
-        new YamlMap().put("name", "whale").put("type", "w"),
-        new YamlMap().put("name", "velociraptor").put("type", "v"),
-        new YamlMap().put("name", "velociraptor").put("type", "a")));
+        new YamlMap().put(NAME, "whale").put("type", "w"),
+        new YamlMap().put(NAME, "velociraptor").put("type", "v"),
+        new YamlMap().put(NAME, "velociraptor").put("type", "a")));
 
     assertSorted("unicorn:%n- name: velociraptor%n  type: a%n- name: velociraptor%n  type: v%n- name: whale%n  type: w%n");
   }
