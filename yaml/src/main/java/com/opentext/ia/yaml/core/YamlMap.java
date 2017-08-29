@@ -243,7 +243,7 @@ public class YamlMap {
       sortListItem(sortedList, i, comparator, content);
     }
     if (content.isAllMapsWithNames()) {
-      Collections.sort(sortedList, (a, b) -> nameOf(a).compareTo(nameOf(b)));
+      Collections.sort(sortedList, new DefaultYamlSequenceComparator());
     }
     map.put(key, sortedList);
   }
@@ -265,11 +265,6 @@ public class YamlMap {
     if (content.isAllScalars()) {
       Collections.sort(sortedList, (a, b) -> String.valueOf(a).compareTo(String.valueOf(b)));
     }
-  }
-
-  @SuppressWarnings("unchecked")
-  private String nameOf(Object object) {
-    return ((Map<String, String>)object).get("name");
   }
 
   @Override

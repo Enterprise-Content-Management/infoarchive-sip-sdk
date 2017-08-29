@@ -5,65 +5,59 @@ package com.opentext.ia.yaml.core;
 
 import java.util.List;
 import java.util.ListIterator;
-import java.util.NoSuchElementException;
 
 
 class YamlSequenceIterator implements ListIterator<Value> {
 
-  private int index;
-  private final List<Object> data;
+  private final ListIterator<Object> wrapped;
 
   YamlSequenceIterator(List<Object> data, int index) {
-    this.data = data;
-    this.index = index;
-  }
-
-  @Override
-  public boolean hasNext() {
-    return index < data.size();
-  }
-
-  @Override
-  public Value next() {
-    if (!hasNext()) {
-      throw new NoSuchElementException();
-    }
-    return new Value(data.get(index++));
-  }
-
-  @Override
-  public boolean hasPrevious() {
-    return index > 0;
-  }
-
-  @Override
-  public Value previous() {
-    return new Value(data.get(--index));
+    this.wrapped = data.listIterator(index);
   }
 
   @Override
   public int nextIndex() {
-    return index + 1;
+    return wrapped.nextIndex();
+  }
+
+  @Override
+  public boolean hasNext() {
+    return wrapped.hasNext();
+  }
+
+  @Override
+  public Value next() {
+    return new Value(wrapped.next());
   }
 
   @Override
   public int previousIndex() {
-    return index - 1;
+    return wrapped.previousIndex();
+  }
+
+  @Override
+  public boolean hasPrevious() {
+    return wrapped.hasPrevious();
+  }
+
+  @Override
+  public Value previous() {
+    return new Value(wrapped.previous());
   }
 
   @Override
   public void remove() {
-    data.remove(index);
+    wrapped.remove();
   }
 
   @Override
   public void set(Value item) {
-    data.set(index, item);
+    wrapped.set(item.getRawData());
   }
 
   @Override
   public void add(Value item) {
-    data.add(index, item);
+    wrapped.add(item.getRawData());
   }
 
 }

@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
@@ -33,8 +34,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
   private final YamlMap yaml = new YamlMap();
-  private final String key = someValue();
-  private final String value = someValue();
+  private final String key = 'k' + someValue();
+  private final String value = 'v' + someValue();
 
   private String someValue() {
     return randomString(10);
@@ -271,6 +272,23 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
+  public void shouldIterateList() {
+    String value2 = '2' + someValue();
+    yaml.put(key, Arrays.asList(value, value2));
+
+    ListIterator<Value> iterator = yaml.get(key).toList().listIterator();
+    assertEquals("Item #1", value, iterator.next().toString());
+
+    iterator.remove();
+    assertEquals("Item after remove", value2, iterator.next().toString());
+
+    assertEquals("Previous item", value2, iterator.previous().toString());
+
+    iterator.remove();
+    assertTrue("List should be empty after removing all values", yaml.get(key).toList().isEmpty());
+  }
+
+  @Test
   public void shouldSortWithDefaultComparator() throws Exception {
     yaml.put("cheetah", "dingo");
     yaml.put("ape", "bear");
@@ -310,10 +328,11 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   @Test
   public void shouldSortSequencesByName() {
     yaml.put("unicorn", Arrays.asList(
-        new YamlMap().put("name", "whale"),
-        new YamlMap().put("name", "velociraptor")));
+        new YamlMap().put("name", "whale").put("type", "w"),
+        new YamlMap().put("name", "velociraptor").put("type", "v"),
+        new YamlMap().put("name", "velociraptor").put("type", "a")));
 
-    assertSorted("unicorn:%n- name: velociraptor%n- name: whale%n");
+    assertSorted("unicorn:%n- name: velociraptor%n  type: a%n- name: velociraptor%n  type: v%n- name: whale%n  type: w%n");
   }
 
 }
