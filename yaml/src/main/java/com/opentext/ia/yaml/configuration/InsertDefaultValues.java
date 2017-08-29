@@ -38,6 +38,7 @@ class InsertDefaultValues extends PathVisitor {
         "support.start.end.token.flags", false));
     result.put("/aics/\\d+/criteria/\\d+", Default.of("indexed", true,
         TYPE, STRING));
+    result.put("/auditEvents/\\d+", Default.of("enabled", true));
     result.put("/exportPipelines/\\d+", Default.of("collectionBasedExport", false,
         "composite", true,
         "envelopeFormat", "zip",

@@ -638,4 +638,19 @@ public class WhenUsingYamlConfiguration extends TestCase {
           assertFalse("Missing " + property, yaml.get("exportConfigurations", 0, property).isEmpty()));
   }
 
+  @Test
+  public void shouldEnableAuditEventByDefault() {
+    yaml.put("auditEvents", Arrays.asList(new YamlMap()
+        .put(NAME, someName())
+        .put(TYPE, someName()), new YamlMap()
+        .put(NAME, someName())
+        .put(TYPE, someName())
+        .put("enabled", false)));
+
+    normalizeYaml();
+
+    assertTrue("Not enabled by default", yaml.get("auditEvents", 0, "enabled").toBoolean());
+    assertFalse("Overridden specified value", yaml.get("auditEvents", 1, "enabled").toBoolean());
+  }
+
 }
