@@ -10,6 +10,7 @@ package com.opentext.ia.sdk.support.http;
 public interface MediaTypes {
 
   String BINARY = "application/octect-stream";
+  String ZIP = "application/zip";
   String HAL = "application/hal+json";
   String XML = "application/xml";
   String TEXT = "text/plain";

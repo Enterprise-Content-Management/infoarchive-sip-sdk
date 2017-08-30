@@ -10,7 +10,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-import com.opentext.ia.sdk.support.http.*;
+import com.opentext.ia.sdk.support.http.Header;
+import com.opentext.ia.sdk.support.http.HttpClient;
+import com.opentext.ia.sdk.support.http.JsonFormatter;
+import com.opentext.ia.sdk.support.http.MediaTypes;
+import com.opentext.ia.sdk.support.http.Part;
+import com.opentext.ia.sdk.support.http.ResponseFactory;
+import com.opentext.ia.sdk.support.http.UriBuilder;
 
 
 /**
@@ -39,6 +45,10 @@ public class RestClient implements Closeable, StandardLinkRelations {
 
   public <T> T get(String uri, Class<T> type) throws IOException {
     return httpClient.get(uri, withAuthorization(headers), type);
+  }
+
+  public <T> T get(String uri, String mediaType, Class<T> type) throws IOException {
+    return httpClient.get(uri, withAuthorization(withContentType(mediaType)), type);
   }
 
   public <T> T get(String uri, ResponseFactory<T> factory) throws IOException {
