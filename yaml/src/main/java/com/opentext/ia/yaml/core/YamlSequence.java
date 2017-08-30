@@ -157,4 +157,9 @@ public class YamlSequence implements List<Value> {
     return new YamlSequence(data.subList(fromIndex, toIndex));
   }
 
+  @Override
+  public String toString() {
+    return data == null ? "[]" : data.toString();
+  }
+
 }
