@@ -17,6 +17,7 @@ import com.opentext.ia.yaml.resource.ResourceResolver;
 
 class InsertDefaultValues extends PathVisitor {
 
+  private static final String CONFIGURE = "configure";
   private static final String FORMAT = "format";
   private static final String TYPE = "type";
   private static final String STRING = "STRING";
@@ -86,6 +87,18 @@ class InsertDefaultValues extends PathVisitor {
 
   InsertDefaultValues() {
     super(DEFAULT_PROPERTIES_BY_PATH_REGEX.keySet());
+  }
+
+  @Override
+  public boolean test(Visit visit) {
+    if (!super.test(visit)) {
+      return false;
+    }
+    YamlMap yaml = visit.getMap();
+    if (!yaml.containsKey(CONFIGURE)) {
+      return true;
+    }
+    return yaml.get(CONFIGURE).toBoolean();
   }
 
   @Override

@@ -9,11 +9,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.atteo.evo.inflector.English;
 import org.junit.Test;
 
 import com.opentext.ia.test.TestCase;
+import com.opentext.ia.yaml.core.Entry;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.resource.ResourceResolver;
@@ -21,8 +23,8 @@ import com.opentext.ia.yaml.resource.ResourceResolver;
 
 public class WhenUsingYamlConfiguration extends TestCase {
 
-  private static final String FILE_SYSTEM_FOLDERS = "fileSystemFolders";
   private static final String NAME = "name";
+  private static final String CONFIGURE = "configure";
   private static final String TYPE = "type";
   private static final String DEFAULT = "default";
   private static final String CONTENT = "content";
@@ -54,6 +56,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String PATH_VALUE_INDEX = "path.value.index";
   private static final String PATH = "path";
   private static final String HTML_TEMPLATE = "htmlTemplate";
+  private static final String FILE_SYSTEM_FOLDERS = "fileSystemFolders";
   private static final String DATABASES = "databases";
   private static final String METADATA = "metadata";
   private static final String EXPORT_TRANSFORMATION = "exportTransformation";
@@ -252,7 +255,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
     normalizeYaml();
 
-    assertValue("Application", name, yaml.get(APPLICATIONS, 0, "name"));
+    assertValue("Application", name, yaml.get(APPLICATIONS, 0, NAME));
   }
 
   @Test
@@ -651,6 +654,19 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
     assertTrue("Not enabled by default", yaml.get("auditEvents", 0, "enabled").toBoolean());
     assertFalse("Overridden specified value", yaml.get("auditEvents", 1, "enabled").toBoolean());
+  }
+
+  @Test
+  public void shouldNotInsertDefaultValueWhenNotConfiguring() {
+    yaml.put("fileSystemRoots", Arrays.asList(new YamlMap()
+        .put(NAME, someName())
+        .put(CONFIGURE, false)));
+
+    normalizeYaml();
+
+    assertEquals("Keys", Arrays.asList(CONFIGURE, NAME), yaml.get("fileSystemRoots", 0).toMap().entries()
+        .map(Entry::getKey)
+        .collect(Collectors.toList()));
   }
 
 }
