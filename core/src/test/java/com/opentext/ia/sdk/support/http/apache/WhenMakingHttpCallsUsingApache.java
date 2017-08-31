@@ -3,8 +3,11 @@
  */
 package com.opentext.ia.sdk.support.http.apache;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,14 +20,23 @@ import java.util.Locale;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentext.ia.sdk.support.http.*;
+import com.opentext.ia.sdk.support.http.BinaryPart;
+import com.opentext.ia.sdk.support.http.Header;
+import com.opentext.ia.sdk.support.http.HttpException;
+import com.opentext.ia.sdk.support.http.ResponseFactory;
+import com.opentext.ia.sdk.support.http.TextPart;
 import com.opentext.ia.test.TestCase;
 
 
@@ -77,7 +89,8 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   private <T> T getResponse(Class<T> type) throws IOException {
-    return httpClient.getResponseHandler(randomString(), randomString(), type).handleResponse(response);
+    return httpClient.getResponseHandler(randomString(), randomString(), new org.apache.http.Header[0], type)
+        .handleResponse(response);
   }
 
   @Test

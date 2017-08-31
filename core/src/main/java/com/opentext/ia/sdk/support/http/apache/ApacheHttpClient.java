@@ -6,8 +6,10 @@ package com.opentext.ia.sdk.support.http.apache;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -16,7 +18,12 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
@@ -32,7 +39,14 @@ import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.opentext.ia.sdk.support.http.*;
+import com.opentext.ia.sdk.support.http.BinaryPart;
+import com.opentext.ia.sdk.support.http.Header;
+import com.opentext.ia.sdk.support.http.HttpClient;
+import com.opentext.ia.sdk.support.http.HttpException;
+import com.opentext.ia.sdk.support.http.Part;
+import com.opentext.ia.sdk.support.http.ResponseFactory;
+import com.opentext.ia.sdk.support.http.TextPart;
+import com.opentext.ia.sdk.support.http.UriBuilder;
 import com.opentext.ia.sdk.support.io.ByteArrayInputOutputStream;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
@@ -48,6 +62,7 @@ public class ApacheHttpClient implements HttpClient {
   private static final int STATUS_CODE_RANGE_MAX = 300;
   private static final int MAX_HTTP_CONNECTIONS = 50;
   private static final int DEFAULT_CONNECTIONS_PER_ROUTE = 50;
+  private static final String NL = System.getProperty("line.separator");
 
   private final CloseableHttpClient client;
   private final ObjectMapper mapper;
@@ -113,8 +128,8 @@ public class ApacheHttpClient implements HttpClient {
   protected <T> T execute(HttpRequestBase request, Class<T> type) throws IOException {
     Objects.requireNonNull(request, "Missing request");
     try {
-      return client.execute(request, getResponseHandler(request.getMethod(), request.getURI()
-        .toString(), type));
+      return client.execute(request, getResponseHandler(request.getMethod(), request.getURI().toString(),
+          request.getAllHeaders(), type));
     } catch (HttpResponseException e) {
       throw new HttpException(e.getStatusCode(), e);
     } catch (HttpException e) {
@@ -171,7 +186,8 @@ public class ApacheHttpClient implements HttpClient {
     return entity == null ? "" : EntityUtils.toString(entity);
   }
 
-  <T> ResponseHandler<T> getResponseHandler(String method, String uri, Class<T> type) {
+  <T> ResponseHandler<T> getResponseHandler(String method, String uri, org.apache.http.Header[] headers,
+      Class<T> type) {
     return response -> {
       try {
         StatusLine statusLine = response.getStatusLine();
@@ -180,8 +196,8 @@ public class ApacheHttpClient implements HttpClient {
         boolean isBinary = InputStream.class.equals(type);
         String body = isBinary ? "<binary>" : toString(entity);
         if (!isOk(status)) {
-          throw new HttpException(status,
-              String.format("%n%s %s%n==> %d %s%n%s", method, uri, status, statusLine.getReasonPhrase(), body));
+          throw new HttpException(status, String.format("%n%s %s%n%s==> %d %s%n%s%s", method, uri, toString(headers),
+              status, statusLine.getReasonPhrase(), toString(response.getAllHeaders()), body));
         }
         return isBinary ? binaryResponse(entity, type) : textResponse(body, type);
       } finally {
@@ -190,6 +206,15 @@ public class ApacheHttpClient implements HttpClient {
         }
       }
     };
+  }
+
+  private String toString(org.apache.http.Header[] headers) {
+    if (headers == null) {
+      return "";
+    }
+    return Arrays.stream(headers)
+        .map(org.apache.http.Header::toString)
+        .collect(Collectors.joining(NL));
   }
 
   private boolean isOk(int status) {
