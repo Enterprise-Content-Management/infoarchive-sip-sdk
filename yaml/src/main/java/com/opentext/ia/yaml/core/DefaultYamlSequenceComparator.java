@@ -30,7 +30,7 @@ public class DefaultYamlSequenceComparator implements Comparator<Object>, Serial
       Object value1 = m1.get(key);
       Object value2 = m2.get(key);
       result = compareNulls(value1, value2);
-      if (result != 0) {
+      if (result != 0 || value1 == null) {
         return result;
       }
       result = compareValues(value1, value2);
