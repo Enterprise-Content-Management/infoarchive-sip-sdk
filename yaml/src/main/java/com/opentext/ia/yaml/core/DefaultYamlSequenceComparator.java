@@ -24,22 +24,40 @@ public class DefaultYamlSequenceComparator implements Comparator<Object>, Serial
       return result;
     }
     Set<String> keys = new TreeSet<>(m1.keySet());
+    keys.addAll(m2.keySet());
     keys.remove(NAME);
     for (String key : keys) {
-      Object value2 = m1.get(key);
-      if (value2 == null) {
-        return 1;
+      Object value1 = m1.get(key);
+      Object value2 = m2.get(key);
+      result = compareNulls(value1, value2);
+      if (result != 0) {
+        return result;
       }
-      Object value1 = m2.get(key);
-      if (!value1.getClass().equals(value2.getClass())) {
-        continue;
+      result = compareValues(value1, value2);
+      if (result != 0) {
+        return result;
       }
-      if (value2 instanceof Comparable) {
-        result = ((Comparable)value2).compareTo(value1);
-        if (result != 0) {
-          return result;
-        }
-      }
+    }
+    return 0;
+  }
+
+  private int compareNulls(Object value1, Object value2) {
+    if (value1 == null) {
+      return value2 == null ? 0 : -1;
+    }
+    if (value2 == null) {
+      return 1;
+    }
+    return 0;
+  }
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private int compareValues(Object value1, Object value2) {
+    if (!value1.getClass().equals(value2.getClass())) {
+      return 0;
+    }
+    if (value2 instanceof Comparable) {
+      return ((Comparable)value1).compareTo(value2);
     }
     return 0;
   }

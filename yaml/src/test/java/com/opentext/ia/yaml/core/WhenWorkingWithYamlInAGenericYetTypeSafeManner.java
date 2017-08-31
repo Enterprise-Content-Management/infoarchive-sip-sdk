@@ -27,6 +27,7 @@ import com.opentext.ia.test.TestCase;
 
 public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
+  private static final String TYPE = "type";
   private static final String EMPTY = "Empty";
   private static final String NAME = "name";
   private static final String SAMPLE_YAML_STRING = String.format(
@@ -329,11 +330,16 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   @Test
   public void shouldSortSequencesByName() {
     yaml.put("unicorn", Arrays.asList(
-        new YamlMap().put(NAME, "whale").put("type", "w"),
-        new YamlMap().put(NAME, "velociraptor").put("type", "v"),
-        new YamlMap().put(NAME, "velociraptor").put("type", "a")));
+        new YamlMap().put(NAME, "whale").put(TYPE, "a"),
+        new YamlMap().put(NAME, "velociraptor").put(TYPE, "e"),
+        new YamlMap().put(NAME, "velociraptor").put(TYPE, "b").put("s", "c"),
+        new YamlMap().put(NAME, "velociraptor").put(TYPE, "d")));
 
-    assertSorted("unicorn:%n- name: velociraptor%n  type: a%n- name: velociraptor%n  type: v%n- name: whale%n  type: w%n");
+    assertSorted("unicorn:%n"
+        + "- name: velociraptor%n  type: d%n"
+        + "- name: velociraptor%n  type: e%n"
+        + "- name: velociraptor%n  s: c%n  type: b%n"
+        + "- name: whale%n  type: a%n");
   }
 
 }
