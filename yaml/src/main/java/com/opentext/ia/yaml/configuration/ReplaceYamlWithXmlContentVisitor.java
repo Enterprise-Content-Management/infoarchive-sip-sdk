@@ -16,13 +16,12 @@ import com.opentext.ia.yaml.core.YamlMap;
 
 abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
 
-  private static final String INDENT = "  ";
-  private static final String NAMESPACES = "namespaces";
-
   enum StartTagOptions {
     CLOSE_TAG, NEW_LINE
   }
 
+  private static final String INDENT = "  ";
+  private static final String NAMESPACES = "namespaces";
   private static final String NL = System.getProperty("line.separator");
 
   private final String rootTag;
@@ -51,8 +50,9 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
     startTagWithNamespaces(root, rootTag, namespaces, result);
     items.forEach(item -> {
       startTag(itemTag, INDENT, EnumSet.allOf(StartTagOptions.class), result);
-      item.toMap().entries().forEach(entry ->
-          appendEntry(entry, "    ", result));
+      item.toMap().entries()
+          .sorted()
+          .forEachOrdered(entry -> appendEntry(entry, "    ", result));
       endTag(itemTag, INDENT, result);
     });
     endTag(rootTag, "", result);
@@ -128,14 +128,16 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
     items.stream()
         .map(Value::toMap)
         .flatMap(YamlMap::entries)
-        .forEach(entry -> appendEntry(entry, indent + INDENT, xml));
+        .sorted()
+        .forEachOrdered(entry -> appendEntry(entry, indent + INDENT, xml));
     endTag(property, indent, xml);
   }
 
   private void appendMap(String property, YamlMap map, String indent, StringBuilder xml) {
     startTag(property, indent, EnumSet.allOf(StartTagOptions.class), xml);
     map.entries()
-        .forEach(entry -> appendEntry(entry, indent + INDENT, xml));
+        .sorted()
+        .forEachOrdered(entry -> appendEntry(entry, indent + INDENT, xml));
     endTag(property, indent, xml);
   }
 

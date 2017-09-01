@@ -125,8 +125,15 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put(key1, value1);
     yaml.put(key2, value2);
 
-    assertEquals("Keys", key2 + ',' + key1, yaml.entries().map(Entry::getKey).collect(Collectors.joining(",")));
-    assertEquals("Values", value2 + ',' + value1, yaml.values().map(Value::toString).collect(Collectors.joining(",")));
+    assertEquals("Keys", key2 + ',' + key1, yaml.entries()
+        .sorted()
+        .map(Entry::getKey)
+        .collect(Collectors.joining(",")));
+    assertEquals("Values", value2 + ',' + value1, yaml.entries()
+        .sorted()
+        .map(Entry::getValue)
+        .map(Value::toString)
+        .collect(Collectors.joining(",")));
   }
 
   @Test
@@ -340,6 +347,21 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         + "- name: velociraptor%n  type: e%n"
         + "- name: velociraptor%n  s: c%n  type: b%n"
         + "- name: whale%n  type: a%n");
+  }
+
+  @Test
+  public void shouldSortButKeepTopLevelAsIs() {
+    yaml.put("bear", new YamlMap()
+            .put("elephant", "fox")
+            .put("cheetah", "dingo"))
+        .put("ape", new YamlMap()
+            .put("giraffe", "hyena"));
+
+    assertSorted("bear:%n"
+        + "  cheetah: dingo%n"
+        + "  elephant: fox%n"
+        + "ape:%n"
+        + "  giraffe: hyena%n", yaml.sort(false));
   }
 
 }

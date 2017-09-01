@@ -665,6 +665,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
     normalizeYaml();
 
     assertEquals("Keys", Arrays.asList(CONFIGURE, NAME), yaml.get("fileSystemRoots", 0).toMap().entries()
+        .sorted()
         .map(Entry::getKey)
         .collect(Collectors.toList()));
   }

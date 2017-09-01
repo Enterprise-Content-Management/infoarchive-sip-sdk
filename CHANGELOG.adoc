@@ -6,6 +6,18 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 7.2.0 - 2017-09-01
+
+*NOTE*: `YamlMap.entries()` are no longer sorted by key. That wasn't part of the contract, so it's not technically
+backwards incompatible, but it might be something that client code depended on.
+
+
+=== Added
+
+- Addded `YamlMap.sort()` overload that allow keeping the top level unsorted
+
+
+
 == 7.1.4 - 2017-09-01
 
 === Fixed

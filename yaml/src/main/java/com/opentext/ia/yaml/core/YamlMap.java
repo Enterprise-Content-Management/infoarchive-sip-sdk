@@ -162,8 +162,7 @@ public class YamlMap {
 
   public Stream<Entry> entries() {
     return data.entrySet().stream()
-        .map(entry -> new Entry(this, entry.getKey(), new Value(entry.getValue())))
-        .sorted();
+        .map(entry -> new Entry(this, entry.getKey(), new Value(entry.getValue())));
   }
 
   public void visit(Visitor visitor) {
@@ -207,9 +206,17 @@ public class YamlMap {
   }
 
   public YamlMap sort(Comparator<String> comparator) {
-    Map<String, Object> sortedMap = sortingCopyOf(data, comparator);
-    sortRecursively(sortedMap, comparator);
-    return new YamlMap(sortedMap);
+    return sort(comparator, true);
+  }
+
+  public YamlMap sort(boolean sortTopLevel) {
+    return sort(new DefaultYamlComparator(), sortTopLevel);
+  }
+
+  public YamlMap sort(Comparator<String> comparator, boolean sortTopLevel) {
+    Map<String, Object> result = sortTopLevel ? sortingCopyOf(data, comparator) : new LinkedHashMap<>(data);
+    sortRecursively(result, comparator);
+    return new YamlMap(result);
   }
 
   private Map<String, Object> sortingCopyOf(Map<String, Object> source, Comparator<String> comparator) {

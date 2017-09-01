@@ -98,14 +98,14 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   private Map<String, String> yamlToProperties() throws IOException {
     try (InputStream input = getClass().getResourceAsStream("/iaif/iaif.yaml")) {
       YamlConfiguration configuration = new YamlConfiguration(input, ResourceResolver.fromClasspath("/iaif"));
-      return new YamlPropertiesMap(configuration.getMap());
+      return new YamlPropertiesMap(configuration.getMap().sort());
     }
   }
 
   private void assertEqual(Map<String, String> expected, Map<String, String> actual) {
     expected.entrySet().stream()
         .sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
-        .forEach(e -> assertEqual(e, actual));
+        .forEachOrdered(e -> assertEqual(e, actual));
   }
 
   private void assertEqual(Entry<String, String> expected, Map<String, String> actual) {
