@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.opentext.ia.sdk.support.http.Header;
 import com.opentext.ia.sdk.support.http.HttpClient;
@@ -35,7 +36,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   public void init(AuthenticationStrategy auth) {
-    headers.add(new Header("Accept", MediaTypes.HAL));
+    headers.add(new Header(Header.ACCEPT, MediaTypes.HAL));
     this.authentication = Objects.requireNonNull(auth, "Missing Authentication strategy");
   }
 
@@ -48,7 +49,15 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   public <T> T get(String uri, String mediaType, Class<T> type) throws IOException {
-    return httpClient.get(uri, withAuthorization(withContentType(mediaType)), type);
+    return httpClient.get(uri, withAuthorization(withAccept(mediaType)), type);
+  }
+
+  private Collection<Header> withAccept(String mediaType) {
+    Collection<Header> result = headers.stream()
+        .filter(header -> !Header.ACCEPT.equals(header.getName()))
+        .collect(Collectors.toList());
+    result.add(new Header(Header.ACCEPT, mediaType));
+    return result;
   }
 
   public <T> T get(String uri, ResponseFactory<T> factory) throws IOException {
@@ -128,7 +137,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
 
   public Collection<Header> withContentType(String contentType) {
     Collection<Header> result = new ArrayList<>(headers);
-    result.add(new Header("Content-Type", contentType));
+    result.add(new Header(Header.CONTENT_TYPE, contentType));
     return result;
   }
 

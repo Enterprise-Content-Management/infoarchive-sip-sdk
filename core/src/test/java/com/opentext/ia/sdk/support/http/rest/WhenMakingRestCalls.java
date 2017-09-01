@@ -4,8 +4,12 @@
 package com.opentext.ia.sdk.support.http.rest;
 
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -125,6 +129,24 @@ public class WhenMakingRestCalls extends TestCase {
     UriBuilder actual = restClient.uri(randomString());
 
     assertSame("URI Builder", expected, actual);
+  }
+
+  @Test
+  public void shouldForwardWithNonDefaultAcceptHeader() throws IOException {
+    String uri = randomString(32);
+    Class<?> type = String.class;
+    String mediaType = randomMediaType();
+
+    Collection<Header> contentAndAuthorizationHeaders = new ArrayList<>();
+    contentAndAuthorizationHeaders.add(new Header("Accept", mediaType));
+    contentAndAuthorizationHeaders.add(new Header("Authorization", "Bearer " + token));
+
+    restClient.get(uri, mediaType, type);
+    verify(httpClient).get(eq(uri), eq(contentAndAuthorizationHeaders), eq(type));
+  }
+
+  private String randomMediaType() {
+    return randomString(5) + '/' + randomString(8);
   }
 
 }
