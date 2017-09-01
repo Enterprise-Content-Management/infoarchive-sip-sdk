@@ -319,11 +319,8 @@ public class ApacheHttpClient implements HttpClient {
       TextPart textPart = (TextPart)part;
       return new StringBody(textPart.getText(), contentType);
     }
-    if (part instanceof BinaryPart) {
-      BinaryPart binaryPart = (BinaryPart)part;
-      return new InputStreamBody(binaryPart.getData(), contentType, binaryPart.getDownloadName());
-    }
-    throw new IllegalArgumentException("Unhandled part type: " + part.getClass().getName());
+    BinaryPart binaryPart = (BinaryPart)part;
+    return new InputStreamBody(binaryPart.getData(), contentType, binaryPart.getDownloadName());
   }
 
   @Override

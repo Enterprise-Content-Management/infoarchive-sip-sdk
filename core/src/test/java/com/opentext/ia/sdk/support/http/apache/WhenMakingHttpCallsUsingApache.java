@@ -172,8 +172,26 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
 
   @Test
   public void shouldBuildUris() {
-    assertEquals("URI", "http://google.com/?q=foo+bar",
+    assertEquals("http://google.com/?q=foo+bar",
         httpClient.uri("http://google.com").addParameter("q", "foo bar").build());
+  }
+
+  @Test
+  public void shouldBuildUrisWithParameters() {
+    assertEquals("http://google.com/?q=foo",
+        httpClient.uri("http://google.com/?q=foo").build());
+  }
+
+  @Test
+  public void shouldAddRequestParameterOnlyOnce() {
+    assertEquals("http://google.com/?q=bar",
+        httpClient.uri("http://google.com/?q=foo").addParameter("q", "bar").build());
+  }
+
+  @Test
+  public void shouldAddRequestParameterMultipleTimes() {
+    assertEquals("http://google.com/?q=foo&q=bar",
+        httpClient.uri("http://google.com/").addParameter("q", "foo").addParameter("q", "bar").build());
   }
 
   @Test
