@@ -45,7 +45,7 @@ ext {
 }
 
 uploadArchives {
-  finalizedBy closeAndPromoteRepository
+  finalizedBy closeAndReleaseRepository
   repositories {
     mavenDeployer {
       beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
