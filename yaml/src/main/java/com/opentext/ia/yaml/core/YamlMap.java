@@ -162,7 +162,8 @@ public class YamlMap {
 
   public Stream<Entry> entries() {
     return data.entrySet().stream()
-        .map(entry -> new Entry(this, entry.getKey(), new Value(entry.getValue())));
+        .map(entry -> new Entry(this, entry.getKey(), new Value(entry.getValue())))
+        .sorted((a, b) -> new DefaultYamlComparator().compare(a.getKey(), b.getKey()));
   }
 
   public void visit(Visitor visitor) {
