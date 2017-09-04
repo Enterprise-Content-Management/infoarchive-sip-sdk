@@ -11,7 +11,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -23,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.opentext.ia.test.TestCase;
+import com.opentext.ia.test.TestUtil;
 
 
 public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
@@ -362,6 +365,46 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         + "  elephant: fox%n"
         + "ape:%n"
         + "  giraffe: hyena%n", yaml.sort(false));
+  }
+
+  @Test
+  public void shouldVisitMap() throws Exception {
+    yaml.put("aardvark", Arrays.asList(
+        new YamlMap()
+            .put("bee", "cobra")
+            .put("dog", new YamlMap()
+                .put("emu", new YamlMap()
+                    .put("falcon", false))),
+        new YamlMap()
+            .put("gazelle", "hamster"),
+        new YamlMap()
+            .put("ibis", "jackal")));
+
+    Collection<String> visitedPaths = new ArrayList<>();
+    yaml.visit(new Visitor() {
+      @Override
+      public int maxNesting() {
+        return 3;
+      }
+
+      @Override
+      public boolean test(Visit visit) {
+        return !visit.getMap().containsKey("ibis");
+      }
+
+      @Override
+      public void accept(Visit visit) {
+        visitedPaths.add(visit.getPath());
+      }
+
+      @Override
+      public void afterVisit(Visit visit) {
+        visitedPaths.add("@" + visit.getPath());
+      }
+    });
+
+    TestUtil.assertEquals("Visited paths", Arrays.asList("/", "/aardvark/0", "/aardvark/0/dog", "@/aardvark/0/dog",
+        "@/aardvark/0", "/aardvark/1", "@/aardvark/1", "@/"), visitedPaths);
   }
 
 }

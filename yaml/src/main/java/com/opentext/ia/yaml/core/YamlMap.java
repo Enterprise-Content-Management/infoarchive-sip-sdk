@@ -171,7 +171,8 @@ public class YamlMap {
   }
 
   private void visit(Visitor visitor, Visit visit) {
-    if (visitor.test(visit)) {
+    boolean shouldVisit = visitor.test(visit);
+    if (shouldVisit) {
       visitor.accept(visit);
     }
     if (visitor.maxNesting() > visit.getLevel()) {
@@ -185,6 +186,9 @@ public class YamlMap {
               .forEach(index -> visit(visitor, visit.descend(key, index)));
         }
       });
+    }
+    if (shouldVisit) {
+      visitor.afterVisit(visit);
     }
   }
 

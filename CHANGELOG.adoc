@@ -6,24 +6,29 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
-== 7.2.1 - 2017-09-01
+== 7.3.0 - 2017-09-04
+
+=== Added
+
+- Added `Visitor.afterVisit()`
+
+
+
+== 7.2.1 - 2017-09-04
 
 === Fixed
 
-- `YamlMap.entries()` are again sorted by key, but now in the same order that the `sort()` method would sort them.
+- `YamlMap.entries()` are once again sorted by key (regression in previous version), but now sorted in the same order
+that the `sort()` method would sort them
 
 
 
 == 7.2.0 - 2017-09-01
 
-*NOTE*: `YamlMap.entries()` are no longer sorted by key. That wasn't part of the contract, so it's not technically
-backwards incompatible, but it might be something that client code depended on.
-
-
 
 === Added
 
-- Addded `YamlMap.sort()` overload that allow keeping the top level unsorted
+- Added `YamlMap.sort()` overload that allows keeping the top level unsorted
 
 
 

@@ -22,4 +22,8 @@ public interface Visitor extends Consumer<Visit>, Predicate<Visit> {
     return Integer.MAX_VALUE;
   }
 
+  default void afterVisit(Visit visit) {
+    // Do nothing
+  }
+
 }
