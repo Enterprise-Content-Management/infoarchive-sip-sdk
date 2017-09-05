@@ -278,6 +278,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String fileSystemRoot = someName();
     String fileSystemFolder = someName();
     String store = someName();
+    String cryptoObject = someName();
+    yaml.put("cryptoObjects", Arrays.asList(new YamlMap().put(NAME, cryptoObject)));
     yaml.put(TENANTS, Arrays.asList(new YamlMap().put(NAME, tenant)));
     yaml.put(APPLICATIONS, Arrays.asList(
         new YamlMap().put(NAME, someName()),
@@ -289,6 +291,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
     yaml.put(FILE_SYSTEM_FOLDERS, Arrays.asList(new YamlMap().put(NAME, fileSystemFolder)));
     yaml.put("stores", Arrays.asList(new YamlMap().put(NAME, store)));
     yaml.put(DATABASES, Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put("holdingCryptoes", Arrays.asList(new YamlMap().put(NAME, someName())));
 
     normalizeYaml();
 
@@ -298,6 +301,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
     assertDatabaseStore("xdb", store);
     assertDatabaseStore("ci", store);
     assertDatabaseStore("managedItem", store);
+    assertValue("CryptoObject", cryptoObject, yaml.get("holdingCryptoes", 0, "ci", "cryptoObject"));
   }
 
   private void assertDatabaseStore(String storeType, String expected) {

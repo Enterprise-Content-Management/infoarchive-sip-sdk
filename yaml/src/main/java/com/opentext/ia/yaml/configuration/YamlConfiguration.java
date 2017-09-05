@@ -39,6 +39,8 @@ public class YamlConfiguration {
       ReplacePdiSchemaNamespaceWithName.class,
       ConvertTopLevelMapOfMapsToSequences.class,
       ConvertNestedMapOfMapsToSequences.class,
+      EnsureHoldingCryptoMembers.class,
+      // Do this again, since the structure may be changed so that additional references are detected
       InsertDefaultReferences.class,
       ConvertPdiIndexes.class,
       ConvertIngestIndexes.class,
