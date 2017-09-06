@@ -83,7 +83,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/stores/\\d+", Arrays.asList(APPLICATION, "fileSystemFolder"));
     result.put("/storageEndPointCredentials/\\d+", Arrays.asList("storageEndPoint"));
     result.put("/tables/\\d+", Arrays.asList(APPLICATION, "schema"));
-    result.put("/tranformations/\\d+", Arrays.asList(APPLICATION));
+    result.put("/transformations/\\d+", Arrays.asList(APPLICATION));
     result.put("/valueLists/\\d+", Arrays.asList(APPLICATION));
     result.put("/xdbDatabases/\\d+", Arrays.asList("xdbFederation"));
     result.put("/xdbLibraries/\\d+", Arrays.asList(APPLICATION));
