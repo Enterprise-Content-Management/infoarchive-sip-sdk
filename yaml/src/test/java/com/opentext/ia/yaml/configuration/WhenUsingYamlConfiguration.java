@@ -23,6 +23,7 @@ import com.opentext.ia.yaml.resource.ResourceResolver;
 
 public class WhenUsingYamlConfiguration extends TestCase {
 
+  private static final String TRANSFORMATION = "transformation";
   private static final String NAME = "name";
   private static final String CONFIGURE = "configure";
   private static final String TYPE = "type";
@@ -61,6 +62,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String METADATA = "metadata";
   private static final String EXPORT_TRANSFORMATION = "exportTransformation";
   private static final String EXPORT_PIPELINE = "exportPipeline";
+  private static final String TRANSFORMATIONS = English.plural(TRANSFORMATION);
+  private static final String XQUERY = "xquery";
 
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
@@ -217,6 +220,56 @@ public class WhenUsingYamlConfiguration extends TestCase {
     normalizeYaml();
 
     assertDatabaseMetadataIsInlined(expected);
+  }
+
+  @Test
+  public void shouldInlineNormalizedTransformationXQuery() throws Exception {
+    String expected = someName();
+    resourceResolver = name -> expected;
+    String resource = someTextFileName();
+    yaml.put(TRANSFORMATIONS, Arrays.asList(new YamlMap()
+        .put(NAME, someName())
+        .put(XQUERY, new YamlMap()
+            .put(RESOURCE, resource))));
+
+    normalizeYaml();
+
+    assertTransformationXQueryIsInlined(expected);
+  }
+
+  private void assertTransformationXQueryIsInlined(String expected) {
+    assertEquals("Inlined transformation xquery", expected,
+        yaml.get(TRANSFORMATIONS, 0, XQUERY, TEXT).toString());
+  }
+
+  @Test
+  public void shouldInlineSingleTransformationXQuery() throws Exception {
+    String expected = someName();
+    resourceResolver = name -> expected;
+    String resource = someTextFileName();
+    yaml.put(TRANSFORMATION, new YamlMap()
+        .put(NAME, someName())
+        .put(XQUERY, new YamlMap()
+            .put(RESOURCE, resource)));
+
+    normalizeYaml();
+
+    assertTransformationXQueryIsInlined(expected);
+  }
+
+  @Test
+  public void shouldInlineNamedTransformationXQuery() throws Exception {
+    String expected = someName();
+    resourceResolver = name -> expected;
+    String resource = someTextFileName();
+    yaml.put(TRANSFORMATIONS, new YamlMap()
+        .put(someName(), new YamlMap()
+            .put(XQUERY, new YamlMap()
+                .put(RESOURCE, resource))));
+
+    normalizeYaml();
+
+    assertTransformationXQueryIsInlined(expected);
   }
 
   @Test
@@ -641,7 +694,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
     normalizeYaml();
 
-    Arrays.asList(APPLICATION, TENANT, "pipeline", "transformation").forEach(property ->
+    Arrays.asList(APPLICATION, TENANT, "pipeline", TRANSFORMATION).forEach(property ->
           assertFalse("Missing " + property, yaml.get("exportConfigurations", 0, property).isEmpty()));
   }
 
