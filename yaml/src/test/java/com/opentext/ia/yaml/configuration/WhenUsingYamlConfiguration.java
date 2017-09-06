@@ -95,8 +95,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
     return randomString(8);
   }
 
-  private String someTextFileName() {
-    return someName() + ".txt";
+  private String someFileName(String extension) {
+    return someName() + '.' + extension;
   }
 
   private YamlMap externalResourceTo(String resource) {
@@ -126,7 +126,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   public void shouldInlineNormalizedCustomPresentationHtmlTemplate() throws Exception {
     String expected = someName();
     resourceResolver = name -> expected;
-    String resource = someTextFileName();
+    String resource = someHtmlFileName();
     yaml.put("customPresentationConfigurations", Arrays.asList(new YamlMap()
         .put(NAME, someName())
         .put(HTML_TEMPLATE, new YamlMap()
@@ -146,7 +146,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   public void shouldInlineSingleCustomPresentationHtmlTemplate() throws Exception {
     String expected = someName();
     resourceResolver = name -> expected;
-    String resource = someTextFileName();
+    String resource = someHtmlFileName();
     yaml.put("customPresentationConfiguration", new YamlMap()
         .put(NAME, someName())
         .put(HTML_TEMPLATE, new YamlMap()
@@ -161,7 +161,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   public void shouldInlineNamedCustomPresentationHtmlTemplate() throws Exception {
     String expected = someName();
     resourceResolver = name -> expected;
-    String resource = someTextFileName();
+    String resource = someHtmlFileName();
     yaml.put("customPresentationConfiguration", new YamlMap()
         .put(someName(), new YamlMap()
             .put(HTML_TEMPLATE, new YamlMap()
@@ -172,11 +172,15 @@ public class WhenUsingYamlConfiguration extends TestCase {
     assertCustomPresentationHasInlinedHtmlTemplate(expected);
   }
 
+  private String someHtmlFileName() {
+    return someFileName("html");
+  }
+
   @Test
   public void shouldInlineNormalizedDatabaseMetadata() throws Exception {
     String expected = someName();
     resourceResolver = name -> expected;
-    String resource = someTextFileName();
+    String resource = someXmlFile();
     yaml.put(DATABASES, Arrays.asList(new YamlMap()
         .put(NAME, someName())
         .put(METADATA, Arrays.asList(new YamlMap()
@@ -188,15 +192,16 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   private void assertDatabaseMetadataIsInlined(String expected) {
-    assertEquals("Inlined resource", expected,
-        yaml.get(DATABASES, 0, METADATA, 0, TEXT).toString());
+    YamlMap databaseMetadata = yaml.get(DATABASES, 0, METADATA, 0).toMap();
+    assertEquals("Metadata", expected, databaseMetadata.get(TEXT).toString());
+    assertEquals("Format", "xml", databaseMetadata.get(FORMAT).toString());
   }
 
   @Test
   public void shouldInlineSingleDatabaseMetadata() throws Exception {
     String expected = someName();
     resourceResolver = name -> expected;
-    String resource = someTextFileName();
+    String resource = someXmlFile();
     yaml.put("database", new YamlMap()
         .put(NAME, someName())
         .put(METADATA, Arrays.asList(new YamlMap()
@@ -211,7 +216,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   public void shouldInlineNamedDatabaseMetadata() throws Exception {
     String expected = someName();
     resourceResolver = name -> expected;
-    String resource = someTextFileName();
+    String resource = someXmlFile();
     yaml.put(DATABASES, new YamlMap()
         .put(someName(), new YamlMap()
             .put(METADATA, Arrays.asList(new YamlMap()
@@ -220,6 +225,10 @@ public class WhenUsingYamlConfiguration extends TestCase {
     normalizeYaml();
 
     assertDatabaseMetadataIsInlined(expected);
+  }
+
+  private String someXmlFile() {
+    return someFileName(XML);
   }
 
   @Test
@@ -270,6 +279,10 @@ public class WhenUsingYamlConfiguration extends TestCase {
     normalizeYaml();
 
     assertTransformationXQueryIsInlined(expected);
+  }
+
+  private String someTextFileName() {
+    return someFileName("txt");
   }
 
   @Test

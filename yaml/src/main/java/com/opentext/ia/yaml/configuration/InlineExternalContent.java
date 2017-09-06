@@ -4,7 +4,10 @@
 package com.opentext.ia.yaml.configuration;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.opentext.ia.yaml.core.PathVisitor;
 import com.opentext.ia.yaml.core.Visit;
@@ -14,6 +17,7 @@ import com.opentext.ia.yaml.resource.ResourceResolver;
 
 class InlineExternalContent extends PathVisitor {
 
+  private static final String FORMAT = "format";
   private static final List<String> RESOURCE_CONTAINER_PATHS = Arrays.asList(
       "/.+/content",
       "/customPresentationConfiguration(s)?/([^/]+/)?htmlTemplate",
@@ -21,12 +25,17 @@ class InlineExternalContent extends PathVisitor {
       "/transformation(s)?/([^/]+/)?xquery");
   private static final String RESOURCE = "resource";
   private static final String TEXT = "text";
+  private static final Collection<String> SEGMENTS_WITH_FORMAT = Arrays.asList("content", "metadata");
 
   private final ResourceResolver resolver;
+  private final Map<String, String> formatByExtension = new HashMap<>();
 
   InlineExternalContent(ResourceResolver resolver) {
     super(RESOURCE_CONTAINER_PATHS);
     this.resolver = resolver;
+    formatByExtension.put("xpl", "xproc");
+    formatByExtension.put("xq", "xquery");
+    formatByExtension.put("xsl", "xslt");
   }
 
   @Override
@@ -37,8 +46,50 @@ class InlineExternalContent extends PathVisitor {
   @Override
   public void accept(Visit visit) {
     YamlMap yaml = visit.getMap();
-    yaml.put(TEXT, resolver.apply(yaml.get(RESOURCE).toString()));
-    yaml.remove(RESOURCE);
+    String resourceName = yaml.get(RESOURCE).toString();
+    inlineResource(yaml, resourceName);
+    optionallySetFormat(visit.getPath(), yaml, resourceName);
+  }
+
+  private void inlineResource(YamlMap yaml, String resourceName) {
+    yaml.put(TEXT, resolver.apply(resourceName))
+        .remove(RESOURCE);
+  }
+
+  private void optionallySetFormat(String path, YamlMap yaml, String resourceName) {
+    String segment = getLastMeaningfulSegment(path);
+    if (SEGMENTS_WITH_FORMAT.contains(segment) && !yaml.containsKey(FORMAT)) {
+      yaml.put(FORMAT, guessFormat(resourceName));
+    }
+  }
+
+  private String getLastMeaningfulSegment(String path) {
+    String[] segments = path.split("/");
+    for (int i = segments.length - 1; i >= 0; i--) {
+      String result = segments[i];
+      if (!isInteger(result)) {
+        return result;
+      }
+    }
+    throw new IllegalStateException("No meaningful segments in path: " + path);
+  }
+
+  private boolean isInteger(String text) {
+    try {
+      Integer.parseInt(text);
+      return true;
+    } catch (NumberFormatException e) {
+      return false;
+    }
+  }
+
+  private String guessFormat(String resourceName) {
+    int index = resourceName.lastIndexOf('.');
+    if (index < 0) {
+      return null;
+    }
+    String extension = resourceName.substring(index + 1);
+    return formatByExtension.getOrDefault(extension, extension);
   }
 
 }
