@@ -6,6 +6,14 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 7.3.7 - 2017-09-08
+
+=== Fixed
+
+- Minor fixes in normalization of YAML configuration
+
+
+
 == 7.3.6 - 2017-09-08
 
 === Fixed
