@@ -22,7 +22,8 @@ class InlineExternalContent extends PathVisitor {
       "/.+/content",
       "/customPresentationConfiguration(s)?/([^/]+/)?htmlTemplate",
       "/database(s)?/([^/]+/)?metadata/\\d+",
-      "/transformation(s)?/([^/]+/)?xquery");
+      "/transformation(s)?/([^/]+/)?xquery",
+      "/xform(s)?/([^/]+/)?form");
   private static final String RESOURCE = "resource";
   private static final String TEXT = "text";
   private static final Collection<String> SEGMENTS_WITH_FORMAT = Arrays.asList("content", "metadata");
