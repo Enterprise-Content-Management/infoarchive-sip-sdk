@@ -37,8 +37,7 @@ class InsertDefaultValues extends PathVisitor {
         "support.phrases", false,
         "support.scoring", false,
         "support.start.end.token.flags", false));
-    result.put("/aics/\\d+/criteria/\\d+", Default.of("indexed", true,
-        TYPE, STRING));
+    result.put("/aics/\\d+/criteria/\\d+", Default.of(TYPE, STRING));
     result.put("/auditEvents/\\d+", Default.of("enabled", true));
     result.put("/exportPipelines/\\d+", Default.of("collectionBasedExport", false,
         "composite", true,
@@ -78,10 +77,12 @@ class InsertDefaultValues extends PathVisitor {
                 .put("extractorImpl", "com.emc.ia.reception.sip.extractor.impl.LegacyZipSipExtractor"))));
     result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+", Default.of("sort", "NONE",
         TYPE, STRING));
-    result.put("/searches/\\d+", Default.of("nestedSearch", false));
+    result.put("/searches/\\d+", Default.of("nestedSearch", false,
+        "state", "DRAFT"));
     result.put("/stores/\\d+", Default.of("status", "ONLINE",
         "storeType", "REGULAR",
         TYPE, "FILESYSTEM"));
+    result.put("/xforms/\\d+", Default.of("creator", "COMPOSITION"));
     return result;
   }
 

@@ -117,33 +117,45 @@ aic:
   name: Messages
   criteria:
     aipId:
-      pkeyValuesAttr: aipId
+      indexed: true
       label: AIP ID
+      pkeyValuesAttr: aipId
     bcc:
+      indexed: true
       label: Bcc
     cc:
+      indexed: true
       label: Cc
     distributionList:
+      indexed: true
       label: Distribution list
     from:
+      indexed: true
       label: From
     fromCountry:
+      indexed: true
       label: Sent from country
     receivedDate:
+      indexed: true
       type: datetime
       label: Received date
       pkeyMinAttr: pkeys.dateTime01
       pkeyMaxAttr: pkeys.dateTime02
     recipient:
+      indexed: true
       label: Recipient
     sentDate:
+      indexed: true
       type: datetime
       label: Sent date
     subject:
+      indexed: true
       label: Subject
     to:
+      indexed: true
       label: To
     toCountry:
+      indexed: true
       label: Sent to country
   
 search:
