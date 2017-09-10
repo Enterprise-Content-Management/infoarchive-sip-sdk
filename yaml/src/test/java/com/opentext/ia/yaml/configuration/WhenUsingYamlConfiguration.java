@@ -139,7 +139,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
   private void assertCustomPresentationHasInlinedHtmlTemplate(String expected) {
     assertEquals("Inlined resource", expected,
-        yaml.get(English.plural("customPresentationConfiguration"), 0, HTML_TEMPLATE).toString());
+        yaml.get(English.plural("customPresentationConfiguration"), 0, HTML_TEMPLATE, TEXT).toString());
   }
 
   @Test
