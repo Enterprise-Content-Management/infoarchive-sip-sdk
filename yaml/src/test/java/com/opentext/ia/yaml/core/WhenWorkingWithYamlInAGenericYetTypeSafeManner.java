@@ -305,7 +305,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put("cheetah", "dingo");
     yaml.put("ape", "bear");
 
-    assertSorted("ape: bear%ncheetah: dingo%n");
+    assertSorted("ape: bear%n%ncheetah: dingo%n");
   }
 
   private void assertSorted(String expected) {
@@ -321,7 +321,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put("elephant", "fox");
     yaml.put("giraffe", "hyena");
 
-    assertSorted("giraffe: hyena%nelephant: fox%n", yaml.sort((a, b) -> b.toString().compareTo(a.toString())));
+    assertSorted("giraffe: hyena%n%nelephant: fox%n", yaml.sort((a, b) -> b.toString().compareTo(a.toString())));
   }
 
   @Test
@@ -362,7 +362,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
     assertSorted("bear:%n"
         + "  cheetah: dingo%n"
-        + "  elephant: fox%n"
+        + "  elephant: fox%n%n"
         + "ape:%n"
         + "  giraffe: hyena%n", yaml.sort(false));
   }
