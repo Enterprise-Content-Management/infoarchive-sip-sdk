@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -32,6 +34,8 @@ import org.yaml.snakeyaml.representer.Representer;
  * Type-safe access to a <a href="http://www.yaml.org/spec/1.2/spec.html">YAML</a> map.
  */
 public class YamlMap {
+
+  private static final String NL = System.getProperty("line.separator");
 
   private final Map<String, Object> data;
 
@@ -105,18 +109,36 @@ public class YamlMap {
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private Object unpack(Object value) {
-    if (value instanceof YamlMap) {
-      return ((YamlMap)value).getRawData();
+    Object result = value;
+    if (result instanceof YamlMap) {
+      result = ((YamlMap)result).getRawData();
     }
-    if (value instanceof Iterable) {
-      Collection<Object> result = new ArrayList<>();
-      ((Iterable)value).forEach(v -> result.add(unpack(v)));
-      return result;
+    if (result instanceof Iterable) {
+      Collection<Object> values = new ArrayList<>();
+      ((Iterable)result).forEach(v -> values.add(unpack(v)));
+      return values;
     }
-    if (value instanceof Value) {
-      return ((Value)value).getRawData();
+    if (result instanceof Value) {
+      result = ((Value)result).getRawData();
     }
-    return value;
+    if (result instanceof String) {
+      result = normalizeWhitespace((String)result);
+    }
+    return result;
+  }
+
+  private String normalizeWhitespace(String text) {
+    StringBuilder result = new StringBuilder();
+    AtomicReference<String> prefix = new AtomicReference<String>("");
+    Arrays.stream(text.split("\n")).forEach(line -> {
+      int end = line.length() - 1;
+      while (end > 0 && Character.isWhitespace(line.charAt(end))) {
+        --end;
+      }
+      result.append(prefix.get()).append(line.substring(0, end + 1));
+      prefix.set(NL);
+    });
+    return result.toString();
   }
 
   private Map<String, Object> getRawData() {
@@ -336,6 +358,23 @@ public class YamlMap {
       propertiesWithoutValue.forEach(result::remove);
       return result;
     }
+  }
+
+  public void replace(String key, Object newValue) {
+    replace(key, key, newValue);
+  }
+
+  public void replace(String oldKey, String newKey, Object newValue) {
+    Map<String, Object> newEntries = new LinkedHashMap<>();
+    for (Map.Entry<String, Object> entry : data.entrySet()) {
+      if (oldKey.equals(entry.getKey())) {
+        newEntries.put(newKey, newValue);
+      } else {
+        newEntries.put(entry.getKey(), entry.getValue());
+      }
+    }
+    data.clear();
+    data.putAll(newEntries);
   }
 
 }
