@@ -397,7 +397,7 @@ public class YamlMap {
     Map<String, Object> newEntries = new LinkedHashMap<>();
     for (Map.Entry<String, Object> entry : data.entrySet()) {
       if (oldKey.equals(entry.getKey())) {
-        newEntries.put(newKey, newValue);
+        newEntries.put(newKey, unpack(newValue));
       } else {
         newEntries.put(entry.getKey(), entry.getValue());
       }

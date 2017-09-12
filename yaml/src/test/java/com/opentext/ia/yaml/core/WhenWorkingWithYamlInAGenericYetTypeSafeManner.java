@@ -434,4 +434,15 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertYaml("vulture: warthog%n%ntapir: uakari%n", yaml);
   }
 
+  @Test
+  public void shouldReplaceNestedMaps() {
+    String oldKey = "xenops";
+    yaml.put(oldKey, new YamlMap()
+        .put("yak", "zebra"));
+
+    yaml.replace(oldKey, "alligator", yaml.get(oldKey));
+
+    assertYaml("alligator:%n  yak: zebra%n", yaml);
+  }
+
 }
