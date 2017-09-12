@@ -130,7 +130,7 @@ public class YamlMap {
 
   private String normalizeWhitespace(String text) {
     StringBuilder result = new StringBuilder();
-    AtomicReference<String> prefix = new AtomicReference<String>("");
+    AtomicReference<String> prefix = new AtomicReference<>("");
     Arrays.stream(text.split("\n")).forEach(line -> {
       int end = line.length() - 1;
       while (end > 0 && Character.isWhitespace(line.charAt(end))) {
