@@ -305,7 +305,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put("cheetah", "dingo");
     yaml.put("ape", "bear");
 
-    assertSorted("ape: bear%ncheetah: dingo%n");
+    assertSorted("ape: bear%n%ncheetah: dingo%n");
   }
 
   private void assertSorted(String expected) {
@@ -321,7 +321,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put("elephant", "fox");
     yaml.put("giraffe", "hyena");
 
-    assertYaml("giraffe: hyena%nelephant: fox%n", yaml.sort((a, b) -> b.toString().compareTo(a.toString())));
+    assertYaml("giraffe: hyena%n%nelephant: fox%n", yaml.sort((a, b) -> b.toString().compareTo(a.toString())));
   }
 
   @Test
@@ -362,7 +362,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
     assertYaml("bear:%n"
         + "  cheetah: dingo%n"
-        + "  elephant: fox%n"
+        + "  elephant: fox%n%n"
         + "ape:%n"
         + "  giraffe: hyena%n", yaml.sort(false));
   }
@@ -411,14 +411,18 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   public void shouldStripEndingWhitespace() {
     yaml.put("mongoose", "narwhal  ");
 
-    assertEquals("Text", "narwhal", yaml.get("mongoose").toString());
+    assertValue("narwhal", yaml.get("mongoose"));
+  }
+
+  private void assertValue(String expected, Value actual) {
+    assertEquals("Value", expected, actual.toString());
   }
 
   @Test
   public void shouldStripWhitespaceAfterLineBreaks() {
     yaml.put("okapi", "panda  \nquail");
 
-    assertEquals("Text", "panda\nquail", yaml.get("okapi").toString());
+    assertValue("panda\nquail", yaml.get("okapi"));
   }
 
   @Test
@@ -427,7 +431,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         .put("tapir", "uakari")
         .replace("rabbit", "vulture", "warthog");
 
-    assertYaml("vulture: warthog%ntapir: uakari%n", yaml);
+    assertYaml("vulture: warthog%n%ntapir: uakari%n", yaml);
   }
 
 }

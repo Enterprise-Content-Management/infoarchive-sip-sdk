@@ -64,7 +64,7 @@ class InsertDefaultValues extends PathVisitor {
     result.put("/queries/\\d+", Default.of("resultRootElement", "result",
         "resultRootNsEnabled", true));
     result.put("/queries/\\d+/xdbPdiConfigs/operands/\\d+", Default.of(TYPE, STRING));
-    result.put("/queryQuota", Default.of("aipQuota", 0,
+    result.put("/queryQuotas/\\d+", Default.of("aipQuota", 0,
         "aiuQuota", 0,
         "dipQuota", 0));
     result.put("/receiverNodes/\\d+", Default.of("logLevel", "INFO",

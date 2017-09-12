@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -303,11 +304,39 @@ public class YamlMap {
 
   @Override
   public String toString() {
-    DumperOptions options = new DumperOptions();
-    options.setDefaultFlowStyle(FlowStyle.BLOCK);
-    options.setPrettyFlow(true);
-    Representer representer = new NullSkippingRepresenter();
-    return new Yaml(representer, options).dump(data);
+    return separateTopLevelSections(yamlToString());
+  }
+
+  private String yamlToString() {
+    return new Yaml(new NullSkippingRepresenter(), prettyFlowBlockOptions()).dump(data);
+  }
+
+  private DumperOptions prettyFlowBlockOptions() {
+    DumperOptions result = new DumperOptions();
+    result.setDefaultFlowStyle(FlowStyle.BLOCK);
+    result.setPrettyFlow(true);
+    return result;
+  }
+
+  private String separateTopLevelSections(String yaml) {
+    StringBuilder result = new StringBuilder();
+    StringTokenizer tokenizer = new StringTokenizer(yaml, "\n\r");
+    while (tokenizer.hasMoreTokens()) {
+      String line = tokenizer.nextToken();
+      if (isTopLevel(line)) {
+        result.append(NL);
+      }
+      result.append(line).append(NL);
+    }
+    return result.toString().trim() + NL;
+  }
+
+  private boolean isTopLevel(String line) {
+    if (line.isEmpty()) {
+      return true;
+    }
+    char firstChar = line.charAt(0);
+    return !Character.isWhitespace(firstChar) && firstChar != '-';
   }
 
 
