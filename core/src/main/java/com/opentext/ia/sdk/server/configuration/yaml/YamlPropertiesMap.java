@@ -193,9 +193,9 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
                     searchCompositionName);
                 appendTemplated(column.get(PATH), SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName,
                     searchCompositionName);
-                appendTemplated(column.get("sort"), SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT, searchName,
+                appendTemplated(column.get("defaultSort"), SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT, searchName,
                     searchCompositionName);
-                appendTemplated(column.get(TYPE), SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName,
+                appendTemplated(column.get("dataType"), SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName,
                     searchCompositionName);
               });
           tab.get("exportConfigurations").toList().stream()

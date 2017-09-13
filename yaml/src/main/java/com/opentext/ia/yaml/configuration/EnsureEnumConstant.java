@@ -36,7 +36,7 @@ class EnsureEnumConstant extends PropertyVisitor {
     result.put("/queries/\\d+/xdbPdiConfigs/operands/\\d+", JUST_TYPE);
     result.put("/resultConfigurationHelpers/\\d+/content/data/\\d+", JUST_TYPE);
     result.put("/resultConfigurationHelpers/\\d+/content/data/\\d+/items/\\d+", JUST_TYPE);
-    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+", Arrays.asList("sort", TYPE));
+    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+", Arrays.asList("dataType", "defaultSort", TYPE));
     result.put("/retentionPolicies/\\d+/agingStrategy", JUST_TYPE);
     result.put("/retentionPolicies/\\d+/agingStrategy/agingPeriod", Arrays.asList("units"));
     result.put("/retentionPolicies/\\d+/dispositionStrategy", JUST_TYPE);

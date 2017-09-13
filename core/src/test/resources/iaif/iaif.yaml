@@ -178,8 +178,8 @@ resultMaster:
             dateSent:
               label: Date Sent
               path: n:dateSent
-              sort: ascending
-              type: datetime
+              defaultSort: ascending
+              dataType: datetime
             sender:
               label: Sender
               path: n:sender/n:email   
