@@ -22,12 +22,12 @@ class InlineExternalContent extends PathVisitor {
   private static final String RESOURCE = "resource";
   private static final List<String> RESOURCE_CONTAINER_PATHS = Arrays.asList(
       "/.+/content",
-      "/customPresentationConfiguration(s)?/([^/]+/)?htmlTemplate",
-      "/database(s)?/([^/]+/)?metadata/\\d+",
-      "/transformation(s)?/([^/]+/)?xquery",
-      "/transformation(s)?/([^/]+/)?xslt",
-      "/xform(s)?/([^/]+/)?form");
-  private static final Collection<String> SEGMENTS_WITH_FORMAT = Arrays.asList("content", "metadata");
+      "/customPresentationConfiguration(s/[^/]+)?/htmlTemplate",
+      "/database(s/[^/]+)?/metadata",
+      "/transformation(s/[^/]+)?/xquery",
+      "/transformation(s/[^/]+)?/xslt",
+      "/xform(s/[^/]+)?/form");
+  private static final Collection<String> SEGMENTS_WITH_FORMAT = Arrays.asList("content");
 
   private final ResourceResolver resolver;
   private final Map<String, String> formatByExtension = new HashMap<>();

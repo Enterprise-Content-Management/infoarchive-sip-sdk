@@ -162,7 +162,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String expected = someName();
     resourceResolver = name -> expected;
     String resource = someHtmlFileName();
-    yaml.put("customPresentationConfiguration", new YamlMap()
+    yaml.put("customPresentationConfigurations", new YamlMap()
         .put(someName(), new YamlMap()
             .put(HTML_TEMPLATE, new YamlMap()
                 .put(RESOURCE, resource))));
@@ -183,8 +183,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String resource = someXmlFile();
     yaml.put(DATABASES, Arrays.asList(new YamlMap()
         .put(NAME, someName())
-        .put(METADATA, Arrays.asList(new YamlMap()
-            .put(RESOURCE, resource)))));
+        .put(METADATA, new YamlMap()
+            .put(RESOURCE, resource))));
 
     normalizeYaml();
 
@@ -192,9 +192,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   private void assertDatabaseMetadataIsInlined(String expected) {
-    YamlMap databaseMetadata = yaml.get(DATABASES, 0, METADATA, 0).toMap();
+    YamlMap databaseMetadata = yaml.get(DATABASES, 0, METADATA).toMap();
     assertEquals("Metadata", expected, databaseMetadata.get(TEXT).toString());
-    assertEquals("Format", "xml", databaseMetadata.get(FORMAT).toString());
   }
 
   @Test
@@ -204,8 +203,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String resource = someXmlFile();
     yaml.put("database", new YamlMap()
         .put(NAME, someName())
-        .put(METADATA, Arrays.asList(new YamlMap()
-            .put(RESOURCE, resource))));
+        .put(METADATA, new YamlMap()
+            .put(RESOURCE, resource)));
 
     normalizeYaml();
 
@@ -219,8 +218,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String resource = someXmlFile();
     yaml.put(DATABASES, new YamlMap()
         .put(someName(), new YamlMap()
-            .put(METADATA, Arrays.asList(new YamlMap()
-                .put(RESOURCE, resource)))));
+            .put(METADATA, new YamlMap()
+                .put(RESOURCE, resource))));
 
     normalizeYaml();
 
