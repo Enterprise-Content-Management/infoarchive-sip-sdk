@@ -22,7 +22,7 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
 
   private static final String INDENT = "  ";
   private static final String NAMESPACES = "namespaces";
-  private static final String NL = System.getProperty("line.separator");
+  private static final String NL = System.lineSeparator();
 
   private final String rootTag;
   private final String itemTag;
@@ -107,9 +107,9 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
 
   private void appendScalar(String property, String value, String indent, StringBuilder xml) {
     startTag(property, indent, EnumSet.of(StartTagOptions.CLOSE_TAG), xml);
-    if (value.contains("\n")) {
+    if (value.contains(System.lineSeparator())) {
       xml.append("<![CDATA[").append(NL);
-      for (String s : value.split("\\n")) {
+      for (String s : value.split("(\\n|\\r)+")) {
         xml.append(indent).append(INDENT).append(s).append(NL);
       }
       xml.append(indent).append("]]></").append(property).append('>').append(NL);

@@ -108,11 +108,7 @@
     <class>com.emc.ia.ingestion.processor.content.InitRiProcessor</class>
     <id>ri.init</id>
     <data>
-      <select.query>
-        <![CDATA[
-          return
-        ]]>
-      </select.query>
+      <select.query>return</select.query>
     </data>
   </processor>
   <processor>
@@ -147,16 +143,12 @@
     <class>com.emc.ia.ingestion.processor.content.CiHashProcessor</class>
     <id>ci.hash</id>
     <data>
-      <select.query>
-        <![CDATA[
-          declare namespace ri = "urn:x-emc:ia:schema:ri";
-          let $uri := replace(document-uri(.), '\.pdi$', '.ri')
-          for $c in doc($uri)/ri:ris/ri:ri
-          return <content filename="{ $c/@key }">
-          <hash encoding="hex" algorithm="SHA-1" provided="false" />
-          </content>
-        ]]>
-      </select.query>
+      <select.query><![CDATA[declare namespace ri = "urn:x-emc:ia:schema:ri"; 
+let $uri := replace(document-uri(.), '\.pdi$', '.ri') 
+for $c in doc($uri)/ri:ris/ri:ri 
+return <content filename="{ $c/@key }"> 
+<hash encoding="hex" algorithm="SHA-1" provided="false" /> 
+</content>]]></select.query>
     </data>
   </processor>
   <processor>
@@ -164,11 +156,7 @@
     <class>com.emc.ia.ingestion.processor.content.CiCompressProcessor</class>
     <id>ci.compress</id>
     <data>
-      <select.query>
-        <![CDATA[
-          return
-        ]]>
-      </select.query>
+      <select.query>return</select.query>
     </data>
   </processor>
   <processor>
@@ -182,11 +170,9 @@
     <id>ci.aggregate</id>
     <data>
       <select.query>
-        <![CDATA[
-          declare namespace ri = "urn:x-emc:ia:schema:ri";
-          let $toc as document-node(element(ri:ris)) := doc(concat("aip_",xhive:metadata(., 'aip_id'),'.ri'))
-          return $toc/ri:ris/ri:ri/string(@key)
-        ]]>
+        <![CDATA[declare namespace ri = "urn:x-emc:ia:schema:ri"; 
+let $toc as document-node(element(ri:ris)) := doc(concat("aip_",xhive:metadata(., 'aip_id'),'.ri')) 
+return $toc/ri:ris/ri:ri/string(@key)]]>
       </select.query>
     </data>
   </processor>

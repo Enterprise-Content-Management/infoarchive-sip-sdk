@@ -422,7 +422,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   public void shouldStripWhitespaceAfterLineBreaks() {
     yaml.put("okapi", "panda  \nquail");
 
-    assertValue("panda\nquail", yaml.get("okapi"));
+    assertValue(String.format("panda%nquail"), yaml.get("okapi"));
   }
 
   @Test

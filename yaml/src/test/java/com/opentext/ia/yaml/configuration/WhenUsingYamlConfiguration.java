@@ -49,8 +49,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String OPERANDS = "operands";
   private static final String INGESTS = "ingests";
   private static final String INGEST = "ingest";
-  private static final String START_PROCESSOR = "  <processor>\n";
-  private static final String END_PROCESSOR = "  </processor>\n";
+  private static final String START_PROCESSOR = "  <processor>%n";
+  private static final String END_PROCESSOR = "  </processor>%n";
   private static final String PDIS = "pdis";
   private static final String DATA = "data";
   private static final String INDEXES = "indexes";
@@ -545,21 +545,21 @@ public class WhenUsingYamlConfiguration extends TestCase {
     assertValue("Format", XML, content.get(FORMAT));
     assertTrue("Namespaces are still there", content.get(NAMESPACES).isEmpty());
     String xml = content.get(TEXT).toString();
-    assertEquals("XML",
-        "<resultConfigurationHelper xmlns:n=\"urn:eas-samples:en:xsd:phonecalls.1.0\" xmlns:pdi=\"urn:x-emc:ia:schema:pdi\">\n"
-        + "  <element>\n"
-        + "    <label>ID</label>\n"
-        + "    <name>id</name>\n"
-        + "    <path>@pdi:id</path>\n"
-        + "    <type>ID</type>\n"
-        + "  </element>\n"
-        + "  <element>\n"
-        + "    <label>Sent to</label>\n"
-        + "    <name>SentToArchiveDate</name>\n"
-        + "    <path>n:SentToArchiveDate</path>\n"
-        + "    <type>DATE_TIME</type>\n"
-        + "  </element>\n"
-        + "</resultConfigurationHelper>", xml);
+    assertEquals("XML", String.format(
+        "<resultConfigurationHelper xmlns:n=\"urn:eas-samples:en:xsd:phonecalls.1.0\" xmlns:pdi=\"urn:x-emc:ia:schema:pdi\">%n"
+        + "  <element>%n"
+        + "    <label>ID</label>%n"
+        + "    <name>id</name>%n"
+        + "    <path>@pdi:id</path>%n"
+        + "    <type>ID</type>%n"
+        + "  </element>%n"
+        + "  <element>%n"
+        + "    <label>Sent to</label>%n"
+        + "    <name>SentToArchiveDate</name>%n"
+        + "    <path>n:SentToArchiveDate</path>%n"
+        + "    <type>DATE_TIME</type>%n"
+        + "  </element>%n"
+        + "</resultConfigurationHelper>"), xml);
   }
 
 
@@ -604,55 +604,55 @@ public class WhenUsingYamlConfiguration extends TestCase {
     YamlMap content = yaml.get(INGESTS, 0, CONTENT).toMap();
     assertValue("Format", XML, content.get(FORMAT));
     String xml = content.get(TEXT).toString();
-    assertEquals("XML", "<processors>\n"
+    assertEquals("XML", String.format("<processors>%n"
         + START_PROCESSOR
-        + "    <class>com.emc.ia.ingestion.processor.downloader.SipContentDownloader</class>\n"
-        + "    <id>sip.download</id>\n"
-        + "    <name>SIP downloader processor</name>\n"
+        + "    <class>com.emc.ia.ingestion.processor.downloader.SipContentDownloader</class>%n"
+        + "    <id>sip.download</id>%n"
+        + "    <name>SIP downloader processor</name>%n"
         + END_PROCESSOR
         + START_PROCESSOR
-        + "    <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>\n"
-        + "    <data>\n"
-        + "      <indexes/>\n"
-        + "      <key.document.name>xdb.pdi.name</key.document.name>\n"
-        + "    </data>\n"
-        + "    <id>pdi.index.creator</id>\n"
-        + "    <name>XDB PDI index processor</name>\n"
+        + "    <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>%n"
+        + "    <data>%n"
+        + "      <indexes/>%n"
+        + "      <key.document.name>xdb.pdi.name</key.document.name>%n"
+        + "    </data>%n"
+        + "    <id>pdi.index.creator</id>%n"
+        + "    <name>XDB PDI index processor</name>%n"
         + END_PROCESSOR
         + START_PROCESSOR
-        + "    <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>\n"
-        + "    <data>\n"
-        + "      <indexes>\n"
-        + "        <path.value.index>\n"
-        + "          <build.without.logging>false</build.without.logging>\n"
-        + "          <compressed>false</compressed>\n"
-        + "          <concurrent>false</concurrent>\n"
-        + "          <name>key</name>\n"
-        + "          <path>/{urn:x-emc:ia:schema:ri}ris/{urn:x-emc:ia:schema:ri}ri[@key&lt;STRING>]</path>\n"
-        + "          <unique.keys>true</unique.keys>\n"
-        + "        </path.value.index>\n"
-        + "      </indexes>\n"
-        + "      <key.document.name>xdb.ri.name</key.document.name>\n"
-        + "    </data>\n"
-        + "    <id>ri.index</id>\n"
-        + "    <name>RI XDB indexes</name>\n"
+        + "    <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>%n"
+        + "    <data>%n"
+        + "      <indexes>%n"
+        + "        <path.value.index>%n"
+        + "          <build.without.logging>false</build.without.logging>%n"
+        + "          <compressed>false</compressed>%n"
+        + "          <concurrent>false</concurrent>%n"
+        + "          <name>key</name>%n"
+        + "          <path>/{urn:x-emc:ia:schema:ri}ris/{urn:x-emc:ia:schema:ri}ri[@key&lt;STRING>]</path>%n"
+        + "          <unique.keys>true</unique.keys>%n"
+        + "        </path.value.index>%n"
+        + "      </indexes>%n"
+        + "      <key.document.name>xdb.ri.name</key.document.name>%n"
+        + "    </data>%n"
+        + "    <id>ri.index</id>%n"
+        + "    <name>RI XDB indexes</name>%n"
         + END_PROCESSOR
         + START_PROCESSOR
-        + "    <class>com.emc.ia.ingestion.processor.content.CiHashProcessor</class>\n"
-        + "    <data>\n"
-        + "      <select.query><![CDATA[\n"
-        + "        declare namespace ri = \"urn:x-emc:ia:schema:ri\";\n"
-        + "        let $uri := replace(document-uri(.), '\\.pdi$', '.ri')\n"
-        + "        for $c in doc($uri)/ri:ris/ri:ri\n"
-        + "        return <content filename=\"{ $c/@key }\">\n"
-        + "          <hash encoding=\"hex\" algorithm=\"SHA-1\" provided=\"false\" />\n"
-        + "        </content>\n"
-        + "      ]]></select.query>\n"
-        + "    </data>\n"
-        + "    <id>ci.hash</id>\n"
-        + "    <name>CI hash generator and validator</name>\n"
+        + "    <class>com.emc.ia.ingestion.processor.content.CiHashProcessor</class>%n"
+        + "    <data>%n"
+        + "      <select.query><![CDATA[%n"
+        + "        declare namespace ri = \"urn:x-emc:ia:schema:ri\";%n"
+        + "        let $uri := replace(document-uri(.), '\\.pdi$', '.ri')%n"
+        + "        for $c in doc($uri)/ri:ris/ri:ri%n"
+        + "        return <content filename=\"{ $c/@key }\">%n"
+        + "          <hash encoding=\"hex\" algorithm=\"SHA-1\" provided=\"false\" />%n"
+        + "        </content>%n"
+        + "      ]]></select.query>%n"
+        + "    </data>%n"
+        + "    <id>ci.hash</id>%n"
+        + "    <name>CI hash generator and validator</name>%n"
         + END_PROCESSOR
-        + "</processors>", xml);
+        + "</processors>"), xml);
   }
 
   @Test
