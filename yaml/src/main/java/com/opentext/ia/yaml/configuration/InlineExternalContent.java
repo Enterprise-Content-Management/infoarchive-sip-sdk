@@ -23,7 +23,7 @@ class InlineExternalContent extends PathVisitor {
   private static final List<String> RESOURCE_CONTAINER_PATHS = Arrays.asList(
       "/.+/content",
       "/customPresentationConfiguration(s/[^/]+)?/htmlTemplate",
-      "/database(s/[^/]+)?/metadata",
+      "/database(s/[^/]+)?/metadata/\\d+",
       "/transformation(s/[^/]+)?/xquery",
       "/transformation(s/[^/]+)?/xslt",
       "/xform(s/[^/]+)?/form");

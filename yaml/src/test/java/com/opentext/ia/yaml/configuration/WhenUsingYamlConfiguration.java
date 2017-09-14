@@ -183,8 +183,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String resource = someXmlFile();
     yaml.put(DATABASES, Arrays.asList(new YamlMap()
         .put(NAME, someName())
-        .put(METADATA, new YamlMap()
-            .put(RESOURCE, resource))));
+        .put(METADATA, Arrays.asList(new YamlMap()
+            .put(RESOURCE, resource)))));
 
     normalizeYaml();
 
@@ -192,7 +192,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   private void assertDatabaseMetadataIsInlined(String expected) {
-    YamlMap databaseMetadata = yaml.get(DATABASES, 0, METADATA).toMap();
+    YamlMap databaseMetadata = yaml.get(DATABASES, 0, METADATA, 0).toMap();
     assertEquals("Metadata", expected, databaseMetadata.get(TEXT).toString());
   }
 
@@ -203,8 +203,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String resource = someXmlFile();
     yaml.put("database", new YamlMap()
         .put(NAME, someName())
-        .put(METADATA, new YamlMap()
-            .put(RESOURCE, resource)));
+        .put(METADATA, Arrays.asList(new YamlMap()
+            .put(RESOURCE, resource))));
 
     normalizeYaml();
 
@@ -218,8 +218,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String resource = someXmlFile();
     yaml.put(DATABASES, new YamlMap()
         .put(someName(), new YamlMap()
-            .put(METADATA, new YamlMap()
-                .put(RESOURCE, resource))));
+            .put(METADATA, Arrays.asList(new YamlMap()
+                .put(RESOURCE, resource)))));
 
     normalizeYaml();
 
