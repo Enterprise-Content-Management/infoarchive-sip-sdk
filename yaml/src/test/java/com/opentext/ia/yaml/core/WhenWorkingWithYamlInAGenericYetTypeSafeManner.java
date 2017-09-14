@@ -309,11 +309,11 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   private void assertSorted(String expected) {
-    assertSorted(expected, yaml.sort());
+    assertYaml(expected, yaml.sort());
   }
 
-  private void assertSorted(String expected, YamlMap actual) {
-    assertEquals("Sorted YAML", String.format(expected), actual.toString());
+  private void assertYaml(String expected, YamlMap actual) {
+    assertEquals("YAML", String.format(expected), actual.toString());
   }
 
   @Test
@@ -321,7 +321,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put("elephant", "fox");
     yaml.put("giraffe", "hyena");
 
-    assertSorted("giraffe: hyena%n%nelephant: fox%n", yaml.sort((a, b) -> b.toString().compareTo(a.toString())));
+    assertYaml("giraffe: hyena%n%nelephant: fox%n", yaml.sort((a, b) -> b.toString().compareTo(a.toString())));
   }
 
   @Test
@@ -360,7 +360,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         .put("ape", new YamlMap()
             .put("giraffe", "hyena"));
 
-    assertSorted("bear:%n"
+    assertYaml("bear:%n"
         + "  cheetah: dingo%n"
         + "  elephant: fox%n%n"
         + "ape:%n"
@@ -405,6 +405,44 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
     TestUtil.assertEquals("Visited paths", Arrays.asList("/", "/aardvark/0", "/aardvark/0/dog", "@/aardvark/0/dog",
         "@/aardvark/0", "/aardvark/1", "@/aardvark/1", "@/"), visitedPaths);
+  }
+
+  @Test
+  public void shouldStripEndingWhitespace() {
+    yaml.put("mongoose", "narwhal  ");
+
+    assertValue("narwhal", yaml.get("mongoose"));
+  }
+
+  private void assertValue(String expected, Value actual) {
+    assertEquals("Value", expected, actual.toString());
+  }
+
+  @Test
+  public void shouldStripWhitespaceAfterLineBreaks() {
+    yaml.put("okapi", "panda  \nquail");
+
+    assertValue(String.format("panda%nquail"), yaml.get("okapi"));
+  }
+
+  @Test
+  public void shouldMaintainOrderWhenReplacingEntries() {
+    yaml.put("rabbit", "scorpion")
+        .put("tapir", "uakari")
+        .replace("rabbit", "vulture", "warthog");
+
+    assertYaml("vulture: warthog%n%ntapir: uakari%n", yaml);
+  }
+
+  @Test
+  public void shouldReplaceNestedMaps() {
+    String oldKey = "xenops";
+    yaml.put(oldKey, new YamlMap()
+        .put("yak", "zebra"));
+
+    yaml.replace(oldKey, "alligator", yaml.get(oldKey));
+
+    assertYaml("alligator:%n  yak: zebra%n", yaml);
   }
 
 }

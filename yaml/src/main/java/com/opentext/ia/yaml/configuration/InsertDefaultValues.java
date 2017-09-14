@@ -75,8 +75,8 @@ class InsertDefaultValues extends PathVisitor {
             new YamlMap()
                 .put(FORMAT, "eas_sip_zip")
                 .put("extractorImpl", "com.emc.ia.reception.sip.extractor.impl.LegacyZipSipExtractor"))));
-    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+", Default.of("sort", "NONE",
-        TYPE, STRING));
+    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+", Default.of("defaultSort", "NONE",
+        "dataType", STRING));
     result.put("/searches/\\d+", Default.of("nestedSearch", false,
         "state", "DRAFT"));
     result.put("/stores/\\d+", Default.of("status", "ONLINE",

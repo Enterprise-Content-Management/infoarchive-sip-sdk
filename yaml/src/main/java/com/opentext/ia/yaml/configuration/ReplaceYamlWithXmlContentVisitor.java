@@ -22,7 +22,7 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
 
   private static final String INDENT = "  ";
   private static final String NAMESPACES = "namespaces";
-  private static final String NL = System.getProperty("line.separator");
+  private static final String NL = System.lineSeparator();
 
   private final String rootTag;
   private final String itemTag;

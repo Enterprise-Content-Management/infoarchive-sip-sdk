@@ -80,7 +80,14 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   public void shouldConvertYamlToProperties() throws IOException {
     Map<String, String> expected = loadProperties();
     Map<String, String> actual = yamlToProperties();
-    assertEqual(expected, actual);
+    assertEqual(normalizeWhitespace(expected), normalizeWhitespace(actual));
+  }
+
+  private Map<String, String> normalizeWhitespace(Map<String, String> map) {
+    for (Entry<String, String> entry : map.entrySet()) {
+      map.put(entry.getKey(), entry.getValue().replaceAll("\\s+", " ").trim());
+    }
+    return map;
   }
 
   private Map<String, String> loadProperties() throws IOException {

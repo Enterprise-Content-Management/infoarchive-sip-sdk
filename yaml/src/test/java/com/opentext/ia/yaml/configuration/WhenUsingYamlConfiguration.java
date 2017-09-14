@@ -163,7 +163,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String expected = someName();
     resourceResolver = name -> expected;
     String resource = someHtmlFileName();
-    yaml.put("customPresentationConfiguration", new YamlMap()
+    yaml.put("customPresentationConfigurations", new YamlMap()
         .put(someName(), new YamlMap()
             .put(HTML_TEMPLATE, new YamlMap()
                 .put(RESOURCE, resource))));
@@ -195,7 +195,6 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private void assertDatabaseMetadataIsInlined(String expected) {
     YamlMap databaseMetadata = yaml.get(DATABASES, 0, METADATA, 0).toMap();
     assertEquals("Metadata", expected, databaseMetadata.get(TEXT).toString());
-    assertEquals("Format", "xml", databaseMetadata.get(FORMAT).toString());
   }
 
   @Test
@@ -561,7 +560,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
         + "    <path>n:SentToArchiveDate</path>%n"
         + "    <type>DATE_TIME</type>%n"
         + "  </element>%n"
-        + "</resultConfigurationHelper>%n"), xml);
+        + "</resultConfigurationHelper>"), xml);
   }
 
 
@@ -654,7 +653,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
         + "    <id>ci.hash</id>%n"
         + "    <name>CI hash generator and validator</name>%n"
         + END_PROCESSOR
-        + "</processors>%n"), xml);
+        + "</processors>"), xml);
   }
 
   @Test
