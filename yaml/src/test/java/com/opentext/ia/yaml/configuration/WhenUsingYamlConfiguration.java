@@ -111,7 +111,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   private void assertContentIsInlined(String type, String expected, Value owner) {
-    assertValue(String.format("Content in %s not inlined:%n", type, yaml), expected,
+    assertValue(String.format("Content in %s not inlined:%n%s", type, yaml), expected,
         owner.toMap().get(CONTENT, TEXT));
   }
 

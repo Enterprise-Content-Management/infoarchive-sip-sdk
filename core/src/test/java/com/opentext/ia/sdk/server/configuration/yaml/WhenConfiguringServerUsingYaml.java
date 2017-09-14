@@ -110,7 +110,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
 
   private void assertEqual(Entry<String, String> expected, Map<String, String> actual) {
     if (!actual.containsKey(expected.getKey())) {
-      fail(String.format("Missing key: %s%nGot:%n", expected.getKey(),
+      fail(String.format("Missing key: %s%nGot:%n%s", expected.getKey(),
           actual.keySet().stream().collect(Collectors.joining(System.lineSeparator()))));
     }
     TestUtil.assertEquals(expected.getKey(), normalize(expected.getValue()), normalize(actual.get(expected.getKey())));
