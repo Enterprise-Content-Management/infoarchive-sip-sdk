@@ -23,7 +23,14 @@ import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ContentResult;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.client.api.QueryResult;
-import com.opentext.ia.sdk.dto.*;
+import com.opentext.ia.sdk.dto.IngestionResponse;
+import com.opentext.ia.sdk.dto.OrderItem;
+import com.opentext.ia.sdk.dto.ReceptionResponse;
+import com.opentext.ia.sdk.dto.Row;
+import com.opentext.ia.sdk.dto.SearchComposition;
+import com.opentext.ia.sdk.dto.SearchDataBuilder;
+import com.opentext.ia.sdk.dto.SearchResult;
+import com.opentext.ia.sdk.dto.SearchResults;
 import com.opentext.ia.sdk.dto.export.ExportConfiguration;
 import com.opentext.ia.sdk.dto.export.ExportTransformation;
 import com.opentext.ia.sdk.dto.query.Comparison;
@@ -144,7 +151,10 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
         }
       }
     }
-    return searchDataBuilder.build().replaceFirst("<\\?.*\\?>", "").replace(" ", "").replace("\n", "");
+    return searchDataBuilder.build()
+        .replaceFirst("<\\?.*\\?>", "")
+        .replace(" ", "")
+        .replace(System.lineSeparator(), "");
   }
 
   @Override

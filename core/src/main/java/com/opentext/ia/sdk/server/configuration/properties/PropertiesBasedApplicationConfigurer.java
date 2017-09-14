@@ -536,9 +536,9 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     result.setType("XPROC");
     result.setComposite(true);
     result.setCollectionBasedExport(false);
-    result.setContent("<p:declare-step version=\"2.0\" xmlns:p=\"http://www.w3.org/ns/xproc\" "
-        + "xmlns:ia=\"http://infoarchive.emc.com/xproc\">\n    <p:input port=\"source\" sequence=\"true\"/>\n    "
-        + "<ia:search-results-csv/>\n    <ia:gzip/>\n    <ia:store-export-result format=\"csv\"/>\n</p:declare-step>");
+    result.setContent(String.format("<p:declare-step version=\"2.0\" xmlns:p=\"http://www.w3.org/ns/xproc\" "
+        + "xmlns:ia=\"http://infoarchive.emc.com/xproc\">%n    <p:input port=\"source\" sequence=\"true\"/>%n    "
+        + "<ia:search-results-csv/>%n    <ia:gzip/>%n    <ia:store-export-result format=\"csv\"/>%n</p:declare-step>"));
     return result;
   }
 

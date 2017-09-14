@@ -132,7 +132,8 @@ public class YamlConfiguration {
   private YamlMap singleInstanceOf(String type) {
     List<Value> instances = yaml.get(English.plural(type)).toList();
     if (instances.size() != 1) {
-      throw new IllegalArgumentException("Expected 1 " + type + ", but got " + instances.size() + " in:\n" + yaml);
+      throw new IllegalArgumentException(String.format("Expected 1 %s, but got %d in:%n%s", type, instances.size(),
+          yaml));
     }
     return instances.get(0).toMap();
   }

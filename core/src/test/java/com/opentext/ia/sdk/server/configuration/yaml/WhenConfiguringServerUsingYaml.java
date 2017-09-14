@@ -110,15 +110,15 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
 
   private void assertEqual(Entry<String, String> expected, Map<String, String> actual) {
     if (!actual.containsKey(expected.getKey())) {
-      fail("Missing key: " + expected.getKey() + "\nGot:\n"
-          + actual.keySet().stream().collect(Collectors.joining("\n")));
+      fail(String.format("Missing key: %s%nGot:%n", expected.getKey(),
+          actual.keySet().stream().collect(Collectors.joining(System.lineSeparator()))));
     }
     TestUtil.assertEquals(expected.getKey(), normalize(expected.getValue()), normalize(actual.get(expected.getKey())));
   }
 
   private List<String> normalize(String value) {
     return Arrays.asList(value
-        .replaceAll("\\n\\s*", " ")
+        .replaceAll("(\\r|\\n)*\\s*", " ")
         .replaceAll("\\s+<", "<")
         .replaceAll(">\\s+", ">")
         .split(","));

@@ -67,7 +67,7 @@ public class HashedContents<S> {
     return source + " with contents " + getContentInfo().entrySet()
       .stream()
       .map(e -> "- " + e.getKey() + "=" + e.getValue())
-      .collect(Collectors.joining("\n"));
+      .collect(Collectors.joining(System.lineSeparator()));
 
   }
 

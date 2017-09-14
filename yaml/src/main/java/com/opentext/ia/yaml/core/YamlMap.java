@@ -34,7 +34,7 @@ import org.yaml.snakeyaml.representer.Representer;
  */
 public class YamlMap {
 
-  private static final String NL = System.getProperty("line.separator");
+  private static final String NL = System.lineSeparator();
 
   private final Map<String, Object> data;
 

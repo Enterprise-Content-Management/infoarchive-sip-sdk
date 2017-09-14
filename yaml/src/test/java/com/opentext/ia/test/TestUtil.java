@@ -17,7 +17,7 @@ public final class TestUtil {
   }
 
   public static <T> void assertEquals(String message, Collection<T> expected, Collection<T> actual) {
-    String details = "\nWanted:\n" + join(expected) + "\nGotten:\n" + join(actual) + '\n';
+    String details = String.format("%nWanted:%n%s%nGotten:%n%s%n", join(expected), join(actual));
     Iterator<T> wanted = expected.iterator();
     Iterator<T> gotten = actual.iterator();
     while (wanted.hasNext()) {
@@ -35,7 +35,7 @@ public final class TestUtil {
   private static <T> String join(Collection<T> items) {
     return items.stream()
       .map(i -> String.valueOf(i))
-      .collect(Collectors.joining("\n"));
+      .collect(Collectors.joining(System.lineSeparator()));
   }
 
 }
