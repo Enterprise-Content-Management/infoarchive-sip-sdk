@@ -47,8 +47,7 @@ class ConvertSingularReferenceToSequenceForCollectionReferences extends PathVisi
 
 
   private void replaceSingleReferenceWithSequence(YamlMap map, String type) {
-    map.put(English.plural(type), Arrays.asList(map.get(type)))
-        .remove(type);
+    map.replace(type, English.plural(type), Arrays.asList(map.get(type)));
   }
 
 }

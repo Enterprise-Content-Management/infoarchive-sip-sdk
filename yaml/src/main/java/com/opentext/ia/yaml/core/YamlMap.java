@@ -389,11 +389,11 @@ public class YamlMap {
     }
   }
 
-  public void replace(String key, Object newValue) {
-    replace(key, key, newValue);
+  public YamlMap replace(String key, Object newValue) {
+    return put(key, newValue);
   }
 
-  public void replace(String oldKey, String newKey, Object newValue) {
+  public YamlMap replace(String oldKey, String newKey, Object newValue) {
     Map<String, Object> newEntries = new LinkedHashMap<>();
     for (Map.Entry<String, Object> entry : data.entrySet()) {
       if (oldKey.equals(entry.getKey())) {
@@ -404,6 +404,7 @@ public class YamlMap {
     }
     data.clear();
     data.putAll(newEntries);
+    return this;
   }
 
 }

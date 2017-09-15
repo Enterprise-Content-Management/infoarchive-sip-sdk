@@ -5,7 +5,11 @@ package com.opentext.ia.yaml.configuration;
 
 import java.util.stream.Collectors;
 
-import com.opentext.ia.yaml.core.*;
+import com.opentext.ia.yaml.core.Entry;
+import com.opentext.ia.yaml.core.Value;
+import com.opentext.ia.yaml.core.Visit;
+import com.opentext.ia.yaml.core.Visitor;
+import com.opentext.ia.yaml.core.YamlMap;
 
 
 class AddNamespaceDeclarationsToQueries implements Visitor {
@@ -28,7 +32,7 @@ class AddNamespaceDeclarationsToQueries implements Visitor {
         .map(prefix -> namespaceDeclarationFor(root, prefix))
         .collect(Collectors.joining(NL)) + NL;
     entry.getParent()
-        .put(entry.getKey(), namespaceDeclarations + entry.getValue().toMap().get("text"))
+        .replace(entry.getKey(), namespaceDeclarations + entry.getValue().toMap().get("text"))
         .remove(NAMESPACES);
   }
 

@@ -42,8 +42,7 @@ class ConvertTopLevelSingularObjectsToSequences implements Visitor {
 
   private void convertToSequence(String type, YamlMap yaml) {
     YamlMap value = yaml.get(type).toMap();
-    yaml.remove(type)
-        .put(English.plural(type), Arrays.asList(value));
+    yaml.replace(type, English.plural(type), Arrays.asList(value));
   }
 
 }

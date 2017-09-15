@@ -28,8 +28,8 @@ class ReplacePdiSchemaNamespaceWithName implements Visitor {
   }
 
   private void replaceNamespaceWithName(YamlMap root, YamlMap pdiSchema) {
-    pdiSchema.put(NAME, NamespaceUri.byPrefix(root, pdiSchema.get(NAMESPACES).toList().iterator().next()))
-        .remove(NAMESPACES);
+    pdiSchema.replace(NAMESPACES, NAME, NamespaceUri.byPrefix(root,
+        pdiSchema.get(NAMESPACES).toList().iterator().next()));
   }
 
 }

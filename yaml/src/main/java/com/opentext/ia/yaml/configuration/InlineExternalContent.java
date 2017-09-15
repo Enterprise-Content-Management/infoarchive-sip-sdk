@@ -54,8 +54,7 @@ class InlineExternalContent extends PathVisitor {
   }
 
   private void inlineResource(YamlMap yaml, String resourceName) {
-    yaml.put(TEXT, resolver.apply(resourceName))
-        .remove(RESOURCE);
+    yaml.replace(RESOURCE, TEXT, resolver.apply(resourceName));
   }
 
   private void optionallySetFormat(String path, YamlMap yaml, String resourceName) {
