@@ -12,18 +12,16 @@ import org.junit.Test;
 
 public class WhenFormattingAsJson {
 
-  private static final String STR = "TestString";
-
   private final JsonFormatter formatter = new JsonFormatter();
 
   @Test
   public void formatString() throws IOException {
-    String result = formatter.format(STR);
-    assertEquals("Resource Name", result, "\"TestString\"");
+    assertEquals("Resource Name", "\"ape\"", formatter.format("ape"));
   }
 
   @Test(expected = NullPointerException.class)
   public void shouldThrowNullPointerException() throws IOException {
     formatter.format(null);
   }
+
 }
