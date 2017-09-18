@@ -26,7 +26,8 @@ class InlineExternalContent extends PathVisitor {
       "/database(s/[^/]+)?/metadata/\\d+",
       "/transformation(s/[^/]+)?/xquery",
       "/transformation(s/[^/]+)?/xslt",
-      "/xform(s/[^/]+)?/form");
+      "/xform(s/[^/]+)?/form",
+      "/xqueryModule(s/[^/]+)?/moduleContent");
   private static final Collection<String> SEGMENTS_WITH_FORMAT = Arrays.asList("content");
 
   private final ResourceResolver resolver;
