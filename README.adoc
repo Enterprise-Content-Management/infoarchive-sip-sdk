@@ -40,7 +40,7 @@ For the latest version, see the `maven-central` button at the top of this page.
 [source,groovy]
 ----
 dependencies { 
-  compile 'com.opentext.ia:infoarchive-sdk-core:7.4.7'
+  compile 'com.opentext.ia:infoarchive-sdk-core:8.0.0'
 }
 ----
 
@@ -52,7 +52,7 @@ dependencies {
   <dependency>
     <groupId>com.opentext.ia</groupId>
     <artifactId>infoarchive-sdk-core</artifactId>
-    <version>7.4.7</version>
+    <version>8.0.0</version>
   </dependency>
 </dependencies>
 ----
