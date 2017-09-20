@@ -237,17 +237,19 @@ public class YamlMap {
     return sort(comparator, true);
   }
 
-  public YamlMap sort(boolean sortTopLevel) {
-    return sort(new DefaultYamlComparator(), sortTopLevel);
+  public YamlMap sort(boolean recursive) {
+    return sort(new DefaultYamlComparator(), recursive);
   }
 
-  public YamlMap sort(Comparator<String> comparator, boolean sortTopLevel) {
-    Map<String, Object> result = sortTopLevel ? sortingCopyOf(data, comparator) : new LinkedHashMap<>(data);
-    sortRecursively(result, comparator);
+  public YamlMap sort(Comparator<String> comparator, boolean recursive) {
+    Map<String, Object> result = sortedCopyOf(data, comparator);
+    if (recursive) {
+      sortRecursively(result, comparator);
+    }
     return new YamlMap(result);
   }
 
-  private Map<String, Object> sortingCopyOf(Map<String, Object> source, Comparator<String> comparator) {
+  private Map<String, Object> sortedCopyOf(Map<String, Object> source, Comparator<String> comparator) {
     Map<String, Object> result = new TreeMap<>(comparator);
     result.putAll(source);
     return result;
@@ -266,7 +268,7 @@ public class YamlMap {
   }
 
   private void sortMap(Map<String, Object> map, Comparator<String> comparator, String key, Map<String, Object> value) {
-    Map<String, Object> sortedMap = sortingCopyOf(value, comparator);
+    Map<String, Object> sortedMap = sortedCopyOf(value, comparator);
     sortRecursively(sortedMap, comparator);
     map.put(key, sortedMap);
   }
@@ -287,7 +289,7 @@ public class YamlMap {
   private void sortListItem(List<Object> sortedList, int index, Comparator<String> comparator, ListContent content) {
     Object value = sortedList.get(index);
     if (value instanceof Map) {
-      Map<String, Object> sortedMap = sortingCopyOf((Map<String, Object>)value, comparator);
+      Map<String, Object> sortedMap = sortedCopyOf((Map<String, Object>)value, comparator);
       sortRecursively(sortedMap, comparator);
       sortedList.set(index, sortedMap);
       content.setAllScalars(false);

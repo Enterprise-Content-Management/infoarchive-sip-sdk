@@ -6,6 +6,17 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 8.0.0 - 2017-09-20
+
+=== Changed
+
+- `YamlMap.sort(boolean)` performs a non-recursive sort when given `false`. This is the exact opposite of the 
+  previous behavior of sorting everything but the top level. This new approach allows complete control over sorting
+  (using a visitor), where some objects can be sorted and others left alone, or different objects can be sorted with
+  different comparators.
+
+
+
 == 7.4.7 - 2017-09-18
 
 === Fixed

@@ -353,18 +353,19 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSortButKeepTopLevelAsIs() {
+  public void shouldSortAtSingleLevel() {
     yaml.put("bear", new YamlMap()
             .put("elephant", "fox")
             .put("cheetah", "dingo"))
         .put("ape", new YamlMap()
             .put("giraffe", "hyena"));
 
-    assertYaml("bear:%n"
-        + "  cheetah: dingo%n"
-        + "  elephant: fox%n%n"
-        + "ape:%n"
-        + "  giraffe: hyena%n", yaml.sort(false));
+    assertYaml("ape:%n"
+        + "  giraffe: hyena%n%n"
+        + "bear:%n"
+        + "  elephant: fox%n"
+        + "  cheetah: dingo%n",
+        yaml.sort(false));
   }
 
   @Test
