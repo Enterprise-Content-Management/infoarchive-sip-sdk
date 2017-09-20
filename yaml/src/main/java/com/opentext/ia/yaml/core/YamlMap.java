@@ -91,17 +91,9 @@ public class YamlMap {
     this(null);
   }
 
-  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @SuppressWarnings("unchecked")
   public YamlMap(Object data) {
-    if (data == null) {
-      this.data = new LinkedHashMap<>();
-    } else if (data instanceof LinkedHashMap) {
-      this.data = (LinkedHashMap)data;
-    } else if (data instanceof Map) {
-      this.data = new LinkedHashMap<>((Map)data);
-    } else {
-      throw new IllegalArgumentException("Unsupported data: " + data.getClass());
-    }
+    this.data = data instanceof Map ? (Map<String, Object>)data : new LinkedHashMap<>();
   }
 
   public boolean isEmpty() {
@@ -121,7 +113,7 @@ public class YamlMap {
   private Object unpack(Object value) {
     Object result = value;
     if (result instanceof YamlMap) {
-      result = unpack(((YamlMap)result).getRawData());
+      result = ((YamlMap)result).getRawData();
     }
     if (result instanceof Iterable) {
       Collection<Object> values = new ArrayList<>();
@@ -129,10 +121,7 @@ public class YamlMap {
       return values;
     }
     if (result instanceof Value) {
-      result = unpack(((Value)result).getRawData());
-    }
-    if (result instanceof Map && !(result instanceof LinkedHashMap)) {
-      result = new LinkedHashMap<>((Map)result);
+      result = ((Value)result).getRawData();
     }
     if (result instanceof String) {
       result = normalizeWhitespace((String)result);
