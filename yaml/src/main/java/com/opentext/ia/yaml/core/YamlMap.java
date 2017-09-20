@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -38,7 +39,7 @@ public class YamlMap {
 
   private static final String NL = System.lineSeparator();
 
-  private final Map<String, Object> data;
+  private Map<String, Object> data;
 
   /**
    * Parses the given YAML.
@@ -90,9 +91,17 @@ public class YamlMap {
     this(null);
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public YamlMap(Object data) {
-    this.data = data instanceof Map ? (Map<String, Object>)data : new LinkedHashMap<>();
+    if (data == null) {
+      this.data = new LinkedHashMap<>();
+    } else if (data instanceof LinkedHashMap) {
+      this.data = (LinkedHashMap)data;
+    } else if (data instanceof Map) {
+      this.data = new LinkedHashMap<>((Map)data);
+    } else {
+      throw new IllegalArgumentException("Unsupported data: " + data.getClass());
+    }
   }
 
   public boolean isEmpty() {
@@ -112,7 +121,7 @@ public class YamlMap {
   private Object unpack(Object value) {
     Object result = value;
     if (result instanceof YamlMap) {
-      result = ((YamlMap)result).getRawData();
+      result = unpack(((YamlMap)result).getRawData());
     }
     if (result instanceof Iterable) {
       Collection<Object> values = new ArrayList<>();
@@ -120,7 +129,10 @@ public class YamlMap {
       return values;
     }
     if (result instanceof Value) {
-      result = ((Value)result).getRawData();
+      result = unpack(((Value)result).getRawData());
+    }
+    if (result instanceof Map && !(result instanceof LinkedHashMap)) {
+      result = new LinkedHashMap<>((Map)result);
     }
     if (result instanceof String) {
       result = normalizeWhitespace((String)result);
@@ -242,42 +254,64 @@ public class YamlMap {
   }
 
   public YamlMap sort(Comparator<String> comparator, boolean recursive) {
-    Map<String, Object> result = sortedCopyOf(data, comparator);
-    if (recursive) {
-      sortRecursively(result, comparator);
-    }
-    return new YamlMap(result);
+    return sort(comparator, ignored -> true, recursive);
   }
 
-  private Map<String, Object> sortedCopyOf(Map<String, Object> source, Comparator<String> comparator) {
+  public YamlMap sort(Predicate<String> entriesFilter) {
+    return sort(new DefaultYamlComparator(), entriesFilter, true);
+  }
+
+  public YamlMap sort(Comparator<String> comparator, Predicate<String> entriesFilter) {
+    return sort(comparator, entriesFilter, true);
+  }
+
+  public YamlMap sort(Comparator<String> comparator, Predicate<String> entriesFilter, boolean recursive) {
+    sortMap(data, comparator);
+    if (recursive) {
+      sortRecursively(data, comparator, entriesFilter);
+    }
+    return this;
+  }
+
+  private Map<String, Object> sortMap(Map<String, Object> source, Comparator<String> comparator) {
     Map<String, Object> result = new TreeMap<>(comparator);
-    result.putAll(source);
+    source.entrySet().forEach(entry -> result.put(entry.getKey(), entry.getValue()));
+    if (source instanceof LinkedHashMap) {
+      source.clear();
+      source.putAll(result);
+      return source;
+    }
     return result;
   }
 
   @SuppressWarnings("unchecked")
-  private void sortRecursively(Map<String, Object> map, Comparator<String> comparator) {
-    map.keySet().forEach(key -> {
-      Object value = map.get(key);
-      if (value instanceof Map) {
-        sortMap(map, comparator, key, (Map<String, Object>)value);
-      } else if (value instanceof List) {
-        sortList(map, comparator, key, (List<?>)value);
-      }
-    });
+  private void sortRecursively(Map<String, Object> map, Comparator<String> comparator,
+      Predicate<String> entriesFilter) {
+    map.keySet().stream()
+        .filter(entriesFilter)
+        .forEach(key -> {
+          Object value = map.get(key);
+          if (value instanceof Map) {
+            sortMap(map, comparator, entriesFilter, key, (Map<String, Object>)value);
+          } else if (value instanceof List) {
+            sortList(map, comparator, entriesFilter, key, (List<?>)value);
+          }
+        });
   }
 
-  private void sortMap(Map<String, Object> map, Comparator<String> comparator, String key, Map<String, Object> value) {
-    Map<String, Object> sortedMap = sortedCopyOf(value, comparator);
-    sortRecursively(sortedMap, comparator);
+  private void sortMap(Map<String, Object> map, Comparator<String> comparator, Predicate<String> entriesFilter,
+      String key, Map<String, Object> value) {
+    Map<String, Object> sortedMap = sortMap(value, comparator);
+    sortRecursively(sortedMap, comparator, entriesFilter);
     map.put(key, sortedMap);
   }
 
-  private void sortList(Map<String, Object> map, Comparator<String> comparator, String key, List<?> list) {
+  private void sortList(Map<String, Object> map, Comparator<String> comparator, Predicate<String> entriesFilter,
+      String key, List<?> list) {
     List<Object> sortedList = new ArrayList<>(list);
     ListContent content = new ListContent();
     for (int i = 0; i < sortedList.size(); i++) {
-      sortListItem(sortedList, i, comparator, content);
+      sortListItem(sortedList, i, comparator, entriesFilter, content);
     }
     if (content.isAllMapsWithNames()) {
       Collections.sort(sortedList, new DefaultYamlSequenceComparator());
@@ -286,11 +320,12 @@ public class YamlMap {
   }
 
   @SuppressWarnings("unchecked")
-  private void sortListItem(List<Object> sortedList, int index, Comparator<String> comparator, ListContent content) {
+  private void sortListItem(List<Object> sortedList, int index, Comparator<String> comparator,
+      Predicate<String> entriesFilter, ListContent content) {
     Object value = sortedList.get(index);
     if (value instanceof Map) {
-      Map<String, Object> sortedMap = sortedCopyOf((Map<String, Object>)value, comparator);
-      sortRecursively(sortedMap, comparator);
+      Map<String, Object> sortedMap = sortMap((Map<String, Object>)value, comparator);
+      sortRecursively(sortedMap, comparator, entriesFilter);
       sortedList.set(index, sortedMap);
       content.setAllScalars(false);
       if (!sortedMap.containsKey("name")) {

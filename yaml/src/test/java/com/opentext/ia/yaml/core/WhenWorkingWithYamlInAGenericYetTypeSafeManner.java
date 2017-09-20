@@ -369,6 +369,31 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
+  public void shouldLeaveSomeEntriesUnsorted() {
+    yaml.put("B",
+        new YamlMap()
+            .put("b", "b")
+            .put("a", "a"))
+        .put("A",
+            Arrays.asList("z", "y"))
+        .put("C",
+        new YamlMap()
+            .put("d", "d")
+            .put("c", "c"));
+
+    assertYaml("A:%n"
+        + "- z%n"
+        + "- y%n%n"
+        + "B:%n"
+        + "  a: a%n"
+        + "  b: b%n%n"
+        + "C:%n"
+        + "  d: d%n"
+        + "  c: c%n",
+        yaml.sort(property -> "B".equals(property)));
+  }
+
+  @Test
   public void shouldVisitMap() throws Exception {
     yaml.put("aardvark", Arrays.asList(
         new YamlMap()
