@@ -18,8 +18,8 @@ import com.opentext.ia.sdk.support.io.FileSupplier;
  *            The type of domain objects to assemble
  */
 public class BatchSipAssemblerWithCallback<D> extends BatchSipAssembler<D> {
-	private Consumer<FileGenerationMetrics> callback;
-	private final Object lock = new Object();
+	protected Consumer<FileGenerationMetrics> callback;
+	protected final Object lock = new Object();
 
 	public BatchSipAssemblerWithCallback(SipAssembler<D> assembler, SipSegmentationStrategy<D> segmentationStrategy,
 			Consumer<FileGenerationMetrics> callback) {
