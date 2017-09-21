@@ -3,14 +3,23 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,7 +29,6 @@ import org.junit.rules.TemporaryFolder;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 import com.opentext.ia.test.TestCase;
 
-
 @SuppressWarnings("unchecked")
 public class WhenAssemblingSipsInBatches extends TestCase {
 
@@ -28,6 +36,7 @@ public class WhenAssemblingSipsInBatches extends TestCase {
   public TemporaryFolder folder = new TemporaryFolder();
   private SipAssembler<String> sipAssembler;
   private SipSegmentationStrategy<String> segmentationStrategy;
+  private final Consumer<FileGenerationMetrics> callback = mock(Consumer.class);
 
   @Before
   public void init() {
@@ -37,14 +46,8 @@ public class WhenAssemblingSipsInBatches extends TestCase {
   }
 
   private PackagingInformation somePackagingInformation() {
-    return PackagingInformation.builder()
-      .dss()
-      .holding(randomString(64))
-      .schema(randomString(64))
-      .entity(randomString(64))
-      .producer(randomString(64))
-      .end()
-      .build();
+    return PackagingInformation.builder().dss().holding(randomString(64)).schema(randomString(64))
+        .entity(randomString(64)).producer(randomString(64)).end().build();
   }
 
   @Test
@@ -61,8 +64,7 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     batcher.add(object2);
     batcher.add(object3);
     batcher.end();
-    Iterator<FileGenerationMetrics> sips = batcher.getSipsMetrics()
-      .iterator();
+    Iterator<FileGenerationMetrics> sips = batcher.getSipsMetrics().iterator();
 
     verify(segmentationStrategy, never()).shouldStartNewSip(eq(object1), any(SipMetrics.class));
     verify(segmentationStrategy).shouldStartNewSip(eq(object2), any(SipMetrics.class));
@@ -85,8 +87,7 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     assertTrue("Missing SIP #" + n, sips.hasNext());
 
     FileGenerationMetrics sip = sips.next();
-    assertEquals("SIP dir #" + n, folder.getRoot(), sip.getFile()
-      .getParentFile());
+    assertEquals("SIP dir #" + n, folder.getRoot(), sip.getFile().getParentFile());
     assertEquals("# objects in SIP #" + n, n, ((SipMetrics)sip.getMetrics()).numAius());
   }
 
@@ -99,8 +100,29 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     batcher.end();
     Collection<FileGenerationMetrics> sips = batcher.getSipsMetrics();
 
-    sips.forEach(sip -> assertEquals("SIP directory", dir, sip.getFile()
-      .getParentFile()));
+    sips.forEach(sip -> assertEquals("SIP directory", dir, sip.getFile().getParentFile()));
+  }
+
+  @Test
+  public void shouldInvokeCallback() throws IOException {
+    BatchSipAssemblerWithCallback<String> batcher =
+        new BatchSipAssemblerWithCallback<>(sipAssembler, segmentationStrategy, () -> newFile(), callback);
+
+    batcher.add(randomString());
+    batcher.end();
+    verify(callback).accept(isNotNull(FileGenerationMetrics.class));
+  }
+
+  @Test
+  public void shouldNotInvokeCallback() throws IOException {
+    BatchSipAssemblerWithCallback<String> batcher =
+        new BatchSipAssemblerWithCallback<>(sipAssembler, segmentationStrategy, () -> newFile(), callback);
+
+    batcher.add(randomString());
+
+    verify(callback, never()).accept(any(FileGenerationMetrics.class));
+
+    batcher.end();
   }
 
 }

@@ -11,7 +11,6 @@ import com.opentext.ia.sdk.support.datetime.Timer;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
-
 /**
  * {@linkplain BatchSipAssembler Assemble a batch of SIPs} on a timed interval.
  * <p>
@@ -33,7 +32,7 @@ public class TimeBasedBatchSipAssembler<D> extends BatchSipAssemblerWithCallback
 
   public TimeBasedBatchSipAssembler(SipAssembler<D> assembler, SipSegmentationStrategy<D> segmentationStrategy,
       Supplier<File> fileSupplier, SipAssemblyTimer sipAssemblyTimer) {
-		super(assembler, segmentationStrategy, fileSupplier, sipAssemblyTimer.getCallback());
+    super(assembler, segmentationStrategy, fileSupplier, sipAssemblyTimer.getCallback());
     setFinalSipInDss(true);
     this.timer = new Timer(sipAssemblyTimer.getMillis(), this::closeSip, sipAssemblyTimer.getClock());
   }

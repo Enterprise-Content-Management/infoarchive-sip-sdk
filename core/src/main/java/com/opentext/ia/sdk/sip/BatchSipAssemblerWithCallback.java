@@ -10,39 +10,38 @@ import java.util.function.Supplier;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 
 /**
- * {@linkplain BatchSipAssembler Assemble a batch of SIPs} with a callback when
- * SIP is closed.
+ * {@linkplain BatchSipAssembler Assemble a batch of SIPs} with a callback when SIP is closed.
  * <p>
  * 
- * @param <D>
- *            The type of domain objects to assemble
+ * @param <D> The type of domain objects to assemble
  */
 public class BatchSipAssemblerWithCallback<D> extends BatchSipAssembler<D> {
-	protected Consumer<FileGenerationMetrics> callback;
-	protected final Object lock = new Object();
 
-	public BatchSipAssemblerWithCallback(SipAssembler<D> assembler, SipSegmentationStrategy<D> segmentationStrategy,
-			Consumer<FileGenerationMetrics> callback) {
-		this(assembler, segmentationStrategy, FileSupplier.fromTemporaryDirectory(), callback);
-	}
+  protected Consumer<FileGenerationMetrics> callback;
+  protected final Object lock = new Object();
 
-	public BatchSipAssemblerWithCallback(SipAssembler<D> assembler, SipSegmentationStrategy<D> segmentationStrategy,
-			File dir, Consumer<FileGenerationMetrics> callback) {
-		this(assembler, segmentationStrategy, FileSupplier.fromDirectory(dir), callback);
-	}
+  public BatchSipAssemblerWithCallback(SipAssembler<D> assembler, SipSegmentationStrategy<D> segmentationStrategy,
+      Consumer<FileGenerationMetrics> callback) {
+    this(assembler, segmentationStrategy, FileSupplier.fromTemporaryDirectory(), callback);
+  }
 
-	public BatchSipAssemblerWithCallback(SipAssembler<D> assembler, SipSegmentationStrategy<D> segmentationStrategy,
-			Supplier<File> fileSupplier, Consumer<FileGenerationMetrics> callback) {
-		super(assembler, segmentationStrategy, fileSupplier);
-		this.callback = callback;
-		setFinalSipInDss(true);
-	}
+  public BatchSipAssemblerWithCallback(SipAssembler<D> assembler, SipSegmentationStrategy<D> segmentationStrategy,
+      File dir, Consumer<FileGenerationMetrics> callback) {
+    this(assembler, segmentationStrategy, FileSupplier.fromDirectory(dir), callback);
+  }
 
-	@Override
-	protected void sipEnded(FileGenerationMetrics metrics) {
-		synchronized (lock) {
-			super.sipEnded(metrics);
-		}
-		callback.accept(metrics);
-	}
+  public BatchSipAssemblerWithCallback(SipAssembler<D> assembler, SipSegmentationStrategy<D> segmentationStrategy,
+      Supplier<File> fileSupplier, Consumer<FileGenerationMetrics> callback) {
+    super(assembler, segmentationStrategy, fileSupplier);
+    this.callback = callback;
+    setFinalSipInDss(true);
+  }
+
+  @Override
+  protected void sipEnded(FileGenerationMetrics metrics) {
+    synchronized (lock) {
+      super.sipEnded(metrics);
+    }
+    callback.accept(metrics);
+  }
 }
