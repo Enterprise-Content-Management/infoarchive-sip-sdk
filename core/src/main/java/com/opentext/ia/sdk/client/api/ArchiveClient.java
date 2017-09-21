@@ -15,7 +15,6 @@ import com.opentext.ia.sdk.dto.export.ExportTransformation;
 import com.opentext.ia.sdk.dto.query.SearchQuery;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 
-
 /**
  * Client that interacts with an Archive.
  */
@@ -85,7 +84,8 @@ public interface ArchiveClient {
    * @return An OrderItem object that contains information about exported package without link to download it
    * @throws IOException When an I/O error occurs
    */
-  OrderItem export(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName) throws IOException;
+  OrderItem export(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName)
+      throws IOException;
 
   /**
    * Start and wait the export of the search results for the specified export configuration.
@@ -97,8 +97,8 @@ public interface ArchiveClient {
    * @return An OrderItem object that contains information about exported package and link to download it
    * @throws IOException When an I/O error occurs
    */
-  OrderItem exportAndWaitForDownloadLink(SearchResults searchResults, ExportConfiguration exportConfiguration, String outputName,
-      TimeUnit timeUnit, long timeOut) throws IOException;
+  OrderItem exportAndWaitForDownloadLink(SearchResults searchResults, ExportConfiguration exportConfiguration,
+      String outputName, TimeUnit timeUnit, long timeOut) throws IOException;
 
   /**
    * Upload the transformation zip with the stylesheet into the Archive.

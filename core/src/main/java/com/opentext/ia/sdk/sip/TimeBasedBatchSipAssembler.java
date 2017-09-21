@@ -39,7 +39,7 @@ public class TimeBasedBatchSipAssembler<D> extends BatchSipAssemblerWithCallback
 
   private void closeSip() {
     try {
-      synchronized (lock) {
+      synchronized (getLock()) {
         closeCurrentSip();
       }
     } catch (IOException e) {
@@ -49,7 +49,7 @@ public class TimeBasedBatchSipAssembler<D> extends BatchSipAssemblerWithCallback
 
   @Override
   public void add(D domainObject) throws IOException {
-    synchronized (lock) {
+    synchronized (getLock()) {
       super.add(domainObject);
     }
     timer.reset();
@@ -57,16 +57,15 @@ public class TimeBasedBatchSipAssembler<D> extends BatchSipAssemblerWithCallback
 
   @Override
   protected void sipEnded(FileGenerationMetrics metrics) {
-    synchronized (lock) {
+    synchronized (getLock()) {
       super.sipEnded(metrics);
     }
-    callback.accept(metrics);
   }
 
   @Override
   public void end() throws IOException {
     timer.stop();
-    synchronized (lock) {
+    synchronized (getLock()) {
       super.end();
     }
   }

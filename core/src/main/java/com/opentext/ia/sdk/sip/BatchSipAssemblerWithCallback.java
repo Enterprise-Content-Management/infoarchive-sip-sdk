@@ -17,8 +17,8 @@ import com.opentext.ia.sdk.support.io.FileSupplier;
  */
 public class BatchSipAssemblerWithCallback<D> extends BatchSipAssembler<D> {
 
-  protected Consumer<FileGenerationMetrics> callback;
-  protected final Object lock = new Object();
+  private Consumer<FileGenerationMetrics> callback;
+  private final Object lock = new Object();
 
   public BatchSipAssemblerWithCallback(SipAssembler<D> assembler, SipSegmentationStrategy<D> segmentationStrategy,
       Consumer<FileGenerationMetrics> callback) {
@@ -39,9 +39,18 @@ public class BatchSipAssemblerWithCallback<D> extends BatchSipAssembler<D> {
 
   @Override
   protected void sipEnded(FileGenerationMetrics metrics) {
-    synchronized (lock) {
+    synchronized (getLock()) {
       super.sipEnded(metrics);
     }
-    callback.accept(metrics);
+    getCallback().accept(metrics);
   }
+
+  public Object getLock() {
+    return lock;
+  }
+
+  public Consumer<FileGenerationMetrics> getCallback() {
+    return callback;
+  }
+
 }
