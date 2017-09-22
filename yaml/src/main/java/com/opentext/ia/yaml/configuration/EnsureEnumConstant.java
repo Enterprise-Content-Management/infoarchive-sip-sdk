@@ -43,6 +43,7 @@ class EnsureEnumConstant extends PropertyVisitor {
     result.put("/searches/\\d+", Arrays.asList("state"));
     result.put("/stores/\\d+", Arrays.asList("storeType", TYPE));
     result.put("/xdbLibraryPolicies/\\d+", Arrays.asList("closeMode"));
+    result.put("/xforms/\\d+", Arrays.asList("creator"));
     return result;
   }
 
