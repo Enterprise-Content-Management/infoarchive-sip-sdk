@@ -730,7 +730,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   public void shouldNotInsertDefaultValueWhenNotConfiguring() {
     yaml.put("fileSystemRoots", Arrays.asList(new YamlMap()
         .put(NAME, someName())
-        .put(CONFIGURE, false)));
+        .put(CONFIGURE, "use existing")));
 
     normalizeYaml();
 

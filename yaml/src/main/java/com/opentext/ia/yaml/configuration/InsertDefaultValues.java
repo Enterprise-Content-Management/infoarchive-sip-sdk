@@ -95,11 +95,7 @@ class InsertDefaultValues extends PathVisitor {
     if (!super.test(visit)) {
       return false;
     }
-    YamlMap yaml = visit.getMap();
-    if (!yaml.containsKey(CONFIGURE)) {
-      return true;
-    }
-    return yaml.get(CONFIGURE).toBoolean();
+    return ObjectConfiguration.parse(visit.getMap().get(CONFIGURE).toString()).canConfigureObject();
   }
 
   @Override
