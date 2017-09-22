@@ -3,14 +3,23 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +37,7 @@ public class WhenAssemblingSipsInBatches extends TestCase {
   public TemporaryFolder folder = new TemporaryFolder();
   private SipAssembler<String> sipAssembler;
   private SipSegmentationStrategy<String> segmentationStrategy;
+  private final Consumer<FileGenerationMetrics> callback = mock(Consumer.class);
 
   @Before
   public void init() {
@@ -101,6 +111,18 @@ public class WhenAssemblingSipsInBatches extends TestCase {
 
     sips.forEach(sip -> assertEquals("SIP directory", dir, sip.getFile()
       .getParentFile()));
+  }
+
+  @Test
+  public void shouldInvokeCallback() throws IOException {
+    BatchSipAssemblerWithCallback<String> batcher =
+        new BatchSipAssemblerWithCallback<>(sipAssembler, segmentationStrategy, () -> newFile(), callback);
+
+    batcher.add(randomString());
+
+    verify(callback, never()).accept(any(FileGenerationMetrics.class));
+    batcher.end();
+    verify(callback).accept(isNotNull(FileGenerationMetrics.class));
   }
 
 }
