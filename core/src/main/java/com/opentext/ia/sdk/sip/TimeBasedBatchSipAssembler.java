@@ -5,24 +5,20 @@ package com.opentext.ia.sdk.sip;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.opentext.ia.sdk.support.datetime.Timer;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
-
 /**
  * {@linkplain BatchSipAssembler Assemble a batch of SIPs} on a timed interval.
  * <p>
  * @param <D> The type of domain objects to assemble
  */
-public class TimeBasedBatchSipAssembler<D> extends BatchSipAssembler<D> {
+public class TimeBasedBatchSipAssembler<D> extends BatchSipAssemblerWithCallback<D> {
 
-  private final Object lock = new Object();
   private final Timer timer;
-  private final Consumer<FileGenerationMetrics> callback;
 
   public TimeBasedBatchSipAssembler(SipAssembler<D> assembler, SipSegmentationStrategy<D> segmentationStrategy,
       SipAssemblyTimer sipAssemblyTimer) {
@@ -36,15 +32,14 @@ public class TimeBasedBatchSipAssembler<D> extends BatchSipAssembler<D> {
 
   public TimeBasedBatchSipAssembler(SipAssembler<D> assembler, SipSegmentationStrategy<D> segmentationStrategy,
       Supplier<File> fileSupplier, SipAssemblyTimer sipAssemblyTimer) {
-    super(assembler, segmentationStrategy, fileSupplier);
-    this.callback = sipAssemblyTimer.getCallback();
+    super(assembler, segmentationStrategy, fileSupplier, sipAssemblyTimer.getCallback());
     setFinalSipInDss(true);
     this.timer = new Timer(sipAssemblyTimer.getMillis(), this::closeSip, sipAssemblyTimer.getClock());
   }
 
   private void closeSip() {
     try {
-      synchronized (lock) {
+      synchronized (getLock()) {
         closeCurrentSip();
       }
     } catch (IOException e) {
@@ -54,7 +49,7 @@ public class TimeBasedBatchSipAssembler<D> extends BatchSipAssembler<D> {
 
   @Override
   public void add(D domainObject) throws IOException {
-    synchronized (lock) {
+    synchronized (getLock()) {
       super.add(domainObject);
     }
     timer.reset();
@@ -62,16 +57,15 @@ public class TimeBasedBatchSipAssembler<D> extends BatchSipAssembler<D> {
 
   @Override
   protected void sipEnded(FileGenerationMetrics metrics) {
-    synchronized (lock) {
+    synchronized (getLock()) {
       super.sipEnded(metrics);
     }
-    callback.accept(metrics);
   }
 
   @Override
   public void end() throws IOException {
     timer.stop();
-    synchronized (lock) {
+    synchronized (getLock()) {
       super.end();
     }
   }
