@@ -113,6 +113,10 @@ uploadArchives {
                 organization = 'Flatirons Solutions'
               }
               contributor {
+                name = 'Domanic Smith-Jones'
+                organization = 'OpenText'
+              }
+              contributor {
                 name = 'Tord Svensson'
                 organization = 'Dell Technologies'
               }
