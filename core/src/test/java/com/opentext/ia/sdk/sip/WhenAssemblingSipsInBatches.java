@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +29,7 @@ public class WhenAssemblingSipsInBatches extends TestCase {
   public TemporaryFolder folder = new TemporaryFolder();
   private SipAssembler<String> sipAssembler;
   private SipSegmentationStrategy<String> segmentationStrategy;
+  private final Consumer<FileGenerationMetrics> callback = mock(Consumer.class);
 
   @Before
   public void init() {
@@ -101,6 +103,18 @@ public class WhenAssemblingSipsInBatches extends TestCase {
 
     sips.forEach(sip -> assertEquals("SIP directory", dir, sip.getFile()
       .getParentFile()));
+  }
+
+  @Test
+  public void shouldInvokeCallback() throws IOException {
+    BatchSipAssemblerWithCallback<String> batcher =
+        new BatchSipAssemblerWithCallback<>(sipAssembler, segmentationStrategy, () -> newFile(), callback);
+
+    batcher.add(randomString());
+
+    verify(callback, never()).accept(any(FileGenerationMetrics.class));
+    batcher.end();
+    verify(callback).accept(isNotNull(FileGenerationMetrics.class));
   }
 
 }
