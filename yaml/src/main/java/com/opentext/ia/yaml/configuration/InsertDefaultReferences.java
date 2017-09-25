@@ -45,13 +45,11 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/auditEvents/\\d+", Arrays.asList(APPLICATION, TENANT));
     result.put("/buckets/\\d+", Arrays.asList("spaceRootObject"));
     result.put("/confirmations/\\d+", Arrays.asList(APPLICATION, "deliveryChannel"));
-    result.put("/customPresentationConfigurations/\\d+", Arrays.asList(APPLICATION, EXPORT_PIPELINE, TENANT));
+    result.put("/customPresentationConfigurations/\\d+", Arrays.asList(EXPORT_PIPELINE));
     result.put("/databases/\\d+", Arrays.asList(APPLICATION, CI_STORE, MANAGED_ITEM_STORE, XDB_STORE));
     result.put("/databaseCryptoes/\\d+", Arrays.asList(APPLICATION, "database"));
     result.put("/deliveryChannels/\\d+", Arrays.asList(APPLICATION, STORE));
-    result.put("/exportConfigurations/\\d+", Arrays.asList(APPLICATION, "pipeline", TENANT, "transformation"));
-    result.put("/exportPipelines/\\d+", Arrays.asList(APPLICATION, TENANT));
-    result.put("/exportTransformations/\\d+", Arrays.asList(APPLICATION, TENANT));
+    result.put("/exportConfigurations/\\d+", Arrays.asList("pipeline", "transformation"));
     result.put("/holds/\\d+", Arrays.asList(TENANT));
     result.put("/holdings/\\d+", Arrays.asList(APPLICATION, CI_STORE, "ingest", "logStore", MANAGED_ITEM_STORE,
         "renditionStore", "sipStore", "stagingStore", "xdbLibraryPolicy", XDB_STORE, "xmlStore"));

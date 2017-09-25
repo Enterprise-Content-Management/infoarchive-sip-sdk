@@ -707,7 +707,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
     normalizeYaml();
 
-    Arrays.asList(APPLICATION, TENANT, "pipeline", TRANSFORMATION).forEach(property ->
+    Arrays.asList("pipeline", TRANSFORMATION).forEach(property ->
           assertFalse("Missing " + property, yaml.get("exportConfigurations", 0, property).isEmpty()));
   }
 
