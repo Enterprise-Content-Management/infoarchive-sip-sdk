@@ -93,7 +93,6 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/xdbLibraryPolicies/\\d+", Arrays.asList(APPLICATION));
     result.put("/xforms/\\d+", Arrays.asList(SEARCH, SEARCH_COMPOSITION));
     result.put("/xqueries/\\d+", Arrays.asList(SEARCH, SEARCH_COMPOSITION));
-    result.put("/xqueryModules/\\d+", Arrays.asList(APPLICATION, TENANT));
     return result;
   }
 

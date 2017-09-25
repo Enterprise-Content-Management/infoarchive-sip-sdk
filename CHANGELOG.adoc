@@ -13,6 +13,11 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 - Added `BatchSipAssemblerWithCallback`
 
 
+=== Fixed
+
+- Minor fixes in normalization of YAML configuration
+
+
 
 == 8.2.0 - 2017-09-22
 
