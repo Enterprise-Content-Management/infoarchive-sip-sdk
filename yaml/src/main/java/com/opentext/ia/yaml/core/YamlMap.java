@@ -255,7 +255,7 @@ public class YamlMap {
   }
 
   public YamlMap sort(Comparator<String> comparator, Predicate<String> entriesFilter, boolean recursive) {
-    sortMap(data, comparator);
+    data = sortMap(data, comparator);
     if (recursive) {
       sortRecursively(data, comparator, entriesFilter);
     }

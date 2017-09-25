@@ -17,6 +17,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
@@ -391,6 +393,19 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         + "  d: d%n"
         + "  c: c%n",
         yaml.sort(property -> "B".equals(property)));
+  }
+
+  @Test
+  public void shouldSortAnyMap() throws Exception {
+    Map<String, String> wrapped = new TreeMap<>((a, b) -> b.compareTo(a));
+    wrapped.put("F", "G");
+    wrapped.put("D", "E");
+    YamlMap map = new YamlMap(wrapped);
+
+    // Should update the underlying map even though it is not a LinkedHashMap
+    map.sort();
+
+    assertYaml("D: E%n%nF: G%n", map);
   }
 
   @Test
