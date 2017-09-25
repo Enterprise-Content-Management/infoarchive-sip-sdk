@@ -73,6 +73,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+", Arrays.asList("exportConfiguration"));
     result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/customPresentation", Arrays.asList(APPLICATION, TENANT));
     result.put("/retentionPolicies/\\d+", Arrays.asList(TENANT));
+    result.put("/rules/\\d+", Arrays.asList(APPLICATION));
     result.put("/schemas/\\d+", Arrays.asList("database", XDB_STORE));
     result.put("/searches/\\d+", Arrays.asList("aic", APPLICATION, "searchGroup", "query"));
     result.put("/searchGroups/\\d+", Arrays.asList(APPLICATION));
