@@ -5,14 +5,18 @@ package com.opentext.ia.yaml.core;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
 public class YamlSequence implements List<Value> {
 
+  private static final String NAME = "name";
   private final List<Object> data;
 
   public YamlSequence(List<Object> data) {
@@ -155,6 +159,34 @@ public class YamlSequence implements List<Value> {
   @Override
   public List<Value> subList(int fromIndex, int toIndex) {
     return new YamlSequence(data.subList(fromIndex, toIndex));
+  }
+
+  public void sort() {
+    sortItems(new DefaultYamlComparator());
+  }
+
+  public void sortItems(Comparator<String> comparator) {
+    sort((o1, o2) -> {
+      Object item1 = unpack(o1);
+      Object item2 = unpack(o2);
+      if (isNamedMap(item1) && isNamedMap(item2)) {
+        return comparator.compare(getName(item1), getName(item2));
+      }
+      return comparator.compare(Objects.toString(item1), Objects.toString(item2));
+    });
+  }
+
+  @SuppressWarnings("unchecked")
+  private boolean isNamedMap(Object object) {
+    if (object instanceof Map) {
+      return ((Map<String, Object>)object).get(NAME) != null;
+    }
+    return false;
+  }
+
+  @SuppressWarnings("unchecked")
+  private String getName(Object object) {
+    return ((Map<String, Object>)object).get(NAME).toString();
   }
 
   @Override

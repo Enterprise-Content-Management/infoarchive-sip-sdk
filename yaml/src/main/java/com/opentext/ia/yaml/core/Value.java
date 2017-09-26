@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.yaml.core;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,9 +44,9 @@ public class Value {
   }
 
   @SuppressWarnings("unchecked")
-  public List<Value> toList() {
+  public YamlSequence toList() {
     if (!isList()) {
-      return Collections.emptyList();
+      return new YamlSequence(new ArrayList<>());
     }
     return new YamlSequence((List<Object>)data);
   }

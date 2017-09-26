@@ -486,4 +486,28 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertYaml("alligator:%n  yak: zebra%n", yaml);
   }
 
+  @Test
+  public void shouldSortSequence() {
+    yaml.put("Q", Arrays.asList("N", "M"))
+        .put("O", Arrays.asList(
+            new YamlMap()
+                .put("I", "J")
+                .put("name", "R"),
+            new YamlMap()
+                .put("K", "L")
+                .put("name", "P")))
+        .put("S", Arrays.asList(
+            new YamlMap()
+                .put("V", "W"),
+            new YamlMap()
+                .put("T", "U")));
+
+    yaml.entries()
+        .map(Entry::getValue)
+        .map(Value::toList)
+        .forEach(YamlSequence::sort);
+
+    assertYaml("Q:%n- M%n- N%n%nO:%n- K: L%n  name: P%n- I: J%n  name: R%n%nS:%n- T: U%n- V: W%n", yaml);
+  }
+
 }
