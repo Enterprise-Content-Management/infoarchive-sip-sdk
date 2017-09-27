@@ -3,7 +3,8 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,7 @@ public class WhenExtractingDigitalObjects extends TestCase {
     try (InputStream stream = actual.get()) {
       assertArrayEquals("Content", content, IOUtils.toByteArray(stream));
     }
+    assertEquals("Size", content.length, actual.getSize());
   }
 
   @Test
