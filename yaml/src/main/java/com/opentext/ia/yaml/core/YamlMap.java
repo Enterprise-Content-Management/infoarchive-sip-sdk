@@ -302,7 +302,7 @@ public class YamlMap {
     for (int i = 0; i < sortedList.size(); i++) {
       sortListItem(sortedList, i, comparator, entriesFilter, content);
     }
-    if (content.isAllMapsWithNames()) {
+    if (content.isAllMaps()) {
       Collections.sort(sortedList, new DefaultYamlSequenceComparator());
     }
     map.put(key, sortedList);
@@ -317,11 +317,8 @@ public class YamlMap {
       sortRecursively(sortedMap, comparator, entriesFilter);
       sortedList.set(index, sortedMap);
       content.setAllScalars(false);
-      if (!sortedMap.containsKey("name")) {
-        content.setAllMapsWithNames(false);
-      }
     } else {
-      content.setAllMapsWithNames(false);
+      content.setAllMaps(false);
     }
     if (content.isAllScalars()) {
       Collections.sort(sortedList, (a, b) -> String.valueOf(a).compareTo(String.valueOf(b)));
@@ -369,7 +366,7 @@ public class YamlMap {
   private static class ListContent {
 
     private boolean allScalars = true;
-    private boolean allMapsWithNames = true;
+    private boolean allMaps = true;
 
     boolean isAllScalars() {
       return allScalars;
@@ -379,12 +376,12 @@ public class YamlMap {
       this.allScalars = allScalars;
     }
 
-    boolean isAllMapsWithNames() {
-      return allMapsWithNames;
+    boolean isAllMaps() {
+      return allMaps;
     }
 
-    void setAllMapsWithNames(boolean allMapsWithNames) {
-      this.allMapsWithNames = allMapsWithNames;
+    void setAllMaps(boolean allMaps) {
+      this.allMaps = allMaps;
     }
 
   }

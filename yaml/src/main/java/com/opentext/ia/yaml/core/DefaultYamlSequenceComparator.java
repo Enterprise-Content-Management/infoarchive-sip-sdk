@@ -12,20 +12,24 @@ import java.util.TreeSet;
 
 public class DefaultYamlSequenceComparator implements Comparator<Object>, Serializable {
 
-  private static final String NAME = "name";
-
   @Override
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public int compare(Object o1, Object o2) {
-    Map<String, Object> m1 = (Map<String, Object>)o1;
-    Map<String, Object> m2 = (Map<String, Object>)o2;
-    int result = m1.get(NAME).toString().compareTo(m2.get(NAME).toString());
-    if (result != 0) {
+    if (o1 instanceof Map && o2 instanceof Map) {
+      return compareMaps((Map<String, Object>)o1, (Map<String, Object>)o2);
+    }
+    int result = compareNulls(o1, o2);
+    if (result != 0 || o1 == null) {
       return result;
     }
-    Set<String> keys = new TreeSet<>(m1.keySet());
+    return compareValues(o1, o2);
+  }
+
+  private int compareMaps(Map<String, Object> m1, Map<String, Object> m2) {
+    int result = 0;
+    Set<String> keys = new TreeSet<>(new DefaultYamlComparator());
+    keys.addAll(m1.keySet());
     keys.addAll(m2.keySet());
-    keys.remove(NAME);
     for (String key : keys) {
       Object value1 = m1.get(key);
       Object value2 = m2.get(key);
@@ -56,7 +60,7 @@ public class DefaultYamlSequenceComparator implements Comparator<Object>, Serial
     if (!value1.getClass().equals(value2.getClass())) {
       return 0;
     }
-    if (value2 instanceof Comparable) {
+    if (value1 instanceof Comparable) {
       return ((Comparable)value1).compareTo(value2);
     }
     return 0;

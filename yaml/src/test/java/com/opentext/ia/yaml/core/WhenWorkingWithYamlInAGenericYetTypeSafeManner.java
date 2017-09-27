@@ -498,8 +498,10 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
                 .put("name", "P")))
         .put("S", Arrays.asList(
             new YamlMap()
-                .put("V", "W"),
+                .put("X", "W")
+                .put("T", "V"),
             new YamlMap()
+                .put("Y", "W")
                 .put("T", "U")));
 
     yaml.entries()
@@ -507,7 +509,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         .map(Value::toList)
         .forEach(YamlSequence::sort);
 
-    assertYaml("Q:%n- M%n- N%n%nO:%n- K: L%n  name: P%n- I: J%n  name: R%n%nS:%n- T: U%n- V: W%n", yaml);
+    assertYaml(
+        "Q:%n- M%n- N%n%nO:%n- K: L%n  name: P%n- I: J%n  name: R%n%nS:%n- Y: W%n  T: U%n- X: W%n  T: V%n", yaml);
   }
 
 }

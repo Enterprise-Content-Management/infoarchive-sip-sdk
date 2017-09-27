@@ -13,6 +13,11 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 - Added `DigitalObject.getSize()`
 
 
+=== Fixed
+
+- Fix `YamlSequence.sort()`
+
+
 
 == 8.4.0 - 2017-09-26
 
