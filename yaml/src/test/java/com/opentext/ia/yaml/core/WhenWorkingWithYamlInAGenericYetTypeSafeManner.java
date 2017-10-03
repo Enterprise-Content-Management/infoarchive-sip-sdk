@@ -242,13 +242,61 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldSerializeToAndDeserializeFromString() {
-    assertEquals("String representation", SAMPLE_YAML_STRING, YamlMap.from(SAMPLE_YAML_STRING).toString());
+    assertToString(YamlMap.from(SAMPLE_YAML_STRING), SAMPLE_YAML_STRING);
+  }
+
+  private void assertToString(YamlMap actual, String format, Object... args) {
+    String expected = String.format(format, args);
+    assertEquals("String representation", expected, actual.toString());
+    assertEquals("Parsed string representation", expected, YamlMap.from(actual.toString()).toString());
   }
 
   @Test
-  public void shouldSkipNullValuesWhenSerializing() {
-    assertEquals("String representation", String.format("foo:%n  ape: bear%n"),
-        new YamlMap().put("foo", new YamlMap().put("ape", "bear").put("cheetah", null)).toString());
+  public void shouldSerializeNullValues() {
+    assertToString(new YamlMap().put("gnu", new YamlMap().put("ape", "bear").put("cheetah", null)),
+        "gnu:%n  ape: bear%n  cheetah: null%n");
+  }
+
+  @Test
+  public void shouldSerializeEmptyString() {
+    assertToString(new YamlMap().put("foobar", ""),
+        "foobar: ''%n");
+  }
+
+  @Test
+  public void shouldSerializeNewlines() {
+    assertToString(new YamlMap().put("gnat", new YamlMap().put("spam", "ham\neggs")),
+        "gnat:%n  spam: |%n    ham%n    eggs%n");
+  }
+
+  @Test
+  public void shouldSerializeTextStartingWithQuote() {
+    assertToString(new YamlMap().put("'foo", "\"bar"), "\"'foo\": '\"bar'%n");
+  }
+
+  @Test
+  public void shouldSerializeTextContainingQuote() {
+    assertToString(new YamlMap().put("fo'o", "ba\"r"), "fo'o: ba\"r%n");
+  }
+
+  @Test
+  public void shouldSerializeTextStartingWithPercent() {
+    assertToString(new YamlMap().put("gnugnat", "%qux"), "gnugnat: '%%qux'%n");
+  }
+
+  @Test
+  public void shouldSerializeTextStartingWithAt() {
+    assertToString(new YamlMap().put("quux", "@q"), "quux: '@q'%n");
+  }
+
+  @Test
+  public void shouldSerializeEmptyCollection() {
+    assertToString(new YamlMap().put("zuul", Collections.emptyList()), "zuul: [ ]%n");
+  }
+
+  @Test
+  public void shouldSerializeEmptyMap() {
+    assertToString(new YamlMap(), "{ }%n");
   }
 
   @Test
@@ -307,7 +355,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put("cheetah", "dingo");
     yaml.put("ape", "bear");
 
-    assertSorted("ape: bear%n%ncheetah: dingo%n");
+    assertSorted("ape: bear%ncheetah: dingo%n");
   }
 
   private void assertSorted(String expected) {
@@ -323,7 +371,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put("elephant", "fox");
     yaml.put("giraffe", "hyena");
 
-    assertYaml("giraffe: hyena%n%nelephant: fox%n", yaml.sort((a, b) -> b.toString().compareTo(a.toString())));
+    assertYaml("giraffe: hyena%nelephant: fox%n", yaml.sort((a, b) -> b.toString().compareTo(a.toString())));
   }
 
   @Test
@@ -405,7 +453,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     // Should update the underlying map even though it is not a LinkedHashMap
     map.sort();
 
-    assertYaml("D: E%n%nF: G%n", map);
+    assertYaml("D: E%nF: G%n", map);
   }
 
   @Test
@@ -472,7 +520,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         .put("tapir", "uakari")
         .replace("rabbit", "vulture", "warthog");
 
-    assertYaml("vulture: warthog%n%ntapir: uakari%n", yaml);
+    assertYaml("vulture: warthog%ntapir: uakari%n", yaml);
   }
 
   @Test

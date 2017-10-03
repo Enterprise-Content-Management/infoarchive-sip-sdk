@@ -17,19 +17,13 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Representer;
 
 
 /**
@@ -325,41 +319,121 @@ public class YamlMap {
     }
   }
 
+  public YamlMap replace(String key, Object newValue) {
+    return put(key, newValue);
+  }
+
+  public YamlMap replace(String oldKey, String newKey, Object newValue) {
+    Map<String, Object> newEntries = new LinkedHashMap<>();
+    for (Map.Entry<String, Object> entry : data.entrySet()) {
+      if (oldKey.equals(entry.getKey())) {
+        newEntries.put(newKey, unpack(newValue));
+      } else {
+        newEntries.put(entry.getKey(), entry.getValue());
+      }
+    }
+    data.clear();
+    data.putAll(newEntries);
+    return this;
+  }
+
   @Override
   public String toString() {
-    return separateTopLevelSections(yamlToString());
-  }
-
-  private String yamlToString() {
-    return new Yaml(new NullSkippingRepresenter(), prettyFlowBlockOptions()).dump(data);
-  }
-
-  private DumperOptions prettyFlowBlockOptions() {
-    DumperOptions result = new DumperOptions();
-    result.setDefaultFlowStyle(FlowStyle.BLOCK);
-    result.setPrettyFlow(true);
-    return result;
-  }
-
-  private String separateTopLevelSections(String yaml) {
     StringBuilder result = new StringBuilder();
-    StringTokenizer tokenizer = new StringTokenizer(yaml, "\n\r");
-    while (tokenizer.hasMoreTokens()) {
-      String line = tokenizer.nextToken();
-      if (isTopLevel(line)) {
-        result.append(NL);
-      }
-      result.append(line).append(NL);
-    }
-    return result.toString().trim() + NL;
+    appendMap("", hasMultipleNestedEntries(), data, result);
+    return result.toString();
   }
 
-  private boolean isTopLevel(String line) {
-    if (line.isEmpty()) {
+  private boolean hasMultipleNestedEntries() {
+    return size() > 1 && entries()
+        .map(Entry::getValue)
+        .anyMatch(value -> value.isMap() || value.isList());
+  }
+
+  private void appendMap(String indent, boolean separateEntries, Map<String, Object> map, StringBuilder builder) {
+    boolean hasOutput = false;
+    String entryIndent = indent;
+    for (Map.Entry<String, Object> entry : map.entrySet()) {
+      if (hasOutput && separateEntries) {
+        builder.append(System.lineSeparator());
+      }
+      appendEntry(entryIndent, entry, builder);
+      if (!hasOutput) {
+        hasOutput = true;
+        entryIndent = indent.replace('-', ' ');
+      }
+    }
+    if (!hasOutput) {
+      builder.append(indent).append("{ }").append(System.lineSeparator());
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private void appendEntry(String indent, Map.Entry<String, Object> entry, StringBuilder builder) {
+    builder.append(indent);
+    if (!appendText(entry.getKey(), builder)) {
+      builder.append(entry.getKey());
+    }
+    builder.append(':');
+    Object value = entry.getValue();
+    if (value instanceof Map) {
+      builder.append(System.lineSeparator());
+      appendMap(indent + "  ", false, (Map<String, Object>)value, builder);
+    } else if (value instanceof Collection) {
+      appendCollection(indent, (Collection<?>)value, builder);
+    } else {
+      builder.append(' ');
+      appendValue(indent, value, builder);
+    }
+  }
+
+  private boolean appendText(String text, StringBuilder builder) {
+    if (text.isEmpty() || text.matches("[\"%@].*")) {
+      builder.append('\'').append(text).append('\'');
       return true;
     }
-    char firstChar = line.charAt(0);
-    return !Character.isWhitespace(firstChar) && firstChar != '-';
+    if (text.startsWith("'")) {
+      builder.append('"').append(text).append('"');
+      return true;
+    }
+    return false;
+  }
+
+  @SuppressWarnings("unchecked")
+  private void appendCollection(String indent, Collection<?> collection, StringBuilder builder) {
+    if (collection.isEmpty()) {
+      builder.append(" [ ]").append(System.lineSeparator());
+    } else {
+      builder.append(System.lineSeparator());
+      for (Object item : collection) {
+        if (item instanceof Map) {
+          appendMap(indent + "- ", false, (Map<String, Object>)item, builder);
+        } else {
+          builder.append(indent).append("- ");
+          appendValue(indent, item, builder);
+        }
+      }
+    }
+  }
+
+  private void appendValue(String indent, Object value, StringBuilder builder) {
+    if (value instanceof String) {
+      String text = ((String)value).trim();
+      if (!appendText(text, builder)) {
+        String[] lines = text.split("(\n|\r)+");
+        if (lines.length > 1) {
+          builder.append('|');
+          for (String line : lines) {
+            builder.append(System.lineSeparator()).append(indent).append("  ").append(line);
+          }
+        } else {
+          builder.append(text);
+        }
+      }
+    } else {
+      builder.append(value);
+    }
+    builder.append(System.lineSeparator());
   }
 
 
@@ -384,50 +458,6 @@ public class YamlMap {
       this.allMaps = allMaps;
     }
 
-  }
-
-
-  private static class NullSkippingRepresenter extends Representer {
-
-    NullSkippingRepresenter() {
-      this.multiRepresenters.put(Map.class, data ->
-          representMapping(getTag(data.getClass(), Tag.MAP), filterNullValues(data), null));
-    }
-
-    private Map<?, ?> filterNullValues(Object data) {
-      Map<?, ?> result = (Map<?, ?>)data;
-      if (result.containsValue(null)) {
-        result = removePropertiesWithoutValue(result);
-      }
-      return result;
-    }
-
-    private Map<?, ?> removePropertiesWithoutValue(Map<?, ?> source) {
-      Map<?, ?> result = new LinkedHashMap<>(source);
-      Collection<?> propertiesWithoutValue = result.keySet().stream()
-          .filter(key -> result.get(key) == null)
-          .collect(Collectors.toList());
-      propertiesWithoutValue.forEach(result::remove);
-      return result;
-    }
-  }
-
-  public YamlMap replace(String key, Object newValue) {
-    return put(key, newValue);
-  }
-
-  public YamlMap replace(String oldKey, String newKey, Object newValue) {
-    Map<String, Object> newEntries = new LinkedHashMap<>();
-    for (Map.Entry<String, Object> entry : data.entrySet()) {
-      if (oldKey.equals(entry.getKey())) {
-        newEntries.put(newKey, unpack(newValue));
-      } else {
-        newEntries.put(entry.getKey(), entry.getValue());
-      }
-    }
-    data.clear();
-    data.putAll(newEntries);
-    return this;
   }
 
 }
