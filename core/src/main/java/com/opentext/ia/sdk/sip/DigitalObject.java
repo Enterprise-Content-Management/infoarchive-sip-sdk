@@ -46,7 +46,7 @@ public interface DigitalObject extends Supplier<InputStream> {
    * @return The newly created {@linkplain DigitalObject}
    */
   static DigitalObject fromFile(String referenceInformation, File file) {
-    return fromSupplier(referenceInformation, () -> file.length(), () -> {
+    return fromSupplier(referenceInformation, file::length, () -> {
       try {
         return new FileInputStream(file);
       } catch (FileNotFoundException e) {
