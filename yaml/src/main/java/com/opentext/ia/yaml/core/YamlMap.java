@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -31,7 +30,7 @@ import org.yaml.snakeyaml.Yaml;
  */
 public class YamlMap {
 
-  private static final String NL = System.lineSeparator();
+  private static final int MAX_LINE_LENGTH = 80;
 
   private Map<String, Object> data;
 
@@ -44,7 +43,7 @@ public class YamlMap {
     try (InputStream input = streamOf(yaml)) {
       return from(input);
     } catch (IOException e) {
-      throw new IllegalStateException("Failed to parse YAML string", e);
+      throw new IllegalArgumentException("Failed to parse YAML string", e);
     }
   }
 
@@ -125,19 +124,22 @@ public class YamlMap {
 
   private String normalizeWhitespace(String text) {
     StringBuilder result = new StringBuilder();
-    AtomicReference<String> prefix = new AtomicReference<>("");
-    Arrays.stream(text.split("(\n|\r)+")).forEach(line -> {
+    String prefix = "";
+    for (String line : text.split("(\n|\r)+")) {
       int end = line.length() - 1;
-      while (end > 0 && Character.isWhitespace(line.charAt(end))) {
+      while (end >= 0 && Character.isWhitespace(line.charAt(end))) {
         --end;
       }
-      result.append(prefix.get()).append(line.substring(0, end + 1));
-      prefix.set(NL);
-    });
+      result.append(prefix);
+      if (end >= 0) {
+        result.append(line.substring(0, end + 1));
+      }
+      prefix = System.lineSeparator();
+    }
     return result.toString();
   }
 
-  private Map<String, Object> getRawData() {
+  Map<String, Object> getRawData() {
     return data;
   }
 
@@ -340,7 +342,7 @@ public class YamlMap {
   @Override
   public String toString() {
     StringBuilder result = new StringBuilder();
-    appendMap("", hasMultipleNestedEntries(), data, result);
+    appendMap(new YamlIndent(), hasMultipleNestedEntries(), data, result, new AtomicBoolean());
     return result.toString();
   }
 
@@ -350,18 +352,15 @@ public class YamlMap {
         .anyMatch(value -> value.isMap() || value.isList());
   }
 
-  private void appendMap(String indent, boolean separateEntries, Map<String, Object> map, StringBuilder builder) {
+  private void appendMap(YamlIndent indent, boolean separateEntries, Map<String, Object> map, StringBuilder builder,
+      AtomicBoolean differenceFound) {
     boolean hasOutput = false;
-    String entryIndent = indent;
     for (Map.Entry<String, Object> entry : map.entrySet()) {
       if (hasOutput && separateEntries) {
         builder.append(System.lineSeparator());
       }
-      appendEntry(entryIndent, entry, builder);
-      if (!hasOutput) {
-        hasOutput = true;
-        entryIndent = indent.replace('-', ' ');
-      }
+      appendEntry(indent, entry, builder, differenceFound);
+      hasOutput = true;
     }
     if (!hasOutput) {
       builder.append(indent).append("{ }").append(System.lineSeparator());
@@ -369,66 +368,91 @@ public class YamlMap {
   }
 
   @SuppressWarnings("unchecked")
-  private void appendEntry(String indent, Map.Entry<String, Object> entry, StringBuilder builder) {
+  private void appendEntry(YamlIndent indent, Map.Entry<String, Object> entry, StringBuilder builder,
+      AtomicBoolean differenceFound) {
+    int len = builder.length();
     builder.append(indent);
-    if (!appendText(entry.getKey(), builder)) {
-      builder.append(entry.getKey());
-    }
+    appendText(indent, builder.length() - len, entry.getKey(), builder);
     builder.append(':');
     Object value = entry.getValue();
     if (value instanceof Map) {
       builder.append(System.lineSeparator());
-      appendMap(indent + "  ", false, (Map<String, Object>)value, builder);
+      appendMap(indent.inMap(), false, (Map<String, Object>)value, builder, differenceFound);
     } else if (value instanceof Collection) {
-      appendCollection(indent, (Collection<?>)value, builder);
+      appendCollection(indent, builder.length() - len, (Collection<?>)value, builder, differenceFound);
     } else {
       builder.append(' ');
-      appendValue(indent, value, builder);
+      appendValue(indent, builder.length() - len, value, builder);
     }
   }
 
-  private boolean appendText(String text, StringBuilder builder) {
-    if (text.isEmpty() || text.matches("[\"%@].*")) {
-      builder.append('\'').append(text).append('\'');
-      return true;
+  private void appendText(YamlIndent indent, int currentLineLength, String text, StringBuilder builder) {
+    if (text.isEmpty() || text.matches("([\"%@].*)|(.*#.*)")) {
+      builder.append('\'').append(text.replace("'", "''")).append('\'');
+    } else if (text.startsWith("'")) {
+      builder.append('"').append(text.replace("\"", "\\\"")).append('"');
+    } else if (MAX_LINE_LENGTH < currentLineLength + text.length()) {
+      appendWrappedText(indent.inText(), currentLineLength, text, builder);
+    } else {
+      builder.append(text);
     }
-    if (text.startsWith("'")) {
-      builder.append('"').append(text).append('"');
-      return true;
+  }
+
+  private void appendWrappedText(YamlIndent indent, int currentLineLength, String text, StringBuilder builder) {
+    int start = 0;
+    int used = currentLineLength;
+    while (start < text.length()) {
+      int end = wordBreakAfter(text, start + MAX_LINE_LENGTH - used + 1);
+      builder.append(text.substring(start, end));
+      start = end + 1;
+      while (start < text.length() && Character.isWhitespace(text.charAt(start))) {
+        start++;
+      }
+      if (start < text.length()) {
+        builder.append(System.lineSeparator()).append(indent);
+        used = indent.length();
+      }
     }
-    return false;
+  }
+
+  private int wordBreakAfter(String text, int start) {
+    int result = text.indexOf(' ', start);
+    if (result < 0) {
+      result = text.length();
+    }
+    return result;
   }
 
   @SuppressWarnings("unchecked")
-  private void appendCollection(String indent, Collection<?> collection, StringBuilder builder) {
+  private void appendCollection(YamlIndent indent, int currentLineLength, Collection<?> collection,
+      StringBuilder builder, AtomicBoolean differenceFound) {
+    int len = builder.length();
     if (collection.isEmpty()) {
       builder.append(" [ ]").append(System.lineSeparator());
     } else {
       builder.append(System.lineSeparator());
       for (Object item : collection) {
         if (item instanceof Map) {
-          appendMap(indent + "- ", false, (Map<String, Object>)item, builder);
+          appendMap(indent.inSequence(), false, (Map<String, Object>)item, builder, differenceFound);
         } else {
           builder.append(indent).append("- ");
-          appendValue(indent, item, builder);
+          appendValue(indent, currentLineLength + builder.length() - len, item, builder);
         }
       }
     }
   }
 
-  private void appendValue(String indent, Object value, StringBuilder builder) {
+  private void appendValue(YamlIndent indent, int currentLineLength, Object value, StringBuilder builder) {
     if (value instanceof String) {
-      String text = ((String)value).trim();
-      if (!appendText(text, builder)) {
-        String[] lines = text.split("(\n|\r)+");
-        if (lines.length > 1) {
-          builder.append('|');
-          for (String line : lines) {
-            builder.append(System.lineSeparator()).append(indent).append("  ").append(line);
-          }
-        } else {
-          builder.append(text);
+      String text = ((String)value).trim().replace("\t", "  ");
+      String[] lines = text.split("\\s*(\n|\r)+");
+      if (lines.length > 1) {
+        builder.append('|');
+        for (String line : lines) {
+          builder.append(System.lineSeparator()).append(indent).append("  ").append(line);
         }
+      } else {
+        appendText(indent, currentLineLength, text, builder);
       }
     } else {
       builder.append(value);

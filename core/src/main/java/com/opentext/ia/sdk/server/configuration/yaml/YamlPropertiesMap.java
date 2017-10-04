@@ -181,7 +181,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
       with("searchComposition", "search", searchName, searchComposition -> {
         Value searchCompositionName = searchComposition.get(NAME);
         putTemplated(searchCompositionName, SEARCH_COMPOSITION_NAME, searchName);
-        with("resultMaster", NAME, searchComposition.get("resultMaster").toString(), resultMaster -> {
+        with("resultMaster", NAME, yaml.get("resultMasters", 0, NAME).toString(), resultMaster -> {
           YamlMap tab = resultMaster.get("panels", 0, "tabs", 0).toMap();
           putTemplated(tab.get("exportEnabled"), SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE, searchName);
           tab.get("columns").toList().stream()

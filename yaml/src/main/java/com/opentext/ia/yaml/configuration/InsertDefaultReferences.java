@@ -77,7 +77,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/schemas/\\d+", Arrays.asList("database", XDB_STORE));
     result.put("/searches/\\d+", Arrays.asList("aic", APPLICATION, "searchGroup", "query"));
     result.put("/searchGroups/\\d+", Arrays.asList(APPLICATION));
-    result.put("/searchCompositions/\\d+", Arrays.asList("resultMaster", SEARCH));
+    result.put("/searchCompositions/\\d+", Arrays.asList("customPresentationConfiguration", SEARCH));
     result.put("/spaces/\\d+", Arrays.asList(APPLICATION));
     result.put("/spaceRootFolders/\\d+", Arrays.asList("fileSystemRoot", SPACE));
     result.put("/spaceRootObjects/\\d+", Arrays.asList(SPACE));

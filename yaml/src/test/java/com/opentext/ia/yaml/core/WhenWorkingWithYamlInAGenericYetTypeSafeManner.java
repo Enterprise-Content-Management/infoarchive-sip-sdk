@@ -25,6 +25,9 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.Yaml;
 
 import com.opentext.ia.test.TestCase;
 import com.opentext.ia.test.TestUtil;
@@ -242,61 +245,59 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldSerializeToAndDeserializeFromString() {
-    assertToString(YamlMap.from(SAMPLE_YAML_STRING), SAMPLE_YAML_STRING);
+    assertToString("toString", YamlMap.from(SAMPLE_YAML_STRING), SAMPLE_YAML_STRING);
   }
 
-  private void assertToString(YamlMap actual, String format, Object... args) {
-    String expected = String.format(format, args);
-    assertEquals("String representation", expected, actual.toString());
-    assertEquals("Parsed string representation", expected, YamlMap.from(actual.toString()).toString());
+  private void assertToString(String message, YamlMap actual, String format, Object... args) {
+    assertAsString(message, actual, String.format(format, args));
   }
 
-  @Test
-  public void shouldSerializeNullValues() {
-    assertToString(new YamlMap().put("gnu", new YamlMap().put("ape", "bear").put("cheetah", null)),
-        "gnu:%n  ape: bear%n  cheetah: null%n");
+  private void assertAsString(String message, YamlMap actual, String expected) {
+    assertEquals(message, expected, actual.toString());
+    assertEquals(message + " - parsed", expected, YamlMap.from(actual.toString()).toString());
   }
 
-  @Test
-  public void shouldSerializeEmptyString() {
-    assertToString(new YamlMap().put("foobar", ""),
-        "foobar: ''%n");
-  }
-
-  @Test
-  public void shouldSerializeNewlines() {
-    assertToString(new YamlMap().put("gnat", new YamlMap().put("spam", "ham\neggs")),
-        "gnat:%n  spam: |%n    ham%n    eggs%n");
+  private void assertToString(String message, YamlMap map) {
+    DumperOptions prettyFlowBlockOptions = new DumperOptions();
+    prettyFlowBlockOptions.setDefaultFlowStyle(FlowStyle.BLOCK);
+    prettyFlowBlockOptions.setPrettyFlow(true);
+    assertAsString(message, map, new Yaml(prettyFlowBlockOptions).dump(map.getRawData()).replace("|-", "|"));
   }
 
   @Test
-  public void shouldSerializeTextStartingWithQuote() {
-    assertToString(new YamlMap().put("'foo", "\"bar"), "\"'foo\": '\"bar'%n");
+  public void shouldSerializeSameAsSnakeYaml() {
+    assertToString("Null", new YamlMap().put("gnu", new YamlMap().put("ape", "bear").put("cheetah", null)));
+    assertToString("Empty string", new YamlMap().put("foobar", ""));
+    assertToString("New lines", new YamlMap().put("gnat",
+        new YamlMap().put("spam", "ham\neggs").put("spam2", Arrays.asList("ham2\reggs2", "yuck\n\rpuck"))));
+    assertToString("Start with double quote", new YamlMap().put("foo", "\"bar"));
+    assertToString("Containing quote", new YamlMap().put("fo'o", "ba\"r"));
+    assertToString("Containing :", new YamlMap().put("quuux", "ba:r"));
+    assertToString("Start with %", new YamlMap().put("gnugnat", "%qux"));
+    assertToString("Start with @", new YamlMap().put("quux", "@q"));
+    assertToString("Nested maps and sequences with long text", new YamlMap().put("databases", Arrays.asList(
+        new YamlMap().put(NAME, "db").put("metadata", Arrays.asList(
+            new YamlMap().put("text", "<foo>\n  <bar/>\n</foo>\n"))))));
+    assertToString("Map in map in list", new YamlMap().put("pdiSchemas", Arrays.asList(new YamlMap()
+        .put("content", new YamlMap()
+            .put("format", "xml")))));
+    assertToString("Long text", new YamlMap().put("qbf",
+        "Ex qui quidam postulant. Diam delicatissimi ut ius, eu quo autem putent conclusionemque, te volutpat "
+        + "democritum sea. Ad est amet integre adipisci, quo id quis vituperata. In modo labitur disputationi sit. Eu "
+        + "quo dolores pertinax theophrastus, usu quidam feugiat adipiscing ei. Usu graece gloriatur at, quo brute "
+        + "altera gloriatur in, mea elitr primis invidunt ut."));
+    assertToString("Containing #", new YamlMap().put("noComment", "This #text# doesn't contain a comment"));
   }
 
-  @Test
-  public void shouldSerializeTextContainingQuote() {
-    assertToString(new YamlMap().put("fo'o", "ba\"r"), "fo'o: ba\"r%n");
-  }
 
   @Test
-  public void shouldSerializeTextStartingWithPercent() {
-    assertToString(new YamlMap().put("gnugnat", "%qux"), "gnugnat: '%%qux'%n");
-  }
-
-  @Test
-  public void shouldSerializeTextStartingWithAt() {
-    assertToString(new YamlMap().put("quux", "@q"), "quux: '@q'%n");
-  }
-
-  @Test
-  public void shouldSerializeEmptyCollection() {
-    assertToString(new YamlMap().put("zuul", Collections.emptyList()), "zuul: [ ]%n");
-  }
-
-  @Test
-  public void shouldSerializeEmptyMap() {
-    assertToString(new YamlMap(), "{ }%n");
+  public void shouldSerializeBetterThanSnakeYaml() {
+    assertToString("Empty collection", new YamlMap().put("zuul", Collections.emptyList()), "zuul: [ ]%n");
+    assertToString("Empty map", new YamlMap(), "{ }%n");
+    assertToString("Starting with quote", new YamlMap().put("foo", "'bar"), "foo: \"'bar\"%n");
+    assertToString("Starting with quote, containing double quote", new YamlMap().put("qq", "'qwe\"rty"),
+        "qq: \"'qwe\\\"rty\"%n");
+    assertToString("Containing tab", new YamlMap().put("tab", "b\tar"), "tab: b  ar%n");
   }
 
   @Test
@@ -540,10 +541,10 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         .put("O", Arrays.asList(
             new YamlMap()
                 .put("I", "J")
-                .put("name", "R"),
+                .put(NAME, "R"),
             new YamlMap()
                 .put("K", "L")
-                .put("name", "P")))
+                .put(NAME, "P")))
         .put("S", Arrays.asList(
             new YamlMap()
                 .put("X", "W")
