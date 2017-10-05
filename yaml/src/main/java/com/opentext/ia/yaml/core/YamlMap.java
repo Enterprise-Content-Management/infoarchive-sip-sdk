@@ -22,7 +22,11 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.representer.Representer;
 
 
 /**
@@ -58,10 +62,15 @@ public class YamlMap {
    */
   public static YamlMap from(InputStream yaml) {
     YamlMap result = new YamlMap();
-    for (Object data : new Yaml().loadAll(yaml)) {
+    for (Object data : newLoader().loadAll(yaml)) {
       result.putAll(new YamlMap(data));
     }
     return result;
+  }
+
+  private static Yaml newLoader() {
+    return new Yaml(new Constructor(), new Representer(), new DumperOptions(), new LoaderOptions(),
+        new YamlTypeResolver());
   }
 
   /**

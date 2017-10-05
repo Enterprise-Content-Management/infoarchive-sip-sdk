@@ -562,4 +562,11 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         "Q:%n- M%n- N%n%nO:%n- K: L%n  name: P%n- I: J%n  name: R%n%nS:%n- Y: W%n  T: U%n- X: W%n  T: V%n", yaml);
   }
 
+  @Test
+  public void shouldResolveOffsetDateTime() throws Exception {
+    Object object = YamlMap.from("odt: 2002-05-30T12:00:00Z").getRawData().get("odt");
+
+    assertEquals("Type", String.class, object.getClass());
+  }
+
 }
