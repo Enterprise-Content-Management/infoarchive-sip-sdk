@@ -281,11 +281,6 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertToString("Map in map in list", new YamlMap().put("pdiSchemas", Arrays.asList(new YamlMap()
         .put("content", new YamlMap()
             .put("format", "xml")))));
-    assertToString("Long text", new YamlMap().put("qbf",
-        "Ex qui quidam postulant. Diam delicatissimi ut ius, eu quo autem putent conclusionemque, te volutpat "
-        + "democritum sea. Ad est amet integre adipisci, quo id quis vituperata. In modo labitur disputationi sit. Eu "
-        + "quo dolores pertinax theophrastus, usu quidam feugiat adipiscing ei. Usu graece gloriatur at, quo brute "
-        + "altera gloriatur in, mea elitr primis invidunt ut."));
     assertToString("Containing #", new YamlMap().put("noComment", "This #text# doesn't contain a comment"));
   }
 
@@ -298,6 +293,17 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertToString("Starting with quote, containing double quote", new YamlMap().put("qq", "'qwe\"rty"),
         "qq: \"'qwe\\\"rty\"%n");
     assertToString("Containing tab", new YamlMap().put("tab", "b\tar"), "tab: b  ar%n");
+    // Want to be as good as snakeyaml 1.18, but 1.17 is different
+    assertToString("Long text", new YamlMap().put("qbf",
+        "Ex qui quidam postulant. Diam delicatissimi ut ius, eu quo autem putent conclusionemque, te volutpat "
+            + "democritum sea. Ad est amet integre adipisci, quo id quis vituperata. In modo labitur disputationi sit. Eu "
+            + "quo dolores pertinax theophrastus, usu quidam feugiat adipiscing ei. Usu graece gloriatur at, quo brute "
+            + "altera gloriatur in, mea elitr primis invidunt ut."),
+        "qbf: Ex qui quidam postulant. Diam delicatissimi ut ius, eu quo autem putent conclusionemque,%n"
+            + "  te volutpat democritum sea. Ad est amet integre adipisci, quo id quis vituperata.%n"
+            + "  In modo labitur disputationi sit. Eu quo dolores pertinax theophrastus, usu quidam%n"
+            + "  feugiat adipiscing ei. Usu graece gloriatur at, quo brute altera gloriatur in, mea%n"
+            + "  elitr primis invidunt ut.%n");
   }
 
   @Test
