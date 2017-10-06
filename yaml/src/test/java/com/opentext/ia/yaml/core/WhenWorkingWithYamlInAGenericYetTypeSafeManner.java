@@ -570,9 +570,13 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldResolveOffsetDateTime() throws Exception {
-    Object object = YamlMap.from("odt: 2002-05-30T12:00:00Z").getRawData().get("odt");
+    assertStringField("odt", "2002-05-30T12:00:00Z");
+    assertStringField("ms", "2017-10-06T10:59:11.477+02:00");
+  }
 
-    assertEquals("Type", String.class, object.getClass());
+  private void assertStringField(String fieldName, String fieldValue) {
+    assertEquals(fieldValue, String.class,
+        YamlMap.from(fieldName + ": " + fieldValue).getRawData().get(fieldName).getClass());
   }
 
 }

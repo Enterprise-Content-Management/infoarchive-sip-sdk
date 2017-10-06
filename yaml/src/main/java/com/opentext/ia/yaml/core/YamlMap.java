@@ -31,7 +31,7 @@ import org.yaml.snakeyaml.representer.Representer;
 /**
  * Type-safe access to a <a href="http://www.yaml.org/spec/1.2/spec.html">YAML</a> map.
  */
-public class YamlMap {
+public class YamlMap implements Cloneable {
 
   private static final int MAX_LINE_LENGTH = 80;
 
@@ -344,6 +344,13 @@ public class YamlMap {
     data.clear();
     data.putAll(newEntries);
     return this;
+  }
+
+  @Override
+  @SuppressWarnings({ "PMD.ProperCloneImplementation", "PMD.CloneThrowsCloneNotSupportedException",
+      "checkstyle:SuperClone"})
+  public YamlMap clone() {
+    return YamlMap.from(toString());
   }
 
   @Override

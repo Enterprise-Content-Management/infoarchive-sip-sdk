@@ -6,6 +6,18 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 8.6.0 - 2017-10-06
+
+=== Added
+
+- Add `YamlDiff` to see the differences between two YAML files
+
+=== Fixed
+
+- Fix `YamlMap.from()` to load ISO dates as strings
+
+
+
 == 8.5.6 - 2017-10-06
 
 === Fixed
