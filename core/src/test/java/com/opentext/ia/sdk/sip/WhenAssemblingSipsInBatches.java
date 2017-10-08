@@ -9,6 +9,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -115,6 +116,50 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     verify(callback, never()).accept(any(FileGenerationMetrics.class));
     batcher.end();
     verify(callback).accept(isNotNull(FileGenerationMetrics.class));
+  }
+
+  @Test
+  public void shouldRejectDomainObjectThatIsTooBig() throws IOException {
+    long sipSizeLimit = 2;
+    File dir = folder.newFolder();
+    // DigitalObjectsExtraction needs to be created and given to the segmentation strategy
+    class StringsDomainObjectToDigitalObjects implements DigitalObjectsExtraction<String> {
+
+      @Override
+      public Iterator<? extends DigitalObject> apply(String testDomainObject) {
+        final ArrayList<DigitalObject> digiObjs = new ArrayList<>();
+        ArrayList<String> myStrings = new ArrayList<>();
+        for (int i = 0; i < testDomainObject.length(); i++) {
+          myStrings.add(testDomainObject.charAt(i) + "");
+        }
+        myStrings.forEach(eachWord -> digiObjs.add(DigitalObject.fromBytes(randomString(), eachWord.getBytes())));
+        return digiObjs.iterator();
+      }
+    }
+
+    SipSegmentationStrategy<String> localStrategy =
+        SipSegmentationStrategy.byMaxProspectiveSipSize(sipSizeLimit, new StringsDomainObjectToDigitalObjects());
+    BatchSipAssembler<String> batcher = new BatchSipAssembler<>(sipAssembler, localStrategy, dir);
+
+    batcher.add("9_1234567");
+    batcher.add("10_1234567");
+    batcher.add("10_1234567");
+    batcher.end();
+    System.out.println("Batcher closed");
+    Iterator<FileGenerationMetrics> sips = batcher.getSipsMetrics().iterator();
+    SipMetrics sMet = (SipMetrics)sips.next().getMetrics();
+    System.out.println("Print Metrics: " + sMet);
+
+    batcher.add("3 - 0123456789");
+    batcher.add("4 - 0123456789");
+    batcher.add("5 - 0123456789");
+    batcher.add("6 - 0123456789");
+    batcher.add("7 - 0123456789");
+    batcher.end();
+    Iterator<FileGenerationMetrics> sips2 = batcher.getSipsMetrics().iterator();
+    SipMetrics sMet2 = (SipMetrics)sips2.next().getMetrics();
+    System.out.println("Print Metrics: " + sMet2);
+    sMet2.sipFileSize();
   }
 
 }

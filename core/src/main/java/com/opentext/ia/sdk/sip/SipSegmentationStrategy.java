@@ -4,6 +4,9 @@
 package com.opentext.ia.sdk.sip;
 
 import java.util.Arrays;
+import java.util.Iterator;
+
+import com.opentext.ia.sdk.support.io.DomainObjectTooBigException;
 
 /**
  * Strategy for segmenting domain objects into different SIPs.
@@ -63,13 +66,49 @@ public interface SipSegmentationStrategy<D> {
   }
 
   /**
-   * Return a {@linkplain SipSegmentationStrategy} that allows a maximum total size (uncompressed) of the SIP.
+   * Return a {@linkplain SipSegmentationStrategy} that allows a maximum total size (uncompressed) of the SIP. Does not
+   * take into account the size of the object currently being added to the SIP
    * @param <D> The type of domain objects to segment into different SIPs
    * @param maxSize The maximum size of the SIP
    * @return A {@linkplain SipSegmentationStrategy} that allows a maximum total size of the SIP
    */
   static <D> SipSegmentationStrategy<D> byMaxSipSize(long maxSize) {
     return (domainObject, metrics) -> metrics.sipSize() >= maxSize;
+  }
+
+  /**
+   * Return a {@linkplain SipSegmentationStrategy} that allows a maximum total size (uncompressed) of the SIP including
+   * the object being added.
+   * @param <D> The type of domain objects to segment into different SIPs
+   * @param maxSize The maximum size of the SIP
+   * @param digitalObjectsExtraction The extractor for the type of digital object being added.
+   * @return A {@linkplain SipSegmentationStrategy} that allows a maximum total size of the SIP including the object
+   *         being added to the SIP
+   */
+  static <D> SipSegmentationStrategy<D> byMaxProspectiveSipSize(long maxSize,
+      DigitalObjectsExtraction<D> digitalObjectsExtraction) {
+    return (domainObject,
+        metrics) -> metrics.sipSize()
+            + getDomainObjectSize(digitalObjectsExtraction.apply(domainObject), maxSize) > maxSize;
+  }
+
+  /**
+   * Return the size of a domain object in bytes.
+   * @param iterator used to iterate over the digital objects contained in the domain object
+   * @return the size of the domain object in bytes
+   * @throws IOException This is thrown if the DomainObject is larger than the maximum allowed SIP size
+   */
+  static long getDomainObjectSize(Iterator<? extends DigitalObject> iterator, long maxSize) {
+    // TODO if we're not adding the content we shouldn't unpack it
+    long size = 0;
+    while (iterator.hasNext()) {
+      DigitalObject digitalObject = iterator.next();
+      size += digitalObject.getSize();
+    }
+    if (size > maxSize) {
+      throw new DomainObjectTooBigException(size, maxSize);
+    }
+    return size;
   }
 
   /**
