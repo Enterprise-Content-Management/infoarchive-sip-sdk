@@ -375,7 +375,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   @Test
-  public void shouldNotInsertDefaultForExplicitNull() {
+  public void shouldNotInsertDefaultReferenceForExplicitNull() {
     yaml.put(TENANTS, Arrays.asList(new YamlMap().put(NAME, someName())));
     yaml.put(APPLICATIONS, Arrays.asList(new YamlMap()
         .put(NAME, someName())
@@ -384,6 +384,22 @@ public class WhenUsingYamlConfiguration extends TestCase {
     normalizeYaml();
 
     assertTrue("Explicit null is overridden with default", yaml.get(APPLICATIONS, 0, TENANT).isEmpty());
+  }
+
+  @Test
+  public void shouldNotInsertDefaultReferenceForExceptionalCases() {
+    // The following are usually null. To prevent having to specify null (almost) everywhere, we simply don't insert
+    // references by default for these exceptional cases.
+    yaml.put("searchGroups", Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put("customPresentationConfigurations", Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put("searches", Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put("searchCompositions", Arrays.asList(new YamlMap().put(NAME, someName())));
+
+    normalizeYaml();
+
+    assertTrue("Search group should not be inserted", yaml.get("searches", 0, "searchGroup").isEmpty());
+    assertTrue("Custom presentation configuration should not be inserted",
+        yaml.get("searchCompositions", 0, "customPresentationConfiguration").isEmpty());
   }
 
   @Test
