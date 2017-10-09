@@ -99,7 +99,6 @@ public interface SipSegmentationStrategy<D> {
    * @throws IOException This is thrown if the DomainObject is larger than the maximum allowed SIP size
    */
   static long getDomainObjectSize(Iterator<? extends DigitalObject> iterator, long maxSize) {
-    // TODO if we're not adding the content we shouldn't unpack it
     long size = 0;
     while (iterator.hasNext()) {
       DigitalObject digitalObject = iterator.next();
