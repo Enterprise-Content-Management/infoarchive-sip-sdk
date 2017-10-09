@@ -9,6 +9,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.opentext.ia.sdk.support.io.DomainObjectTooBigException;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 import com.opentext.ia.test.TestCase;
 
@@ -67,7 +69,7 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     Iterator<FileGenerationMetrics> sips = batcher.getSipsMetrics()
       .iterator();
 
-    verify(segmentationStrategy, never()).shouldStartNewSip(eq(object1), any(SipMetrics.class));
+    verify(segmentationStrategy).shouldStartNewSip(eq(object1), any(SipMetrics.class));
     verify(segmentationStrategy).shouldStartNewSip(eq(object2), any(SipMetrics.class));
     verify(segmentationStrategy).shouldStartNewSip(eq(object3), any(SipMetrics.class));
 
@@ -118,7 +120,7 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     verify(callback).accept(isNotNull(FileGenerationMetrics.class));
   }
 
-  @Test
+  @Test(expected = DomainObjectTooBigException.class)
   public void shouldRejectDomainObjectThatIsTooBig() throws IOException {
     long sipSizeLimit = 2;
     File dir = folder.newFolder();
@@ -127,12 +129,15 @@ public class WhenAssemblingSipsInBatches extends TestCase {
 
       @Override
       public Iterator<? extends DigitalObject> apply(String testDomainObject) {
-        final ArrayList<DigitalObject> digiObjs = new ArrayList<>();
-        ArrayList<String> myStrings = new ArrayList<>();
+        ArrayList<DigitalObject> digiObjs = new ArrayList<DigitalObject>();
         for (int i = 0; i < testDomainObject.length(); i++) {
-          myStrings.add(testDomainObject.charAt(i) + "");
+          try {
+            digiObjs
+                .add(DigitalObject.fromBytes(randomString(), testDomainObject.substring(i, i + 1).getBytes("UTF-8")));
+          } catch (UnsupportedEncodingException e) {
+            assertTrue("UnsupportedEncodingException in shouldRejectDomainObjectThatIsTooBig", false);
+          }
         }
-        myStrings.forEach(eachWord -> digiObjs.add(DigitalObject.fromBytes(randomString(), eachWord.getBytes())));
         return digiObjs.iterator();
       }
     }
@@ -142,24 +147,6 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     BatchSipAssembler<String> batcher = new BatchSipAssembler<>(sipAssembler, localStrategy, dir);
 
     batcher.add("9_1234567");
-    batcher.add("10_1234567");
-    batcher.add("10_1234567");
-    batcher.end();
-    System.out.println("Batcher closed");
-    Iterator<FileGenerationMetrics> sips = batcher.getSipsMetrics().iterator();
-    SipMetrics sMet = (SipMetrics)sips.next().getMetrics();
-    System.out.println("Print Metrics: " + sMet);
-
-    batcher.add("3 - 0123456789");
-    batcher.add("4 - 0123456789");
-    batcher.add("5 - 0123456789");
-    batcher.add("6 - 0123456789");
-    batcher.add("7 - 0123456789");
-    batcher.end();
-    Iterator<FileGenerationMetrics> sips2 = batcher.getSipsMetrics().iterator();
-    SipMetrics sMet2 = (SipMetrics)sips2.next().getMetrics();
-    System.out.println("Print Metrics: " + sMet2);
-    sMet2.sipFileSize();
   }
 
 }

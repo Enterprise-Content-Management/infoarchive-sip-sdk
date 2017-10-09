@@ -27,7 +27,7 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
   private int expected;
 
   @Rule
-  public ExpectedException thrown = ExpectedException.none();
+  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void init() {
@@ -92,35 +92,41 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
   }
 
   @Test
-  public void shouldSegmentByProspectiveSipSize() throws IOException {
+  public void shouldSegmentByRandomMaxProspectiveSipSize() throws IOException {
     int noSips;
     // Random Strings
-    noSips = executeSegmentByProspectiveSipSize(randomInt(50, 150), randomArrayOfStrings(randomInt(4, 8)));
-    assertEquals("SIP counts - Random generated Strings", expected, noSips);
+    int sipLimit = randomInt(50, 150);
+    String[] randomArrayofStrings = randomArrayOfStrings(randomInt(4, 8));
 
+    int domainObjectSize = 0;
+    for (String thisOne : randomArrayofStrings) {
+      domainObjectSize += thisOne.length();
+    }
+    if (domainObjectSize > sipLimit) {
+      expectedException.expect(DomainObjectTooBigException.class);
+    }
+    noSips = executeSegmentByProspectiveSipSize(sipLimit, randomArrayofStrings);
+    assertEquals("SIP counts - Random generated Strings", expected, noSips);
+  }
+
+  @Test
+  public void shouldSegmentByMaxProspectiveSipSize() throws IOException {
+    int noSips;
     // Boundary Test - 45 size and 90 limit
     noSips = executeSegmentByProspectiveSipSize(90,
         new String[] { "Hello", "Doman", "yuiopqwertyuiop", "poiuytrewqpoiuytrewq" });
     assertEquals("SIP counts - Fixed Length Strings", expected, noSips);
 
-    // Boundary Test - 1 sip per AIU
+    // Boundary Test - exact match
     noSips = executeSegmentByProspectiveSipSize(45,
         new String[] { "Hello", "Doman", "yuiopqwertyuiop", "poiuytrewqpoiuytrewq" });
     assertEquals("SIP counts - Fixed Length Strings", expected, noSips);
   }
 
-  @Test
-  public void shouldThrowDomainObjectTooBigException() throws IOException {
-    thrown.expect(DomainObjectTooBigException.class);
-    executeSegmentByProspectiveSipSize(44,
-        new String[] { "Hello", "Doman", "yuiopqwertyuiop", "poiuytrewqpoiuytrewq" });
-  }
-
   private int executeSegmentByProspectiveSipSize(int sipSizeLimit, String[] stringArray) throws IOException {
-    // Domain Object to test with
     class TestDomainObject {
 
-      private String[] containedStrings;
+      private final String[] containedStrings;
 
       TestDomainObject(String[] inContainedStrings) {
         containedStrings = inContainedStrings;
@@ -132,9 +138,9 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
 
       @Override
       public Iterator<? extends DigitalObject> apply(TestDomainObject testDomainObject) {
-        final ArrayList<DigitalObject> digiObjs = new ArrayList<>();
-        ArrayList<String> myStrings = new ArrayList<>(Arrays.asList(testDomainObject.containedStrings));
-        myStrings.forEach(eachWord -> digiObjs.add(DigitalObject.fromBytes(randomString(), eachWord.getBytes())));
+        ArrayList<DigitalObject> digiObjs = new ArrayList<DigitalObject>();
+        Arrays.asList(testDomainObject.containedStrings)
+            .forEach(eachWord -> digiObjs.add(DigitalObject.fromBytes(randomString(), eachWord.getBytes())));
         return digiObjs.iterator();
       }
     }

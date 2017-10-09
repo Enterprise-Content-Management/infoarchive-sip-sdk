@@ -3,10 +3,8 @@
  */
 package com.opentext.ia.sdk.support.io;
 
-import java.io.IOException;
-
 /**
- * Unchecked version of {@linkplain IOException}.
+ * Extends {@linkplain RuntimeException}. Used when a DomainObject is too big to fit in a SIP with the defined limit.
  */
 public class DomainObjectTooBigException extends RuntimeException {
 
