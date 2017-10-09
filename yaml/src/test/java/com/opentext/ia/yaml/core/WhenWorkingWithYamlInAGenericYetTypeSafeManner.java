@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.DumperOptions.LineBreak;
 import org.yaml.snakeyaml.Yaml;
 
 import com.opentext.ia.test.TestCase;
@@ -261,6 +262,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     DumperOptions prettyFlowBlockOptions = new DumperOptions();
     prettyFlowBlockOptions.setDefaultFlowStyle(FlowStyle.BLOCK);
     prettyFlowBlockOptions.setPrettyFlow(true);
+    prettyFlowBlockOptions.setLineBreak(LineBreak.getPlatformLineBreak());
     assertAsString(message, map, new Yaml(prettyFlowBlockOptions).dump(map.getRawData()).replace("|-", "|"));
   }
 
@@ -268,16 +270,11 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   public void shouldSerializeSameAsSnakeYaml() {
     assertToString("Null", new YamlMap().put("gnu", new YamlMap().put("ape", "bear").put("cheetah", null)));
     assertToString("Empty string", new YamlMap().put("foobar", ""));
-    assertToString("New lines", new YamlMap().put("gnat",
-        new YamlMap().put("spam", "ham\neggs").put("spam2", Arrays.asList("ham2\reggs2", "yuck\n\rpuck"))));
     assertToString("Start with double quote", new YamlMap().put("foo", "\"bar"));
     assertToString("Containing quote", new YamlMap().put("fo'o", "ba\"r"));
     assertToString("Containing :", new YamlMap().put("quuux", "ba:r"));
     assertToString("Start with %", new YamlMap().put("gnugnat", "%qux"));
     assertToString("Start with @", new YamlMap().put("quux", "@q"));
-    assertToString("Nested maps and sequences with long text", new YamlMap().put("databases", Arrays.asList(
-        new YamlMap().put(NAME, "db").put("metadata", Arrays.asList(
-            new YamlMap().put("text", "<foo>\n  <bar/>\n</foo>\n"))))));
     assertToString("Map in map in list", new YamlMap().put("pdiSchemas", Arrays.asList(new YamlMap()
         .put("content", new YamlMap()
             .put("format", "xml")))));
@@ -293,6 +290,13 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertToString("Starting with quote, containing double quote", new YamlMap().put("qq", "'qwe\"rty"),
         "qq: \"'qwe\\\"rty\"%n");
     assertToString("Containing tab", new YamlMap().put("tab", "b\tar"), "tab: b  ar%n");
+    assertToString("New lines", new YamlMap().put("gnat", new YamlMap().put("spam", "ham\neggs")
+        .put("spam2", Arrays.asList("ham2\reggs2", "yuck\n\rpuck"))),
+        "gnat:%n  spam: |%n    ham%n    eggs%n  spam2:%n  - |%n    ham2%n    eggs2%n  - |%n    yuck%n    puck%n");
+    assertToString("Nested maps and sequences with long text", new YamlMap().put("databases", Arrays.asList(
+        new YamlMap().put(NAME, "db").put("metadata", Arrays.asList(
+            new YamlMap().put("text", "<foo>\n  <bar/>\n</foo>\n"))))),
+        "databases:%n- name: db%n  metadata:%n  - text: |%n      <foo>%n        <bar/>%n      </foo>%n");
     // Want to be as good as snakeyaml 1.18, but 1.17 is different
     assertToString("Long text", new YamlMap().put("qbf",
         "Ex qui quidam postulant. Diam delicatissimi ut ius, eu quo autem putent conclusionemque, te volutpat "

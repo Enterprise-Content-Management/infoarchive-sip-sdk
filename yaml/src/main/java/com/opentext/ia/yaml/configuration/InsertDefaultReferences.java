@@ -55,7 +55,6 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
         "renditionStore", "sipStore", "stagingStore", "xdbLibraryPolicy", XDB_STORE, "xmlStore"));
     result.put("/holdings/\\d+/pdiConfigs/\\d+", Arrays.asList("pdi"));
     result.put("/holdingCryptoes/\\d+", Arrays.asList(APPLICATION, "holding"));
-    result.put("/holdingCryptoes/\\d+/(ci|pdi|sip)", Arrays.asList("cryptoObject"));
     result.put("/holdingCryptoes/\\d+/pdis/\\d+", Arrays.asList("pdiCrypto"));
     result.put("/ingests/\\d+", Arrays.asList(APPLICATION));
     result.put("/ingestNodes/\\d+", Arrays.asList(APPLICATION));
