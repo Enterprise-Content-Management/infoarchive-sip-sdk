@@ -14,6 +14,13 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
 
+== 8.6.1 - 2017-10-09
+
+=== Fixed
+
+- Minor fixes in normalization of YAML configuration
+
+
 == 8.6.0 - 2017-10-06
 
 === Added

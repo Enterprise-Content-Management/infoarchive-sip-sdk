@@ -367,7 +367,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
     assertDatabaseStore("xdb", store);
     assertDatabaseStore("ci", store);
     assertDatabaseStore("managedItem", store);
-    assertValue("CryptoObject", cryptoObject, yaml.get("holdingCryptoes", 0, "ci", "cryptoObject"));
+    assertFalse("Should NOT insert CryptoObject",
+        yaml.get("holdingCryptoes", 0, "ci").toMap().containsKey("cryptoObject"));
   }
 
   private void assertDatabaseStore(String storeType, String expected) {

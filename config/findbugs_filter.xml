@@ -29,9 +29,4 @@
     <Class name="com.opentext.ia.yaml.core.YamlDiff" />
     <Method name="addMissing" />
   </Match>
-  <Match>
-    <Bug pattern="CN_IDIOM_NO_SUPER_CALL" />
-    <Class name="com.opentext.ia.yaml.core.YamlMap" />
-    <Method name="clone" />
-  </Match>
 </FindBugsFilter>
