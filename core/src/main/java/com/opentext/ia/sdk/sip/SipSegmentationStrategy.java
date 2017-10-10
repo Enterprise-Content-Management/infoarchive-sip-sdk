@@ -78,7 +78,7 @@ public interface SipSegmentationStrategy<D> {
 
   /**
    * Return a {@linkplain SipSegmentationStrategy} that allows a maximum total size (uncompressed) of the SIP including
-   * the object being added.
+   * the object being added, but NOT including the PDI.
    * @param <D> The type of domain objects to segment into different SIPs
    * @param maxSize The maximum size of the SIP
    * @param digitalObjectsExtraction The extractor for the type of digital object being added.

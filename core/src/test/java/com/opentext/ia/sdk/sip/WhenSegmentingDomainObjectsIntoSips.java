@@ -110,15 +110,15 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
   }
 
   @Test
-  public void shouldSegmentByMaxProspectiveSipSize() throws IOException {
-    int noSips;
-    // Boundary Test - 45 size and 90 limit
-    noSips = executeSegmentByProspectiveSipSize(90,
+  public void shouldSegmentByMaxProspectiveSipSizeHalfMax() throws IOException {
+    int noSips = executeSegmentByProspectiveSipSize(90,
         new String[] { "Hello", "Doman", "yuiopqwertyuiop", "poiuytrewqpoiuytrewq" });
     assertEquals("SIP counts - Fixed Length Strings", expected, noSips);
+  }
 
-    // Boundary Test - exact match
-    noSips = executeSegmentByProspectiveSipSize(45,
+  @Test
+  public void shouldSegmentByMaxProspectiveSipSizeExact() throws IOException {
+    int noSips = executeSegmentByProspectiveSipSize(45,
         new String[] { "Hello", "Doman", "yuiopqwertyuiop", "poiuytrewqpoiuytrewq" });
     assertEquals("SIP counts - Fixed Length Strings", expected, noSips);
   }

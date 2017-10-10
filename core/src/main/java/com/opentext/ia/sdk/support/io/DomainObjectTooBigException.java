@@ -4,7 +4,7 @@
 package com.opentext.ia.sdk.support.io;
 
 /**
- * Extends {@linkplain RuntimeException}. Used when a DomainObject is too big to fit in a SIP with the defined limit.
+ * Used when a DomainObject is too big to fit in a SIP with the defined limit.
  */
 public class DomainObjectTooBigException extends RuntimeException {
 
@@ -13,14 +13,14 @@ public class DomainObjectTooBigException extends RuntimeException {
   private final long domainObjectSize;
   private final long maxSipSize;
 
-  public DomainObjectTooBigException(long inDomainObjectSize, long inMaxSipSize) {
-    domainObjectSize = inDomainObjectSize;
-    maxSipSize = inMaxSipSize;
+  public DomainObjectTooBigException(long domainObjectSize, long maxSipSize) {
+    this.domainObjectSize = domainObjectSize;
+    this.maxSipSize = maxSipSize;
   }
 
   @Override
   public String getMessage() {
-    return "DomainObject is " + domainObjectSize + " bytes, but SegmentationStrategy MaxSize is set to " + maxSipSize
+    return "DomainObject is " + domainObjectSize + " bytes, but MaxSize is set to " + maxSipSize
         + " bytes.";
   }
 }
