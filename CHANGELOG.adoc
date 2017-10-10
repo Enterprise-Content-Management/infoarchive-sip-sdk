@@ -6,6 +6,14 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 9.0.0 - TBD
+
+=== Changed
+
+- `YamlMap` no longer implements `Cloneable`, but provides a _copy factory_ instead: `YamlMap.from(YamlMap source)`
+
+
+
 == 8.6.1 - 2017-10-09
 
 === Fixed

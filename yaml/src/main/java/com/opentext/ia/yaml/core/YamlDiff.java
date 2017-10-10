@@ -20,8 +20,8 @@ public class YamlDiff {
   private final YamlMap right;
 
   public YamlDiff(YamlMap left, YamlMap right) {
-    this.left = left.clone().sort();
-    this.right = right.clone().sort();
+    this.left = YamlMap.from(left).sort();
+    this.right = YamlMap.from(right).sort();
     diffMaps(this.left, this.right);
   }
 
@@ -49,15 +49,15 @@ public class YamlDiff {
   private <T> void diffValue(T owner1, Value value1, T owner2, Value value2, Consumer<T> removeFromOwner,
       Consumer<T> removeText) {
     if (value1.isMap() && value2.isMap()) {
-      diffMap(owner1, value1, owner2, value2, removeFromOwner);
+      diffMapValues(owner1, value1, owner2, value2, removeFromOwner);
     } else if (value1.isList() && value2.isList()) {
-      diffList(owner1, value1, owner2, value2, removeFromOwner);
+      diffListValues(owner1, value1, owner2, value2, removeFromOwner);
     } else if (value1.isScalar() && value2.isScalar()) {
-      diffScalar(owner1, value1, owner2, value2, removeText);
+      diffScalarValues(owner1, value1, owner2, value2, removeText);
     }
   }
 
-  private <T> void diffMap(T owner1, Value value1, T owner2, Value value2, Consumer<T> removeFromOwner) {
+  private <T> void diffMapValues(T owner1, Value value1, T owner2, Value value2, Consumer<T> removeFromOwner) {
     YamlMap subMap1 = value1.toMap();
     YamlMap subMap2 = value2.toMap();
     diffMaps(subMap1, subMap2);
@@ -67,7 +67,7 @@ public class YamlDiff {
     }
   }
 
-  private <T> void diffList(T owner1, Value value1, T owner2, Value value2, Consumer<T> removeFromOwner) {
+  private <T> void diffListValues(T owner1, Value value1, T owner2, Value value2, Consumer<T> removeFromOwner) {
     List<Value> list1 = value1.toList();
     List<Value> list2 = value2.toList();
     diffLists(list1, list2);
@@ -77,7 +77,7 @@ public class YamlDiff {
     }
   }
 
-  private <T> void diffScalar(T owner1, Value value1, T owner2, Value value2, Consumer<T> removeScalar) {
+  private <T> void diffScalarValues(T owner1, Value value1, T owner2, Value value2, Consumer<T> removeScalar) {
     String text1 = normalize(value1);
     String text2 = normalize(value2);
     if (Objects.equals(text1, text2)) {
@@ -99,7 +99,7 @@ public class YamlDiff {
     while (iterator1.hasNext() && iterator2.hasNext()) {
       Value value1 = iterator1.next();
       Value value2 = iterator2.next();
-      diffValue(iterator1, value1, iterator2, value2, iterator -> iterator.remove(),
+      diffValue(iterator1, value1, iterator2, value2, ListIterator::remove,
           iterator -> iterator.set(new Value(SAME_VALUE)));
     }
     addMissing(iterator1, list2);
