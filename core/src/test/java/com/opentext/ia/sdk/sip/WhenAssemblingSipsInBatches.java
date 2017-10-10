@@ -135,7 +135,7 @@ public class WhenAssemblingSipsInBatches extends TestCase {
             digiObjs
                 .add(DigitalObject.fromBytes(randomString(), testDomainObject.substring(i, i + 1).getBytes("UTF-8")));
           } catch (UnsupportedEncodingException e) {
-            assertTrue("UnsupportedEncodingException in shouldRejectDomainObjectThatIsTooBig", false);
+            fail("UnsupportedEncodingException in shouldRejectDomainObjectThatIsTooBig");
           }
         }
         return digiObjs.iterator();
