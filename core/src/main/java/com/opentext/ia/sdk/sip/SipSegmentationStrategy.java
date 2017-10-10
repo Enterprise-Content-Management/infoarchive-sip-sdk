@@ -94,9 +94,9 @@ public interface SipSegmentationStrategy<D> {
 
   /**
    * Return the size of a domain object in bytes.
+   * @param maxSize this is the maximum allowed size for the SIP
    * @param iterator used to iterate over the digital objects contained in the domain object
    * @return the size of the domain object in bytes
-   * @throws IOException This is thrown if the DomainObject is larger than the maximum allowed SIP size
    */
   static long getDomainObjectSize(Iterator<? extends DigitalObject> iterator, long maxSize) {
     long size = 0;
