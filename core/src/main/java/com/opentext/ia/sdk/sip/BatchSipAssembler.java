@@ -85,7 +85,8 @@ public class BatchSipAssembler<D> {
   }
 
   private boolean shouldStartNewSip(D component) {
-    return current == null || segmentationStrategy.shouldStartNewSip(component, assembler.getMetrics());
+    // We need to check that the DomainObject will fit in the Sip before we return anything
+    return segmentationStrategy.shouldStartNewSip(component, assembler.getMetrics()) || current == null;
   }
 
   private void startSip() throws IOException {

@@ -9,6 +9,8 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -18,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.opentext.ia.sdk.support.io.DomainObjectTooBigException;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 import com.opentext.ia.test.TestCase;
 
@@ -66,7 +69,7 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     Iterator<FileGenerationMetrics> sips = batcher.getSipsMetrics()
       .iterator();
 
-    verify(segmentationStrategy, never()).shouldStartNewSip(eq(object1), any(SipMetrics.class));
+    verify(segmentationStrategy).shouldStartNewSip(eq(object1), any(SipMetrics.class));
     verify(segmentationStrategy).shouldStartNewSip(eq(object2), any(SipMetrics.class));
     verify(segmentationStrategy).shouldStartNewSip(eq(object3), any(SipMetrics.class));
 
@@ -115,6 +118,35 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     verify(callback, never()).accept(any(FileGenerationMetrics.class));
     batcher.end();
     verify(callback).accept(isNotNull(FileGenerationMetrics.class));
+  }
+
+  @Test(expected = DomainObjectTooBigException.class)
+  public void shouldRejectDomainObjectThatIsTooBig() throws IOException {
+    long sipSizeLimit = 2;
+    File dir = folder.newFolder();
+    // DigitalObjectsExtraction needs to be created and given to the segmentation strategy
+    class StringsDomainObjectToDigitalObjects implements DigitalObjectsExtraction<String> {
+
+      @Override
+      public Iterator<? extends DigitalObject> apply(String testDomainObject) {
+        ArrayList<DigitalObject> digiObjs = new ArrayList<DigitalObject>();
+        for (int i = 0; i < testDomainObject.length(); i++) {
+          try {
+            digiObjs
+                .add(DigitalObject.fromBytes(randomString(), testDomainObject.substring(i, i + 1).getBytes("UTF-8")));
+          } catch (UnsupportedEncodingException e) {
+            fail("UnsupportedEncodingException in shouldRejectDomainObjectThatIsTooBig");
+          }
+        }
+        return digiObjs.iterator();
+      }
+    }
+
+    SipSegmentationStrategy<String> localStrategy =
+        SipSegmentationStrategy.byMaxProspectiveSipSize(sipSizeLimit, new StringsDomainObjectToDigitalObjects());
+    BatchSipAssembler<String> batcher = new BatchSipAssembler<>(sipAssembler, localStrategy, dir);
+
+    batcher.add("9_1234567");
   }
 
 }
