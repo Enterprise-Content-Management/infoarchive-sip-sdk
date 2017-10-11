@@ -85,7 +85,8 @@ public class BatchSipAssembler<D> {
   }
 
   private boolean shouldStartNewSip(D component) {
-    return current == null || segmentationStrategy.shouldStartNewSip(component, assembler.getMetrics());
+    // NOTE: Give the segmentation strategy to prevent the component from being added by throwing an exception
+    return segmentationStrategy.shouldStartNewSip(component, assembler.getMetrics()) || current == null;
   }
 
   private void startSip() throws IOException {
