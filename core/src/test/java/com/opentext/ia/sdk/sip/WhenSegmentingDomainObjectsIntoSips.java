@@ -3,14 +3,17 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,6 +26,8 @@ import com.opentext.ia.test.TestCase;
 
 public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
 
+  private static final String[] CONTENT_OBJECTS = new String[] { "Hello", "Doman", "yuiopqwertyuiop",
+      "poiuytrewqpoiuytrewq" };
   private SipSegmentationStrategy<String> strategy;
   private int expected;
 
@@ -92,109 +97,6 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
   }
 
   @Test
-  public void shouldSegmentByRandomMaxProspectiveSipSize() throws IOException {
-    int noSips;
-    // Random Strings
-    int sipLimit = randomInt(50, 150);
-    String[] randomArrayofStrings = randomArrayOfStrings(randomInt(4, 8));
-
-    int domainObjectSize = 0;
-    for (String thisOne : randomArrayofStrings) {
-      domainObjectSize += thisOne.length();
-    }
-    if (domainObjectSize > sipLimit) {
-      expectedException.expect(DomainObjectTooBigException.class);
-    }
-    noSips = executeSegmentByProspectiveSipSize(sipLimit, randomArrayofStrings);
-    assertEquals("SIP counts - Random generated Strings", expected, noSips);
-  }
-
-  @Test
-  public void shouldSegmentByMaxProspectiveSipSizeHalfMax() throws IOException {
-    int noSips = executeSegmentByProspectiveSipSize(90,
-        new String[] { "Hello", "Doman", "yuiopqwertyuiop", "poiuytrewqpoiuytrewq" });
-    assertEquals("SIP counts - Fixed Length Strings", expected, noSips);
-  }
-
-  @Test
-  public void shouldSegmentByMaxProspectiveSipSizeExact() throws IOException {
-    int noSips = executeSegmentByProspectiveSipSize(45,
-        new String[] { "Hello", "Doman", "yuiopqwertyuiop", "poiuytrewqpoiuytrewq" });
-    assertEquals("SIP counts - Fixed Length Strings", expected, noSips);
-  }
-
-  private int executeSegmentByProspectiveSipSize(int sipSizeLimit, String[] stringArray) throws IOException {
-    class TestDomainObject {
-
-      private final String[] containedStrings;
-
-      TestDomainObject(String[] inContainedStrings) {
-        containedStrings = inContainedStrings;
-      }
-    }
-
-    // DigitalObjectsExtraction needs to be created and given to the segmentation strategy
-    class TestDomainObjectToDigitalObjects implements DigitalObjectsExtraction<TestDomainObject> {
-
-      @Override
-      public Iterator<? extends DigitalObject> apply(TestDomainObject testDomainObject) {
-        ArrayList<DigitalObject> digiObjs = new ArrayList<DigitalObject>();
-        Arrays.asList(testDomainObject.containedStrings)
-            .forEach(eachWord -> digiObjs.add(DigitalObject.fromBytes(randomString(), eachWord.getBytes())));
-        return digiObjs.iterator();
-      }
-    }
-
-    int domainObjectSize = 0;
-    for (String thisOne : stringArray) {
-      domainObjectSize += thisOne.length();
-    }
-    Counters metrics = new Counters();
-
-    SipSegmentationStrategy<TestDomainObject> localStrategy =
-        SipSegmentationStrategy.byMaxProspectiveSipSize(sipSizeLimit, new TestDomainObjectToDigitalObjects());
-
-    // Variables to help determine what to expect from the test
-    int noDomainObjects = randomInt(6, 10);
-    int sipSizeSoFar = 0;
-    int expectedNumberOfSIPs = 1;
-    int actualNumberOfSIPs = 1;
-
-    for (int i = 0; i < noDomainObjects; i++) {
-      sipSizeSoFar += domainObjectSize;
-      metrics.inc(SipMetrics.SIZE_SIP, domainObjectSize);
-
-      TestDomainObject testDomainObject = new TestDomainObject(stringArray);
-      // Here we test the MaxProspectiveSipSize SegmentationStrategy
-      if (localStrategy.shouldStartNewSip(testDomainObject, new SipMetrics(metrics))) {
-        actualNumberOfSIPs++;
-        metrics.set(SipMetrics.SIZE_SIP, 0);
-      }
-      if (sipSizeSoFar + domainObjectSize > sipSizeLimit) {
-        expectedNumberOfSIPs++;
-        sipSizeSoFar = 0;
-      }
-    }
-    // If the SIP size is 0 after the last SIP is started, then the last SIP is empty so we take it off the total
-    if (sipSizeSoFar == 0) {
-      expectedNumberOfSIPs--;
-    }
-    if (metrics.get(SipMetrics.SIZE_SIP) == 0) {
-      actualNumberOfSIPs--;
-    }
-    expected = expectedNumberOfSIPs;
-    return actualNumberOfSIPs;
-  }
-
-  private String[] randomArrayOfStrings(int numberOfStrings) {
-    String[] arrayOfStrings = new String[numberOfStrings];
-    for (int i = 0; i < numberOfStrings; i++) {
-      arrayOfStrings[i] = randomString(randomInt(5, 20));
-    }
-    return arrayOfStrings;
-  }
-
-  @Test
   public void shouldCombineSegmentations() {
     String object1 = randomString();
     String object2 = randomString();
@@ -210,6 +112,87 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
 
   private SipSegmentationStrategy<String> segmentOn(String segmentObject) {
     return (domainObject, metrics) -> domainObject == segmentObject;
+  }
+
+  @Test
+  public void shouldSegmentByRandomMaxProspectiveSipSize() throws IOException {
+    int maxSize = randomInt(50, 150);
+    String[] contentObjects = randomStrings(randomInt(4, 8));
+    if (sizeOf(contentObjects) > maxSize) {
+      expectedException.expect(DomainObjectTooBigException.class);
+    }
+
+    assertSegmentByProspectiveSipSize(maxSize, contentObjects);
+  }
+
+  private String[] randomStrings(int numStrings) {
+    String[] result = new String[numStrings];
+    for (int i = 0; i < numStrings; i++) {
+      result[i] = randomString(randomInt(5, 20));
+    }
+    return result;
+  }
+
+  private int sizeOf(String[] domainObjects) {
+    return Arrays.stream(domainObjects)
+        .collect(Collectors.summingInt(String::length));
+  }
+
+  private void assertSegmentByProspectiveSipSize(int maxSize, String... contentObjects) throws IOException {
+    SipSegmentationStrategy<String[]> byMaxSize = SipSegmentationStrategy.byMaxProspectiveSipSize(maxSize,
+        new ContentObjectsToDigitalObjects());
+    int size = sizeOf(contentObjects);
+    int expectedSips = 0;
+    int sipSize = 0;
+    int actualSips = 0;
+    Counters metrics = new Counters();
+    SipMetrics sipMetrics = new SipMetrics(metrics);
+
+    int numDomainObjects = randomInt(6, 10);
+    for (int i = 0; i < numDomainObjects; i++) {
+      if (sipSize == 0) {
+        expectedSips++;
+      }
+      sipSize += size;
+      if (metrics.get(SipMetrics.SIZE_SIP) == 0) {
+        actualSips++;
+      }
+      metrics.inc(SipMetrics.SIZE_SIP, size);
+
+      // Expected behavior
+      if (sipSize + size > maxSize) {
+        sipSize = 0;
+      }
+
+      // Actual behavior
+      if (byMaxSize.shouldStartNewSip(contentObjects, sipMetrics)) {
+        metrics.set(SipMetrics.SIZE_SIP, 0);
+      }
+    }
+    assertEquals("# SIPs", expectedSips, actualSips);
+  }
+
+  @Test
+  public void shouldSegmentByMaxProspectiveSipSizeHalfMax() throws IOException {
+    assertSegmentByProspectiveSipSize(90, CONTENT_OBJECTS);
+  }
+
+  @Test
+  public void shouldSegmentByMaxProspectiveSipSizeExact() throws IOException {
+    assertSegmentByProspectiveSipSize(45, CONTENT_OBJECTS);
+  }
+
+
+  private class ContentObjectsToDigitalObjects implements DigitalObjectsExtraction<String[]> {
+
+    @Override
+    public Iterator<? extends DigitalObject> apply(String[] contentObjects) {
+      return Arrays.stream(contentObjects)
+          .map(contentObject -> DigitalObject.fromString(randomString(), contentObject, StandardCharsets.UTF_8))
+          .collect(Collectors.toList())
+          .iterator();
+    }
+
   }
 
 }

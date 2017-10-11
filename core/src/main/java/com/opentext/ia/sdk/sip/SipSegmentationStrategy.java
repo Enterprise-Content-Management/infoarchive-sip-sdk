@@ -87,9 +87,8 @@ public interface SipSegmentationStrategy<D> {
    */
   static <D> SipSegmentationStrategy<D> byMaxProspectiveSipSize(long maxSize,
       DigitalObjectsExtraction<D> digitalObjectsExtraction) {
-    return (domainObject,
-        metrics) -> metrics.sipSize()
-            + getDomainObjectSize(digitalObjectsExtraction.apply(domainObject), maxSize) > maxSize;
+    return (domainObject, metrics) -> maxSize < metrics.sipSize()
+        + getDomainObjectSize(digitalObjectsExtraction.apply(domainObject), maxSize);
   }
 
   /**
@@ -99,15 +98,14 @@ public interface SipSegmentationStrategy<D> {
    * @return the size of the domain object in bytes
    */
   static long getDomainObjectSize(Iterator<? extends DigitalObject> iterator, long maxSize) {
-    long size = 0;
+    long result = 0;
     while (iterator.hasNext()) {
-      DigitalObject digitalObject = iterator.next();
-      size += digitalObject.getSize();
+      result += iterator.next().getSize();
     }
-    if (size > maxSize) {
-      throw new DomainObjectTooBigException(size, maxSize);
+    if (result > maxSize) {
+      throw new DomainObjectTooBigException(result, maxSize);
     }
-    return size;
+    return result;
   }
 
   /**

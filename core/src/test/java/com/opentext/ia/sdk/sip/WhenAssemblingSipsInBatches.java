@@ -3,13 +3,21 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -36,8 +44,8 @@ public class WhenAssemblingSipsInBatches extends TestCase {
 
   @Before
   public void init() {
-    sipAssembler =
-        SipAssembler.forPdi(somePackagingInformation(), (Assembler<HashedContents<String>>)mock(Assembler.class));
+    sipAssembler = SipAssembler.forPdi(somePackagingInformation(),
+        (Assembler<HashedContents<String>>)mock(Assembler.class));
     segmentationStrategy = mock(SipSegmentationStrategy.class);
   }
 
@@ -104,8 +112,7 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     batcher.end();
     Collection<FileGenerationMetrics> sips = batcher.getSipsMetrics();
 
-    sips.forEach(sip -> assertEquals("SIP directory", dir, sip.getFile()
-      .getParentFile()));
+    sips.forEach(sip -> assertEquals("SIP directory", dir, sip.getFile().getParentFile()));
   }
 
   @Test
@@ -122,31 +129,28 @@ public class WhenAssemblingSipsInBatches extends TestCase {
 
   @Test(expected = DomainObjectTooBigException.class)
   public void shouldRejectDomainObjectThatIsTooBig() throws IOException {
-    long sipSizeLimit = 2;
     File dir = folder.newFolder();
-    // DigitalObjectsExtraction needs to be created and given to the segmentation strategy
-    class StringsDomainObjectToDigitalObjects implements DigitalObjectsExtraction<String> {
+    int maxSize = 2;
+    SipSegmentationStrategy<String> strategy = SipSegmentationStrategy.byMaxProspectiveSipSize(maxSize,
+        new StringToDigitalObjects());
+    BatchSipAssembler<String> batcher = new BatchSipAssembler<>(sipAssembler, strategy, dir);
 
-      @Override
-      public Iterator<? extends DigitalObject> apply(String testDomainObject) {
-        ArrayList<DigitalObject> digiObjs = new ArrayList<DigitalObject>();
-        for (int i = 0; i < testDomainObject.length(); i++) {
-          try {
-            digiObjs
-                .add(DigitalObject.fromBytes(randomString(), testDomainObject.substring(i, i + 1).getBytes("UTF-8")));
-          } catch (UnsupportedEncodingException e) {
-            fail("UnsupportedEncodingException in shouldRejectDomainObjectThatIsTooBig");
-          }
-        }
-        return digiObjs.iterator();
+    batcher.add(randomString(maxSize + 1));
+  }
+
+
+  private final class StringToDigitalObjects implements DigitalObjectsExtraction<String> {
+
+    @Override
+    public Iterator<? extends DigitalObject> apply(String testDomainObject) {
+      Collection<DigitalObject> result = new ArrayList<>();
+      for (int i = 0; i < testDomainObject.length(); i++) {
+        result.add(
+            DigitalObject.fromString(randomString(), testDomainObject.substring(i, i + 1), StandardCharsets.UTF_8));
       }
+      return result.iterator();
     }
 
-    SipSegmentationStrategy<String> localStrategy =
-        SipSegmentationStrategy.byMaxProspectiveSipSize(sipSizeLimit, new StringsDomainObjectToDigitalObjects());
-    BatchSipAssembler<String> batcher = new BatchSipAssembler<>(sipAssembler, localStrategy, dir);
-
-    batcher.add("9_1234567");
   }
 
 }

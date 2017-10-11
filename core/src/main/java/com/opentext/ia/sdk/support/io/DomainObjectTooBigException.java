@@ -10,17 +10,16 @@ public class DomainObjectTooBigException extends RuntimeException {
 
   private static final long serialVersionUID = -3456477572689104546L;
 
-  private final long domainObjectSize;
-  private final long maxSipSize;
+  private final long size;
+  private final long maxSize;
 
-  public DomainObjectTooBigException(long domainObjectSize, long maxSipSize) {
-    this.domainObjectSize = domainObjectSize;
-    this.maxSipSize = maxSipSize;
+  public DomainObjectTooBigException(long size, long maxSize) {
+    this.size = size;
+    this.maxSize = maxSize;
   }
 
   @Override
   public String getMessage() {
-    return "DomainObject is " + domainObjectSize + " bytes, but MaxSize is set to " + maxSipSize
-        + " bytes.";
+    return String.format("DomainObject is %d bytes, but should not be more than %d bytes", size, maxSize);
   }
 }
