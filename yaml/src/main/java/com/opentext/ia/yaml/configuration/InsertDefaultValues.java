@@ -17,6 +17,7 @@ import com.opentext.ia.yaml.resource.ResourceResolver;
 
 class InsertDefaultValues extends PathVisitor {
 
+  private static final String ENCODING = "encoding";
   private static final String CONFIGURE = "configure";
   private static final String FORMAT = "format";
   private static final String TYPE = "type";
@@ -134,10 +135,10 @@ class InsertDefaultValues extends PathVisitor {
         "storeType", "REGULAR",
         TYPE, "FILESYSTEM"));
     result.put("/transformations/\\d+", Default.of("compressed", true,
-        "encoding", "UTF-8",
+        ENCODING, "UTF-8",
         TYPE, "XQUERY"));
-    result.put("/xdbDatabases/\\d+", Default.of("encoding", BASE64));
-    result.put("/xdbFederations/\\d+", Default.of("encoding", BASE64));
+    result.put("/xdbDatabases/\\d+", Default.of(ENCODING, BASE64));
+    result.put("/xdbFederations/\\d+", Default.of(ENCODING, BASE64));
     result.put("/xdbLibraries/\\d+", Default.of("aipCount", 0,
         "aiuCount", 0,
         "cacheInCount", 0,
