@@ -42,7 +42,6 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/aips/\\d+", Arrays.asList(APPLICATION, "xdbLibrary"));
     result.put("/applicationCategories/\\d+", Arrays.asList(TENANT));
     result.put("/applications/\\d+", Arrays.asList(TENANT));
-    result.put("/auditEvents/\\d+", Arrays.asList(APPLICATION, TENANT));
     result.put("/buckets/\\d+", Arrays.asList("spaceRootObject"));
     result.put("/confirmations/\\d+", Arrays.asList(APPLICATION, "deliveryChannel"));
     result.put("/customPresentationConfigurations/\\d+", Arrays.asList(EXPORT_PIPELINE));
@@ -53,6 +52,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/holds/\\d+", Arrays.asList(TENANT));
     result.put("/holdings/\\d+", Arrays.asList(APPLICATION, CI_STORE, "ingest", "logStore", MANAGED_ITEM_STORE,
         "renditionStore", "sipStore", "stagingStore", "xdbLibraryPolicy", XDB_STORE, "xmlStore"));
+    result.put("/holdings/\\d+/ingestConfigs/\\d+", Arrays.asList("ingest"));
     result.put("/holdings/\\d+/pdiConfigs/\\d+", Arrays.asList("pdi"));
     result.put("/holdingCryptoes/\\d+", Arrays.asList(APPLICATION, "holding"));
     result.put("/holdingCryptoes/\\d+/pdis/\\d+", Arrays.asList("pdiCrypto"));

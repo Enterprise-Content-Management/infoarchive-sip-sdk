@@ -21,6 +21,9 @@ class InsertDefaultValues extends PathVisitor {
   private static final String FORMAT = "format";
   private static final String TYPE = "type";
   private static final String STRING = "STRING";
+  private static final String NONE = "NONE";
+  private static final String STATIC = "STATIC";
+  private static final String BASE64 = "base64";
   private static final Map<String, Collection<Default>> DEFAULT_PROPERTIES_BY_PATH_REGEX = defaultValuesByPathRegex();
 
   private static Map<String, Collection<Default>> defaultValuesByPathRegex() {
@@ -37,33 +40,54 @@ class InsertDefaultValues extends PathVisitor {
         "support.phrases", false,
         "support.scoring", false,
         "support.start.end.token.flags", false));
-    result.put("/aics/\\d+/criteria/\\d+", Default.of(TYPE, STRING));
+
+    result.put("/aics/\\d+/criteria/\\d+", Default.of("indexed", false,
+        TYPE, STRING));
+    result.put("/applications/\\d+", Default.of("cryptoEncoding", BASE64,
+        "metadataCacheSize", 0,
+        "retentionEnabled", false,
+        "searchCreated", true,
+        "state", "IN_TEST",
+        "structuredDataStorageAllocationStrategy", "DEFAULT"));
     result.put("/auditEvents/\\d+", Default.of("enabled", true));
+    result.put("/cryptoObjects/\\d+", Default.of("encryptionAlgorithm", "AES",
+        "encryptionMode", "CBC",
+        "keySize", 256));
+    result.put("/deliveryChannels/\\d+", Default.of("compress", false,
+        "overwrite", false));
     result.put("/exportPipelines/\\d+", Default.of("collectionBasedExport", false,
         "composite", true,
         "envelopeFormat", "zip",
         "includesContent", true,
         "inputFormat", "ROW_COLUMN",
-        "type", "XPROC"));
-    result.put("/exportConfigurations/\\d+", Default.of("exportType", "ASYNCHRONOUS"));
+        TYPE, "XPROC"));
+    result.put("/exportConfigurations/\\d+", Default.of("cryptoEncoding", BASE64,
+        "exportType", "ASYNCHRONOUS"
+    ));
     result.put("/fileSystemRoots/\\d+", Default.of(TYPE, "FILESYSTEM"));
+    result.put("/holdingCryptoes/\\d+/(ci|pdi|sip)", Default.of("cryptoEnabled", false));
     result.put("/holdings/\\d+", Default.of("ciHashValidationEnabled", true,
+        "keepCiOnRejInvEnabled", false,
+        "keepPdiXmlAfterIngestEnabled", true,
+        "keepSipOnRejInvEnabled", false,
+        "keepXmlOnRejInvEnabled", false,
         "keepSipAfterCommitEnabled", false,
         "logStoreEnabled", true,
         "pdiXmlHashEnforced", false,
         "pdiXmlHashValidationEnabled", true,
+        "pushRetentionOnRejInvEnabled", false,
         "syncCommitEnabled", true,
         "xdbMode", "PRIVATE"));
     result.put("/ingests/\\d+", Default.of("content", new YamlMap()
         .put(FORMAT, "xml")
         .put("text", ResourceResolver.fromClasspath().apply("defaultIngest.xml"))));
-    result.put("/ingestNodes/\\d+", Default.of("enumerationCutoffDays", 30,
-       "enumerationMaxResultCount", 10,
-       "enumerationMinusRunning", true,
-       "logLevel", "INFO"));
+    result.put("/ingestNodes/\\d+", Default.of("enumerationMaxResultCount", 10,
+       "enumerationMinusRunning", false));
     result.put("/queries/\\d+", Default.of("resultRootElement", "result",
         "resultRootNsEnabled", true));
-    result.put("/queries/\\d+/xdbPdiConfigs/operands/\\d+", Default.of(TYPE, STRING));
+    result.put("/queries/\\d+/xdbPdiConfigs/\\d+", Default.of("template", "return $aiu"));
+    result.put("/queries/\\d+/xdbPdiConfigs/\\d+/operands/\\d+", Default.of(TYPE, STRING,
+        "index", false));
     result.put("/queryQuotas/\\d+", Default.of("aipQuota", 0,
         "aiuQuota", 0,
         "dipQuota", 0));
@@ -75,13 +99,61 @@ class InsertDefaultValues extends PathVisitor {
             new YamlMap()
                 .put(FORMAT, "eas_sip_zip")
                 .put("extractorImpl", "com.emc.ia.reception.sip.extractor.impl.LegacyZipSipExtractor"))));
-    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+", Default.of("defaultSort", "NONE",
-        "dataType", STRING));
+    result.put("/resultConfigurationHelpers/\\d+", Default.of("propagateChanges", false));
+    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+", Default.of("createCollectionEnabled", false,
+        "exportEnabled", false));
+    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+", Default.of(
+        "dataType", STRING,
+        "defaultSort", NONE,
+        "downloadable", true,
+        "encrypt", false,
+        "exportable", true,
+        "filterEnabled", false,
+        "hidden", false,
+        "masked", false,
+        "order", 0,
+        "previewRequired", true,
+        "printable", true,
+        "rowIdentifier", false,
+        "showIcon", false,
+        "sortable", false));
+    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+/urlConfiguration", Default.of(
+        "hostType", STATIC,
+        "pathType", NONE,
+        "port", "80",
+        "portType", NONE,
+        "protocol", "http",
+        "protocolType", STATIC,
+        "queryType", NONE,
+        "target", "TAB"));
+    result.put("/retentionPolicies/\\d+", Default.of("dispositionBlocked", false));
     result.put("/searches/\\d+", Default.of("nestedSearch", false,
         "state", "DRAFT"));
     result.put("/stores/\\d+", Default.of("status", "ONLINE",
+        "contentLifetimeAfterRestoration", 0,
         "storeType", "REGULAR",
         TYPE, "FILESYSTEM"));
+    result.put("/transformations/\\d+", Default.of("compressed", true,
+        "encoding", "UTF-8",
+        TYPE, "XQUERY"));
+    result.put("/xdbDatabases/\\d+", Default.of("encoding", BASE64));
+    result.put("/xdbFederations/\\d+", Default.of("encoding", BASE64));
+    result.put("/xdbLibraries/\\d+", Default.of("aipCount", 0,
+        "aiuCount", 0,
+        "cacheInCount", 0,
+        "cacheSupport", false,
+        "closeRequested", false,
+        "closed", false,
+        "concurrent", false,
+        "detachable", false,
+        "detached", false,
+        "indexSize", 0,
+        "readOnly", false,
+        "size", 0,
+        TYPE, "DATA",
+        "xdbMode", "PRIVATE"
+        ));
+    result.put("/xdbLibraryPolicies/\\d+", Default.of("aiuThreshold", 0));
     result.put("/xforms/\\d+", Default.of("creator", "COMPOSITION"));
     return result;
   }

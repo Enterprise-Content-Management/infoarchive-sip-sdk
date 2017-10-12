@@ -125,7 +125,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
 
   private List<String> normalize(String value) {
     return Arrays.asList(value
-        .replaceAll("(\\r|\\n)*\\s*", " ")
+        .replaceAll("(\\r|\\n)+\\s*", " ")
         .replaceAll("\\s+<", "<")
         .replaceAll(">\\s+", ">")
         .split(","));

@@ -3,6 +3,9 @@ application:
 
 holding:
   name: Messages
+  ingestConfigs:
+  - ingest: MessagesIngest
+    sipFormat: sip_zip
 
 fileSystemFolder:
   name: export
@@ -21,6 +24,7 @@ xdbDatabase:
   adminPassword: test
 
 ingest:
+  name: MessagesIngest
   content:
     format: xml
     resource: ingest.xml
@@ -67,9 +71,11 @@ queries:
         bcc:
           index: false
           path: n:recipient[n:additionalType = 'bcc']/n:email
+          type: string
         cc:
           index: false
           path: n:recipient[n:additionalType = 'cc']/n:email
+          type: string
         distributionList:
           index: true
           path: n:recipient/n:memberOf/n:programName
@@ -77,9 +83,11 @@ queries:
         from:
           index: true
           path: n:sender/n:email
+          type: string
         fromCountry:
           index: true
           path: n:sender/n:worksFor/n:address/n:addressCountry
+          type: string
         receivedDate:
           index: true
           path: n:dateReceived
@@ -87,6 +95,7 @@ queries:
         recipient:
           index: true
           path: n:recipient/n:email
+          type: string
         sentDate:
           index: true
           path: n:dateSent
@@ -94,12 +103,15 @@ queries:
         subject:
           index: false
           path: n:about
+          type: string
         to:
           index: false
           path: n:recipient[not(n:additionalType)]/n:email
+          type: string
         toCountry:
           index: true
           path: n:recipient[not(n:additionalType)]/n:worksFor/n:address/n:addressCountry
+          type: string
 
 queryQuota:
   name: DefaultQuota
@@ -120,21 +132,27 @@ aic:
       indexed: true
       label: AIP ID
       pkeyValuesAttr: aipId
+      type: string
     bcc:
       indexed: true
       label: Bcc
+      type: string
     cc:
       indexed: true
       label: Cc
+      type: string
     distributionList:
       indexed: true
       label: Distribution list
+      type: string
     from:
       indexed: true
       label: From
+      type: string
     fromCountry:
       indexed: true
       label: Sent from country
+      type: string
     receivedDate:
       indexed: true
       type: datetime
@@ -144,6 +162,7 @@ aic:
     recipient:
       indexed: true
       label: Recipient
+      type: string
     sentDate:
       indexed: true
       type: datetime
@@ -151,12 +170,15 @@ aic:
     subject:
       indexed: true
       label: Subject
+      type: string
     to:
       indexed: true
       label: To
+      type: string
     toCountry:
       indexed: true
       label: Sent to country
+      type: string
   
 search:
   name: Find emails
