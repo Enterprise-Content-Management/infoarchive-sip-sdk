@@ -13,7 +13,12 @@ import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.client.impl.ApplicationIngestionResourcesCache;
 import com.opentext.ia.sdk.client.impl.InfoArchiveRestClient;
-import com.opentext.ia.sdk.dto.*;
+import com.opentext.ia.sdk.dto.Aics;
+import com.opentext.ia.sdk.dto.Application;
+import com.opentext.ia.sdk.dto.Applications;
+import com.opentext.ia.sdk.dto.ProductInfo;
+import com.opentext.ia.sdk.dto.Services;
+import com.opentext.ia.sdk.dto.Tenant;
 import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 import com.opentext.ia.sdk.support.http.rest.RestClient;
@@ -58,10 +63,16 @@ public final class ArchiveClients {
       ArchiveConnection connection, RestClient restClient) throws IOException {
     ApplicationIngestionResourcesCache resourceCache = new ApplicationIngestionResourcesCache(applicationName);
     Services services = connection.getServices();
+    ProductInfo productInfo = getProductInfo(restClient, services);
     Tenant tenant = getTenant(restClient, services);
     Application application = getApplication(restClient, tenant, applicationName);
-    cacheResourceUris(restClient, application, resourceCache);
+    cacheResourceUris(restClient, productInfo, application, resourceCache);
     return resourceCache;
+  }
+
+  private static ProductInfo getProductInfo(RestClient restClient, Services services) throws IOException {
+    return Objects.requireNonNull(restClient.follow(services, InfoArchiveLinkRelations.LINK_PRODUCT_INFO,
+        ProductInfo.class), "Product Info not found.");
   }
 
   private static Tenant getTenant(RestClient restClient, Services services) throws IOException {
@@ -77,8 +88,10 @@ public final class ArchiveClients {
         "Application " + applicationName + " not found.");
   }
 
-  private static void cacheResourceUris(RestClient restClient, Application application,
+  private static void cacheResourceUris(RestClient restClient, ProductInfo productInfo, Application application,
       ApplicationIngestionResourcesCache resourceCache) throws IOException {
+    resourceCache.setServerVersion(productInfo.getBuildProperties().getServerVersion());
+
     Map<String, String> dipResourceUrisByAicName = new HashMap<>();
     Aics aics = restClient.follow(application, InfoArchiveLinkRelations.LINK_AICS, Aics.class);
     aics.getItems().forEach(aic ->

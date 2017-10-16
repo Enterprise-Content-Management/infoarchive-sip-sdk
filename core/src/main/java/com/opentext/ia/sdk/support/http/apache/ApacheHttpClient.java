@@ -278,6 +278,17 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   @Override
+  public <T> T put(String uri, Collection<Header> headers, Class<T> type, Part... parts) throws IOException {
+    HttpPut request = newPut(uri, headers);
+    MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+    for (Part part : parts) {
+      entityBuilder.addPart(part.getName(), newContentBody(part));
+    }
+    request.setEntity(entityBuilder.build());
+    return execute(request, type);
+  }
+
+  @Override
   public <T> T post(String uri, Collection<Header> headers, Class<T> type, InputStream payload) throws IOException {
     HttpPost request = newPost(uri, headers);
     if (payload != null) {

@@ -80,6 +80,10 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return put(uri, type, toJson(payload));
   }
 
+  public <T> T put(String uri, Class<T> type, Part... parts) throws IOException {
+    return httpClient.put(uri, withAuthorization(headers), type, parts);
+  }
+
   public <S, T> T post(String uri, Class<T> type, S payload) throws IOException {
     if (payload instanceof Part) {
       return httpClient.post(uri, withAuthorization(headers), type, (Part)payload);

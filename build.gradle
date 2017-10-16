@@ -42,6 +42,7 @@ subprojects {
     httpmime
     jacksonCore
     jacksonDatabind
+    semVer
     validation
     xmlunit
     yaml
@@ -63,6 +64,7 @@ subprojects {
     jacksonDatabind "com.fasterxml.jackson.core:jackson-databind:$jacksonCoreVersion"
     junit "junit:junit:$junitVersion"
     mockito "org.mockito:mockito-core:$mockitoVersion"
+    semVer "com.github.zafarkhaja:java-semver:$semVerVersion"
     validation "javax.validation:validation-api:$validationVersion"
     xmlunit "org.xmlunit:xmlunit-core:$xmlunitVersion"
     yaml "org.yaml:snakeyaml:$snakeYamlVersion"
@@ -156,7 +158,7 @@ project(':infoarchive-yaml') {
 project(':infoarchive-sdk-core') {
   configurations {
     compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, commonsLang, evoInflector, 
-        httpclient, httpmime, jacksonCore, jacksonDatabind, validation, yaml
+        httpclient, httpmime, jacksonCore, jacksonDatabind, semVer, validation, yaml
   }
   
   dependencies {

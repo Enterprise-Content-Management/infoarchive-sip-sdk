@@ -23,6 +23,8 @@ public interface HttpClient {
 
   <T> T put(String uri, Collection<Header> headers, Class<T> type, InputStream payload) throws IOException;
 
+  <T> T put(String uri, Collection<Header> headers, Class<T> type, Part... parts) throws IOException;
+
   <T> T post(String uri, Collection<Header> headers, Class<T> type, String payload) throws IOException;
 
   <T> T post(String uri, Collection<Header> headers, Class<T> type, InputStream payload) throws IOException;

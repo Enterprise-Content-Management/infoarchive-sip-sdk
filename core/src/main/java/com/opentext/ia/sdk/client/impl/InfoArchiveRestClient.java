@@ -66,7 +66,12 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   public String ingest(InputStream sip) throws IOException {
     ReceptionResponse response = restClient.post(resourceCache.getAipResourceUri(), ReceptionResponse.class,
         new TextPart("format", "sip_zip"), new BinaryPart("sip", sip, "IASIP.zip"));
-    return restClient.post(response.getUri(LINK_INGEST), IngestionResponse.class).getAipId();
+    String ingestUri = response.getUri(LINK_INGEST);
+    // There was a backwards incompatible change between 4.2 and 4.3 from PUT to POST
+    if (resourceCache.isVersionOrEarlier("4.2")) {
+      return restClient.put(ingestUri, IngestionResponse.class).getAipId();
+    }
+    return restClient.post(ingestUri, IngestionResponse.class).getAipId();
   }
 
   @Override

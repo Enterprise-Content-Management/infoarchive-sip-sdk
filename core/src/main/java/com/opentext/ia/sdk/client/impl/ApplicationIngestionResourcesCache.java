@@ -5,6 +5,8 @@ package com.opentext.ia.sdk.client.impl;
 
 import java.util.Map;
 
+import com.github.zafarkhaja.semver.Version;
+
 
 /**
  * Cache of REST resources used for ingesting SIPs into an InfoArchive application.
@@ -16,6 +18,7 @@ public class ApplicationIngestionResourcesCache {
   private String aipResourceUri;
   private String aipIngestDirectResourceUri;
   private Map<String, String> dipResourceUriByAicName;
+  private String serverVersion;
 
   public ApplicationIngestionResourcesCache(String applicationName) {
     this.applicationName = applicationName;
@@ -55,6 +58,30 @@ public class ApplicationIngestionResourcesCache {
 
   public void setDipResourceUriByAicName(Map<String, String> dipResourceUriByAicName) {
     this.dipResourceUriByAicName = dipResourceUriByAicName;
+  }
+
+  public String getServerVersion() {
+    return serverVersion;
+  }
+
+  public void setServerVersion(String serverVersion) {
+    this.serverVersion = serverVersion;
+  }
+
+  public boolean isVersionOrLater(String version) {
+    return toVersion(getServerVersion()).compareTo(toVersion(version)) >= 0;
+  }
+
+  private Version toVersion(String version) {
+    StringBuilder semVer = new StringBuilder(version);
+    for (int i = 0; i < 2 - version.replaceAll("[^.]", "").length(); i++) {
+      semVer.append(".0");
+    }
+    return Version.valueOf(semVer.toString());
+  }
+
+  public boolean isVersionOrEarlier(String version) {
+    return toVersion(getServerVersion()).compareTo(toVersion(version)) <= 0;
   }
 
 }

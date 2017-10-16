@@ -3,7 +3,6 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -85,7 +84,7 @@ public class YamlConfiguration {
    * @param yaml The string to load from
    */
   public YamlConfiguration(String yaml) {
-    this(new ByteArrayInputStream(yaml.getBytes(StandardCharsets.UTF_8)), ResourceResolver.none());
+    this(IOUtils.toInputStream(yaml, StandardCharsets.UTF_8), ResourceResolver.none());
   }
 
   YamlConfiguration(YamlMap yaml, ResourceResolver resolver) {

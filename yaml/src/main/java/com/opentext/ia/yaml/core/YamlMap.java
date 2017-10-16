@@ -3,7 +3,6 @@
  */
 package com.opentext.ia.yaml.core;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,6 +21,7 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -55,7 +55,7 @@ public class YamlMap {
   }
 
   private static InputStream streamOf(String text) {
-    return new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+    return IOUtils.toInputStream(text, StandardCharsets.UTF_8);
   }
 
   /**

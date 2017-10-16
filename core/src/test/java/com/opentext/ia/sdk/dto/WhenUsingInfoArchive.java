@@ -42,6 +42,7 @@ import com.opentext.ia.sdk.client.impl.ContentResultFactory;
 import com.opentext.ia.sdk.client.impl.DefaultContentResult;
 import com.opentext.ia.sdk.client.impl.DefaultQueryResult;
 import com.opentext.ia.sdk.client.impl.QueryResultFactory;
+import com.opentext.ia.sdk.dto.ProductInfo.BuildProperties;
 import com.opentext.ia.sdk.dto.export.ExportConfiguration;
 import com.opentext.ia.sdk.dto.export.ExportConfigurations;
 import com.opentext.ia.sdk.dto.export.ExportPipeline;
@@ -157,6 +158,11 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
     when(restClient.get(BILLBOARD_URI, Services.class)).thenReturn(resource);
     when(restClient.follow(resource, LINK_TENANT, Tenant.class)).thenReturn(tenant);
+    ProductInfo productInfo = new ProductInfo();
+    BuildProperties buildProperties = new BuildProperties();
+    buildProperties.setServerVersion("16.3");
+    productInfo.setBuildProperties(buildProperties);
+    when(restClient.follow(resource, LINK_PRODUCT_INFO, ProductInfo.class)).thenReturn(productInfo);
     when(link.getHref()).thenReturn(BILLBOARD_URI);
     when(restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class)).thenReturn(aips);
     aips.setLinks(links);
