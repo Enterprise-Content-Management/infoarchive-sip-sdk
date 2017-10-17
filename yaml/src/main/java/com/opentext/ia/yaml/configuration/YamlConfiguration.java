@@ -94,7 +94,9 @@ public class YamlConfiguration {
 
   private Stream<Visitor> normalizations(ResourceResolver resolver) {
     return Stream.concat(
-        Stream.of(new InlineExternalContent(resolver)),
+        Stream.concat(
+            Stream.of(new InlineExternalContent(resolver)),
+            Stream.of(new IncludeExternalYaml(resolver))),
         YAML_NORMALIZATION_CLASSES.stream().map(this::newVisitor));
   }
 

@@ -47,6 +47,9 @@ public class YamlMap {
    * @return A <code>YamlMap</code> corresponding to the provided YAML string
    */
   public static YamlMap from(String yaml) {
+    if (yaml == null) {
+      throw new IllegalArgumentException("Missing YAML");
+    }
     try (InputStream input = streamOf(yaml)) {
       return from(input);
     } catch (IOException e) {

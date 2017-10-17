@@ -757,4 +757,26 @@ public class WhenUsingYamlConfiguration extends TestCase {
         .collect(Collectors.toList()));
   }
 
+  @Test
+  public void shouldIncludeConfiguration() {
+    // TODO:
+    // - fail on overwrites
+    // - ...unless { configure: use existing }, then ignore
+    // - resolve resources relative to context
+    String key1 = English.plural(someName());
+    String key2 = someName();
+    String value = someName();
+    String included = new YamlMap()
+        .put(key1, Arrays.asList(new YamlMap().put(key2, value)))
+        .toString();
+    String include = someName();
+    resourceResolver = name -> included;
+    yaml.put("includes", Arrays.asList(include));
+
+    normalizeYaml();
+
+    assertValue("Included value", value, yaml.get(key1, 0, key2));
+    assertTrue("Includes should be removed", yaml.get("includes").isEmpty());
+  }
+
 }
