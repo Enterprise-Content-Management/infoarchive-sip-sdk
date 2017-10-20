@@ -74,3 +74,9 @@ For an https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/
 to the SDK and some https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.3/lab.pdf[lab exercises],
 see the related https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab[lab] project.
 For examples on how to use the SDK, see the https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/samples[sample programs].
+
+
+== Contributing
+
+See the https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/blob/master/CONTRIBUTING.adoc[CONTRIBUTING]
+file on how to get started.
