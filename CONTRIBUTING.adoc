@@ -72,7 +72,7 @@ what task to perform on a high level.
 All source code contributions must come in the form of https://help.github.com/articles/about-pull-requests/[Pull Requests]
 (PRs). If you submit code in a PR, we assume you have all the legal aspects covered and are authorized by your 
 organization to transfer ownership of the intellectual property to us. GitHub will ask you to sign our 
-_Contributor License Agreement_ (CLA) when you submit a PR to verify this. PRs without a signed CLA will NOT be merged.
+_Contributor License Agreement_ (CLA) when you submit a PR to verify this. *PRs without a signed CLA will not be merged*.
 
 
 ==== Source Code Organization 
