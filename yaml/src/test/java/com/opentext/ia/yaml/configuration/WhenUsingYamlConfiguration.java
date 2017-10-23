@@ -12,7 +12,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.atteo.evo.inflector.English;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.Entry;
@@ -64,7 +66,10 @@ public class WhenUsingYamlConfiguration extends TestCase {
   private static final String EXPORT_PIPELINE = "exportPipeline";
   private static final String TRANSFORMATIONS = English.plural(TRANSFORMATION);
   private static final String XQUERY = "xquery";
+  private static final String INCLUDES = "includes";
 
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
 
@@ -759,24 +764,86 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
   @Test
   public void shouldIncludeConfiguration() {
-    // TODO:
-    // - fail on overwrites
-    // - ...unless { configure: use existing }, then ignore
-    // - resolve resources relative to context
     String key1 = English.plural(someName());
     String key2 = someName();
     String value = someName();
     String included = new YamlMap()
         .put(key1, Arrays.asList(new YamlMap().put(key2, value)))
         .toString();
-    String include = someName();
+    String include = someYamlFileName();
     resourceResolver = name -> included;
-    yaml.put("includes", Arrays.asList(include));
+    yaml.put(INCLUDES, Arrays.asList(include));
 
     normalizeYaml();
 
     assertValue("Included value", value, yaml.get(key1, 0, key2));
-    assertTrue("Includes should be removed", yaml.get("includes").isEmpty());
+    assertTrue("Includes should be removed", yaml.get(INCLUDES).isEmpty());
+  }
+
+  private String someYamlFileName() {
+    return someFileName("yml");
+  }
+
+  @Test
+  public void shouldFailToIncludeDuplicateEntry() throws Exception {
+    String key = English.plural(someName());
+    String included = new YamlMap()
+        .put(key, someName())
+        .toString();
+    String include = someYamlFileName();
+    resourceResolver = name -> included;
+    yaml.put(key, someName())
+        .put(INCLUDES, Arrays.asList(include));
+
+    thrown.expect(IllegalArgumentException.class);
+    normalizeYaml();
+  }
+
+  @Test
+  public void shouldIgnoreDuplicateEntryConfiguredAsExisting() throws Exception {
+    String key1 = English.plural(someName());
+    String value = someName();
+    String included = new YamlMap()
+        .put(key1, Arrays.asList(new YamlMap().put(NAME, someName()).put("configure", "use existing")))
+        .toString();
+    String include = someYamlFileName();
+    resourceResolver = name -> included;
+    yaml.put(key1, Arrays.asList(new YamlMap().put(NAME, value)))
+        .put(INCLUDES, Arrays.asList(include));
+
+    normalizeYaml();
+
+    assertValue("Include value should be ignored", value, yaml.get(key1, 0, NAME));
+  }
+
+  @Test
+  public void shouldResolveInlineResourcesRelativeToIncludedResource() throws Exception {
+    String dir = someName();
+    String file = someHtmlFileName();
+    String relativeFile = dir + '/' + file;
+    String key = someName() + 'n';
+    String included = new YamlMap()
+        .put(key, new YamlMap()
+            .put(NAME, someName())
+            .put(CONTENT, new YamlMap()
+                .put(RESOURCE, file)))
+        .toString();
+    String include = dir + '/' + someYamlFileName();
+    String text = randomString(64);
+    resourceResolver = name -> {
+      if (name.equals(include)) {
+        return included;
+      }
+      if (name.equals(relativeFile)) {
+        return text;
+      }
+      throw new IllegalStateException("Unknown resource: " + name);
+    };
+    yaml.put(INCLUDES, Arrays.asList(include));
+
+    normalizeYaml();
+
+    assertValue("Included resource should be resolved", text, yaml.get(English.plural(key), 0, CONTENT, TEXT));
   }
 
 }

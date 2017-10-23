@@ -10,7 +10,7 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 === Added
 
-- YAML configuration supports including other configurations 
+- YAML configuration supports including other configurations
 
 
 
