@@ -21,7 +21,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,6 +29,8 @@ import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import com.opentext.ia.sdk.support.io.IOStreams;
 
 
 /**
@@ -460,7 +461,7 @@ public final class XmlUtil {
     } catch (SAXException | NullPointerException e) {
       throw new ValidationException("Invalid XML Schema", e);
     } finally {
-      IOUtils.closeQuietly(xmlSchema);
+      IOStreams.close(xmlSchema);
     }
   }
 

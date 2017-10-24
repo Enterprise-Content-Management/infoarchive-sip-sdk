@@ -20,7 +20,6 @@ public class JsonFormatter {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
     mapper.configure(SerializationFeature.INDENT_OUTPUT, false);
-    mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     return mapper.writer().writeValueAsString(Objects.requireNonNull(value));
   }

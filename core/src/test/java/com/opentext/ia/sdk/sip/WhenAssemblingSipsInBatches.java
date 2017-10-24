@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNotNull;
+import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -124,7 +124,7 @@ public class WhenAssemblingSipsInBatches extends TestCase {
 
     verify(callback, never()).accept(any(FileGenerationMetrics.class));
     batcher.end();
-    verify(callback).accept(isNotNull(FileGenerationMetrics.class));
+    verify(callback).accept(notNull(FileGenerationMetrics.class));
   }
 
   @Test(expected = DomainObjectTooBigException.class)

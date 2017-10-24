@@ -6,9 +6,8 @@ package com.opentext.ia.sdk.client.impl;
 import java.io.Closeable;
 import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
-
 import com.opentext.ia.sdk.client.api.QueryResult;
+import com.opentext.ia.sdk.support.io.IOStreams;
 
 
 /**
@@ -67,8 +66,7 @@ public class DefaultQueryResult implements Closeable, QueryResult {
 
   @Override
   public void close() {
-    IOUtils.closeQuietly(resultStream);
-    IOUtils.closeQuietly(dependentResource);
+    IOStreams.close(resultStream, dependentResource);
   }
 
   @Override

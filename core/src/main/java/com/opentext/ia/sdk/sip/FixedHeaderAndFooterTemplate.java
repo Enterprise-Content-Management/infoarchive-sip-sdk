@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 
+import com.opentext.ia.sdk.support.io.IOStreams;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
 /**
@@ -36,7 +37,7 @@ public abstract class FixedHeaderAndFooterTemplate<D> implements Template<D> {
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     } finally {
-      IOUtils.closeQuietly(stream);
+      IOStreams.close(stream);
     }
   }
 

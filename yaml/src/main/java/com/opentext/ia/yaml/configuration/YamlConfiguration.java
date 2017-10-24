@@ -79,7 +79,11 @@ public class YamlConfiguration {
    */
   public YamlConfiguration(InputStream yaml, ResourceResolver resolver) {
     this(YamlMap.from(yaml), resolver);
-    IOUtils.closeQuietly(yaml);
+    try {
+      yaml.close();
+    } catch (final IOException ioe) {
+      // ignore
+    }
   }
 
   /**

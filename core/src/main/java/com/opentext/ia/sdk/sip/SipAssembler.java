@@ -9,14 +9,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.apache.commons.io.IOUtils;
-
 import com.opentext.ia.sdk.support.io.DataBuffer;
 import com.opentext.ia.sdk.support.io.DataBufferSupplier;
 import com.opentext.ia.sdk.support.io.DefaultZipAssembler;
 import com.opentext.ia.sdk.support.io.EncodedHash;
 import com.opentext.ia.sdk.support.io.FileBuffer;
 import com.opentext.ia.sdk.support.io.HashAssembler;
+import com.opentext.ia.sdk.support.io.IOStreams;
 import com.opentext.ia.sdk.support.io.MemoryBuffer;
 import com.opentext.ia.sdk.support.io.NoHashAssembler;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
@@ -332,7 +331,7 @@ public class SipAssembler<D> implements Assembler<D> {
       endPdi();
       addPackagingInformation();
     } finally {
-      IOUtils.closeQuietly(zip);
+      IOStreams.close(zip);
       metrics.set(SipMetrics.ASSEMBLY_TIME, System.currentTimeMillis() - metrics.get(SipMetrics.ASSEMBLY_TIME));
       metrics.set(SipMetrics.SIZE_SIP_FILE, sipFileBuffer.length());
     }

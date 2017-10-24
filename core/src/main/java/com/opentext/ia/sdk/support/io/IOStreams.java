@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.support.io;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,6 +40,19 @@ public final class IOStreams {
       out.write(buffer, 0, numRead);
       hashAssembler.add(buffer, numRead);
       numRead = in.read(buffer);
+    }
+  }
+
+  public static void close(Closeable... closeables) {
+    for (Closeable closeable : closeables) {
+      if (closeable == null) {
+        continue;
+      }
+      try {
+        closeable.close();
+      } catch (IOException e) {
+        // Ignore
+      }
     }
   }
 

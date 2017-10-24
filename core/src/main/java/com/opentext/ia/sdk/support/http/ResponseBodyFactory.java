@@ -7,8 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.io.IOUtils;
-
+import com.opentext.ia.sdk.support.io.IOStreams;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
 
@@ -29,7 +28,7 @@ public abstract class ResponseBodyFactory<T> implements ResponseFactory<T> {
       }
       resultStream.set(response.getBody());
       closeResult = () -> {
-        IOUtils.closeQuietly(resultStream.get());
+        IOStreams.close(resultStream.get());
         closeResponse.run();
       };
       T result = doCreate(response, resultStream.get(), closeResult);

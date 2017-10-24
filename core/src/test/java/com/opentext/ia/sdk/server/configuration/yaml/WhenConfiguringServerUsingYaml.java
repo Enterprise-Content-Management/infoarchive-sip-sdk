@@ -4,7 +4,7 @@
 package com.opentext.ia.sdk.server.configuration.yaml;
 
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -57,23 +57,23 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
     String configurationUri = randomUri();
     Services services = new Services();
     services.getLinks().put(LINK_CONFIGURATION, new Link(configurationUri));
-    when(httpClient.get(anyString(), anyObject(), eq(Services.class))).thenReturn(services);
+    when(httpClient.get(anyString(), any(), eq(Services.class))).thenReturn(services);
 
     configurer.configure(connection);
 
-    verify(httpClient).put(eq(configurationUri), anyObject(), eq(String.class), anyString());
-    verify(clientSideConfigurer, never()).configure(anyObject());
+    verify(httpClient).put(eq(configurationUri), any(), eq(String.class), anyString());
+    verify(clientSideConfigurer, never()).configure(any());
   }
 
   @Test
   public void shouldConfigureFromClientWhenServerDoesntSupportsYamlConfiguration() throws Exception {
     Services services = new Services();
-    when(httpClient.get(anyString(), anyObject(), eq(Services.class))).thenReturn(services);
+    when(httpClient.get(anyString(), any(), eq(Services.class))).thenReturn(services);
 
     configurer.configure(connection);
 
-    verify(clientSideConfigurer).configure(anyObject());
-    verify(httpClient, never()).put(anyString(), anyObject(), anyObject(), anyString());
+    verify(clientSideConfigurer).configure(any());
+    verify(httpClient, never()).put(anyString(), any(), any(), anyString());
   }
 
   @Test

@@ -48,6 +48,7 @@ import com.opentext.ia.sdk.support.http.ResponseFactory;
 import com.opentext.ia.sdk.support.http.TextPart;
 import com.opentext.ia.sdk.support.http.UriBuilder;
 import com.opentext.ia.sdk.support.io.ByteArrayInputOutputStream;
+import com.opentext.ia.sdk.support.io.IOStreams;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
 
@@ -154,7 +155,7 @@ public class ApacheHttpClient implements HttpClient {
       throw new HttpException(500, e);
     }
     Runnable closeResponse = () -> {
-      IOUtils.closeQuietly(httpResponse);
+      IOStreams.close(httpResponse);
       request.releaseConnection();
     };
     boolean shouldCloseResponse = true;
@@ -202,7 +203,7 @@ public class ApacheHttpClient implements HttpClient {
         return isBinary ? binaryResponse(entity, type) : textResponse(body, type);
       } finally {
         if (response instanceof CloseableHttpResponse) {
-          IOUtils.closeQuietly((CloseableHttpResponse)response);
+          IOStreams.close((CloseableHttpResponse)response);
         }
       }
     };
@@ -343,7 +344,7 @@ public class ApacheHttpClient implements HttpClient {
 
   @Override
   public void close() {
-    IOUtils.closeQuietly(client);
+    IOStreams.close(client);
   }
 
   @Override

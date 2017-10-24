@@ -3,11 +3,19 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -44,8 +52,7 @@ public class WhenGeneratingFiles extends TestCase {
     Assembler<String> wrapped = mock(Assembler.class);
     doAnswer(invocation -> {
       try {
-        try (OutputStream stream = invocation.getArgumentAt(0, DataBuffer.class)
-          .openForWriting()) {
+        try (OutputStream stream = invocation.getArgumentAt(0, DataBuffer.class).openForWriting()) {
           stream.write(content);
         }
       } catch (IOException e) {
