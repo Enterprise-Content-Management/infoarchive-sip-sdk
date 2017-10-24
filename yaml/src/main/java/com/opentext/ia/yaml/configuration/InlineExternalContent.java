@@ -17,10 +17,7 @@ import com.opentext.ia.yaml.resource.ResourceResolver;
 
 class InlineExternalContent extends PathVisitor {
 
-  private static final String FORMAT = "format";
-  private static final String TEXT = "text";
-  private static final String RESOURCE = "resource";
-  private static final List<String> RESOURCE_CONTAINER_PATHS = Arrays.asList(
+  static final List<String> RESOURCE_CONTAINER_PATHS = Arrays.asList(
       "/.+/content",
       "/customPresentationConfiguration(s/[^/]+)?/htmlTemplate",
       "/database(s/[^/]+)?/metadata/\\d+",
@@ -28,6 +25,9 @@ class InlineExternalContent extends PathVisitor {
       "/transformation(s/[^/]+)?/xslt",
       "/xform(s/[^/]+)?/form",
       "/xqueryModule(s/[^/]+)?/moduleContent");
+  static final String TEXT = "text";
+  private static final String FORMAT = "format";
+  private static final String RESOURCE = "resource";
   private static final Collection<String> SEGMENTS_WITH_FORMAT = Arrays.asList("content");
 
   private final ResourceResolver resolver;

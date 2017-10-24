@@ -3,12 +3,15 @@
  */
 package com.opentext.ia.yaml.configuration;
 
+import java.net.URI;
+
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.Visit;
 import com.opentext.ia.yaml.core.Visitor;
 import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.core.YamlSequence;
 import com.opentext.ia.yaml.resource.ResourceResolver;
+import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 
 public class IncludeExternalYaml implements Visitor {
@@ -17,9 +20,11 @@ public class IncludeExternalYaml implements Visitor {
   private static final String CONFIGURE = "configure";
 
   private final ResourceResolver resourceResolver;
+  private final ConfigurationProperties parent;
 
-  public IncludeExternalYaml(ResourceResolver resourceResolver) {
+  public IncludeExternalYaml(ResourceResolver resourceResolver, ConfigurationProperties parent) {
     this.resourceResolver = resourceResolver;
+    this.parent = parent;
   }
 
   @Override
@@ -37,7 +42,17 @@ public class IncludeExternalYaml implements Visitor {
   private void include(String resource, YamlMap target) {
     YamlMap include = YamlMap.from(resourceResolver.apply(resource));
     include.visit(new ResolveResources(resource));
+    include.visit(new StringSubstitutor(getSubstitutor(resource)));
     include.entries().forEach(entry -> includeEntry(entry.getKey(), entry.getValue(), target));
+  }
+
+  private ConfigurationProperties getSubstitutor(String resource) {
+    String propertiesResource = URI.create(resource).resolve("configuration.properties").toString();
+    try {
+      return new ConfigurationProperties(resourceResolver, propertiesResource, parent);
+    } catch (UnknownResourceException e) {
+      return parent;
+    }
   }
 
   private void includeEntry(String key, Value value, YamlMap target) {

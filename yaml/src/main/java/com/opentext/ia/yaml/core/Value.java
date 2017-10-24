@@ -55,13 +55,16 @@ public class Value {
     return !isEmpty() && !isList() && !isMap();
   }
 
+  public boolean isBoolean() {
+    return toString().equals(Boolean.toString(toBoolean()));
+  }
+
   public boolean toBoolean() {
     return Boolean.parseBoolean(toString());
   }
 
-  @Override
-  public String toString() {
-    return data == null ? "" : data.toString();
+  public boolean isInt() {
+    return toString().equals(Integer.toString(toInt()));
   }
 
   public int toInt() {
@@ -72,12 +75,25 @@ public class Value {
     }
   }
 
+  public boolean isDouble() {
+    return toString().equals(Double.toString(toDouble()));
+  }
+
   public double toDouble() {
     try {
       return Double.parseDouble(toString());
     } catch (NumberFormatException e) {
       return 0.0;
     }
+  }
+
+  public boolean isString() {
+    return isScalar() && !isBoolean() && !isInt() && !isDouble();
+  }
+
+  @Override
+  public String toString() {
+    return data == null ? "" : data.toString();
   }
 
   Object getRawData() {

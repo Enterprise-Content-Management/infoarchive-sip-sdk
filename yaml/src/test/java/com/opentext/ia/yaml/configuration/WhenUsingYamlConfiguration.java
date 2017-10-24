@@ -21,6 +21,7 @@ import com.opentext.ia.yaml.core.Entry;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.resource.ResourceResolver;
+import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 
 public class WhenUsingYamlConfiguration extends TestCase {
@@ -76,10 +77,10 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldInlineResources() throws Exception {
     String expected = someName();
-    resourceResolver = name -> expected;
+    String resource = someTextFileName();
+    resourceResolver = resolveResource(resource, expected);
     String singularType = someType();
     String pluralType = English.plural(someType());
-    String resource = someTextFileName();
     yaml.put(singularType, Arrays.asList(externalContentTo(resource)));
     yaml.put(pluralType, externalContentTo(resource));
     String nonContent = English.plural(someName());
@@ -131,8 +132,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldInlineNormalizedCustomPresentationHtmlTemplate() throws Exception {
     String expected = someName();
-    resourceResolver = name -> expected;
     String resource = someHtmlFileName();
+    resourceResolver = resolveResource(resource, expected);
     yaml.put("customPresentationConfigurations", Arrays.asList(new YamlMap()
         .put(NAME, someName())
         .put(HTML_TEMPLATE, new YamlMap()
@@ -143,6 +144,15 @@ public class WhenUsingYamlConfiguration extends TestCase {
     assertCustomPresentationHasInlinedHtmlTemplate(expected);
   }
 
+  private ResourceResolver resolveResource(String supported, String resolution) {
+    return name -> {
+      if (name.equals(supported)) {
+        return resolution;
+      }
+      throw new UnknownResourceException(name, null);
+    };
+  }
+
   private void assertCustomPresentationHasInlinedHtmlTemplate(String expected) {
     assertEquals("Inlined resource", expected,
         yaml.get(English.plural("customPresentationConfiguration"), 0, HTML_TEMPLATE, TEXT).toString());
@@ -151,8 +161,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldInlineSingleCustomPresentationHtmlTemplate() throws Exception {
     String expected = someName();
-    resourceResolver = name -> expected;
     String resource = someHtmlFileName();
+    resourceResolver = resolveResource(resource, expected);
     yaml.put("customPresentationConfiguration", new YamlMap()
         .put(NAME, someName())
         .put(HTML_TEMPLATE, new YamlMap()
@@ -166,8 +176,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldInlineNamedCustomPresentationHtmlTemplate() throws Exception {
     String expected = someName();
-    resourceResolver = name -> expected;
     String resource = someHtmlFileName();
+    resourceResolver = resolveResource(resource, expected);
     yaml.put("customPresentationConfigurations", new YamlMap()
         .put(someName(), new YamlMap()
             .put(HTML_TEMPLATE, new YamlMap()
@@ -185,8 +195,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldInlineNormalizedDatabaseMetadata() throws Exception {
     String expected = someName();
-    resourceResolver = name -> expected;
     String resource = someXmlFile();
+    resourceResolver = resolveResource(resource, expected);
     yaml.put(DATABASES, Arrays.asList(new YamlMap()
         .put(NAME, someName())
         .put(METADATA, Arrays.asList(new YamlMap()
@@ -205,8 +215,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldInlineSingleDatabaseMetadata() throws Exception {
     String expected = someName();
-    resourceResolver = name -> expected;
     String resource = someXmlFile();
+    resourceResolver = resolveResource(resource, expected);
     yaml.put("database", new YamlMap()
         .put(NAME, someName())
         .put(METADATA, Arrays.asList(new YamlMap()
@@ -220,8 +230,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldInlineNamedDatabaseMetadata() throws Exception {
     String expected = someName();
-    resourceResolver = name -> expected;
     String resource = someXmlFile();
+    resourceResolver = resolveResource(resource, expected);
     yaml.put(DATABASES, new YamlMap()
         .put(someName(), new YamlMap()
             .put(METADATA, Arrays.asList(new YamlMap()
@@ -239,8 +249,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldInlineNormalizedTransformationXQuery() throws Exception {
     String expected = someName();
-    resourceResolver = name -> expected;
     String resource = someTextFileName();
+    resourceResolver = resolveResource(resource, expected);
     yaml.put(TRANSFORMATIONS, Arrays.asList(new YamlMap()
         .put(NAME, someName())
         .put(XQUERY, new YamlMap()
@@ -259,8 +269,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldInlineSingleTransformationXQuery() throws Exception {
     String expected = someName();
-    resourceResolver = name -> expected;
     String resource = someTextFileName();
+    resourceResolver = resolveResource(resource, expected);
     yaml.put(TRANSFORMATION, new YamlMap()
         .put(NAME, someName())
         .put(XQUERY, new YamlMap()
@@ -274,8 +284,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
   @Test
   public void shouldInlineNamedTransformationXQuery() throws Exception {
     String expected = someName();
-    resourceResolver = name -> expected;
     String resource = someTextFileName();
+    resourceResolver = resolveResource(resource, expected);
     yaml.put(TRANSFORMATIONS, new YamlMap()
         .put(someName(), new YamlMap()
             .put(XQUERY, new YamlMap()
@@ -771,7 +781,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
         .put(key1, Arrays.asList(new YamlMap().put(key2, value)))
         .toString();
     String include = someYamlFileName();
-    resourceResolver = name -> included;
+    resourceResolver = resolveResource(include, included);
     yaml.put(INCLUDES, Arrays.asList(include));
 
     normalizeYaml();
@@ -791,7 +801,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
         .put(key, someName())
         .toString();
     String include = someYamlFileName();
-    resourceResolver = name -> included;
+    resourceResolver = resolveResource(include, included);
     yaml.put(key, someName())
         .put(INCLUDES, Arrays.asList(include));
 
@@ -807,7 +817,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
         .put(key1, Arrays.asList(new YamlMap().put(NAME, someName()).put("configure", "use existing")))
         .toString();
     String include = someYamlFileName();
-    resourceResolver = name -> included;
+    resourceResolver = resolveResource(include, included);
     yaml.put(key1, Arrays.asList(new YamlMap().put(NAME, value)))
         .put(INCLUDES, Arrays.asList(include));
 
@@ -837,13 +847,41 @@ public class WhenUsingYamlConfiguration extends TestCase {
       if (name.equals(relativeFile)) {
         return text;
       }
-      throw new IllegalStateException("Unknown resource: " + name);
+      throw new UnknownResourceException(name, null);
     };
     yaml.put(INCLUDES, Arrays.asList(include));
 
     normalizeYaml();
 
     assertValue("Included resource should be resolved", text, yaml.get(English.plural(key), 0, CONTENT, TEXT));
+  }
+
+  @Test
+  public void shouldSubstituteProperties() {
+    String collection = English.plural(someName());
+    String intProperty = someName();
+    int intValue = randomInt(13, 42);
+    resourceResolver = ResourceResolver.fromClasspath();
+    yaml.put(collection, Arrays.asList(new YamlMap().put(NAME, "${qux}").put(intProperty, intValue)));
+
+    normalizeYaml();
+
+    assertValue("Substituted value", "thud", yaml.get(collection, 0, NAME));
+    assertEquals("Ignored value", intValue, yaml.get(collection, 0, intProperty).toInt());
+  }
+
+  @Test
+  public void shouldSubstitutePropertiesInInlinedYaml() {
+    String collection = English.plural(someName());
+    resourceResolver = ResourceResolver.fromClasspath();
+    yaml.put(collection, Arrays.asList(new YamlMap().put(NAME, "${qux}")))
+        .put(INCLUDES, Arrays.asList("include/configuration.yml"));
+
+    normalizeYaml();
+
+    assertValue("Substituted value", "thud", yaml.get(collection, 0, NAME));
+    assertValue("Inherited inline value", "bar", yaml.get("inc", 0, "foo"));
+    assertValue("Overridden inline value", "xyzzy", yaml.get("inc", 0, NAME));
   }
 
 }
