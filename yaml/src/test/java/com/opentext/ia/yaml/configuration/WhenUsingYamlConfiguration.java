@@ -26,6 +26,7 @@ import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 public class WhenUsingYamlConfiguration extends TestCase {
 
+  private static final String STORES = "stores";
   private static final String TRANSFORMATION = "transformation";
   private static final String NAME = "name";
   private static final String CONFIGURE = "configure";
@@ -122,7 +123,11 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   private void normalizeYaml() {
-    new YamlConfiguration(yaml, resourceResolver);
+    normalizeYaml(yaml);
+  }
+
+  private YamlConfiguration normalizeYaml(YamlMap map) {
+    return new YamlConfiguration(map, resourceResolver);
   }
 
   private void assertValue(String message, String expected, Value actual) {
@@ -370,7 +375,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
     yaml.put("spaceRootFolders", Arrays.asList(new YamlMap().put(NAME, spaceRootFolder)));
     yaml.put("fileSystemRoots", Arrays.asList(new YamlMap().put(NAME, fileSystemRoot)));
     yaml.put(FILE_SYSTEM_FOLDERS, Arrays.asList(new YamlMap().put(NAME, fileSystemFolder)));
-    yaml.put("stores", Arrays.asList(new YamlMap().put(NAME, store)));
+    yaml.put(STORES, Arrays.asList(new YamlMap().put(NAME, store)));
     yaml.put(DATABASES, Arrays.asList(new YamlMap().put(NAME, someName())));
     yaml.put("holdingCryptoes", Arrays.asList(new YamlMap().put(NAME, someName())));
 
@@ -882,6 +887,16 @@ public class WhenUsingYamlConfiguration extends TestCase {
     assertValue("Substituted value", "thud", yaml.get(collection, 0, NAME));
     assertValue("Inherited inline value", "bar", yaml.get("inc", 0, "foo"));
     assertValue("Overridden inline value", "xyzzy", yaml.get("inc", 0, NAME));
+  }
+
+  @Test
+  public void shouldInlineBasedOnSubstitutedProperty() {
+    resourceResolver = ResourceResolver.fromClasspath("/stores");
+    YamlMap map = YamlMap.from(resourceResolver.apply("configuration.yml"));
+
+    normalizeYaml(map);
+
+    assertValue("Store name", "aws-s3", map.get(STORES, 0, NAME));
   }
 
 }

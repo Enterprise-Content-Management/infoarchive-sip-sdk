@@ -3,11 +3,14 @@
  */
 package com.opentext.ia.yaml.configuration;
 
+import java.util.ListIterator;
 import java.util.function.Function;
 
 import com.opentext.ia.yaml.core.Entry;
+import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.Visit;
 import com.opentext.ia.yaml.core.Visitor;
+import com.opentext.ia.yaml.core.YamlMap;
 
 
 public class StringSubstitutor implements Visitor {
@@ -32,14 +35,35 @@ public class StringSubstitutor implements Visitor {
   public void accept(Visit visit) {
     boolean isResourceContainer = InlineExternalContent.RESOURCE_CONTAINER_PATHS.stream()
         .anyMatch(visit.getPath()::matches);
-    visit.getMap().entries()
+    YamlMap yaml = visit.getMap();
+    yaml.entries()
         .filter(entry -> entry.getValue().isString())
         .filter(entry -> !isResourceContainer || !InlineExternalContent.TEXT.equals(entry.getKey()))
-        .forEach(this::substitute);
+        .forEach(this::substituteValue);
+    yaml.entries()
+        .filter(this::isListOfStrings)
+        .forEach(this::substituteValues);
   }
 
-  private void substitute(Entry entry) {
-    entry.getParent().replace(entry.getKey(), substitutor.apply(entry.getValue().toString()));
+  private void substituteValue(Entry entry) {
+    entry.getParent().replace(entry.getKey(), substituteValue(entry.getValue()));
+  }
+
+  private String substituteValue(Value value) {
+    return substitutor.apply(value.toString());
+  }
+
+  private boolean isListOfStrings(Entry entry) {
+    Value value = entry.getValue();
+    return value.isList() && value.toList().stream().allMatch(Value::isString);
+  }
+
+  private void substituteValues(Entry entry) {
+    ListIterator<Value> iterator = entry.getValue().toList().listIterator();
+    while (iterator.hasNext()) {
+      String substitutedValue = substituteValue(iterator.next());
+      iterator.set(new Value(substitutedValue));
+    }
   }
 
 }
