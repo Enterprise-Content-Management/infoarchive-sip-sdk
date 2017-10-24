@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Locale;
@@ -139,7 +140,8 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
 
       assertEquals("Response", expected, actual);
     } catch (HttpException e) {
-      if (e.getCause() instanceof SSLHandshakeException) {
+      Throwable cause = e.getCause();
+      if (cause instanceof SSLHandshakeException || cause instanceof UnknownHostException) {
         // This can happen when on a VPN and the company blocks certain TLS traffic
         return;
       }
