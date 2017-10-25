@@ -20,10 +20,11 @@ public class WhenSubstitutingProperties {
   @Test
   public void shouldReplacePropertyReferenceWithValue() {
     propertyResolver = new ConfigurationProperties(resourceResolver, "configuration.properties");
-//    assertEquals("Non-expression", "foo", propertyResolver.apply("foo"));
-//    assertProperty("Use existing value", "bar", "foo");
+    assertEquals("Non-expression", "foo", propertyResolver.apply("foo"));
+    assertProperty("Use existing value", "bar", "foo");
     assertProperty("Substitute with value", "gnat", "baz");
     assertProperty("Substitute with default if not found", "quux", "qux");
+    assertProperty("Substitute with empty default", "", "waldo");
     assertProperty("Don't substitute if not found and no default", "${grault}", "corge");
     assertProperty("Keep prefix and suffix", "hamANDeggs", "spam");
     assertProperty("Multiple subsitutions", "http://localhost:8765/services", "url");

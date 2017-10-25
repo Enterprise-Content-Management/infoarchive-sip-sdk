@@ -18,7 +18,7 @@ public class ConfigurationProperties implements Function<String, String> {
 
   private static final String SUBSTITUTE_START = "${";
   private static final Pattern REFERENCE = Pattern.compile(
-      "\\$\\{(?<var>[^}:]+)(:(?<default>[^}]+))?\\}(?<suffix>[^$]+)?");
+      "\\$\\{(?<var>[^}:]+)(:(?<default>[^}]*))?\\}(?<suffix>[^$]+)?");
 
   private final ConfigurationProperties parent;
   private final Properties properties = new Properties();
