@@ -899,4 +899,14 @@ public class WhenUsingYamlConfiguration extends TestCase {
     assertValue("Store name", "aws-s3", map.get(STORES, 0, NAME));
   }
 
+  @Test
+  public void shouldInlineNestedIncludes() {
+    resourceResolver = ResourceResolver.fromClasspath("/nested-includes");
+    yaml.put(INCLUDES, Arrays.asList("root.yml"));
+
+    normalizeYaml(yaml);
+
+    assertValue("Inlined value", "bar", yaml.get("foo"));
+  }
+
 }

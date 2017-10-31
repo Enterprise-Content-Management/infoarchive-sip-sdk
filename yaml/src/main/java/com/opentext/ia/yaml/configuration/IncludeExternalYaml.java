@@ -35,19 +35,23 @@ public class IncludeExternalYaml implements Visitor {
   @Override
   public void accept(Visit visit) {
     YamlMap yaml = visit.getMap();
-    yaml.get(INCLUDES).toList().forEach(value -> include(value.toString(), yaml));
+    YamlSequence includeFiles = yaml.get(INCLUDES).toList();
     yaml.remove(INCLUDES);
+    includeFiles.forEach(value -> include(value.toString(), yaml));
   }
 
   private void include(String resource, YamlMap target) {
+    URI base = URI.create(resource);
+    ConfigurationProperties properties = propertiesIn(base);
     YamlMap include = YamlMap.from(resourceResolver.apply(resource));
+    include.visit(includeNestedYaml(base, properties));
     include.visit(new ResolveResources(resource));
-    include.visit(new StringSubstitutor(getSubstitutor(resource)));
+    include.visit(new StringSubstitutor(properties));
     include.entries().forEach(entry -> includeEntry(entry.getKey(), entry.getValue(), target));
   }
 
-  private ConfigurationProperties getSubstitutor(String resource) {
-    String propertiesResource = URI.create(resource).resolve("configuration.properties").toString();
+  private ConfigurationProperties propertiesIn(URI resource) {
+    String propertiesResource = resource.resolve("configuration.properties").toString();
     try {
       return new ConfigurationProperties(resourceResolver, propertiesResource, parent);
     } catch (UnknownResourceException e) {
@@ -55,11 +59,15 @@ public class IncludeExternalYaml implements Visitor {
     }
   }
 
+  private IncludeExternalYaml includeNestedYaml(URI base, ConfigurationProperties properties) {
+    return new IncludeExternalYaml(name -> resourceResolver.apply(base.resolve(name).toString()), properties);
+  }
+
   private void includeEntry(String key, Value value, YamlMap target) {
     switch (getDuplication(key, value, target)) {
       case DUPLICATION:
         throw new IllegalArgumentException(String.format(
-            "Duplicate key %s: cannot set to %s because it's already set to %s", key, value, target.get(key)));
+            "Duplicate key '%s': cannot set to '%s' because it's already set to '%s'", key, value, target.get(key)));
       case NO_DUPLICATION:
         target.put(key, value);
         break;
