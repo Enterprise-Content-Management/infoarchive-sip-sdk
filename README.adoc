@@ -32,7 +32,7 @@ The SDK consists of the following jars:
 
 All jars can be found in the https://repo1.maven.org/maven2/com/emc/ia/[Central Repository]. The easiest way to get
 them is through a dependency management system like http://gradle.org/[Gradle] or https://maven.apache.org/[Maven].
-For the latest version, see the `maven-central` button at the top of this page.
+For the latest version, see the `maven-central` badge at the top of this page.
 
 
 *Gradle*
