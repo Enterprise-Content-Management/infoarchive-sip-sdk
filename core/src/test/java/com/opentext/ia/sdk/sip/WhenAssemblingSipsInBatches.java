@@ -17,14 +17,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -157,6 +162,38 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     batcher.end();
     assertNotNull("Callback not invoked", sip.get());
     assertFalse("File not deleted", sip.get().isFile());
+  }
+
+  @Test
+  // #39
+  public void shouldProduceValidSips() throws IOException {
+    AtomicInteger numSips = new AtomicInteger();
+    Consumer<FileGenerationMetrics> sipValidatingCallback = fgm -> {
+      numSips.incrementAndGet();
+      File sip = fgm.getFile();
+      try (ZipInputStream zip = new ZipInputStream(new FileInputStream(sip))) {
+        ZipEntry entry = zip.getNextEntry();
+        while (entry != null) {
+          if ("eas_sip.xml".equals(entry.getName())) {
+            String packageInformation = IOUtils.toString(zip, StandardCharsets.UTF_8);
+            assertTrue("SeqNo should be 1", packageInformation.contains("<seqno>1</seqno>"));
+            assertTrue("IsLast should be true", packageInformation.contains("<is_last>true</is_last>"));
+            break;
+          }
+          entry = zip.getNextEntry();
+        }
+      } catch (IOException e) {
+        throw new RuntimeIoException(e);
+      }
+    };
+    BatchSipAssemblerWithCallback<String> batcher = new BatchSipAssemblerWithCallback<>(sipAssembler,
+        (object, metrics) -> true, () -> newFile(), sipValidatingCallback);
+
+    batcher.add(randomString());
+    batcher.add(randomString());
+
+    batcher.end();
+    assertEquals("# SIPs", 2, numSips.get());
   }
 
 
