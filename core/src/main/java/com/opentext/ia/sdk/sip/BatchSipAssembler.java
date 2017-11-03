@@ -68,8 +68,7 @@ public class BatchSipAssembler<D> {
   }
 
   protected final void setFinalSipInDss(boolean finalSipInDss) {
-    assembler.getPackagingInformationFactory()
-      .setFinalSipInDss(finalSipInDss);
+    assembler.getPackagingInformationFactory().setFinalSipInDss(finalSipInDss);
   }
 
   /**
