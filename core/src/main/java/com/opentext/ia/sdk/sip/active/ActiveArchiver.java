@@ -31,8 +31,8 @@ import com.opentext.ia.sdk.support.io.NoHashAssembler;
 
 /**
  * {@linkplain BatchSipAssembler Assemble SIPs} and ingest them into an Archive as soon as they are done.
- * <p>
- *
+ * <dl><dt>Warning:</dt><dd>This object is not thread-safe. If you want to use multiple threads to assemble SIPs, let
+ * each use their own instance.</dd></dl>
  * @param <D> The type of domain objects to assemble
  */
 public class ActiveArchiver<D> {
@@ -42,7 +42,8 @@ public class ActiveArchiver<D> {
   private final BiConsumer<File, IOException> failedSipHandler;
 
   public ActiveArchiver(SipSegmentationStrategy<D> segmentationStrategy, PackagingInformation packagingInformation,
-      String dssPrefix, PdiAssembler<D> pdiAssembler, ArchiveClient archiveClient, BiConsumer<File, IOException> failedSipHandler) {
+      String dssPrefix, PdiAssembler<D> pdiAssembler, ArchiveClient archiveClient,
+      BiConsumer<File, IOException> failedSipHandler) {
     this(segmentationStrategy, packagingInformation, dssPrefix, pdiAssembler, ignored -> Collections.emptyIterator(),
         archiveClient, failedSipHandler);
   }
@@ -63,6 +64,14 @@ public class ActiveArchiver<D> {
     return SipAssembler.forPdiAndContent(factory, pdiAssembler, contentsAssembler);
   }
 
+  /**
+   * Create a new instance.
+   * @param segmentationStrategy The strategy to use for determining when to start a new SIP
+   * @param sipAssembler The SIP assembler to use. This object must not be used anywhere else but here, especially
+   * not in another thread
+   * @param archiveClient The client to use for ingesting the assembled SIPs
+   * @param failedSipHandler The error handler to call when ingesting a SIP fails
+   */
   public ActiveArchiver(SipSegmentationStrategy<D> segmentationStrategy, SipAssembler<D> sipAssembler,
       ArchiveClient archiveClient, BiConsumer<File, IOException> failedSipHandler) {
     this.archiveClient = archiveClient;

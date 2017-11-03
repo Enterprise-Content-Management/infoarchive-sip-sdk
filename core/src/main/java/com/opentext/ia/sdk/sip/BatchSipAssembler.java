@@ -23,7 +23,9 @@ import com.opentext.ia.sdk.support.io.FileSupplier;
  * <p>
  * There are several {@linkplain SipSegmentationStrategy factory methods} available to create common segmentation
  * strategies and you can also {@linkplain SipSegmentationStrategy#combining(SipSegmentationStrategy...) combine} them.
- * <p>
+ *
+ * <dl><dt>Warning:</dt><dd>This object is not thread-safe. If you want to use multiple threads to assemble SIPs, let
+ * each use their own instance.</dd></dl>
  * @param <D> The type of domain object to assemble SIPs from
  */
 public class BatchSipAssembler<D> {

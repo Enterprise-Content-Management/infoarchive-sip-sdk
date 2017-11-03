@@ -11,8 +11,9 @@ import com.opentext.ia.sdk.support.io.FileSupplier;
 
 
 /**
- * {@linkplain BatchSipAssembler Assemble a batch of SIPs} with a callback when SIP is closed.
- * <p>
+ * {@linkplain BatchSipAssembler Assemble a batch of SIPs} and invoke a callback after each SIP is closed.
+ * <dl><dt>Warning:</dt><dd>This object is not thread-safe. If you want to use multiple threads to assemble SIPs, let
+ * each use their own instance.</dd></dl>
  *
  * @param <D> The type of domain objects to assemble
  */

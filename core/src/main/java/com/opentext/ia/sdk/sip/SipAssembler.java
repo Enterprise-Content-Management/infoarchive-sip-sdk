@@ -57,7 +57,9 @@ import com.opentext.ia.sdk.support.io.ZipAssembler;
  * {@linkplain SipAssembler} in a {@linkplain Generator} to reduce the above code to a single call.
  * <p>
  * To assemble a number of SIPs in a batch, use {@linkplain BatchSipAssembler}.
- * <p>
+ *
+ * <dl><dt>Warning:</dt><dd>This object is not thread-safe. If you want to use multiple threads to assemble SIPs, let
+ * each use their own instance.</dd></dl>
  * @param <D> The type of domain objects to assemble the SIP from
  */
 public class SipAssembler<D> implements Assembler<D> {
