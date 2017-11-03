@@ -9,10 +9,11 @@ import java.util.function.Supplier;
 
 import com.opentext.ia.sdk.support.io.FileSupplier;
 
+
 /**
  * {@linkplain BatchSipAssembler Assemble a batch of SIPs} with a callback when SIP is closed.
  * <p>
- * 
+ *
  * @param <D> The type of domain objects to assemble
  */
 public class BatchSipAssemblerWithCallback<D> extends BatchSipAssembler<D> {
@@ -34,7 +35,6 @@ public class BatchSipAssemblerWithCallback<D> extends BatchSipAssembler<D> {
       Supplier<File> fileSupplier, Consumer<FileGenerationMetrics> callback) {
     super(assembler, segmentationStrategy, fileSupplier);
     this.callback = callback;
-    setFinalSipInDss(true);
   }
 
   @Override

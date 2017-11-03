@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,10 +27,7 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,11 +35,10 @@ import org.junit.rules.TemporaryFolder;
 
 import com.opentext.ia.sdk.support.io.DomainObjectTooBigException;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
-import com.opentext.ia.test.TestCase;
 
 
 @SuppressWarnings("unchecked")
-public class WhenAssemblingSipsInBatches extends TestCase {
+public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
 
   @Rule
   public TemporaryFolder folder = new TemporaryFolder();
@@ -170,18 +167,10 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     AtomicInteger numSips = new AtomicInteger();
     Consumer<FileGenerationMetrics> sipValidatingCallback = fgm -> {
       numSips.incrementAndGet();
-      File sip = fgm.getFile();
-      try (ZipInputStream zip = new ZipInputStream(new FileInputStream(sip))) {
-        ZipEntry entry = zip.getNextEntry();
-        while (entry != null) {
-          if ("eas_sip.xml".equals(entry.getName())) {
-            String packageInformation = IOUtils.toString(zip, StandardCharsets.UTF_8);
-            assertTrue("SeqNo should be 1", packageInformation.contains("<seqno>1</seqno>"));
-            assertTrue("IsLast should be true", packageInformation.contains("<is_last>true</is_last>"));
-            break;
-          }
-          entry = zip.getNextEntry();
-        }
+      File zip = fgm.getFile();
+      try (InputStream sip = new FileInputStream(zip)) {
+        String packageInformation = getPackageInformation(sip);
+        assertEquals("Is last", getSeqNo(packageInformation) > 1, isLast(packageInformation));
       } catch (IOException e) {
         throw new RuntimeIoException(e);
       }
