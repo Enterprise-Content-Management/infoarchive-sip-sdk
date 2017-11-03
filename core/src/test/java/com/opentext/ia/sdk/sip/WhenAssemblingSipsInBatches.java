@@ -5,6 +5,7 @@ package com.opentext.ia.sdk.sip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -21,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.junit.Before;
@@ -136,6 +138,25 @@ public class WhenAssemblingSipsInBatches extends TestCase {
     BatchSipAssembler<String> batcher = new BatchSipAssembler<>(sipAssembler, strategy, dir);
 
     batcher.add(randomString(maxSize + 1));
+  }
+
+  @Test
+  // #39
+  public void shouldBeAbleToDeleteFileFromCallback() throws IOException {
+    AtomicReference<File> sip = new AtomicReference<File>();
+    Consumer<FileGenerationMetrics> deletingCallback = fgm -> {
+      File file = fgm.getFile();
+      sip.set(file);
+      file.delete();
+    };
+    BatchSipAssemblerWithCallback<String> batcher = new BatchSipAssemblerWithCallback<>(sipAssembler,
+        segmentationStrategy, () -> newFile(), deletingCallback);
+
+    batcher.add(randomString());
+
+    batcher.end();
+    assertNotNull("Callback not invoked", sip.get());
+    assertFalse("File not deleted", sip.get().isFile());
   }
 
 

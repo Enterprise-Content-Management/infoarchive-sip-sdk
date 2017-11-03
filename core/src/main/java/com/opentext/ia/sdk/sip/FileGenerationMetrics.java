@@ -34,4 +34,9 @@ public class FileGenerationMetrics {
     return metrics;
   }
 
+  @Override
+  public String toString() {
+    return file.getPath() + ": " + metrics;
+  }
+
 }
