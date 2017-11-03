@@ -7,8 +7,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Collections;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.sip.BatchSipAssembler;
@@ -38,17 +39,17 @@ public class ActiveArchiver<D> {
 
   private final ArchiveClient archiveClient;
   private final BatchSipAssemblerWithCallback<D> assembler;
-  private final Consumer<File> failedSipHandler;
+  private final BiConsumer<File, IOException> failedSipHandler;
 
   public ActiveArchiver(SipSegmentationStrategy<D> segmentationStrategy, PackagingInformation packagingInformation,
-      String dssPrefix, PdiAssembler<D> pdiAssembler, ArchiveClient archiveClient, Consumer<File> failedSipHandler) {
+      String dssPrefix, PdiAssembler<D> pdiAssembler, ArchiveClient archiveClient, BiConsumer<File, IOException> failedSipHandler) {
     this(segmentationStrategy, packagingInformation, dssPrefix, pdiAssembler, ignored -> Collections.emptyIterator(),
         archiveClient, failedSipHandler);
   }
 
   public ActiveArchiver(SipSegmentationStrategy<D> segmentationStrategy, PackagingInformation packagingInformation,
       String dssPrefix, PdiAssembler<D> pdiAssembler, DigitalObjectsExtraction<D> contentsExtraction,
-      ArchiveClient archiveClient, Consumer<File> failedSipHandler) {
+      ArchiveClient archiveClient, BiConsumer<File, IOException> failedSipHandler) {
     this(segmentationStrategy, newSipAssembler(packagingInformation, dssPrefix, pdiAssembler,
         contentsExtraction), archiveClient, failedSipHandler);
   }
@@ -63,7 +64,7 @@ public class ActiveArchiver<D> {
   }
 
   public ActiveArchiver(SipSegmentationStrategy<D> segmentationStrategy, SipAssembler<D> sipAssembler,
-      ArchiveClient archiveClient, Consumer<File> failedSipHandler) {
+      ArchiveClient archiveClient, BiConsumer<File, IOException> failedSipHandler) {
     this.archiveClient = archiveClient;
     this.failedSipHandler = failedSipHandler;
     this.assembler = new BatchSipAssemblerWithCallback<>(sipAssembler, segmentationStrategy, this::sipAssembled);
@@ -75,9 +76,9 @@ public class ActiveArchiver<D> {
       try (InputStream sip = new FileInputStream(file)) {
         archiveClient.ingestDirect(sip);
       }
-      file.delete();
+      Files.delete(file.toPath());
     } catch (IOException e) {
-      failedSipHandler.accept(file);
+      failedSipHandler.accept(file, e);
     }
   }
 

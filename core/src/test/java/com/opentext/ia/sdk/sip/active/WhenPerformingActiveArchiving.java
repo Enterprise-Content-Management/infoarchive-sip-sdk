@@ -66,7 +66,7 @@ public class WhenPerformingActiveArchiving extends SipAssemblingTestCase {
 
   private ActiveArchiver<String> newArchiver() {
     return new ActiveArchiver<>(segmentationStrategy, packagingInformation(), dssPrefix(),
-        pdiAssembler(), archiveClient, failedSip -> failedSips.add(failedSip));
+        pdiAssembler(), archiveClient, (failedSip, exception) -> failedSips.add(failedSip));
   }
 
   private PackagingInformation packagingInformation() {
