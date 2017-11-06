@@ -91,6 +91,9 @@ public class IncludeExternalYaml implements Visitor {
       }
       return Duplication.DIFFERENT_VERSION;
     }
+    if ("namespace".equals(key) || "namespaces".equals(key)) {
+      return Duplication.NO_DUPLICATION;
+    }
     YamlMap map = toMap(value);
     if (map == null) {
       return Duplication.DUPLICATION;

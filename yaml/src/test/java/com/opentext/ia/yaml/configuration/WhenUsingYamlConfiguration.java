@@ -849,6 +849,33 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   @Test
+  public void shouldIgnoreDuplicateNamespaceEntry() throws Exception {
+    YamlMap namespace1 = someNamespace();
+    YamlMap namespace2 = someNamespace();
+    String included = new YamlMap()
+        .put("namespace", namespace1)
+        .put("namespaces", Arrays.asList(namespace2))
+        .toString();
+    String include = someYamlFileName();
+    resourceResolver = resolveResource(include, included);
+    yaml.put("namespace", someName())
+        .put("namespaces", Arrays.asList(namespace2))
+        .put(INCLUDES, Arrays.asList(include));
+
+    normalizeYaml();
+
+    // Should not throw exception
+  }
+
+  private YamlMap someNamespace() {
+    return new YamlMap().put("uri", someUri()).put("prefix", someName());
+  }
+
+  private String someUri() {
+    return String.format("http://%s.com/%s", someName(), someName());
+  }
+
+  @Test
   public void shouldResolveInlineResourcesRelativeToIncludedResource() throws Exception {
     String dir = someName();
     String file = someHtmlFileName();
