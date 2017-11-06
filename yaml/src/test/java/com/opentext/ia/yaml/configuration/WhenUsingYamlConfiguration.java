@@ -26,6 +26,8 @@ import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 public class WhenUsingYamlConfiguration extends TestCase {
 
+  private static final String VERSION = "version";
+  private static final String VERSION_1 = "1.0.0";
   private static final String STORES = "stores";
   private static final String TRANSFORMATION = "transformation";
   private static final String NAME = "name";
@@ -309,14 +311,14 @@ public class WhenUsingYamlConfiguration extends TestCase {
   public void shouldAddDefaultVersionWhenNotSpecified() throws Exception {
     normalizeYaml();
 
-    assertValue("Default version", "1.0.0", yaml.get("version"));
+    assertValue("Default version", VERSION_1, yaml.get(VERSION));
   }
 
   @Test
   public void shouldNotOverwriteSpecifiedVersion() throws Exception {
     YamlConfiguration configuration = new YamlConfiguration("version: 2.0.0");
 
-    assertValue("Version", "2.0.0", configuration.getMap().get("version"));
+    assertValue("Version", "2.0.0", configuration.getMap().get(VERSION));
   }
 
   @Test
@@ -829,6 +831,21 @@ public class WhenUsingYamlConfiguration extends TestCase {
     normalizeYaml();
 
     assertValue("Include value should be ignored", value, yaml.get(key1, 0, NAME));
+  }
+
+  @Test
+  public void shouldIgnoreDuplicateVersionEntry() throws Exception {
+    String included = new YamlMap()
+        .put(VERSION, VERSION_1)
+        .toString();
+    String include = someYamlFileName();
+    resourceResolver = resolveResource(include, included);
+    yaml.put(VERSION, VERSION_1)
+        .put(INCLUDES, Arrays.asList(include));
+
+    normalizeYaml();
+
+    assertValue(VERSION, VERSION_1, yaml.get(VERSION));
   }
 
   @Test

@@ -73,6 +73,9 @@ public class IncludeExternalYaml implements Visitor {
         break;
       case IGNORE_DUPLICATION:
         break;
+      case DIFFERENT_VERSION:
+        throw new IllegalArgumentException(String.format("Different versions of configuration format: %s vs %s",
+            value, target.get(key)));
       default:
         throw new UnsupportedOperationException("Unhandled " + Duplication.class.getName());
     }
@@ -81,6 +84,12 @@ public class IncludeExternalYaml implements Visitor {
   private Duplication getDuplication(String key, Value value, YamlMap target) {
     if (!target.containsKey(key)) {
       return Duplication.NO_DUPLICATION;
+    }
+    if ("version".equals(key)) {
+      if (value.toString().equals(target.get(key).toString())) {
+        return Duplication.NO_DUPLICATION;
+      }
+      return Duplication.DIFFERENT_VERSION;
     }
     YamlMap map = toMap(value);
     if (map == null) {
@@ -112,7 +121,7 @@ public class IncludeExternalYaml implements Visitor {
 
   private enum Duplication {
 
-    NO_DUPLICATION, IGNORE_DUPLICATION, DUPLICATION;
+    NO_DUPLICATION, IGNORE_DUPLICATION, DUPLICATION, DIFFERENT_VERSION;
 
   }
 
