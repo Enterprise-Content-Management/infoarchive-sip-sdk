@@ -332,7 +332,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
     normalizeYaml();
 
-    assertValue("Name", name, yaml.get(English.plural(type), 0, NAME));
+    assertValue(NAME, name, yaml.get(English.plural(type), 0, NAME));
     assertValue("Should not be changed", value, yaml.get(otherType, 0));
   }
 
@@ -467,7 +467,7 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
     normalizeYaml();
 
-    assertValue("Name", query, yaml.get(QUERIES, 0, NAME));
+    assertValue(NAME, query, yaml.get(QUERIES, 0, NAME));
     assertValue("Operand", operand, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, NAME));
     assertValue("Path", path, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, PATH));
   }
@@ -818,19 +818,57 @@ public class WhenUsingYamlConfiguration extends TestCase {
 
   @Test
   public void shouldIgnoreDuplicateEntryConfiguredAsExisting() throws Exception {
-    String key1 = English.plural(someName());
-    String value = someName();
+    String type = someName();
+    String collection = English.plural(type);
+    String name = someName();
     String included = new YamlMap()
-        .put(key1, Arrays.asList(new YamlMap().put(NAME, someName()).put("configure", "use existing")))
+        .put(type, new YamlMap()
+                .put(NAME, name)
+                .put(CONFIGURE, ObjectConfiguration.USE_EXISTING.toString()))
         .toString();
     String include = someYamlFileName();
     resourceResolver = resolveResource(include, included);
-    yaml.put(key1, Arrays.asList(new YamlMap().put(NAME, value)))
+    yaml.put(collection, Arrays.asList(new YamlMap().put(NAME, name)))
         .put(INCLUDES, Arrays.asList(include));
 
     normalizeYaml();
 
-    assertValue("Include value should be ignored", value, yaml.get(key1, 0, NAME));
+    assertValue(NAME, name, yaml.get(collection, 0, NAME));
+    assertFalse("Singular should not be added", yaml.containsKey(type));
+  }
+
+  @Test
+  public void shouldReplaceOriginalEntryConfiguredAsExisting() throws Exception {
+    String type = someName();
+    String collection = English.plural(type);
+    String name = someName();
+    String property = someName();
+    String value = someName();
+    String included1 = new YamlMap()
+        .put(type, new YamlMap().put(NAME, name).put(CONFIGURE, ObjectConfiguration.USE_EXISTING.toString()))
+        .toString();
+    String include1 = someYamlFileName();
+    String included2 = new YamlMap()
+        .put(collection, Arrays.asList(new YamlMap().put(NAME, name).put(property, value)))
+        .toString();
+    String include2 = someYamlFileName();
+    resourceResolver = resource -> {
+      if (resource.equals(include1)) {
+        return included1;
+      }
+      if (resource.equals(include2)) {
+        return included2;
+      }
+      throw new UnknownResourceException(resource, null);
+    };
+    yaml.put(INCLUDES, Arrays.asList(include1, include2));
+
+    normalizeYaml();
+
+    assertTrue("Singular should not be added", yaml.get(type).isEmpty());
+    YamlMap map = yaml.get(collection, 0).toMap();
+    assertValue(NAME, name, map.get(NAME));
+    assertValue("Other property", value, map.get(property));
   }
 
   @Test

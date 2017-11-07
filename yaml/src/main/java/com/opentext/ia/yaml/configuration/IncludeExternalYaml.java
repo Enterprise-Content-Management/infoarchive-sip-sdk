@@ -5,6 +5,9 @@ package com.opentext.ia.yaml.configuration;
 
 import java.net.URI;
 
+import org.atteo.evo.inflector.English;
+
+import com.opentext.ia.yaml.core.Entry;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.Visit;
 import com.opentext.ia.yaml.core.Visitor;
@@ -16,6 +19,7 @@ import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 public class IncludeExternalYaml implements Visitor {
 
+  private static final String VERSION = "version";
   private static final String INCLUDES = "includes";
   private static final String CONFIGURE = "configure";
 
@@ -64,68 +68,66 @@ public class IncludeExternalYaml implements Visitor {
   }
 
   private void includeEntry(String key, Value value, YamlMap target) {
-    switch (getDuplication(key, value, target)) {
-      case DUPLICATION:
-        throw new IllegalArgumentException(String.format(
-            "Duplicate key '%s': cannot set to '%s' because it's already set to '%s'", key, value, target.get(key)));
-      case NO_DUPLICATION:
-        target.put(key, value);
-        break;
-      case IGNORE_DUPLICATION:
-        break;
-      case DIFFERENT_VERSION:
-        throw new IllegalArgumentException(String.format("Different versions of configuration format: %s vs %s",
-            value, target.get(key)));
-      default:
-        throw new UnsupportedOperationException("Unhandled " + Duplication.class.getName());
+    if (VERSION.equals(key)) {
+      assertSameVersion(value, target);
+      return;
+    }
+    if ("namespace".equals(key) || "namespaces".equals(key)) {
+      return;
+    }
+    String type = value.isList() ? findSingular(target, key) : key;
+    String collection = English.plural(type);
+    includeEntry(key, type, collection, value, target);
+  }
+
+  private void assertSameVersion(Value version, YamlMap target) {
+    if (!version.toString().equals(target.get(VERSION).toString())) {
+      throw new IllegalArgumentException(String.format("Different versions of configuration format: %s vs %s",
+          version, target.get(VERSION)));
     }
   }
 
-  private Duplication getDuplication(String key, Value value, YamlMap target) {
-    if (!target.containsKey(key)) {
-      return Duplication.NO_DUPLICATION;
+  private String findSingular(YamlMap target, String plural) {
+    return target.entries()
+        .map(Entry::getKey)
+        .filter(key -> plural.equals(English.plural(key)))
+        .findAny()
+        .orElse("");
+  }
+
+  private void includeEntry(String key, String type, String collection, Value value, YamlMap target) {
+    Value targetValue = target.containsKey(type) ? target.get(type) : target.get(collection);
+    if (targetValue.isEmpty()) {
+      target.put(key, value);
+      return;
     }
-    if ("version".equals(key)) {
-      if (value.toString().equals(target.get(key).toString())) {
-        return Duplication.NO_DUPLICATION;
-      }
-      return Duplication.DIFFERENT_VERSION;
+    if (isUseExisting(value)) {
+      return;
     }
-    if ("namespace".equals(key) || "namespaces".equals(key)) {
-      return Duplication.NO_DUPLICATION;
+    if (isUseExisting(targetValue)) {
+      target.remove(type)
+          .remove(collection)
+          .put(key, value);
+      return;
     }
+    throw new IllegalArgumentException(String.format(
+        "Duplicate key '%s': cannot set to '%s' because it's already set to '%s'", key, value, targetValue));
+  }
+
+  private boolean isUseExisting(Value value) {
     YamlMap map = toMap(value);
-    if (map == null) {
-      return Duplication.DUPLICATION;
-    }
-    if (ObjectConfiguration.USE_EXISTING.equals(ObjectConfiguration.parse(map.get(CONFIGURE).toString()))) {
-      return Duplication.IGNORE_DUPLICATION;
-    }
-    return Duplication.DUPLICATION;
+    return !map.isEmpty()
+        && ObjectConfiguration.USE_EXISTING.equals(ObjectConfiguration.parse(map.get(CONFIGURE).toString()));
   }
 
   private YamlMap toMap(Value value) {
-    if (value.isMap()) {
-      return value.toMap();
-    }
     if (value.isList()) {
-      YamlSequence values = value.toList();
-      if (values.size() != 1) {
-        return null;
-      }
-      Value item = values.get(0);
-      if (item.isMap()) {
-        return item.toMap();
+      YamlSequence items = value.toList();
+      if (items.size() == 1) {
+        return items.get(0).toMap();
       }
     }
-    return null;
-  }
-
-
-  private enum Duplication {
-
-    NO_DUPLICATION, IGNORE_DUPLICATION, DUPLICATION, DIFFERENT_VERSION;
-
+    return value.toMap();
   }
 
 

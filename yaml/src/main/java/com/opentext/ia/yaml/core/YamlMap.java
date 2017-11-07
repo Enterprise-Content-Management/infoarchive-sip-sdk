@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
@@ -176,7 +177,7 @@ public class YamlMap {
     while (i < keys.length - 1) {
       Value value = map.get(keys[i++]);
       if (value.isList()) {
-        int index = (int)keys[i++];
+        int index = toListIndex(keys[i++]);
         value = value.toList().get(index);
         if (i < keys.length) {
           map = value.toMap();
@@ -188,6 +189,13 @@ public class YamlMap {
       }
     }
     return new Value(map.data.get(keys[keys.length - 1]));
+  }
+
+  private int toListIndex(Object index) {
+    if (!Integer.class.isAssignableFrom(Objects.requireNonNull(index).getClass())) {
+      throw new IllegalArgumentException("Expecting an index in a sequence, but got: " + index);
+    }
+    return (int)index;
   }
 
   public Stream<Value> values() {
