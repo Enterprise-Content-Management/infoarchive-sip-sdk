@@ -76,7 +76,7 @@ public class IncludeExternalYaml implements Visitor {
       return;
     }
     String type = value.isList() ? findSingular(target, key) : key;
-    String collection = English.plural(type);
+    String collection = type.isEmpty() ? key : English.plural(type);
     includeEntry(key, type, collection, value, target);
   }
 
@@ -101,10 +101,10 @@ public class IncludeExternalYaml implements Visitor {
       target.put(key, value);
       return;
     }
-    if (isUseExisting(value)) {
+    if (!canConfigure(value)) {
       return;
     }
-    if (isUseExisting(targetValue)) {
+    if (!canConfigure(targetValue)) {
       target.remove(type)
           .remove(collection)
           .put(key, value);
@@ -114,20 +114,9 @@ public class IncludeExternalYaml implements Visitor {
         "Duplicate key '%s': cannot set to '%s' because it's already set to '%s'", key, value, targetValue));
   }
 
-  private boolean isUseExisting(Value value) {
-    YamlMap map = toMap(value);
-    return !map.isEmpty()
-        && ObjectConfiguration.USE_EXISTING.equals(ObjectConfiguration.parse(map.get(CONFIGURE).toString()));
-  }
-
-  private YamlMap toMap(Value value) {
-    if (value.isList()) {
-      YamlSequence items = value.toList();
-      if (items.size() == 1) {
-        return items.get(0).toMap();
-      }
-    }
-    return value.toMap();
+  private boolean canConfigure(Value value) {
+    YamlMap map = value.isList() ? value.toList().get(0).toMap() : value.toMap();
+    return ObjectConfiguration.parse(map.get(CONFIGURE).toString()).canConfigureObject();
   }
 
 

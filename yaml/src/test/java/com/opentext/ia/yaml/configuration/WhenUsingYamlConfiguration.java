@@ -838,6 +838,28 @@ public class WhenUsingYamlConfiguration extends TestCase {
   }
 
   @Test
+  public void shouldIgnoreDuplicateEntriesConfiguredAsExisting() throws Exception {
+    String type = someName();
+    String collection = English.plural(type);
+    String name = someName();
+    String included = new YamlMap()
+        .put(collection, Arrays.asList(new YamlMap()
+                .put(NAME, name)
+                .put(CONFIGURE, ObjectConfiguration.USE_EXISTING.toString())))
+        .toString();
+    String include = someYamlFileName();
+    resourceResolver = resolveResource(include, included);
+    yaml.put(collection, Arrays.asList(new YamlMap().put(NAME, name)))
+        .put(INCLUDES, Arrays.asList(include));
+
+    normalizeYaml();
+
+    Value object = yaml.get(collection, 0);
+    assertValue(NAME, name, object.toMap().get(NAME));
+    assertValue(CONFIGURE, "", yaml.get(CONFIGURE));
+  }
+
+  @Test
   public void shouldReplaceOriginalEntryConfiguredAsExisting() throws Exception {
     String type = someName();
     String collection = English.plural(type);
