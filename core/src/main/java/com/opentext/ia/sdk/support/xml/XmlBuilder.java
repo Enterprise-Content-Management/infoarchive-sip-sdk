@@ -3,12 +3,18 @@
  */
 package com.opentext.ia.sdk.support.xml;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 
 /**
@@ -176,6 +182,40 @@ public interface XmlBuilder<T> {
     }
     end();
     return this;
+  }
+
+  /**
+   * Add an XML document.
+   * @param xml The XML document or fragment to add
+   * @return This builder
+   */
+  default XmlBuilder<T> xml(InputStream xml) {
+    return xml(new InputStreamReader(xml, StandardCharsets.UTF_8));
+  }
+
+  /**
+   * Add an XML document.
+   * @param xml The XML document or fragment to add
+   * @return This builder
+   */
+  default XmlBuilder<T> xml(Reader xml) {
+    return xml(XmlUtil.parse(xml).getDocumentElement());
+  }
+
+  /**
+   * Add an XML element.
+   * @param xml The XML element to add
+   * @return This builder
+   */
+  XmlBuilder<T> xml(Element xml);
+
+  /**
+   * Add an XML document.
+   * @param xml The XML document or fragment to add
+   * @return This builder
+   */
+  default XmlBuilder<T> xml(String xml) {
+    return xml(new StringReader(xml));
   }
 
 }

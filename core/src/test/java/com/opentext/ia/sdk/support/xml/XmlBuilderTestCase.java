@@ -218,4 +218,22 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
     assertXml();
   }
 
+  @Test
+  public void shouldImportXml() {
+    String root = aName();
+    String parent = aName();
+    String child1 = aName();
+    String child2 = aName();
+    String xml = String.format("  <%1$s>%n    <%2$s/>%n    <%3$s>foo</%3$s>%n  </%1$s>%n", parent, child1, child2);
+
+    result.append(OPEN_ELEMENT).append(root).append(CLOSE_ELEMENT_NL).append(xml)
+        .append(CLOSE_ELEMENT_BEGIN).append(root).append(CLOSE_ELEMENT_NL);
+
+    getBuilder().element(root)
+        .xml(xml)
+        .end();
+
+    assertXml();
+  }
+
 }

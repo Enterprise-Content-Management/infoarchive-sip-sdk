@@ -132,6 +132,16 @@ public class PrintingXmlBuilder implements XmlBuilder<Void> {
   }
 
   @Override
+  public XmlBuilder<Void> xml(org.w3c.dom.Element xml) {
+    Element parent = currentElement();
+    if (parent != null) {
+      close(parent, ElementContent.ELEMENT);
+    }
+    writer.print(XmlUtil.toString(xml, indentation()));
+    return this;
+  }
+
+  @Override
   public Void build() {
     while (!elements.isEmpty()) {
       end();

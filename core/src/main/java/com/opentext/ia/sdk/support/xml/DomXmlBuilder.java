@@ -78,6 +78,12 @@ public class DomXmlBuilder implements XmlBuilder<Document> {
   }
 
   @Override
+  public XmlBuilder<Document> xml(Element xml) {
+    current.appendChild(document.importNode(xml, true));
+    return this;
+  }
+
+  @Override
   public String toString() {
     return XmlUtil.toString(build());
   }

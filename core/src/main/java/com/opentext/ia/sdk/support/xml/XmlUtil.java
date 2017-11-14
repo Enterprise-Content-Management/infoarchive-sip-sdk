@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -27,6 +30,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -365,9 +369,18 @@ public final class XmlUtil {
    * @return The parsed XML document
    */
   public static Document parse(InputStream stream) {
+    return parse(new InputStreamReader(stream, StandardCharsets.UTF_8));
+  }
+
+  /**
+   * Parse the content of a given reader into an XML document.
+   * @param reader The reader to parse
+   * @return The parsed XML document
+   */
+  public static Document parse(Reader reader) {
     DocumentBuilder documentBuilder = getDocumentBuilder();
     try {
-      return documentBuilder.parse(stream);
+      return documentBuilder.parse(new InputSource(reader));
     } catch (SAXException | IOException e) {
       throw new IllegalArgumentException("Failed to parse XML document", e);
     } finally {
