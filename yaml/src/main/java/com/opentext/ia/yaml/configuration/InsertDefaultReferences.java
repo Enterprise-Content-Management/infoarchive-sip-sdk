@@ -100,7 +100,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("transformation", "exportTransformation");
     result.put(CI_STORE, STORE);
     result.put(MANAGED_ITEM_STORE, STORE);
-    result.put("xdbStore", STORE);
+    result.put(XDB_STORE, STORE);
     return result;
   }
 
