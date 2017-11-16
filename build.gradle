@@ -14,7 +14,7 @@ buildscript {
 import org.gradle.api.logging.StandardOutputListener
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '4.3'
+  gradleVersion = '4.3.1'
 }
 
 apply plugin: 'eclipse'
@@ -42,6 +42,7 @@ subprojects {
     httpmime
     jacksonCore
     jacksonDatabind
+    json
     semVer
     validation
     xmlunit
@@ -62,6 +63,7 @@ subprojects {
     httpmime "org.apache.httpcomponents:httpmime:$httpmimeVersion"
     jacksonCore "com.fasterxml.jackson.core:jackson-core:$jacksonCoreVersion"
     jacksonDatabind "com.fasterxml.jackson.core:jackson-databind:$jacksonCoreVersion"
+    json "org.json:json:$jsonVersion"
     junit "junit:junit:$junitVersion"
     mockito "org.mockito:mockito-core:$mockitoVersion"
     semVer "com.github.zafarkhaja:java-semver:$semVerVersion"
@@ -151,6 +153,16 @@ subprojects {
 project(':infoarchive-yaml') {
   configurations {
     compile.extendsFrom commonsIo, evoInflector, yaml
+  }
+}
+
+
+project(':infoarchive-configuration') {
+  configurations {
+    compile.extendsFrom json
+  }
+  dependencies {
+    compile project(':infoarchive-yaml')
   }
 }
 
