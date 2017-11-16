@@ -4,16 +4,17 @@
 package com.opentext.ia.configuration;
 
 
-public class NamedObjectBuilder<P extends BaseBuilder<?>, S extends BaseBuilder<?>> extends BaseBuilder<P> {
+public class NamedObjectBuilder<P extends BaseBuilder<?, C>, S extends NamedObjectBuilder<?, ?, C>, C>
+    extends BaseBuilder<P, C> {
 
-  protected NamedObjectBuilder(P parent, String collection) {
-    super(parent, collection);
+  protected NamedObjectBuilder(P parent, String type) {
+    super(parent, type);
     named(someName());
   }
 
   @SuppressWarnings("unchecked")
-  public S named(String name) {
-    setField("name", name);
+  public final S named(String name) {
+    setProperty("name", name);
     return (S)this;
   }
 

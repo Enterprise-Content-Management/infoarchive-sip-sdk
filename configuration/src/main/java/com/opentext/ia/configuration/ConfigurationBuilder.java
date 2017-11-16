@@ -4,21 +4,21 @@
 package com.opentext.ia.configuration;
 
 
-public class ConfigurationBuilder extends BaseBuilder<BaseBuilder<?>> {
+public class ConfigurationBuilder<C> extends BaseBuilder<BaseBuilder<?, C>, C> {
 
-  public ConfigurationBuilder(ConfigurationWriter manager) {
-    super(manager);
+  public ConfigurationBuilder(ConfigurationProducer<C> producer) {
+    super(producer, null);
   }
 
-  public TenantBuilder withTenant() {
-    return new TenantBuilder(this);
+  public TenantBuilder<C> withTenant() {
+    return new TenantBuilder<>(this);
   }
 
-  public ApplicationBuilder withApplication() {
+  public ApplicationBuilder<C> withApplication() {
     return withTenant().withApplication();
   }
 
-  public SearchBuilder withSearch() {
+  public SearchBuilder<C> withSearch() {
     return withApplication().withSearch();
   }
 

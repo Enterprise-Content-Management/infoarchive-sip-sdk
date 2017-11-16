@@ -4,14 +4,14 @@
 package com.opentext.ia.configuration;
 
 
-public class ApplicationBuilder extends NamedObjectBuilder<TenantBuilder, ApplicationBuilder> {
+public class ApplicationBuilder<C> extends NamedObjectBuilder<TenantBuilder<C>, ApplicationBuilder<C>, C> {
 
-  public ApplicationBuilder(TenantBuilder parent) {
-    super(parent, "applications");
+  public ApplicationBuilder(TenantBuilder<C> parent) {
+    super(parent, "application");
   }
 
-  public SearchBuilder withSearch() {
-    return new SearchBuilder(this, "searches");
+  public SearchBuilder<C> withSearch() {
+    return new SearchBuilder<>(this, "search");
   }
 
 }

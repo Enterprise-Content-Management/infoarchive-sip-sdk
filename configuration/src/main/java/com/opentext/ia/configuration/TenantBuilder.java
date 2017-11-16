@@ -4,15 +4,15 @@
 package com.opentext.ia.configuration;
 
 
-public class TenantBuilder extends NamedObjectBuilder<ConfigurationBuilder, TenantBuilder> {
+public class TenantBuilder<C> extends NamedObjectBuilder<ConfigurationBuilder<C>, TenantBuilder<C>, C> {
 
-  protected TenantBuilder(ConfigurationBuilder parent) {
-    super(parent, "tenants");
+  protected TenantBuilder(ConfigurationBuilder<C> parent) {
+    super(parent, "tenant");
     named("INFOARCHIVE");
   }
 
-  public ApplicationBuilder withApplication() {
-    return new ApplicationBuilder(this);
+  public ApplicationBuilder<C> withApplication() {
+    return new ApplicationBuilder<>(this);
   }
 
 }

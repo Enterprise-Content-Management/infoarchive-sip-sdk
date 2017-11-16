@@ -4,10 +4,10 @@
 package com.opentext.ia.configuration;
 
 
-public class SearchBuilder extends NamedObjectBuilder<ApplicationBuilder, SearchBuilder> {
+public class SearchBuilder<C> extends NamedObjectBuilder<ApplicationBuilder<C>, SearchBuilder<C>, C> {
 
-  protected SearchBuilder(ApplicationBuilder parent, String collection) {
-    super(parent, collection);
+  protected SearchBuilder(ApplicationBuilder<C> parent, String type) {
+    super(parent, type);
   }
 
 }

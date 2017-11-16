@@ -3,11 +3,10 @@
  */
 package com.opentext.ia.configuration;
 
-import org.json.JSONObject;
 
+@FunctionalInterface
+public interface ConfigurationProducer<T> {
 
-public interface ConfigurationWriter {
-
-  Configuration build(JSONObject object);
+  Configuration<T> produce(ConfigurationObject container);
 
 }

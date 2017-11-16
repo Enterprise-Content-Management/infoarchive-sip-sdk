@@ -150,19 +150,19 @@ subprojects {
 }
 
 
-project(':infoarchive-yaml') {
+project(':infoarchive-configuration') {
   configurations {
-    compile.extendsFrom commonsIo, evoInflector, yaml
+    compile.extendsFrom evoInflector, json
   }
 }
 
 
-project(':infoarchive-configuration') {
+project(':infoarchive-yaml') {
   configurations {
-    compile.extendsFrom json
+    compile.extendsFrom commonsIo, evoInflector, yaml
   }
   dependencies {
-    compile project(':infoarchive-yaml')
+    compile project(':infoarchive-configuration')
   }
 }
 

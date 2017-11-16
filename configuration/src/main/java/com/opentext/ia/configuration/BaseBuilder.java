@@ -5,51 +5,49 @@ package com.opentext.ia.configuration;
 
 import java.util.UUID;
 
-import org.json.JSONObject;
+import org.atteo.evo.inflector.English;
 
 
-abstract class BaseBuilder<P extends BaseBuilder<?>> {
+abstract class BaseBuilder<P extends BaseBuilder<?, C>, C> {
 
-  private final JSONObject object = new JSONObject();
-  private final ConfigurationWriter manager;
+  private final ConfigurationObject object;
+  private final ConfigurationProducer<C> producer;
   private final P parent;
-  private String collection;
 
-  protected BaseBuilder(P parent, String collection) {
-    this.manager = null;
+  protected BaseBuilder(P parent, String type) {
+    this.producer = null;
     this.parent = parent;
-    this.collection = collection;
+    this.object = new ConfigurationObject(type);
   }
 
-  protected BaseBuilder(ConfigurationWriter manager) {
-    this.manager = manager;
+  protected BaseBuilder(ConfigurationProducer<C> producer, String type) {
+    this.producer = producer;
     this.parent = null;
+    this.object = new ConfigurationObject(type);
   }
 
   protected String someName() {
     return UUID.randomUUID().toString();
   }
 
-  protected void setField(String name, Object value) {
-    object.put(name, value);
+  protected void setProperty(String name, Object value) {
+    object.setProperty(name, value);
   }
 
   public P end() {
-    if (parent == null) {
-      throw new IllegalStateException("Cannot end top-level builder; use build() instead");
-    }
-    parent.addSubObject(collection, object);
+    parent.addChildObject(English.plural(object.getType()), object);
     return parent;
   }
 
-  protected void addSubObject(String key, JSONObject subObject) {
+  protected void addChildObject(String collection, ConfigurationObject childObject) {
+    object.addChildObject(collection, childObject);
   }
 
-  public void build() {
-    if (manager == null) {
-      throw new IllegalStateException("Use build intermediate builder; use end() instead");
+  public Configuration<C> build() {
+    if (parent == null) {
+      return producer.produce(object);
     }
-    manager.build(object);
+    return end().build();
   }
 
 }
