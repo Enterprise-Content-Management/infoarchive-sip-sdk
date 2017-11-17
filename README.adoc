@@ -28,7 +28,9 @@ The SDK consists of the following jars:
 * `infoarchive-sdk-core` is the core of the SDK
 * `infoarchive-sdk-stringtemplate` contains code for working with the http://www.stringtemplate.org/[StringTemplate] template engine
 * `infoarchive-sdk-velocity` contains code for working with the http://velocity.apache.org/[Velocity] template engine
-* `infoarchive-yaml` contains code for working with YAML configurations
+* `infoarchive-configuration` contains code for working with InfoArchive configurations. This is currently in the 
+proof of concept phase and _not ready for production_
+* `infoarchive-yaml` contains code for working with InfoArchive configurations in YAML
 
 All jars can be found in the https://repo1.maven.org/maven2/com/emc/ia/[Central Repository]. The easiest way to get
 them is through a dependency management system like http://gradle.org/[Gradle] or https://maven.apache.org/[Maven].
@@ -40,7 +42,7 @@ For the latest version, see the `maven-central` badge at the top of this page.
 [source,groovy]
 ----
 dependencies { 
-  compile 'com.opentext.ia:infoarchive-sdk-core:9.3.0'
+  compile 'com.opentext.ia:infoarchive-sdk-core:9.4.0'
 }
 ----
 
@@ -52,7 +54,7 @@ dependencies {
   <dependency>
     <groupId>com.opentext.ia</groupId>
     <artifactId>infoarchive-sdk-core</artifactId>
-    <version>9.3.0</version>
+    <version>9.4.0</version>
   </dependency>
 </dependencies>
 ----
@@ -70,8 +72,8 @@ https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/blob/master
 
 == Usage
 
-For an https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.3/presentation.pdf[introduction]
-to the SDK and some https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.3/lab.pdf[lab exercises],
+For an https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.4/presentation.pdf[introduction]
+to the SDK and some https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.4/lab.pdf[lab exercises],
 see the related https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab[lab] project.
 For examples on how to use the SDK, see the https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/samples[sample programs].
 
