@@ -8,6 +8,14 @@ import java.util.UUID;
 import org.atteo.evo.inflector.English;
 
 
+/**
+ * Base class for all configuration builders.
+ * @author Ray Sinnema
+ * @since 9.4.0
+ *
+ * @param <P> The type of parent builder
+ * @param <C> The type of configuration to build
+ */
 abstract class BaseBuilder<P extends BaseBuilder<?, C>, C> {
 
   private final ConfigurationObject object;
@@ -34,20 +42,36 @@ abstract class BaseBuilder<P extends BaseBuilder<?, C>, C> {
     object.setProperty(name, value);
   }
 
+  /**
+   * End this builder.
+   * @return The parent builder
+   */
   public P end() {
     parent.addChildObject(English.plural(object.getType()), object);
     return parent;
   }
 
   protected void addChildObject(String collection, ConfigurationObject childObject) {
+    if (object.getType() != null) {
+      childObject.setProperty(object.getType(), object.getProperties().optString("name"));
+    }
     object.addChildObject(collection, childObject);
   }
 
+  /**
+   * Build the configuration.
+   * @return The configuration that was built
+   */
   public Configuration<C> build() {
     if (parent == null) {
       return producer.produce(object);
     }
     return end().build();
+  }
+
+  @Override
+  public String toString() {
+    return object.toString();
   }
 
 }
