@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.configuration;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -33,7 +34,7 @@ public class JsonConfigurationProducer implements ConfigurationProducer<Configur
     }
 
     private List<ConfigurationObject> childrenOf(ConfigurationObject parent, String collection) {
-      return parent.getChildObjects().get(collection);
+      return parent.getChildObjects().computeIfAbsent(collection, ignored -> Collections.emptyList());
     }
 
     @Override
