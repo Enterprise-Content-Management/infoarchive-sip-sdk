@@ -4,7 +4,6 @@
 package com.opentext.ia.yaml.configuration.builder;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -49,7 +48,7 @@ public class WhenBuildingYamlConfigurations {
     assertEquals("Application name", APPLICATION_NAME, application.get(NAME).toString());
     assertEquals("Tenant name", TENANT_NAME, application.get("tenant").toString());
     assertTrue("Missing description", application.containsKey("description"));
-    assertFalse("Default description", application.get("description").isEmpty());
+    assertTrue("Default description", application.get("description").isEmpty());
   }
 
 }

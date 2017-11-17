@@ -65,6 +65,8 @@ public class YamlMapConfigurationProducer implements ConfigurationProducer<YamlM
         sequence.add(new Value(jsonToYaml(item)));
       }
       result = sequence;
+    } else if (value == JSONObject.NULL) {
+      result = null;
     } else {
       result = value;
     }
