@@ -6,7 +6,15 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
-== 9.4.0 - TBD
+== 9.4.1 - 2017-11-17
+
+=== Fixed
+
+- Configuration builders set default values for mandatory properties and allow changing them
+
+
+
+== 9.4.0 - 2017-11-17
 
 === Added
 

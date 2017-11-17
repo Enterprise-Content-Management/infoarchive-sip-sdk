@@ -18,10 +18,14 @@ import org.junit.rules.ExpectedException;
 
 public class WhenBuildingConfigurations {
 
+  private static final String STATE = "state";
+  private static final Pattern NAME_PATTERN = Pattern.compile("[a-z]{1,3}(?<uuid>.*)");
   private static final String NAME = "name";
   private static final String TENANT_NAME = "myTenant";
   private static final String APPLICATION_NAME = "myApplication";
-  private static final Pattern NAME_PATTERN = Pattern.compile("[a-z]{1,3}(?<uuid>.*)");
+  private static final String SEARCH_NAME = "mySearch";
+  private static final String DESCRIPTION = "myDescription";
+  private static final String CATEGORY = "myCategory";
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -50,14 +54,19 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultpropertiesForApplication() {
+  public void shouldUseDefaultPropertiesForApplication() {
     configuration = builder.withApplication().build();
+    ConfigurationObject application = configuration.getApplication();
 
-    assertRandomName(nameOf(configuration.getApplication()));
+    assertRandomName(application);
+    assertProperties(application,
+        "type", "ACTIVE_ARCHIVING",
+        "archiveType", "SIP",
+        STATE, "IN_TEST");
   }
 
-  private void assertRandomName(String actual) {
-    Matcher matcher = NAME_PATTERN.matcher(actual);
+  private void assertRandomName(ConfigurationObject actual) {
+    Matcher matcher = NAME_PATTERN.matcher(nameOf(actual));
     if (matcher.matches()) {
       assertUuid(NAME, matcher.group("uuid"));
     } else {
@@ -73,29 +82,41 @@ public class WhenBuildingConfigurations {
     }
   }
 
+  private void assertProperties(ConfigurationObject actual, String... expectedPropertyValues) {
+    JSONObject properties = actual.getProperties();
+    for (int i = 0; i < expectedPropertyValues.length; i += 2) {
+      String property = expectedPropertyValues[i];
+      assertEquals(property, expectedPropertyValues[i + 1], properties.optString(property));
+    }
+  }
+
   @Test
   public void shouldSetPropertiesOfApplication() {
     configuration = builder.withApplication()
         .named(APPLICATION_NAME)
+        .forAppDecom()
+        .forTables()
+        .activated()
+        .withDescription(DESCRIPTION)
+        .withCategory(CATEGORY)
     .build();
 
-    JSONObject application = configuration.getApplication().getProperties();
-    assertEquals(NAME, APPLICATION_NAME, application.getString(NAME));
+    ConfigurationObject application = configuration.getApplication();
+    assertProperties(application,
+        NAME, APPLICATION_NAME,
+        "type", "APP_DECOMM",
+        "archiveType", "TABLE",
+        STATE, "ACTIVE",
+        "description", DESCRIPTION,
+        "category", CATEGORY);
   }
 
   @Test
   public void shouldSetTenantForApplication() {
     configuration = builder.withApplication().build();
 
-    assertEquals("Tenant", nameOf(configuration.getTenant()),
-        configuration.getApplication().getProperties().getString("tenant"));
-  }
-
-  @Test
-  public void shouldUseDefaultPropertiesForSearch() {
-    configuration = builder.withSearch().build();
-
-    assertRandomName(nameOf(configuration.getSearch()));
+    assertProperties(configuration.getApplication(),
+        "tenant", nameOf(configuration.getTenant()));
   }
 
   @Test
@@ -103,6 +124,31 @@ public class WhenBuildingConfigurations {
     thrown.expect(IllegalArgumentException.class);
 
     builder.withTenant().build().getApplication();
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForSearch() {
+    configuration = builder.withSearch().build();
+    ConfigurationObject search = configuration.getSearch();
+
+    assertRandomName(search);
+    assertProperties(search,
+        STATE, "DRAFT");
+  }
+
+  @Test
+  public void shouldSetPropertiesForSearch() {
+    configuration = builder.withSearch()
+        .named(SEARCH_NAME)
+        .withDescription(DESCRIPTION)
+        .published()
+    .build();
+    ConfigurationObject search = configuration.getSearch();
+
+    assertProperties(search,
+        NAME, SEARCH_NAME,
+        STATE, "PUBLISHED",
+        "description", DESCRIPTION);
   }
 
 }

@@ -15,6 +15,21 @@ public class SearchBuilder<C> extends NamedObjectBuilder<ApplicationBuilder<C>, 
 
   protected SearchBuilder(ApplicationBuilder<C> parent, String type) {
     super(parent, type);
+    setState("DRAFT");
+  }
+
+  private void setState(String state) {
+    setProperty("state", state);
+  }
+
+  public SearchBuilder<C> published() {
+    setState("PUBLISHED");
+    return this;
+  }
+
+  public SearchBuilder<C> withDescription(String description) {
+    setProperty("description", description);
+    return this;
   }
 
 }
