@@ -49,9 +49,7 @@ public class YamlMapConfigurationProducer implements ConfigurationProducer<YamlM
   }
 
   private void copy(JSONObject source, YamlMap destination) {
-    source.keySet().forEach(key -> {
-      destination.put(key, jsonToYaml(source.get(key)));
-    });
+    source.keySet().forEach(key -> destination.put(key, jsonToYaml(source.get(key))));
   }
 
   private Object jsonToYaml(Object value) {

@@ -57,13 +57,17 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
 
   @Override
   public List<YamlMap> getApplications(YamlMap tenant) {
-    return toList(streamOfType("application")
-        .filter(application -> tenant.get("name").equals(application.get("tenant"))));
+    return childList(tenant, "tenant", "application");
+  }
+
+  private List<YamlMap> childList(YamlMap parent, String parentType, String type) {
+    return toList(streamOfType(type)
+        .filter(application -> parent.get("name").equals(application.get(parentType))));
   }
 
   @Override
   public List<YamlMap> getSearches(YamlMap application) {
-    return null;
+    return childList(application, "application", "search");
   }
 
   @Override

@@ -82,9 +82,8 @@ public class ConfigurationObject {
       if (objects.isEmpty()) {
         result.append(indent).append("  []").append(System.lineSeparator());
       } else {
-        objects.forEach(object -> {
-          result.append(indent).append(object.toString(indent + "  ")).append(System.lineSeparator());
-        });
+        objects.forEach(object ->
+            result.append(indent).append(object.toString(indent + "  ")).append(System.lineSeparator()));
       }
     });
     return result.toString();
