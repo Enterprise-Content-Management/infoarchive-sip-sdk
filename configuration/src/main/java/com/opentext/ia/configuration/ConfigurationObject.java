@@ -56,7 +56,7 @@ public class ConfigurationObject {
    * @param value The value to set the property to
    */
   public void setProperty(String name, Object value) {
-    properties.put(name, value);
+    properties.put(name, value == null ? JSONObject.NULL : value);
   }
 
   /**

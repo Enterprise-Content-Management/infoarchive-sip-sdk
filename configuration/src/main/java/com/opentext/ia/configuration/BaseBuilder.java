@@ -16,7 +16,7 @@ import org.atteo.evo.inflector.English;
  * @param <P> The type of parent builder
  * @param <C> The type of configuration to build
  */
-abstract class BaseBuilder<P extends BaseBuilder<?, C>, C> {
+public abstract class BaseBuilder<P extends BaseBuilder<?, C>, C> {
 
   private final ConfigurationObject object;
   private final ConfigurationProducer<C> producer;
@@ -40,6 +40,12 @@ abstract class BaseBuilder<P extends BaseBuilder<?, C>, C> {
 
   protected void setProperty(String name, Object value) {
     object.setProperty(name, value);
+  }
+
+  protected void setUninitialized(String... properties) {
+    for (String property : properties) {
+      setProperty(property, null);
+    }
   }
 
   /**

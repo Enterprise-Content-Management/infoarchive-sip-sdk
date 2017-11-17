@@ -18,6 +18,7 @@ public class ApplicationBuilder<C> extends NamedObjectBuilder<TenantBuilder<C>, 
     setArchiveType("SIP");
     setType("ACTIVE_ARCHIVING");
     setState("IN_TEST");
+    setUninitialized("description", "category");
   }
 
   private void setType(String type) {
