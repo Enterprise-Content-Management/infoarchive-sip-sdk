@@ -11,7 +11,8 @@ package com.opentext.ia.configuration;
  *
  * @param <C> The type of configuration to build
  */
-public class ApplicationBuilder<C> extends NamedObjectBuilder<TenantBuilder<C>, ApplicationBuilder<C>, C> {
+public class ApplicationBuilder<C extends Configuration<?>>
+    extends NamedObjectBuilder<TenantBuilder<C>, ApplicationBuilder<C>, C> {
 
   public ApplicationBuilder(TenantBuilder<C> parent) {
     super(parent, "application");

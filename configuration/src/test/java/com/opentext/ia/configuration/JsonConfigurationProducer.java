@@ -6,11 +6,13 @@ package com.opentext.ia.configuration;
 import java.util.Collections;
 import java.util.List;
 
+import com.opentext.ia.configuration.JsonConfigurationProducer.JsonConfiguration;
 
-public class JsonConfigurationProducer implements ConfigurationProducer<ConfigurationObject> {
+
+public class JsonConfigurationProducer implements ConfigurationProducer<JsonConfiguration> {
 
   @Override
-  public Configuration<ConfigurationObject> produce(ConfigurationObject container) {
+  public JsonConfiguration produce(ConfigurationObject container) {
     return new JsonConfiguration(container);
   }
 

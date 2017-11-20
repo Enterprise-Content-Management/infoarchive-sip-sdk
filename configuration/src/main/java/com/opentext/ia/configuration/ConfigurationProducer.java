@@ -9,11 +9,11 @@ package com.opentext.ia.configuration;
  * @author Ray Sinnema
  * @since 9.4.0
  *
- * @param <T> The type of configuration to produce
+ * @param <C> The type of configuration to produce
  */
 @FunctionalInterface
-public interface ConfigurationProducer<T> {
+public interface ConfigurationProducer<C extends Configuration<?>> {
 
-  Configuration<T> produce(ConfigurationObject container);
+  C produce(ConfigurationObject container);
 
 }

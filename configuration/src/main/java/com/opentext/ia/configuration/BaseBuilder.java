@@ -16,7 +16,7 @@ import org.atteo.evo.inflector.English;
  * @param <P> The type of parent builder
  * @param <C> The type of configuration to build
  */
-public abstract class BaseBuilder<P extends BaseBuilder<?, C>, C> {
+public abstract class BaseBuilder<P extends BaseBuilder<?, C>, C extends Configuration<?>> {
 
   private final ConfigurationObject object;
   private final ConfigurationProducer<C> producer;
@@ -68,7 +68,7 @@ public abstract class BaseBuilder<P extends BaseBuilder<?, C>, C> {
    * Build the configuration.
    * @return The configuration that was built
    */
-  public Configuration<C> build() {
+  public C build() {
     if (parent == null) {
       return producer.produce(object);
     }

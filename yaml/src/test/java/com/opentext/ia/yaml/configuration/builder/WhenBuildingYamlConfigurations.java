@@ -19,13 +19,13 @@ public class WhenBuildingYamlConfigurations {
   private static final String TENANT_NAME = "myTenant";
   private static final String APPLICATION_NAME = "myApplication";
 
-  private final ConfigurationProducer<YamlMap> producer = new YamlMapConfigurationProducer();
-  private final ConfigurationBuilder<YamlMap> builder = new ConfigurationBuilder<>(producer);
+  private final ConfigurationProducer<YamlMapConfiguration> producer = new YamlMapConfigurationProducer();
+  private final ConfigurationBuilder<YamlMapConfiguration> builder = new ConfigurationBuilder<>(producer);
 
   @Test
   public void shouldBuildYampMap() {
-    YamlMapConfiguration configuration = (YamlMapConfiguration)builder.withApplication().build();
-    YamlMap yaml = configuration.getYaml();
+    YamlMap yaml = builder.withApplication().build().getYaml();
+
     assertEquals("Version", "1.0.0", yaml.get("version").toString());
   }
 

@@ -15,6 +15,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.opentext.ia.configuration.JsonConfigurationProducer.JsonConfiguration;
+
 
 public class WhenBuildingConfigurations {
 
@@ -29,8 +31,8 @@ public class WhenBuildingConfigurations {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
-  private final ConfigurationProducer<ConfigurationObject> producer = new JsonConfigurationProducer();
-  private final ConfigurationBuilder<ConfigurationObject> builder = new ConfigurationBuilder<>(producer);
+  private final ConfigurationProducer<JsonConfiguration> producer = new JsonConfigurationProducer();
+  private final ConfigurationBuilder<JsonConfiguration> builder = new ConfigurationBuilder<>(producer);
   private Configuration<ConfigurationObject> configuration;
 
   @Test

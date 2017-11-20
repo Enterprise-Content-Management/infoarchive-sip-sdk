@@ -11,7 +11,7 @@ package com.opentext.ia.configuration;
  *
  * @param <C> The type of configuration to build
  */
-public class ConfigurationBuilder<C> extends BaseBuilder<BaseBuilder<?, C>, C> {
+public class ConfigurationBuilder<C extends Configuration<?>> extends BaseBuilder<BaseBuilder<?, C>, C> {
 
   public ConfigurationBuilder(ConfigurationProducer<C> producer) {
     super(producer, null);

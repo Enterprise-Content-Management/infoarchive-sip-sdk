@@ -11,7 +11,8 @@ package com.opentext.ia.configuration;
  *
  * @param <C> The type of configuration to build
  */
-public class SearchBuilder<C> extends NamedObjectBuilder<ApplicationBuilder<C>, SearchBuilder<C>, C> {
+public class SearchBuilder<C extends Configuration<?>>
+    extends NamedObjectBuilder<ApplicationBuilder<C>, SearchBuilder<C>, C> {
 
   protected SearchBuilder(ApplicationBuilder<C> parent, String type) {
     super(parent, type);

@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.opentext.ia.configuration.Configuration;
 import com.opentext.ia.configuration.ConfigurationObject;
 import com.opentext.ia.configuration.ConfigurationProducer;
 import com.opentext.ia.yaml.core.Value;
@@ -22,10 +21,10 @@ import com.opentext.ia.yaml.core.YamlMap;
  * @author Ray Sinnema
  * @since 9.4.0
  */
-public class YamlMapConfigurationProducer implements ConfigurationProducer<YamlMap> {
+public class YamlMapConfigurationProducer implements ConfigurationProducer<YamlMapConfiguration> {
 
   @Override
-  public Configuration<YamlMap> produce(ConfigurationObject container) {
+  public YamlMapConfiguration produce(ConfigurationObject container) {
     return new YamlMapConfiguration(toYaml(container));
   }
 
