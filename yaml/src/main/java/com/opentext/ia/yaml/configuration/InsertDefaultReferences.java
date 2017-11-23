@@ -79,9 +79,9 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/searchCompositions/\\d+", Arrays.asList(SEARCH));
     result.put("/spaces/\\d+", Arrays.asList(APPLICATION));
     result.put("/spaceRootFolders/\\d+", Arrays.asList("fileSystemRoot", SPACE));
-    result.put("/spaceRootObjects/\\d+", Arrays.asList(SPACE));
+    result.put("/spaceRootObjects/\\d+", Arrays.asList(SPACE, "customStorage", "storageEndPointCredential"));
     result.put("/spaceRootXdbLibraries/\\d+", Arrays.asList(SPACE, "xdbDatabase"));
-    result.put("/stores/\\d+", Arrays.asList(APPLICATION, "fileSystemFolder"));
+    result.put("/stores/\\d+", Arrays.asList(APPLICATION, "bucket", "fileSystemFolder"));
     result.put("/storageEndPointCredentials/\\d+", Arrays.asList("storageEndPoint"));
     result.put("/tables/\\d+", Arrays.asList(APPLICATION, "schema"));
     result.put("/transformations/\\d+", Arrays.asList(APPLICATION));
