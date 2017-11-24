@@ -3,6 +3,8 @@
  */
 package com.opentext.ia.yaml.core;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.error.MarkedYAMLException;
 import org.yaml.snakeyaml.representer.Representer;
 
 
@@ -35,6 +38,8 @@ import org.yaml.snakeyaml.representer.Representer;
 public class YamlMap {
 
   private static final int MAX_LINE_LENGTH = 80;
+
+  private static YamlSyntaxErrorPrettifier yamlSyntaxErrorPrettifier = new YamlSyntaxErrorPrettifier();
 
   private Map<String, Object> data;
 
@@ -68,11 +73,34 @@ public class YamlMap {
    * @return A <code>YamlMap</code> corresponding to the provided YAML input stream
    */
   public static YamlMap from(InputStream yaml) {
+    return from(yaml, yaml instanceof ByteArrayInputStream);
+  }
+
+  public static YamlMap from(InputStream yaml, boolean canReset) {
+    InputStream input = canReset ? yaml : inMemoryCopyOf(yaml);
     YamlMap result = new YamlMap();
-    for (Object data : newLoader().loadAll(yaml)) {
-      result.putAll(new YamlMap(data));
+    try {
+      for (Object data : newLoader().loadAll(input)) {
+        result.putAll(new YamlMap(data));
+      }
+    } catch (MarkedYAMLException e) {
+      try {
+        input.reset();
+        throw yamlSyntaxErrorPrettifier.apply(e, IOUtils.toString(input, StandardCharsets.UTF_8));
+      } catch (IOException ignored) {
+        // NOTREACHED
+      }
     }
     return result;
+  }
+
+  private static InputStream inMemoryCopyOf(InputStream input) {
+    try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+      IOUtils.copy(input, output);
+      return new ByteArrayInputStream(output.toByteArray());
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   private static Yaml newLoader() {
