@@ -36,6 +36,11 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   }
 
   @Override
+  public String toString() {
+    return yaml.toString();
+  }
+
+  @Override
   public List<YamlMap> getTenants() {
     return toList(streamOfType("tenant"));
   }
@@ -71,8 +76,23 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   }
 
   @Override
-  public String toString() {
-    return yaml.toString();
+  public List<YamlMap> getFileSystemRoots() {
+    return toList(streamOfType("fileSystemRoot"));
+  }
+
+  @Override
+  public List<YamlMap> getSpaces(YamlMap application) {
+    return childList(application, "application", "space");
+  }
+
+  @Override
+  public List<YamlMap> getSpaceRootXdbLibraries(YamlMap space) {
+    return childList(space, "space", "spaceRootXdbLibrary");
+  }
+
+  @Override
+  public List<YamlMap> getXdbLibraries(YamlMap spaceRootXdbLibrary) {
+    return childList(spaceRootXdbLibrary, "spaceRootXdbLibrary", "xdbLibrary");
   }
 
 }

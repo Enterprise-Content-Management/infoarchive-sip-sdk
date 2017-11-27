@@ -49,6 +49,26 @@ public class JsonConfigurationProducer implements ConfigurationProducer<JsonConf
       return childrenOf(application, "searches");
     }
 
+    @Override
+    public List<ConfigurationObject> getFileSystemRoots() {
+      return childrenOf(container, "fileSystemRoots");
+    }
+
+    @Override
+    public List<ConfigurationObject> getSpaces(ConfigurationObject application) {
+      return childrenOf(application, "spaces");
+    }
+
+    @Override
+    public List<ConfigurationObject> getSpaceRootXdbLibraries(ConfigurationObject space) {
+      return childrenOf(space, "spaceRootXdbLibraries");
+    }
+
+    @Override
+    public List<ConfigurationObject> getXdbLibraries(ConfigurationObject spaceRootXdbLibrary) {
+      return childrenOf(spaceRootXdbLibrary, "xdbLibraries");
+    }
+
   }
 
 }

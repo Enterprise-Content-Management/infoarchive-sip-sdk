@@ -3,7 +3,6 @@
  */
 package com.opentext.ia.configuration;
 
-
 /**
  * Build an application.
  * @author Ray Sinnema
@@ -61,6 +60,10 @@ public class ApplicationBuilder<C extends Configuration<?>>
 
   public SearchBuilder<C> withSearch() {
     return new SearchBuilder<>(this, "search");
+  }
+
+  public SpaceBuilder<C> withSpace() {
+    return new SpaceBuilder<>(this);
   }
 
 }

@@ -20,14 +20,24 @@ import com.opentext.ia.configuration.JsonConfigurationProducer.JsonConfiguration
 
 public class WhenBuildingConfigurations {
 
-  private static final String STATE = "state";
   private static final Pattern NAME_PATTERN = Pattern.compile("[a-z]{1,3}(?<uuid>.*)");
   private static final String NAME = "name";
+  private static final String TYPE = "type";
+  private static final String DESCRIPTION = "description";
+  private static final String DEFAULT_TENANT_NAME = "INFOARCHIVE";
   private static final String TENANT_NAME = "myTenant";
   private static final String APPLICATION_NAME = "myApplication";
   private static final String SEARCH_NAME = "mySearch";
-  private static final String DESCRIPTION = "myDescription";
+  private static final String DESCRIPTIVE_TEXT = "myDescription";
   private static final String CATEGORY = "myCategory";
+  private static final String STATE = "state";
+  private static final String DRAFT = "DRAFT";
+  private static final String FILE_SYSTEM_ROOT_NAME = "myFileSystemRoot";
+  private static final String PATH = "path";
+  private static final String SOME_PATH = "/path/to/some/place";
+  private static final String SPACE_NAME = "mySpace";
+  private static final String SPACE_ROOT_XDB_LIBRARY_NAME = "mySpaceRootXdbLibrary";
+  private static final String XDB_LIBRARY_NAME = "myXdbLibrary";
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -39,7 +49,7 @@ public class WhenBuildingConfigurations {
   public void shouldUseDefaultPropertiesForTenant() {
     configuration = builder.withTenant().build();
 
-    assertEquals(NAME, "INFOARCHIVE", configuration.getTenant().getProperties().getString(NAME));
+    assertEquals(NAME, DEFAULT_TENANT_NAME, configuration.getTenant().getProperties().getString(NAME));
   }
 
   @Test
@@ -62,7 +72,8 @@ public class WhenBuildingConfigurations {
 
     assertRandomName(application);
     assertProperties(application,
-        "type", "ACTIVE_ARCHIVING",
+        "tenant", DEFAULT_TENANT_NAME,
+        TYPE, "ACTIVE_ARCHIVING",
         "archiveType", "SIP",
         STATE, "IN_TEST");
   }
@@ -94,31 +105,26 @@ public class WhenBuildingConfigurations {
 
   @Test
   public void shouldSetPropertiesOfApplication() {
-    configuration = builder.withApplication()
-        .named(APPLICATION_NAME)
-        .forAppDecom()
-        .forTables()
-        .activated()
-        .withDescription(DESCRIPTION)
-        .withCategory(CATEGORY)
+    configuration = builder.withTenant()
+        .named(TENANT_NAME)
+        .withApplication()
+            .named(APPLICATION_NAME)
+            .forAppDecom()
+            .forTables()
+            .activated()
+            .withDescription(DESCRIPTIVE_TEXT)
+            .withCategory(CATEGORY)
     .build();
 
     ConfigurationObject application = configuration.getApplication();
     assertProperties(application,
+        "tenant", TENANT_NAME,
         NAME, APPLICATION_NAME,
-        "type", "APP_DECOMM",
+        TYPE, "APP_DECOMM",
         "archiveType", "TABLE",
         STATE, "ACTIVE",
-        "description", DESCRIPTION,
+        DESCRIPTION, DESCRIPTIVE_TEXT,
         "category", CATEGORY);
-  }
-
-  @Test
-  public void shouldSetTenantForApplication() {
-    configuration = builder.withApplication().build();
-
-    assertProperties(configuration.getApplication(),
-        "tenant", nameOf(configuration.getTenant()));
   }
 
   @Test
@@ -135,22 +141,126 @@ public class WhenBuildingConfigurations {
 
     assertRandomName(search);
     assertProperties(search,
-        STATE, "DRAFT");
+        STATE, DRAFT);
   }
 
   @Test
   public void shouldSetPropertiesForSearch() {
-    configuration = builder.withSearch()
-        .named(SEARCH_NAME)
-        .withDescription(DESCRIPTION)
-        .published()
+    configuration = builder.withApplication()
+        .named(APPLICATION_NAME)
+        .withSearch()
+            .named(SEARCH_NAME)
+            .withDescription(DESCRIPTIVE_TEXT)
+            .published()
     .build();
     ConfigurationObject search = configuration.getSearch();
 
     assertProperties(search,
+        "application", APPLICATION_NAME,
         NAME, SEARCH_NAME,
         STATE, "PUBLISHED",
-        "description", DESCRIPTION);
+        DESCRIPTION, DESCRIPTIVE_TEXT);
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForFileSystemRoot() {
+    configuration = builder.withFileSystemRoot().build();
+    ConfigurationObject fileSystemRoot = configuration.getFileSystemRoot();
+
+    assertRandomName(fileSystemRoot);
+    assertProperties(fileSystemRoot,
+        PATH, "/data/root",
+        TYPE, "FILESYSTEM");
+  }
+
+  @Test
+  public void shouldSetPropertiesForFileSystemRoot() {
+    configuration = builder.withFileSystemRoot()
+        .named(FILE_SYSTEM_ROOT_NAME)
+        .withDescription(DESCRIPTIVE_TEXT)
+        .at(SOME_PATH)
+        .onIsilon()
+    .build();
+    ConfigurationObject fileSystemRoot = configuration.getFileSystemRoot();
+
+    assertProperties(fileSystemRoot,
+        NAME, FILE_SYSTEM_ROOT_NAME,
+        DESCRIPTION, DESCRIPTIVE_TEXT,
+        PATH, SOME_PATH,
+        TYPE, "ISILON");
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForSpace() {
+    configuration = builder.withSpace().build();
+    ConfigurationObject space = configuration.getSpace();
+
+    assertRandomName(space);
+  }
+
+  @Test
+  public void shouldSetPropertiesForSpace() {
+    configuration = builder.withApplication()
+        .named(APPLICATION_NAME)
+        .withSpace()
+            .named(SPACE_NAME)
+    .build();
+    ConfigurationObject space = configuration.getSpace();
+
+    assertProperties(space,
+        "application", APPLICATION_NAME,
+        NAME, SPACE_NAME);
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForSpaceRootXdbLibrary() {
+    configuration = builder.withSpace()
+        .withSpaceRootXdbLibrary()
+    .build();
+    ConfigurationObject spaceRootXdbLibrary = configuration.getSpaceRootXdbLibrary();
+
+    assertRandomName(spaceRootXdbLibrary);
+  }
+
+  @Test
+  public void shouldSetPropertiesForSpaceRootXdbLibrary() {
+    configuration = builder.withSpace()
+        .named(SPACE_NAME)
+        .withSpaceRootXdbLibrary()
+            .named(SPACE_ROOT_XDB_LIBRARY_NAME)
+    .build();
+    ConfigurationObject spaceRootXdbLibrary = configuration.getSpaceRootXdbLibrary();
+
+    assertProperties(spaceRootXdbLibrary,
+        "space", SPACE_NAME,
+        NAME, SPACE_ROOT_XDB_LIBRARY_NAME);
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForXdbLibrary() {
+    configuration = builder.withSpace()
+        .withSpaceRootXdbLibrary()
+            .withXdbLibrary()
+    .build();
+    ConfigurationObject xdbLibrary = configuration.getXdbLibrary();
+
+    assertRandomName(xdbLibrary);
+  }
+
+  @Test
+  public void shouldSetPropertiesForXdbLibrary() {
+    configuration = builder.withSpace()
+        .named(SPACE_NAME)
+        .withSpaceRootXdbLibrary()
+            .named(SPACE_ROOT_XDB_LIBRARY_NAME)
+            .withXdbLibrary()
+                .named(XDB_LIBRARY_NAME)
+    .build();
+    ConfigurationObject xdbLibrary = configuration.getXdbLibrary();
+
+    assertProperties(xdbLibrary,
+        "parentSpaceRootXdbLibrary", SPACE_ROOT_XDB_LIBRARY_NAME,
+        NAME, XDB_LIBRARY_NAME);
   }
 
 }

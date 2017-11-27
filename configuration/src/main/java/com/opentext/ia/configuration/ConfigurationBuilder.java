@@ -3,7 +3,6 @@
  */
 package com.opentext.ia.configuration;
 
-
 /**
  * Build InfoArchive configurations.
  * @author Ray Sinnema
@@ -39,6 +38,22 @@ public class ConfigurationBuilder<C extends Configuration<?>> extends BaseBuilde
    */
   public SearchBuilder<C> withSearch() {
     return withApplication().withSearch();
+  }
+
+  /**
+   * Start building a file system root.
+   * @return A builder for the new file system root
+   */
+  public FileSystemRootBuilder<C> withFileSystemRoot() {
+    return new FileSystemRootBuilder<>(this);
+  }
+
+  /**
+   * Start building a space in a new application in a new tenant.
+   * @return A builder for the new space
+   */
+  public SpaceBuilder<C> withSpace() {
+    return withApplication().withSpace();
   }
 
 }
