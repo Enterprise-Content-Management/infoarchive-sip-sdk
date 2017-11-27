@@ -18,6 +18,7 @@ public class ApplicationBuilder<C extends Configuration<?>>
     setArchiveType("SIP");
     setType("ACTIVE_ARCHIVING");
     setState("IN_TEST");
+    setProperty("retentionEnabled", "true");
     setUninitialized("description", "category");
   }
 
@@ -64,6 +65,14 @@ public class ApplicationBuilder<C extends Configuration<?>>
 
   public SpaceBuilder<C> withSpace() {
     return new SpaceBuilder<>(this);
+  }
+
+  public PdiSchemaBuilder<C> withPdiSchema() {
+    return new PdiSchemaBuilder<>(this);
+  }
+
+  public HoldingBuilder<C> withHolding() {
+    return new HoldingBuilder<>(this);
   }
 
 }

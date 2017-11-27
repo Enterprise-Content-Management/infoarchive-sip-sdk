@@ -56,4 +56,12 @@ public class ConfigurationBuilder<C extends Configuration<?>> extends BaseBuilde
     return withApplication().withSpace();
   }
 
+  /**
+   * Start building a holding in a new application in a new tenant.
+   * @return A builder for the new holding
+   */
+  public HoldingBuilder<C> withHolding() {
+    return withApplication().withHolding();
+  }
+
 }

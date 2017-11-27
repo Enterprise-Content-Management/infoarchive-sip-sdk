@@ -15,4 +15,8 @@ public class SpaceBuilder<C extends Configuration<?>>
     return new SpaceRootXdbLibraryBuilder<>(this);
   }
 
+  public SpaceRootFolderBuilder<C> withSpaceRootFolder(String fileSystemRootName) {
+    return new SpaceRootFolderBuilder<>(this, fileSystemRootName);
+  }
+
 }

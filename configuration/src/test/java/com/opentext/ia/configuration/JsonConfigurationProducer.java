@@ -60,6 +60,11 @@ public class JsonConfigurationProducer implements ConfigurationProducer<JsonConf
     }
 
     @Override
+    public List<ConfigurationObject> getSpaceRootFolders(ConfigurationObject space) {
+      return childrenOf(space, "spaceRootFolders");
+    }
+
+    @Override
     public List<ConfigurationObject> getSpaceRootXdbLibraries(ConfigurationObject space) {
       return childrenOf(space, "spaceRootXdbLibraries");
     }
@@ -67,6 +72,16 @@ public class JsonConfigurationProducer implements ConfigurationProducer<JsonConf
     @Override
     public List<ConfigurationObject> getXdbLibraries(ConfigurationObject spaceRootXdbLibrary) {
       return childrenOf(spaceRootXdbLibrary, "xdbLibraries");
+    }
+
+    @Override
+    public List<ConfigurationObject> getPdiSchemas(ConfigurationObject application) {
+      return childrenOf(application, "pdiSchemas");
+    }
+
+    @Override
+    public List<ConfigurationObject> getHoldings(ConfigurationObject application) {
+      return childrenOf(application, "holdings");
     }
 
   }

@@ -99,6 +99,7 @@ public interface Configuration<T> {
    */
   List<T> getSearches(T application);
 
+
   /**
    * Returns the first configured file system root.
    * @return The first configured file system root
@@ -113,6 +114,7 @@ public interface Configuration<T> {
    * @return All the configured file system roots
    */
   List<T> getFileSystemRoots();
+
 
   /**
    * Returns the first configured space for the first application of the first tenant.
@@ -141,26 +143,33 @@ public interface Configuration<T> {
    */
   List<T> getSpaces(T application);
 
+
   /**
-   * Returns the first configured spaceRootXdbLibrary for the first space of the fist application of the first tenant.
-   * @return The first configured spaceRootXdbLibrary for the first space of the first application of the first tenant
-   * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
-   * tenant or when no spaces are configured for the first application of the first tenant or not spaceRootXdbLibraries
-   * are configured for the first space of the first application of the first tenant
+   * Returns the first configured spaceRootFolder for the given space.
+   * @param space The owner of the spaceRootFolder
+   * @return The first configured spaceRootFolder for the given space
+   * @throws IllegalArgumentException when no spaceRootFolders are configured for the given space
    */
-  default T getSpaceRootXdbLibrary() {
-    return first(getSpaceRootXdbLibraries());
+  default T getSpaceRootFolder(T space) {
+    return first(getSpaceRootFolders(space));
   }
 
   /**
-   * Returns all configured spaceRootXdbLibraries for the first space of the fist application of the first tenant.
-   * @return All configured spaceRootXdbLibraries for the first space of the first application of the first tenant
-   * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
-   * tenant or when no spaces are configured for the first application of the first tenant or not spaceRootXdbLibraries
-   * are configured for the first space of the first application of the first tenant
+   * Returns all configured spaceRootFolders for the given space.
+   * @param space The space that owns the spaceRootFolders
+   * @return All configured spaceRootFolders for the given space
    */
-  default List<T> getSpaceRootXdbLibraries() {
-    return getSpaceRootXdbLibraries(getSpace());
+  List<T> getSpaceRootFolders(T space);
+
+
+  /**
+   * Returns the first configured spaceRootXdbLibrary for the given space.
+   * @param space The owner of the spaceRootXdbLibrary
+   * @return The first configured spaceRootXdbLibrary for the given space
+   * @throws IllegalArgumentException when no spaceRootXdbLibraries are configured for the given space
+   */
+  default T getSpaceRootXdbLibrary(T space) {
+    return first(getSpaceRootXdbLibraries(space));
   }
 
   /**
@@ -170,32 +179,17 @@ public interface Configuration<T> {
    */
   List<T> getSpaceRootXdbLibraries(T space);
 
-  /**
-   * Returns The first configured xdbLibrary for the first spaceRootXdbLibrary for the first space of the fist
-   * application of the first tenant.
-   * @return The first configured xdbLibrary for the first spaceRootXdbLibrary for the first space of the first
-   * application of the first tenant
-   * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
-   * tenant or when no spaces are configured for the first application of the first tenant or not spaceRootXdbLibraries
-   * are configured for the first space of the first application of the first tenant or no xdbLibraries are configured
-   * for the first spaceRootXdbLibrary of the first space of the first application of the first tenant
-   */
-  default T getXdbLibrary() {
-    return first(getXdbLibraries());
-  }
 
   /**
-   * Returns all configured xdbLibraries for the first spaceRootXdbLibrary for the first space of the fist application
-   * of the first tenant.
-   * @return All configured xdbLibraries for the first spaceRootXdbLibrary for the first space of the first application
-   * of the first tenant
-   * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
-   * tenant or when no spaces are configured for the first application of the first tenant or not spaceRootXdbLibraries
-   * are configured for the first space of the first application of the first tenant or no xdbLibraries are configured
-   * for the first spaceRootXdbLibrary of the first space of the first application of the first tenant
+   * Returns The first configured xdbLibrary for the given spaceRootXdbLibrary.
+   * @param spaceRootXdbLibrary The spaceRootXdbLibrary that owns the xdbLibraries
+   * @param spaceRootXdbLibrary The spaceRootXdbLibrary that owns the xdbLibraries
+   * @return The first configured xdbLibrary for the given spaceRootXdbLibrary
+   * @throws IllegalArgumentException when no xdbLibraries are configured
+   * for the given spaceRootXdbLibrary
    */
-  default List<T> getXdbLibraries() {
-    return getXdbLibraries(getSpaceRootXdbLibrary());
+  default T getXdbLibrary(T spaceRootXdbLibrary) {
+    return first(getXdbLibraries(spaceRootXdbLibrary));
   }
 
   /**
@@ -204,5 +198,52 @@ public interface Configuration<T> {
    * @return All configured xdbLibraries for the given spaceRootXdbLibrary
    */
   List<T> getXdbLibraries(T spaceRootXdbLibrary);
+
+
+  /**
+   * Returns the first configured pdi schema for the given application.
+   * @param application The owner of the pdi schema
+   * @return The first configured pdi schema for the given application
+   * @throws IllegalArgumentException when no pdi schemas are configured for the given application
+   */
+  default T getPdiSchema(T application) {
+    return first(getPdiSchemas(application));
+  }
+
+  /**
+   * Returns all configured pdi schemas for the given application.
+   * @param application The owner of the pdi schemas
+   * @return All configured pdi schemas for the given application
+   * @throws IllegalArgumentException when no pdi schemas are configured for the given application
+   */
+  List<T> getPdiSchemas(T application);
+
+
+  /**
+   * Returns the first configured holding for the first application of the first tenant.
+   * @return The first configured holding for the first application of the first tenant
+   * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
+   * tenant or when no holdings are configured for the first application of the first tenant
+   */
+  default T getHolding() {
+    return first(getHoldings());
+  }
+
+  /**
+   * Returns all configured holdings for the first application of the first tenant.
+   * @return All configured holdings for the first application of the first tenant
+   * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
+   * tenant
+   */
+  default List<T> getHoldings() {
+    return getHoldings(getApplication());
+  }
+
+  /**
+   * Returns all configured holdings for the given application.
+   * @param application The application that owns the holdings
+   * @return All configured holdings for the given application
+   */
+  List<T> getHoldings(T application);
 
 }

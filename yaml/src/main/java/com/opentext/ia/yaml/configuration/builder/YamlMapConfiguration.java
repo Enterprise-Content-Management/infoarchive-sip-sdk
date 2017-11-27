@@ -86,6 +86,11 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   }
 
   @Override
+  public List<YamlMap> getSpaceRootFolders(YamlMap space) {
+    return childList(space, "space", "spaceRootFolder");
+  }
+
+  @Override
   public List<YamlMap> getSpaceRootXdbLibraries(YamlMap space) {
     return childList(space, "space", "spaceRootXdbLibrary");
   }
@@ -93,6 +98,16 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   @Override
   public List<YamlMap> getXdbLibraries(YamlMap spaceRootXdbLibrary) {
     return childList(spaceRootXdbLibrary, "spaceRootXdbLibrary", "xdbLibrary");
+  }
+
+  @Override
+  public List<YamlMap> getPdiSchemas(YamlMap application) {
+    return childList(application, "application", "pdiSchema");
+  }
+
+  @Override
+  public List<YamlMap> getHoldings(YamlMap application) {
+    return childList(application, "application", "holding");
   }
 
 }

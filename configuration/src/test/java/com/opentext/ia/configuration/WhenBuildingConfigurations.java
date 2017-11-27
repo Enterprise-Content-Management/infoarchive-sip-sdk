@@ -20,6 +20,8 @@ import com.opentext.ia.configuration.JsonConfigurationProducer.JsonConfiguration
 
 public class WhenBuildingConfigurations {
 
+  private static final String PDI_SCHEMA_TEXT = "";
+  private static final String PDI_SCHEMA_FORMAT = "rng";
   private static final Pattern NAME_PATTERN = Pattern.compile("[a-z]{1,3}(?<uuid>.*)");
   private static final String NAME = "name";
   private static final String TYPE = "type";
@@ -38,6 +40,10 @@ public class WhenBuildingConfigurations {
   private static final String SPACE_NAME = "mySpace";
   private static final String SPACE_ROOT_XDB_LIBRARY_NAME = "mySpaceRootXdbLibrary";
   private static final String XDB_LIBRARY_NAME = "myXdbLibrary";
+  private static final String SUB_PATH = "my/sub/path";
+  private static final String PDI_SCHEMA_NAME = "myPdiSchema";
+  private static final String SPACE_ROOT_FOLDER_NAME = "mySpaceRootFolder";
+  private static final String HOLDING_NAME = "myHolding";
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -75,7 +81,8 @@ public class WhenBuildingConfigurations {
         "tenant", DEFAULT_TENANT_NAME,
         TYPE, "ACTIVE_ARCHIVING",
         "archiveType", "SIP",
-        STATE, "IN_TEST");
+        STATE, "IN_TEST",
+        "retentionEnabled", "true");
   }
 
   private void assertRandomName(ConfigurationObject actual) {
@@ -213,11 +220,44 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
+  public void shouldUseDefaultPropertiesForSpaceRootFolder() {
+    configuration = builder
+        .withFileSystemRoot()
+            .named(FILE_SYSTEM_ROOT_NAME)
+        .end()
+        .withSpace()
+            .withSpaceRootFolder(FILE_SYSTEM_ROOT_NAME)
+    .build();
+    ConfigurationObject spaceRootFolder = configuration.getSpaceRootFolder(configuration.getSpace());
+
+    assertRandomName(spaceRootFolder);
+    assertProperties(spaceRootFolder, "fileSystemRoot", FILE_SYSTEM_ROOT_NAME);
+  }
+
+  @Test
+  public void shouldSetPropertiesForSpaceRootFolder() {
+    configuration = builder
+        .withFileSystemRoot()
+            .named(FILE_SYSTEM_ROOT_NAME)
+        .end()
+        .withSpace()
+            .named(SPACE_NAME)
+            .withSpaceRootFolder(FILE_SYSTEM_ROOT_NAME)
+                .named(SPACE_ROOT_FOLDER_NAME)
+    .build();
+    ConfigurationObject spaceRootFolder = configuration.getSpaceRootFolder(configuration.getSpace());
+
+    assertProperties(spaceRootFolder,
+        "space", SPACE_NAME,
+        NAME, SPACE_ROOT_FOLDER_NAME);
+  }
+
+  @Test
   public void shouldUseDefaultPropertiesForSpaceRootXdbLibrary() {
     configuration = builder.withSpace()
         .withSpaceRootXdbLibrary()
     .build();
-    ConfigurationObject spaceRootXdbLibrary = configuration.getSpaceRootXdbLibrary();
+    ConfigurationObject spaceRootXdbLibrary = configuration.getSpaceRootXdbLibrary(configuration.getSpace());
 
     assertRandomName(spaceRootXdbLibrary);
   }
@@ -229,7 +269,7 @@ public class WhenBuildingConfigurations {
         .withSpaceRootXdbLibrary()
             .named(SPACE_ROOT_XDB_LIBRARY_NAME)
     .build();
-    ConfigurationObject spaceRootXdbLibrary = configuration.getSpaceRootXdbLibrary();
+    ConfigurationObject spaceRootXdbLibrary = configuration.getSpaceRootXdbLibrary(configuration.getSpace());
 
     assertProperties(spaceRootXdbLibrary,
         "space", SPACE_NAME,
@@ -242,9 +282,13 @@ public class WhenBuildingConfigurations {
         .withSpaceRootXdbLibrary()
             .withXdbLibrary()
     .build();
-    ConfigurationObject xdbLibrary = configuration.getXdbLibrary();
+    ConfigurationObject xdbLibrary = configuration.getXdbLibrary(configuration.getSpaceRootXdbLibrary(
+        configuration.getSpace()));
 
     assertRandomName(xdbLibrary);
+    assertProperties(xdbLibrary,
+        TYPE, "DATA",
+        "xdbMode", "PRIVATE");
   }
 
   @Test
@@ -255,12 +299,71 @@ public class WhenBuildingConfigurations {
             .named(SPACE_ROOT_XDB_LIBRARY_NAME)
             .withXdbLibrary()
                 .named(XDB_LIBRARY_NAME)
+                .storingSearchResults()
+                .at(SUB_PATH)
+                .inAggregate()
     .build();
-    ConfigurationObject xdbLibrary = configuration.getXdbLibrary();
+    ConfigurationObject xdbLibrary = configuration.getXdbLibrary(configuration.getSpaceRootXdbLibrary(
+        configuration.getSpace()));
 
     assertProperties(xdbLibrary,
         "parentSpaceRootXdbLibrary", SPACE_ROOT_XDB_LIBRARY_NAME,
-        NAME, XDB_LIBRARY_NAME);
+        NAME, XDB_LIBRARY_NAME,
+        TYPE, "SEARCH_RESULTS",
+        "subPath", SUB_PATH,
+        "xdbMode", "AGGREGATE");
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForPdiSchema() {
+    configuration = builder.withApplication()
+        .withPdiSchema()
+    .build();
+    ConfigurationObject pdiSchema = configuration.getPdiSchema(configuration.getApplication());
+
+    assertRandomName(pdiSchema);
+    assertProperties(pdiSchema,
+        "format", "xsd");
+  }
+
+  @Test
+  public void shouldSetPropertiesForPdiSchema() {
+    configuration = builder.withApplication()
+        .named(APPLICATION_NAME)
+        .withPdiSchema()
+            .named(PDI_SCHEMA_NAME)
+            .ofType(PDI_SCHEMA_FORMAT)
+            .as(PDI_SCHEMA_TEXT)
+    .build();
+    ConfigurationObject pdiSchema = configuration.getPdiSchema(configuration.getApplication());
+
+    assertProperties(pdiSchema,
+        "application", APPLICATION_NAME,
+        NAME, PDI_SCHEMA_NAME,
+        "format", PDI_SCHEMA_FORMAT,
+        "content", PDI_SCHEMA_TEXT);
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForHolding() {
+    configuration = builder.withHolding().build();
+    ConfigurationObject holding = configuration.getHolding();
+
+    assertRandomName(holding);
+  }
+
+  @Test
+  public void shouldSetPropertiesForHolding() {
+    configuration = builder.withApplication()
+        .named(APPLICATION_NAME)
+        .withHolding()
+            .named(HOLDING_NAME)
+    .build();
+    ConfigurationObject holding = configuration.getHolding();
+
+    assertProperties(holding,
+        "application", APPLICATION_NAME,
+        NAME, HOLDING_NAME);
   }
 
 }
