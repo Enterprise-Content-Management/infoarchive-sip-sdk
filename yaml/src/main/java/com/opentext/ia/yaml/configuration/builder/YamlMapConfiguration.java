@@ -21,6 +21,11 @@ import com.opentext.ia.yaml.core.YamlMap;
  */
 public class YamlMapConfiguration implements Configuration<YamlMap> {
 
+  private static final String NAME = "name";
+  private static final String TENANT = "tenant";
+  private static final String APPLICATION = "application";
+  private static final String SPACE = "space";
+
   private final YamlMap yaml;
 
   public YamlMapConfiguration(YamlMap yaml) {
@@ -42,7 +47,7 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
 
   @Override
   public List<YamlMap> getTenants() {
-    return toList(streamOfType("tenant"));
+    return toList(streamOfType(TENANT));
   }
 
   private List<YamlMap> toList(Stream<YamlMap> stream) {
@@ -62,17 +67,17 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
 
   @Override
   public List<YamlMap> getApplications(YamlMap tenant) {
-    return childList(tenant, "tenant", "application");
+    return childList(tenant, TENANT, APPLICATION);
   }
 
   private List<YamlMap> childList(YamlMap parent, String parentType, String type) {
     return toList(streamOfType(type)
-        .filter(application -> parent.get("name").equals(application.get(parentType))));
+        .filter(application -> parent.get(NAME).equals(application.get(parentType))));
   }
 
   @Override
   public List<YamlMap> getSearches(YamlMap application) {
-    return childList(application, "application", "search");
+    return childList(application, APPLICATION, "search");
   }
 
   @Override
@@ -82,17 +87,17 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
 
   @Override
   public List<YamlMap> getSpaces(YamlMap application) {
-    return childList(application, "application", "space");
+    return childList(application, APPLICATION, SPACE);
   }
 
   @Override
   public List<YamlMap> getSpaceRootFolders(YamlMap space) {
-    return childList(space, "space", "spaceRootFolder");
+    return childList(space, SPACE, "spaceRootFolder");
   }
 
   @Override
   public List<YamlMap> getSpaceRootXdbLibraries(YamlMap space) {
-    return childList(space, "space", "spaceRootXdbLibrary");
+    return childList(space, SPACE, "spaceRootXdbLibrary");
   }
 
   @Override
@@ -102,12 +107,12 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
 
   @Override
   public List<YamlMap> getPdiSchemas(YamlMap application) {
-    return childList(application, "application", "pdiSchema");
+    return childList(application, APPLICATION, "pdiSchema");
   }
 
   @Override
   public List<YamlMap> getHoldings(YamlMap application) {
-    return childList(application, "application", "holding");
+    return childList(application, APPLICATION, "holding");
   }
 
 }

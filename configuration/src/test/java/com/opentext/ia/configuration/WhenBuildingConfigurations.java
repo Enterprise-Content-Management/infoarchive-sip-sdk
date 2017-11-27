@@ -20,14 +20,13 @@ import com.opentext.ia.configuration.JsonConfigurationProducer.JsonConfiguration
 
 public class WhenBuildingConfigurations {
 
-  private static final String PDI_SCHEMA_TEXT = "";
-  private static final String PDI_SCHEMA_FORMAT = "rng";
   private static final Pattern NAME_PATTERN = Pattern.compile("[a-z]{1,3}(?<uuid>.*)");
   private static final String NAME = "name";
   private static final String TYPE = "type";
   private static final String DESCRIPTION = "description";
   private static final String DEFAULT_TENANT_NAME = "INFOARCHIVE";
   private static final String TENANT_NAME = "myTenant";
+  private static final String APPLICATION = "application";
   private static final String APPLICATION_NAME = "myApplication";
   private static final String SEARCH_NAME = "mySearch";
   private static final String DESCRIPTIVE_TEXT = "myDescription";
@@ -42,6 +41,14 @@ public class WhenBuildingConfigurations {
   private static final String XDB_LIBRARY_NAME = "myXdbLibrary";
   private static final String SUB_PATH = "my/sub/path";
   private static final String PDI_SCHEMA_NAME = "myPdiSchema";
+  private static final String PDI_SCHEMA_FORMAT = "rnc";
+  private static final String PDI_SCHEMA_TEXT
+      = "element addressBook {\n"
+      + "  element card {\n"
+      + "    element name { text },\n"
+      + "    element email { text }\n"
+      + "  }*\n"
+      + "}";
   private static final String SPACE_ROOT_FOLDER_NAME = "mySpaceRootFolder";
   private static final String HOLDING_NAME = "myHolding";
 
@@ -163,7 +170,7 @@ public class WhenBuildingConfigurations {
     ConfigurationObject search = configuration.getSearch();
 
     assertProperties(search,
-        "application", APPLICATION_NAME,
+        APPLICATION, APPLICATION_NAME,
         NAME, SEARCH_NAME,
         STATE, "PUBLISHED",
         DESCRIPTION, DESCRIPTIVE_TEXT);
@@ -215,7 +222,7 @@ public class WhenBuildingConfigurations {
     ConfigurationObject space = configuration.getSpace();
 
     assertProperties(space,
-        "application", APPLICATION_NAME,
+        APPLICATION, APPLICATION_NAME,
         NAME, SPACE_NAME);
   }
 
@@ -338,7 +345,7 @@ public class WhenBuildingConfigurations {
     ConfigurationObject pdiSchema = configuration.getPdiSchema(configuration.getApplication());
 
     assertProperties(pdiSchema,
-        "application", APPLICATION_NAME,
+        APPLICATION, APPLICATION_NAME,
         NAME, PDI_SCHEMA_NAME,
         "format", PDI_SCHEMA_FORMAT,
         "content", PDI_SCHEMA_TEXT);
@@ -362,7 +369,7 @@ public class WhenBuildingConfigurations {
     ConfigurationObject holding = configuration.getHolding();
 
     assertProperties(holding,
-        "application", APPLICATION_NAME,
+        APPLICATION, APPLICATION_NAME,
         NAME, HOLDING_NAME);
   }
 
