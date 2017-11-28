@@ -44,4 +44,10 @@ public class WhenSubstitutingProperties {
     assertProperty("From grandparent", "garply", "corge");
   }
 
+  @Test
+  public void shouldTrimValues() {
+    propertyResolver = new ConfigurationProperties(resourceResolver, "configuration.properties");
+    assertEquals("Trimmed value", "bar", propertyResolver.apply("${foo}"));
+  }
+
 }
