@@ -183,7 +183,6 @@ public interface Configuration<T> {
   /**
    * Returns The first configured xdbLibrary for the given spaceRootXdbLibrary.
    * @param spaceRootXdbLibrary The spaceRootXdbLibrary that owns the xdbLibraries
-   * @param spaceRootXdbLibrary The spaceRootXdbLibrary that owns the xdbLibraries
    * @return The first configured xdbLibrary for the given spaceRootXdbLibrary
    * @throws IllegalArgumentException when no xdbLibraries are configured
    * for the given spaceRootXdbLibrary
