@@ -51,6 +51,8 @@ public class WhenBuildingConfigurations {
       + "}";
   private static final String SPACE_ROOT_FOLDER_NAME = "mySpaceRootFolder";
   private static final String HOLDING_NAME = "myHolding";
+  private static final String CRYPTO_OBJECT_NAME = "myCryptoObject";
+  private static final String XDB_FEDERATION_NAME = "myXdbFederation";
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -366,11 +368,92 @@ public class WhenBuildingConfigurations {
         .withHolding()
             .named(HOLDING_NAME)
     .build();
+
     ConfigurationObject holding = configuration.getHolding();
 
     assertProperties(holding,
         APPLICATION, APPLICATION_NAME,
         NAME, HOLDING_NAME);
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForCryptoObject() {
+    configuration = builder.withCryptoObject().build();
+
+    ConfigurationObject cryptoObject = configuration.getCryptoObject();
+
+    assertRandomName(cryptoObject);
+    assertProperties(cryptoObject,
+        "securityProvider", "Bouncy Castle",
+        "keySize", "256",
+        "encryptionMode", "CBC",
+        "paddingScheme", "PKCS5PADDING",
+        "encryptionAlgorithm", "AES");
+  }
+
+  @Test
+  public void shouldSetPropertiesForCryptoObject() {
+    configuration = builder.withCryptoObject()
+        .named(CRYPTO_OBJECT_NAME)
+        .providedBy("SunJCE")
+        .withKeysOfSize(192)
+        .combiningBlocksUsing("OFB")
+        .paddedBy("RSA/ECB/PKCS1Padding")
+
+    .build();
+
+    ConfigurationObject cryptoObject = configuration.getCryptoObject();
+
+    assertProperties(cryptoObject,
+        NAME, CRYPTO_OBJECT_NAME,
+        "securityProvider", "SunJCE",
+        "keySize", "192",
+        "encryptionMode", "OFB",
+        "paddingScheme", "RSA/ECB/PKCS1Padding");
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForXdbFederation() {
+    configuration = builder.withXdbFederation().build();
+
+    ConfigurationObject xdbFederation = configuration.getXdbFederation();
+
+    assertRandomName(xdbFederation);
+    assertProperties(xdbFederation,
+        "bootstrap", "xhive://127.0.0.1:2910",
+        "superUserPassword", "test");
+  }
+
+  @Test
+  public void shouldSetPropertiesForXdbFederation() {
+    configuration = builder.withXdbFederation()
+        .named(XDB_FEDERATION_NAME)
+        .runningAt("xhives://xdb.com:2345")
+        .protectedWithPassword("secret")
+    .build();
+
+    ConfigurationObject xdbFederation = configuration.getXdbFederation();
+
+    assertProperties(xdbFederation,
+        NAME, XDB_FEDERATION_NAME,
+        "bootstrap", "xhives://xdb.com:2345",
+        "superUserPassword", "secret");
+  }
+
+  @Test
+  public void shouldSetCryptoObject() {
+    configuration = builder
+        .withCryptoObject()
+            .named(CRYPTO_OBJECT_NAME)
+        .end()
+        .withXdbFederation()
+            .encryptedBy(CRYPTO_OBJECT_NAME)
+        .end()
+    .build();
+
+    ConfigurationObject xdbFederation = configuration.getXdbFederation();
+
+    assertProperties(xdbFederation, "cryptoObject", CRYPTO_OBJECT_NAME);
   }
 
 }

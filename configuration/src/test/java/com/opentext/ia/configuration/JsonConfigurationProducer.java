@@ -84,6 +84,16 @@ public class JsonConfigurationProducer implements ConfigurationProducer<JsonConf
       return childrenOf(application, "holdings");
     }
 
+    @Override
+    public List<ConfigurationObject> getCryptoObjects() {
+      return childrenOf(container, "cryptoObjects");
+    }
+
+    @Override
+    public List<ConfigurationObject> getXdbFederations() {
+      return childrenOf(container, "xdbFederations");
+    }
+
   }
 
 }

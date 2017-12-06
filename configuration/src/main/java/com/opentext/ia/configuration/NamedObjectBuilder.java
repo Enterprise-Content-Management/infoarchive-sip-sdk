@@ -13,8 +13,8 @@ package com.opentext.ia.configuration;
  * @param <S> The type of this builder
  * @param <C> The type of configuration to build
  */
-public class NamedObjectBuilder<P extends BaseBuilder<?, C>, S extends NamedObjectBuilder<?, ?, C>, C extends Configuration<?>>
-    extends BaseBuilder<P, C> {
+public class NamedObjectBuilder<P extends BaseBuilder<?, C>, S extends NamedObjectBuilder<?, ?, C>,
+    C extends Configuration<?>> extends BaseBuilder<P, C> {
 
   protected NamedObjectBuilder(P parent, String type) {
     super(parent, type);

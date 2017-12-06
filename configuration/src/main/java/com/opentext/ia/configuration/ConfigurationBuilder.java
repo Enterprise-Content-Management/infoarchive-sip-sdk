@@ -43,6 +43,7 @@ public class ConfigurationBuilder<C extends Configuration<?>> extends BaseBuilde
   /**
    * Start building a file system root.
    * @return A builder for the new file system root
+   * @since 9.5.0
    */
   public FileSystemRootBuilder<C> withFileSystemRoot() {
     return new FileSystemRootBuilder<>(this);
@@ -51,6 +52,7 @@ public class ConfigurationBuilder<C extends Configuration<?>> extends BaseBuilde
   /**
    * Start building a space in a new application in a new tenant.
    * @return A builder for the new space
+   * @since 9.5.0
    */
   public SpaceBuilder<C> withSpace() {
     return withApplication().withSpace();
@@ -59,9 +61,28 @@ public class ConfigurationBuilder<C extends Configuration<?>> extends BaseBuilde
   /**
    * Start building a holding in a new application in a new tenant.
    * @return A builder for the new holding
+   * @since 9.5.0
    */
   public HoldingBuilder<C> withHolding() {
     return withApplication().withHolding();
+  }
+
+  /**
+   * Start building a crypto object.
+   * @return A builder for the new crypto object
+   * @since 9.6.0
+   */
+  public CryptoObjectBuilder<C> withCryptoObject() {
+    return new CryptoObjectBuilder<>(this);
+  }
+
+  /**
+   * Start building an xDB federation.
+   * @return A builder for the new xDB federation
+   * @since 9.6.0
+   */
+  public XdbFederationBuilder<C> withXdbFederation() {
+    return new XdbFederationBuilder<>(this);
   }
 
 }

@@ -245,4 +245,34 @@ public interface Configuration<T> {
    */
   List<T> getHoldings(T application);
 
+  /**
+   * Returns the first configured crypto object.
+   * @return The first configured crypto object
+   * @throws IllegalArgumentException when no crypto objects are configured
+   */
+  default T getCryptoObject() {
+    return first(getCryptoObjects());
+  }
+
+  /**
+   * Returns all the configured crypto objects.
+   * @return All the configured crypto objects
+   */
+  List<T> getCryptoObjects();
+
+  /**
+   * Returns the first configured xDB federation.
+   * @return The first configured xDB federation
+   * @throws IllegalArgumentException when no xDB federations are configured
+   */
+  default T getXdbFederation() {
+    return first(getXdbFederations());
+  }
+
+  /**
+   * Returns all the configured xDB federations.
+   * @return All the configured xDB federations
+   */
+  List<T> getXdbFederations();
+
 }

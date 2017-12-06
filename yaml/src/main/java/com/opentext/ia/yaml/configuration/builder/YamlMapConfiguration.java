@@ -115,4 +115,14 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
     return childList(application, APPLICATION, "holding");
   }
 
+  @Override
+  public List<YamlMap> getCryptoObjects() {
+    return toList(streamOfType("cryptoObject"));
+  }
+
+  @Override
+  public List<YamlMap> getXdbFederations() {
+    return toList(streamOfType("xdbFederation"));
+  }
+
 }
