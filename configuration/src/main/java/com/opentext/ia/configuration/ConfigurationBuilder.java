@@ -85,4 +85,13 @@ public class ConfigurationBuilder<C extends Configuration<?>> extends BaseBuilde
     return new XdbFederationBuilder<>(this);
   }
 
+  /**
+   * Start building an xDB database in a new xDB federation.
+   * @return A builder for the new xDB database
+   * @since 9.6.0
+   */
+  public XdbDatabaseBuilder<C> withXdbDatabase() {
+    return withXdbFederation().withXdbDatabase();
+  }
+
 }

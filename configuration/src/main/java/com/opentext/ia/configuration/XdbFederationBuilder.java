@@ -43,4 +43,8 @@ public class XdbFederationBuilder<C extends Configuration<?>>
     return this;
   }
 
+  public XdbDatabaseBuilder<C> withXdbDatabase() {
+    return new XdbDatabaseBuilder<>(this);
+  }
+
 }

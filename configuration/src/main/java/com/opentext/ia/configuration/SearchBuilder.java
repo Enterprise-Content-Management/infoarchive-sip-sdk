@@ -14,8 +14,8 @@ package com.opentext.ia.configuration;
 public class SearchBuilder<C extends Configuration<?>>
     extends NamedObjectBuilder<ApplicationBuilder<C>, SearchBuilder<C>, C> {
 
-  protected SearchBuilder(ApplicationBuilder<C> parent, String type) {
-    super(parent, type);
+  protected SearchBuilder(ApplicationBuilder<C> parent) {
+    super(parent, "search");
     setState("DRAFT");
     setUninitialized("description");
   }

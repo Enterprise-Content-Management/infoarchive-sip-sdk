@@ -51,6 +51,8 @@ public class WhenBuildingConfigurations {
       + "}";
   private static final String SPACE_ROOT_FOLDER_NAME = "mySpaceRootFolder";
   private static final String HOLDING_NAME = "myHolding";
+  private static final String XDB_MODE = "xdbMode";
+  private static final String DEFAULT_XDB_MODE = "PRIVATE";
   private static final String CRYPTO_OBJECT_NAME = "myCryptoObject";
   private static final String XDB_FEDERATION_NAME = "myXdbFederation";
 
@@ -297,7 +299,7 @@ public class WhenBuildingConfigurations {
     assertRandomName(xdbLibrary);
     assertProperties(xdbLibrary,
         TYPE, "DATA",
-        "xdbMode", "PRIVATE");
+        XDB_MODE, DEFAULT_XDB_MODE);
   }
 
   @Test
@@ -320,7 +322,7 @@ public class WhenBuildingConfigurations {
         NAME, XDB_LIBRARY_NAME,
         TYPE, "SEARCH_RESULTS",
         "subPath", SUB_PATH,
-        "xdbMode", "AGGREGATE");
+        XDB_MODE, "AGGREGATE");
   }
 
   @Test
@@ -359,6 +361,7 @@ public class WhenBuildingConfigurations {
     ConfigurationObject holding = configuration.getHolding();
 
     assertRandomName(holding);
+    assertProperties(holding, XDB_MODE, DEFAULT_XDB_MODE);
   }
 
   @Test
@@ -367,19 +370,19 @@ public class WhenBuildingConfigurations {
         .named(APPLICATION_NAME)
         .withHolding()
             .named(HOLDING_NAME)
+            .inPool()
     .build();
-
     ConfigurationObject holding = configuration.getHolding();
 
     assertProperties(holding,
         APPLICATION, APPLICATION_NAME,
-        NAME, HOLDING_NAME);
+        NAME, HOLDING_NAME,
+        XDB_MODE, "POOLED");
   }
 
   @Test
   public void shouldUseDefaultPropertiesForCryptoObject() {
     configuration = builder.withCryptoObject().build();
-
     ConfigurationObject cryptoObject = configuration.getCryptoObject();
 
     assertRandomName(cryptoObject);
@@ -401,7 +404,6 @@ public class WhenBuildingConfigurations {
         .paddedBy("RSA/ECB/PKCS1Padding")
 
     .build();
-
     ConfigurationObject cryptoObject = configuration.getCryptoObject();
 
     assertProperties(cryptoObject,
@@ -415,7 +417,6 @@ public class WhenBuildingConfigurations {
   @Test
   public void shouldUseDefaultPropertiesForXdbFederation() {
     configuration = builder.withXdbFederation().build();
-
     ConfigurationObject xdbFederation = configuration.getXdbFederation();
 
     assertRandomName(xdbFederation);
@@ -431,7 +432,6 @@ public class WhenBuildingConfigurations {
         .runningAt("xhives://xdb.com:2345")
         .protectedWithPassword("secret")
     .build();
-
     ConfigurationObject xdbFederation = configuration.getXdbFederation();
 
     assertProperties(xdbFederation,
@@ -450,10 +450,32 @@ public class WhenBuildingConfigurations {
             .encryptedBy(CRYPTO_OBJECT_NAME)
         .end()
     .build();
-
     ConfigurationObject xdbFederation = configuration.getXdbFederation();
 
     assertProperties(xdbFederation, "cryptoObject", CRYPTO_OBJECT_NAME);
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForXdbDatabase() {
+    configuration = builder.withXdbDatabase().build();
+    ConfigurationObject xdbDatabase = configuration.getXdbDatabase();
+
+    assertRandomName(xdbDatabase);
+    assertProperties(xdbDatabase,
+        "adminPassword", "secret");
+  }
+
+  @Test
+  public void shouldSetPropertiesForXdbDatabase() {
+    configuration = builder.withXdbDatabase()
+        .named("myXdbDatabase")
+        .protectedWithPassword("test")
+    .build();
+    ConfigurationObject xdbDatabase = configuration.getXdbDatabase();
+
+    assertProperties(xdbDatabase,
+        NAME, "myXdbDatabase",
+        "adminPassword", "test");
   }
 
 }

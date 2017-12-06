@@ -60,7 +60,7 @@ public class ApplicationBuilder<C extends Configuration<?>>
   }
 
   public SearchBuilder<C> withSearch() {
-    return new SearchBuilder<>(this, "search");
+    return new SearchBuilder<>(this);
   }
 
   public SpaceBuilder<C> withSpace() {

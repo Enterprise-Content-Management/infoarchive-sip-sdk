@@ -104,6 +104,7 @@ public interface Configuration<T> {
    * Returns the first configured file system root.
    * @return The first configured file system root
    * @throws IllegalArgumentException when no file system roots are configured
+   * @since 9.5.0
    */
   default T getFileSystemRoot() {
     return first(getFileSystemRoots());
@@ -112,6 +113,7 @@ public interface Configuration<T> {
   /**
    * Returns all the configured file system roots.
    * @return All the configured file system roots
+   * @since 9.5.0
    */
   List<T> getFileSystemRoots();
 
@@ -121,6 +123,7 @@ public interface Configuration<T> {
    * @return The first configured space for the first application of the first tenant
    * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
    * tenant or when no spaces are configured for the first application of the first tenant
+   * @since 9.5.0
    */
   default T getSpace() {
     return first(getSpaces());
@@ -131,6 +134,7 @@ public interface Configuration<T> {
    * @return All configured spaces for the first application of the first tenant
    * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
    * tenant
+   * @since 9.5.0
    */
   default List<T> getSpaces() {
     return getSpaces(getApplication());
@@ -140,6 +144,7 @@ public interface Configuration<T> {
    * Returns all configured spaces for the given application.
    * @param application The application that owns the spaces
    * @return All configured spaces for the given application
+   * @since 9.5.0
    */
   List<T> getSpaces(T application);
 
@@ -149,6 +154,7 @@ public interface Configuration<T> {
    * @param space The owner of the spaceRootFolder
    * @return The first configured spaceRootFolder for the given space
    * @throws IllegalArgumentException when no spaceRootFolders are configured for the given space
+   * @since 9.5.0
    */
   default T getSpaceRootFolder(T space) {
     return first(getSpaceRootFolders(space));
@@ -158,6 +164,7 @@ public interface Configuration<T> {
    * Returns all configured spaceRootFolders for the given space.
    * @param space The space that owns the spaceRootFolders
    * @return All configured spaceRootFolders for the given space
+   * @since 9.5.0
    */
   List<T> getSpaceRootFolders(T space);
 
@@ -167,6 +174,7 @@ public interface Configuration<T> {
    * @param space The owner of the spaceRootXdbLibrary
    * @return The first configured spaceRootXdbLibrary for the given space
    * @throws IllegalArgumentException when no spaceRootXdbLibraries are configured for the given space
+   * @since 9.5.0
    */
   default T getSpaceRootXdbLibrary(T space) {
     return first(getSpaceRootXdbLibraries(space));
@@ -176,6 +184,7 @@ public interface Configuration<T> {
    * Returns all configured spaceRootXdbLibraries for the given space.
    * @param space The space that owns the spaceRootXdbLibraries
    * @return All configured spaceRootXdbLibraries for the given space
+   * @since 9.5.0
    */
   List<T> getSpaceRootXdbLibraries(T space);
 
@@ -186,6 +195,7 @@ public interface Configuration<T> {
    * @return The first configured xdbLibrary for the given spaceRootXdbLibrary
    * @throws IllegalArgumentException when no xdbLibraries are configured
    * for the given spaceRootXdbLibrary
+   * @since 9.5.0
    */
   default T getXdbLibrary(T spaceRootXdbLibrary) {
     return first(getXdbLibraries(spaceRootXdbLibrary));
@@ -195,6 +205,7 @@ public interface Configuration<T> {
    * Returns all configured xdbLibraries for the given spaceRootXdbLibrary.
    * @param spaceRootXdbLibrary The spaceRootXdbLibrary that owns the xdbLibraries
    * @return All configured xdbLibraries for the given spaceRootXdbLibrary
+   * @since 9.5.0
    */
   List<T> getXdbLibraries(T spaceRootXdbLibrary);
 
@@ -204,6 +215,7 @@ public interface Configuration<T> {
    * @param application The owner of the pdi schema
    * @return The first configured pdi schema for the given application
    * @throws IllegalArgumentException when no pdi schemas are configured for the given application
+   * @since 9.5.0
    */
   default T getPdiSchema(T application) {
     return first(getPdiSchemas(application));
@@ -214,6 +226,7 @@ public interface Configuration<T> {
    * @param application The owner of the pdi schemas
    * @return All configured pdi schemas for the given application
    * @throws IllegalArgumentException when no pdi schemas are configured for the given application
+   * @since 9.5.0
    */
   List<T> getPdiSchemas(T application);
 
@@ -223,6 +236,7 @@ public interface Configuration<T> {
    * @return The first configured holding for the first application of the first tenant
    * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
    * tenant or when no holdings are configured for the first application of the first tenant
+   * @since 9.5.0
    */
   default T getHolding() {
     return first(getHoldings());
@@ -233,6 +247,7 @@ public interface Configuration<T> {
    * @return All configured holdings for the first application of the first tenant
    * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
    * tenant
+   * @since 9.5.0
    */
   default List<T> getHoldings() {
     return getHoldings(getApplication());
@@ -242,6 +257,7 @@ public interface Configuration<T> {
    * Returns all configured holdings for the given application.
    * @param application The application that owns the holdings
    * @return All configured holdings for the given application
+   * @since 9.5.0
    */
   List<T> getHoldings(T application);
 
@@ -249,6 +265,7 @@ public interface Configuration<T> {
    * Returns the first configured crypto object.
    * @return The first configured crypto object
    * @throws IllegalArgumentException when no crypto objects are configured
+   * @since 9.6.0
    */
   default T getCryptoObject() {
     return first(getCryptoObjects());
@@ -257,6 +274,7 @@ public interface Configuration<T> {
   /**
    * Returns all the configured crypto objects.
    * @return All the configured crypto objects
+   * @since 9.6.0
    */
   List<T> getCryptoObjects();
 
@@ -264,6 +282,7 @@ public interface Configuration<T> {
    * Returns the first configured xDB federation.
    * @return The first configured xDB federation
    * @throws IllegalArgumentException when no xDB federations are configured
+   * @since 9.6.0
    */
   default T getXdbFederation() {
     return first(getXdbFederations());
@@ -272,7 +291,38 @@ public interface Configuration<T> {
   /**
    * Returns all the configured xDB federations.
    * @return All the configured xDB federations
+   * @since 9.6.0
    */
   List<T> getXdbFederations();
+
+  /**
+   * Returns the first configured xDB database for the first xDB federation.
+   * @return The first configured xDB database for the first xDB federation
+   * @throws IllegalArgumentException when no xDB federations are configured or no xDB database are configured for the
+   * first xDB federation
+   * @since 9.6.0
+   */
+  default T getXdbDatabase() {
+    return getXdbDatabase(getXdbFederation());
+  }
+
+  /**
+   * Returns the first configured xDB database for the given xDB federation.
+   * @param xdbFederation The xDB federation that owns the xDB databases
+   * @return The first configured xDB database for the given xDB federation
+   * @throws IllegalArgumentException when no xDB database are configured for the given xDB federation
+   * @since 9.6.0
+   */
+  default T getXdbDatabase(T xdbFederation) {
+    return first(getXdbDatabases(xdbFederation));
+  }
+
+  /**
+   * Returns all configured xDB databases for the given xDB federation.
+   * @param xdbFederation The xDB federation that owns the xDB databases
+   * @return All configured xDB databases for the given xDB federation
+   * @since 9.6.0
+   */
+  List<T> getXdbDatabases(T xdbFederation);
 
 }

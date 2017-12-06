@@ -94,6 +94,11 @@ public class JsonConfigurationProducer implements ConfigurationProducer<JsonConf
       return childrenOf(container, "xdbFederations");
     }
 
+    @Override
+    public List<ConfigurationObject> getXdbDatabases(ConfigurationObject xdbFederation) {
+      return childrenOf(xdbFederation, "xdbDatabases");
+    }
+
   }
 
 }

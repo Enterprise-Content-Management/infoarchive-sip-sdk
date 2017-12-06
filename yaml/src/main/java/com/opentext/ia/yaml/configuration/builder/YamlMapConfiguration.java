@@ -25,6 +25,7 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   private static final String TENANT = "tenant";
   private static final String APPLICATION = "application";
   private static final String SPACE = "space";
+  private static final String XDB_FEDERATION = "xdbFederation";
 
   private final YamlMap yaml;
 
@@ -122,7 +123,12 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
 
   @Override
   public List<YamlMap> getXdbFederations() {
-    return toList(streamOfType("xdbFederation"));
+    return toList(streamOfType(XDB_FEDERATION));
+  }
+
+  @Override
+  public List<YamlMap> getXdbDatabases(YamlMap xdbFederation) {
+    return childList(xdbFederation, XDB_FEDERATION, "xdbDatabase");
   }
 
 }
