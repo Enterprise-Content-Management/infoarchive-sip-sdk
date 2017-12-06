@@ -1013,4 +1013,14 @@ public class WhenUsingYamlConfiguration extends TestCase {
     assertValue("Inlined value", "bar", yaml.get("foo"));
   }
 
+  @Test
+  public void shouldResolvePropertiesToDefaultsWhenNoValuesProvided() {
+    resourceResolver = ResourceResolver.none();
+    yaml.put("gnus", Arrays.asList(new YamlMap().put("gnat", "${waldo:fred}")));
+
+    normalizeYaml(yaml);
+
+    assertValue("Resolved value", "fred", yaml.get("gnus", 0, "gnat"));
+  }
+
 }

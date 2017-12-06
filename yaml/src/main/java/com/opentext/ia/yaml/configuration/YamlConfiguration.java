@@ -101,7 +101,7 @@ public class YamlConfiguration {
   }
 
   private ConfigurationProperties getProperties(ResourceResolver resolver) {
-    ConfigurationProperties parent = null;
+    ConfigurationProperties parent = new ConfigurationProperties();
     for (int index = 0; index < MAX_PROPERTIES_RESOURCES; index++) {
       try {
         parent = new ConfigurationProperties(resolver, String.format("%d.properties", index), parent);

@@ -23,6 +23,10 @@ public class ConfigurationProperties implements Function<String, String> {
   private final ConfigurationProperties parent;
   private final Properties properties = new Properties();
 
+  public ConfigurationProperties() {
+    this.parent = null;
+  }
+
   public ConfigurationProperties(ResourceResolver resolver, String resource) {
     this(resolver, resource, null);
   }
