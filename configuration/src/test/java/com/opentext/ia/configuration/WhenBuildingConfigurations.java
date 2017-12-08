@@ -93,7 +93,7 @@ public class WhenBuildingConfigurations {
         TYPE, "ACTIVE_ARCHIVING",
         "archiveType", "SIP",
         STATE, "IN_TEST",
-        "retentionEnabled", "true");
+        "retentionEnabled", true);
   }
 
   private void assertRandomName(ConfigurationObject actual) {
@@ -113,12 +113,16 @@ public class WhenBuildingConfigurations {
     }
   }
 
-  private void assertProperties(ConfigurationObject actual, String... expectedPropertyValues) {
+  private void assertProperties(ConfigurationObject actual, Object... expectedPropertyValues) {
     JSONObject properties = actual.getProperties();
     for (int i = 0; i < expectedPropertyValues.length; i += 2) {
-      String property = expectedPropertyValues[i];
-      assertEquals(property, expectedPropertyValues[i + 1], properties.optString(property));
+      String property = expectedPropertyValues[i].toString();
+      assertProperty(expectedPropertyValues[i + 1].toString(), properties, property);
     }
+  }
+
+  private void assertProperty(String expected, JSONObject object, String name) {
+    assertEquals(name, expected, object.optString(name));
   }
 
   @Test
@@ -476,6 +480,52 @@ public class WhenBuildingConfigurations {
     assertProperties(xdbDatabase,
         NAME, "myXdbDatabase",
         "adminPassword", "test");
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForJobDefinition() {
+    configuration = builder.withJobDefinition().build();
+    ConfigurationObject jobDefinition = configuration.getJobDefinition();
+
+    assertRandomName(jobDefinition);
+    assertProperties(jobDefinition,
+        "applicationScoped", true,
+        "tenantScoped", true,
+        "systemScoped", true,
+        "readOnly", false,
+        "maxAttempts", "1",
+        "expirationInterval", "60000",
+        "rescheduleInterval", "60000");
+  }
+
+  @Test
+  public void shouldSetPropertiesForJobDefinition() {
+    configuration = builder.withJobDefinition()
+        .named("myJobDefinition")
+        .withDescription(DESCRIPTIVE_TEXT)
+        .handledBy("myHandler")
+        .readOnly()
+        .scopedToTenant()
+        .attemptMax(2)
+        .expireAfter(1000)
+        .rescheduleAfter(1000)
+        .withProperty("ape", "bear")
+        .withProperty("cheetah", "dingo")
+    .build();
+    ConfigurationObject jobDefinition = configuration.getJobDefinition();
+
+    assertProperties(jobDefinition,
+        NAME, "myJobDefinition",
+        "description", DESCRIPTIVE_TEXT,
+        "handlerName", "myHandler",
+        "readOnly", true,
+        "applicationScoped", false,
+        "maxAttempts", "2",
+        "expirationInterval", "1000",
+        "rescheduleInterval", "1000");
+    JSONObject properties = jobDefinition.getProperties().optJSONObject("properties");
+    assertProperty("bear", properties, "ape");
+    assertProperty("dingo", properties, "cheetah");
   }
 
 }

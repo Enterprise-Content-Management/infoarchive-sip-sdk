@@ -94,4 +94,13 @@ public class ConfigurationBuilder<C extends Configuration<?>> extends BaseBuilde
     return withXdbFederation().withXdbDatabase();
   }
 
+  /**
+   * Start building a job definition.
+   * @return A builder for the new job definition
+   * @since 9.7.0
+   */
+  public JobDefinitionBuilder<C> withJobDefinition() {
+    return new JobDefinitionBuilder<>(this);
+  }
+
 }

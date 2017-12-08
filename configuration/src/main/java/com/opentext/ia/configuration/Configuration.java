@@ -325,4 +325,21 @@ public interface Configuration<T> {
    */
   List<T> getXdbDatabases(T xdbFederation);
 
+  /**
+   * Returns the first configured job definition.
+   * @return The first configured job definition
+   * @throws IllegalArgumentException when no job definitions are configured
+   * @since 9.7.0
+   */
+  default T getJobDefinition() {
+    return first(getJobDefinitions());
+  }
+
+  /**
+   * Returns all the configured job definitions.
+   * @return All the configured job definitions
+   * @since 9.7.0
+   */
+  List<T> getJobDefinitions();
+
 }

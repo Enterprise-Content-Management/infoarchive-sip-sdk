@@ -131,4 +131,9 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
     return childList(xdbFederation, XDB_FEDERATION, "xdbDatabase");
   }
 
+  @Override
+  public List<YamlMap> getJobDefinitions() {
+    return toList(streamOfType("jobDefinition"));
+  }
+
 }
