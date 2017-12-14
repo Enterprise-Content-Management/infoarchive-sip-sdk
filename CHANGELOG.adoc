@@ -6,11 +6,27 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 9.7.1 - 2017-12-14
+
+=== Fixed 
+
+- Fix default value in `ConfigurationBuilder`
+
+
+
 == 9.7.0 - 2017-12-08
 
 === Added 
 
 - Support more types in `ConfigurationBuilder`
+
+
+
+== 9.6.2 - 2017-12-14
+
+=== Fixed 
+
+- Fix default value in `ConfigurationBuilder`
 
 
 
