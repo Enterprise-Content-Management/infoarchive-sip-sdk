@@ -462,7 +462,8 @@ public class WhenBuildingConfigurations {
 
     assertRandomName(xdbDatabase);
     assertProperties(xdbDatabase,
-        "adminPassword", "secret");
+        "adminPassword", "secret",
+        "adminPasswordEncrypted", "false");
   }
 
   @Test
