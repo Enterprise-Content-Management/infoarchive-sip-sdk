@@ -15,7 +15,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.opentext.ia.configuration.JsonConfigurationProducer.JsonConfiguration;
+import com.opentext.ia.configuration.json.JsonConfiguration;
+import com.opentext.ia.configuration.json.JsonConfigurationProducer;
 
 
 public class WhenBuildingConfigurations {
