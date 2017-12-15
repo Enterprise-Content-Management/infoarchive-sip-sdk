@@ -116,7 +116,7 @@ public class IncludeExternalYaml implements Visitor {
 
   private boolean canConfigure(Value value) {
     YamlMap map = value.isList() ? value.toList().get(0).toMap() : value.toMap();
-    return ObjectConfiguration.parse(map.get(CONFIGURE).toString()).canConfigureObject();
+    return ObjectConfiguration.parse(map.get(CONFIGURE).toString()).mayCreateObject();
   }
 
 

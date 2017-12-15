@@ -17,7 +17,6 @@ public class XdbDatabaseBuilder<C extends Configuration<?>>
   protected XdbDatabaseBuilder(XdbFederationBuilder<C> parent) {
     super(parent, "xdbDatabase");
     setAdminPassword("secret");
-    setProperty("adminPasswordEncrypted", false);
   }
 
   private void setAdminPassword(String adminPassword) {

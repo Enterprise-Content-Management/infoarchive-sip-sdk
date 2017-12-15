@@ -93,7 +93,8 @@ public class WhenBuildingConfigurations {
         TYPE, "ACTIVE_ARCHIVING",
         "archiveType", "SIP",
         STATE, "IN_TEST",
-        "retentionEnabled", true);
+        "retentionEnabled", true,
+        "configure", "");
   }
 
   private void assertRandomName(ConfigurationObject actual) {
@@ -131,6 +132,7 @@ public class WhenBuildingConfigurations {
         .named(TENANT_NAME)
         .withApplication()
             .named(APPLICATION_NAME)
+            .configure("create")
             .forAppDecom()
             .forTables()
             .activated()
@@ -146,7 +148,8 @@ public class WhenBuildingConfigurations {
         "archiveType", "TABLE",
         STATE, "ACTIVE",
         DESCRIPTION, DESCRIPTIVE_TEXT,
-        "category", CATEGORY);
+        "category", CATEGORY,
+        "configure", "create");
   }
 
   @Test
@@ -466,8 +469,7 @@ public class WhenBuildingConfigurations {
 
     assertRandomName(xdbDatabase);
     assertProperties(xdbDatabase,
-        "adminPassword", "secret",
-        "adminPasswordEncrypted", "false");
+        "adminPassword", "secret");
   }
 
   @Test

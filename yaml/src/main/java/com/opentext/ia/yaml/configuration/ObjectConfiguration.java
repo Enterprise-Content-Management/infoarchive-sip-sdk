@@ -8,20 +8,21 @@ import java.util.Locale;
 
 public enum ObjectConfiguration {
 
-  CREATE_OR_UPDATE("create or update", true),
-  CREATE("create", true),
-  USE_EXISTING("use existing", false);
+  CREATE_OR_UPDATE("create or update", false, true, true),
+  CREATE("create", false, true, false),
+  USE_EXISTING("use existing", false, false, false),
+  IGNORE("ignore", true, false, false);
 
   private final String representation;
-  private final boolean configureObject;
+  private final boolean mayCreate;
+  private final boolean mayUpdate;
+  private final boolean shouldIgnore;
 
-  ObjectConfiguration(String representation, boolean configureObject) {
+  ObjectConfiguration(String representation, boolean shouldIgnore, boolean mayCreate, boolean mayUpdate) {
     this.representation = representation;
-    this.configureObject = configureObject;
-  }
-
-  public boolean canConfigureObject() {
-    return configureObject;
+    this.shouldIgnore = shouldIgnore;
+    this.mayCreate = mayCreate;
+    this.mayUpdate = mayUpdate;
   }
 
   public static ObjectConfiguration parse(String text) {
@@ -42,6 +43,44 @@ public enum ObjectConfiguration {
       }
     }
     throw new IllegalArgumentException("Unknown ObjectConfiguration: " + text);
+  }
+
+  /**
+   * Returns whether the object should be ignored.
+   * @return Whether the object should be ignored
+   * @since 9.8.0
+   */
+  public boolean shouldIgnoreObject() {
+    return shouldIgnore;
+  }
+
+  /**
+   * Returns whether the object may be created.
+   * @return Whether the object may be created
+   * @deprecated Use {@linkplain #mayCreateObject()} instead.
+   * @since 9.8.0
+   */
+  @Deprecated
+  public boolean canConfigureObject() {
+    return mayCreateObject();
+  }
+
+  /**
+   * Returns whether the object may be created.
+   * @return Whether the object may be created
+   * @since 9.8.0
+   */
+  public boolean mayCreateObject() {
+    return mayCreate;
+  }
+
+  /**
+   * Returns whether the object may be updated.
+   * @return Whether the object may be updated
+   * @since 9.8.0
+   */
+  public boolean mayUpdateObject() {
+    return mayUpdate;
   }
 
   @Override

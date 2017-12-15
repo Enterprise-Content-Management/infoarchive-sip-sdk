@@ -168,7 +168,7 @@ class InsertDefaultValues extends PathVisitor {
     if (!super.test(visit)) {
       return false;
     }
-    return ObjectConfiguration.parse(visit.getMap().get(CONFIGURE).toString()).canConfigureObject();
+    return ObjectConfiguration.parse(visit.getMap().get(CONFIGURE).toString()).mayCreateObject();
   }
 
   @Override

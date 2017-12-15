@@ -36,4 +36,16 @@ public class NamedObjectBuilder<P extends BaseBuilder<?, C>, S extends NamedObje
     return (S)this;
   }
 
+  /**
+   * Set the configure property.
+   * @param configure The new value of the configure property
+   * @return This builder
+   * @since 9.8.0
+   */
+  @SuppressWarnings("unchecked")
+  public S configure(String configure) {
+    setProperty("configure", configure);
+    return (S)this;
+  }
+
 }
