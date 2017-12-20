@@ -48,6 +48,7 @@ public class YamlConfiguration {
       EnsureEnumConstant.class,
       InsertDefaultValues.class,
       InsertDefaultParentForFileSystemFolder.class,
+      InsertDefaultParentForXdbDatabase.class,
       AddNamespaceDeclarationsToQueries.class,
       ReplacePdiIndexNamespaceWithUri.class,
       ReplaceIngestIndexNamespaceWithUri.class,

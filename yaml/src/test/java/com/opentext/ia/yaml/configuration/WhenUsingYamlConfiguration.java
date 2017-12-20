@@ -24,7 +24,7 @@ import com.opentext.ia.yaml.resource.ResourceResolver;
 import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 
-public class WhenUsingYamlConfiguration extends TestCase {
+public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   private static final String VERSION = "version";
   private static final String VERSION_1 = "1.0.0";
@@ -367,6 +367,8 @@ public class WhenUsingYamlConfiguration extends TestCase {
     String fileSystemFolder = someName();
     String store = someName();
     String cryptoObject = someName();
+    String xdbFederation = someName();
+    String xdbDatabase = someName();
     yaml.put("cryptoObjects", Arrays.asList(new YamlMap().put(NAME, cryptoObject)));
     yaml.put(TENANTS, Arrays.asList(new YamlMap().put(NAME, tenant)));
     yaml.put(APPLICATIONS, Arrays.asList(
@@ -380,12 +382,15 @@ public class WhenUsingYamlConfiguration extends TestCase {
     yaml.put(STORES, Arrays.asList(new YamlMap().put(NAME, store)));
     yaml.put(DATABASES, Arrays.asList(new YamlMap().put(NAME, someName())));
     yaml.put("holdingCryptoes", Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put("xdbFederations", Arrays.asList(new YamlMap().put(NAME, xdbFederation)));
+    yaml.put("xdbDatabases", Arrays.asList(new YamlMap().put(NAME, xdbDatabase)));
 
     normalizeYaml();
 
     assertValue("Tenant", tenant, yaml.get(APPLICATIONS, 0, TENANT));
     assertValue("Application", application, yaml.get(SPACES, 0, APPLICATION));
     assertValue("Space root folder", spaceRootFolder, yaml.get(FILE_SYSTEM_FOLDERS, 0, "parentSpaceRootFolder"));
+    assertValue("xDB federation", xdbFederation, yaml.get("xdbDatabases", 0, "xdbFederation"));
     assertDatabaseStore("xdb", store);
     assertDatabaseStore("ci", store);
     assertDatabaseStore("managedItem", store);
