@@ -93,13 +93,18 @@ public class JsonConfiguration implements Configuration<ConfigurationObject> {
   }
 
   @Override
-  public List<ConfigurationObject> getXdbDatabases(ConfigurationObject xdbFederation) {
-    return childrenOf(xdbFederation, "xdbDatabases");
+  public List<ConfigurationObject> getXdbDatabases(ConfigurationObject xdbFederationOrCluster) {
+    return childrenOf(xdbFederationOrCluster, "xdbDatabases");
   }
 
   @Override
   public List<ConfigurationObject> getJobDefinitions() {
     return childrenOf(container, "jobDefinitions");
+  }
+
+  @Override
+  public List<ConfigurationObject> getXdbClusters() {
+    return childrenOf(container, "xdbClusters");
   }
 
 }

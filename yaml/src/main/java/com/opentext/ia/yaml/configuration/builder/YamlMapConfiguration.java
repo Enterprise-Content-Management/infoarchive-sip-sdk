@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.yaml.configuration.builder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,6 +27,8 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   private static final String APPLICATION = "application";
   private static final String SPACE = "space";
   private static final String XDB_FEDERATION = "xdbFederation";
+  private static final String XDB_DATABASE = "xdbDatabase";
+  private static final String XDB_CLUSTER = "xdbCluster";
 
   private final YamlMap yaml;
 
@@ -127,13 +130,21 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   }
 
   @Override
-  public List<YamlMap> getXdbDatabases(YamlMap xdbFederation) {
-    return childList(xdbFederation, XDB_FEDERATION, "xdbDatabase");
+  public List<YamlMap> getXdbDatabases(YamlMap xdbFederationOrCluster) {
+    List<YamlMap> result = new ArrayList<>();
+    result.addAll(childList(xdbFederationOrCluster, XDB_FEDERATION, XDB_DATABASE));
+    result.addAll(childList(xdbFederationOrCluster, XDB_CLUSTER, XDB_DATABASE));
+    return result;
   }
 
   @Override
   public List<YamlMap> getJobDefinitions() {
     return toList(streamOfType("jobDefinition"));
+  }
+
+  @Override
+  public List<YamlMap> getXdbClusters() {
+    return toList(streamOfType(XDB_CLUSTER));
   }
 
 }

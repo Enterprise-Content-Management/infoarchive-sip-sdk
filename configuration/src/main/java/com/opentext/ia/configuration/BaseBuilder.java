@@ -38,6 +38,10 @@ public abstract class BaseBuilder<P extends BaseBuilder<?, C>, C extends Configu
     return UUID.randomUUID().toString();
   }
 
+  protected Object getProperty(String name) {
+    return object.getProperties().get(name);
+  }
+
   protected void setProperty(String name, Object value) {
     object.setProperty(name, value);
   }

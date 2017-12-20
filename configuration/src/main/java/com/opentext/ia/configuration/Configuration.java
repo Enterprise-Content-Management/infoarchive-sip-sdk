@@ -307,23 +307,23 @@ public interface Configuration<T> {
   }
 
   /**
-   * Returns the first configured xDB database for the given xDB federation.
-   * @param xdbFederation The xDB federation that owns the xDB databases
-   * @return The first configured xDB database for the given xDB federation
-   * @throws IllegalArgumentException when no xDB database are configured for the given xDB federation
+   * Returns the first configured xDB database for the given xDB federation or cluster.
+   * @param xdbFederationOrXdbCluster The xDB federation or cluster that owns the xDB databases
+   * @return The first configured xDB database for the given xDB federation or cluster
+   * @throws IllegalArgumentException when no xDB database are configured for the given xDB federation or cluster
    * @since 9.6.0
    */
-  default T getXdbDatabase(T xdbFederation) {
-    return first(getXdbDatabases(xdbFederation));
+  default T getXdbDatabase(T xdbFederationOrXdbCluster) {
+    return first(getXdbDatabases(xdbFederationOrXdbCluster));
   }
 
   /**
-   * Returns all configured xDB databases for the given xDB federation.
-   * @param xdbFederation The xDB federation that owns the xDB databases
-   * @return All configured xDB databases for the given xDB federation
+   * Returns all configured xDB databases for the given xDB federation or cluster.
+   * @param xdbFederationOrXdbCluster The xDB federation or cluster that owns the xDB databases
+   * @return All configured xDB databases for the given xDB federation or cluster
    * @since 9.6.0
    */
-  List<T> getXdbDatabases(T xdbFederation);
+  List<T> getXdbDatabases(T xdbFederationOrXdbCluster);
 
   /**
    * Returns the first configured job definition.
@@ -341,5 +341,22 @@ public interface Configuration<T> {
    * @since 9.7.0
    */
   List<T> getJobDefinitions();
+
+  /**
+   * Returns the first configured xDB cluster.
+   * @return The first configured xDB cluster
+   * @throws IllegalArgumentException when no xDB clusters are configured
+   * @since 9.9.0
+   */
+  default T getXdbCluster() {
+    return first(getXdbClusters());
+  }
+
+  /**
+   * Returns all the configured xDB clusters.
+   * @return All the configured xDB clusters
+   * @since 9.9.0
+   */
+  List<T> getXdbClusters();
 
 }

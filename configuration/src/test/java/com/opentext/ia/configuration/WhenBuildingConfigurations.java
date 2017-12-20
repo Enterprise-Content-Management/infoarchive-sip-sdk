@@ -56,6 +56,11 @@ public class WhenBuildingConfigurations {
   private static final String DEFAULT_XDB_MODE = "PRIVATE";
   private static final String CRYPTO_OBJECT_NAME = "myCryptoObject";
   private static final String XDB_FEDERATION_NAME = "myXdbFederation";
+  private static final String SUPER_USER_PASSWORD = "superUserPassword";
+  private static final String SOME_PASSWORD = "super_secret";
+  private static final String XDB_BOOTSTRAP = "xhives://xdb.com:2345";
+  private static final String XDB_CLUSTER_NAME = "myXdbCluster";
+  private static final String XDB_DATABASE_NAME = "myXdbDatabase";
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -430,22 +435,22 @@ public class WhenBuildingConfigurations {
     assertRandomName(xdbFederation);
     assertProperties(xdbFederation,
         "bootstrap", "xhive://127.0.0.1:2910",
-        "superUserPassword", "test");
+        SUPER_USER_PASSWORD, "test");
   }
 
   @Test
   public void shouldSetPropertiesForXdbFederation() {
     configuration = builder.withXdbFederation()
         .named(XDB_FEDERATION_NAME)
-        .runningAt("xhives://xdb.com:2345")
-        .protectedWithPassword("secret")
+        .runningAt(XDB_BOOTSTRAP)
+        .protectedWithPassword(SOME_PASSWORD)
     .build();
     ConfigurationObject xdbFederation = configuration.getXdbFederation();
 
     assertProperties(xdbFederation,
         NAME, XDB_FEDERATION_NAME,
-        "bootstrap", "xhives://xdb.com:2345",
-        "superUserPassword", "secret");
+        "bootstrap", XDB_BOOTSTRAP,
+        SUPER_USER_PASSWORD, SOME_PASSWORD);
   }
 
   @Test
@@ -476,14 +481,14 @@ public class WhenBuildingConfigurations {
   @Test
   public void shouldSetPropertiesForXdbDatabase() {
     configuration = builder.withXdbDatabase()
-        .named("myXdbDatabase")
-        .protectedWithPassword("test")
+        .named(XDB_DATABASE_NAME)
+        .protectedWithPassword(SOME_PASSWORD)
     .build();
     ConfigurationObject xdbDatabase = configuration.getXdbDatabase();
 
     assertProperties(xdbDatabase,
-        NAME, "myXdbDatabase",
-        "adminPassword", "test");
+        NAME, XDB_DATABASE_NAME,
+        "adminPassword", SOME_PASSWORD);
   }
 
   @Test
@@ -520,7 +525,7 @@ public class WhenBuildingConfigurations {
 
     assertProperties(jobDefinition,
         NAME, "myJobDefinition",
-        "description", DESCRIPTIVE_TEXT,
+        DESCRIPTION, DESCRIPTIVE_TEXT,
         "handlerName", "myHandler",
         "readOnly", true,
         "applicationScoped", false,
@@ -530,6 +535,50 @@ public class WhenBuildingConfigurations {
     JSONObject properties = jobDefinition.getProperties().optJSONObject("properties");
     assertProperty("bear", properties, "ape");
     assertProperty("dingo", properties, "cheetah");
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForXdbCluster() {
+    configuration = builder.withXdbCluster().build();
+    ConfigurationObject xdbCluster = configuration.getXdbCluster();
+
+    assertRandomName(xdbCluster);
+    assertProperties(xdbCluster,
+        DESCRIPTION, "",
+        SUPER_USER_PASSWORD, "test",
+        "bootstraps", "[]");
+  }
+
+  @Test
+  public void shouldSetPropertiesForXdbCluster() {
+    configuration = builder.withXdbCluster()
+        .named(XDB_CLUSTER_NAME)
+        .withDescription(DESCRIPTIVE_TEXT)
+        .protectedWithPassword(SOME_PASSWORD)
+        .withBootstrap(XDB_BOOTSTRAP)
+    .build();
+    ConfigurationObject xdbCluster = configuration.getXdbCluster();
+
+    assertProperties(xdbCluster,
+        NAME, XDB_CLUSTER_NAME,
+        DESCRIPTION, DESCRIPTIVE_TEXT,
+        SUPER_USER_PASSWORD, SOME_PASSWORD,
+        "bootstraps", '[' + XDB_BOOTSTRAP + ']');
+  }
+
+  @Test
+  public void shouldAddXdbDatabaseToXdbCluster() {
+    configuration = builder.withXdbCluster()
+        .withXdbDatabase()
+            .named(XDB_DATABASE_NAME)
+            .protectedWithPassword(SOME_PASSWORD)
+    .build();
+    ConfigurationObject xdbCluster = configuration.getXdbCluster();
+    ConfigurationObject xdbDatabase = configuration.getXdbDatabase(xdbCluster);
+
+    assertProperties(xdbDatabase,
+        NAME, XDB_DATABASE_NAME,
+        "adminPassword", SOME_PASSWORD);
   }
 
 }

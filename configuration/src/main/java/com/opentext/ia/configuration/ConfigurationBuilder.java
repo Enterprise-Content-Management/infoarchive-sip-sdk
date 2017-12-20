@@ -90,7 +90,7 @@ public class ConfigurationBuilder<C extends Configuration<?>> extends BaseBuilde
    * @return A builder for the new xDB database
    * @since 9.6.0
    */
-  public XdbDatabaseBuilder<C> withXdbDatabase() {
+  public XdbDatabaseBuilder<XdbFederationBuilder<C>, C> withXdbDatabase() {
     return withXdbFederation().withXdbDatabase();
   }
 
@@ -101,6 +101,15 @@ public class ConfigurationBuilder<C extends Configuration<?>> extends BaseBuilde
    */
   public JobDefinitionBuilder<C> withJobDefinition() {
     return new JobDefinitionBuilder<>(this);
+  }
+
+  /**
+   * Start building an xDB cluster.
+   * @return A builder for the new xDB cluster
+   * @since 9.9.0
+   */
+  public XdbClusterBuilder<C> withXdbCluster() {
+    return new XdbClusterBuilder<>(this);
   }
 
 }

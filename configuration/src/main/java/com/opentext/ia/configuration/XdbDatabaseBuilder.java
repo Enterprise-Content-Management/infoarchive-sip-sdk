@@ -11,10 +11,10 @@ package com.opentext.ia.configuration;
  *
  * @param <C> The type of configuration to build
  */
-public class XdbDatabaseBuilder<C extends Configuration<?>>
-    extends NamedObjectBuilder<XdbFederationBuilder<C>, XdbDatabaseBuilder<C>, C> {
+public class XdbDatabaseBuilder<P extends BaseBuilder<?, C>, C extends Configuration<?>>
+    extends NamedObjectBuilder<P, XdbDatabaseBuilder<P, C>, C> {
 
-  protected XdbDatabaseBuilder(XdbFederationBuilder<C> parent) {
+  protected XdbDatabaseBuilder(P parent) {
     super(parent, "xdbDatabase");
     setAdminPassword("secret");
   }
@@ -23,7 +23,7 @@ public class XdbDatabaseBuilder<C extends Configuration<?>>
     setProperty("adminPassword", adminPassword);
   }
 
-  public XdbDatabaseBuilder<C> protectedWithPassword(String adminPassword) {
+  public XdbDatabaseBuilder<P, C> protectedWithPassword(String adminPassword) {
     setAdminPassword(adminPassword);
     return this;
   }
