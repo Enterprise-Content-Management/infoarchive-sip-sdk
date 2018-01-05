@@ -6,6 +6,14 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 9.10.1 - 2018-01-05
+
+=== Fixed 
+
+- #40: JWT refresh thread should be a daemon thread
+
+
+
 == 9.10.0 - 2017-12-22
 
 === Added 
