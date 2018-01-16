@@ -21,7 +21,6 @@ import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.Visitor;
 import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.resource.ResourceResolver;
-import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 
 /**
@@ -59,8 +58,6 @@ public class YamlConfiguration {
       ExpandResultMasterNamespaces.class
   );
   private static final String NAME = "name";
-  private static final int MAX_PROPERTIES_RESOURCES = 10;
-
   private final YamlMap yaml;
   private final ConfigurationProperties properties;
 
@@ -97,24 +94,8 @@ public class YamlConfiguration {
 
   YamlConfiguration(YamlMap yaml, ResourceResolver resolver) {
     this.yaml = yaml;
-    this.properties = getProperties(resolver);
+    this.properties = ConfigurationPropertiesFactory.newInstance(resolver);
     normalizations(resolver).forEach(this.yaml::visit);
-  }
-
-  private ConfigurationProperties getProperties(ResourceResolver resolver) {
-    ConfigurationProperties parent = new ConfigurationProperties();
-    for (int index = 0; index < MAX_PROPERTIES_RESOURCES; index++) {
-      try {
-        parent = new ConfigurationProperties(resolver, String.format("%d.properties", index), parent);
-      } catch (UnknownResourceException e) {
-        break;
-      }
-    }
-    try {
-      return new ConfigurationProperties(resolver, "configuration.properties", parent);
-    } catch (UnknownResourceException e) {
-      return parent;
-    }
   }
 
   private Stream<Visitor> normalizations(ResourceResolver resolver) {
