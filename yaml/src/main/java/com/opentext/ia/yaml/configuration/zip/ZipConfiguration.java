@@ -9,20 +9,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -30,8 +31,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.error.YAMLException;
 
+import com.opentext.ia.yaml.configuration.ConfigurationPropertiesFactory;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
+import com.opentext.ia.yaml.resource.ResourceResolver;
+import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 
 /**
@@ -43,209 +47,226 @@ public class ZipConfiguration {
 
   private static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir")).toAbsolutePath().normalize();
   private static final int MAX_PARENT_PROPERTIES_FILES_PER_ZIP = 10;
-  private static final List<String> YAML_FILE_EXTENSIONS = Arrays.asList("yml", "yaml");
-  private static final String CONFIGURATION_FILE_NAME = "configuration.yml";
-  private static final String LOCAL_PROPERTIES_FILE_NAME = "configuration.properties";
-  private static final String TOP_LEVEL_PROPERTIES_FILE_NAME = "default.properties";
-  private static final String RESOURCE_KEY = "resource";
-  private static final String INCLUDES_KEY = "includes";
+  private static final String MAIN_PROPERTIES_FILE_NAME = "configuration.properties";
+  private static final String MAIN_YAML_FILE_NAME = "configuration.yml";
 
-  private final Map<File, String> entries = new HashMap<>();
-  private final File root;
-  private final String rootPath;
-  private int numExternalEntries;
-
-  public static File of(File yaml) throws IOException {
-    return new ZipConfiguration(yaml).toZip();
+  public static File of(File source) throws IOException {
+    File yaml = source;
+    if (yaml == null) {
+      throw new EmptyZipException();
+    }
+    if (yaml.isDirectory()) {
+      yaml = new File(yaml, MAIN_YAML_FILE_NAME);
+    }
+    if (!yaml.isFile()) {
+      throw new EmptyZipException();
+    }
+    return new ZipConfiguration().from(yaml);
   }
 
-  public ZipConfiguration(File yaml) throws IOException {
-    this.root = Optional.ofNullable(yaml)
-        .orElseThrow(EmptyZipException::new)
-        .getCanonicalFile();
-    this.rootPath = this.root.getParentFile().getPath() + File.separator;
-}
-
-  private File toZip() throws IOException {
-    collectEntries();
-    return zipEntries();
-  }
-
-  private void collectEntries() throws IOException {
-    addReferencedFiles();
-    addParentPropertiesFiles();
-  }
-
-  private void addReferencedFiles() throws IOException {
-    YamlMap updatedYaml = addReferencedFilesIn(root);
-    File updatedYamlFile = new File(Files.createTempDirectory("ia-configuration").toFile(), CONFIGURATION_FILE_NAME);
-    copy(updatedYaml.toStream(), updatedYamlFile);
-    addPath(updatedYamlFile);
-  }
-
-  private YamlMap addReferencedFilesIn(File yaml) {
-    YamlMap result = parse(yaml);
-    addReferencedResourceFiles(yaml, result);
-    addIncludedYamlFiles(yaml, result);
-    addLocalPropertiesFile(yaml);
-    return result;
-  }
-
-  private YamlMap parse(File yaml) {
-    try {
-      return YamlMap.from(yaml);
-    } catch (IOException | YAMLException e) {
-      throw new CannotReadZipEntryException(e, yaml);
+  private static void checkFileExists(File file) {
+    if (!file.isFile()) {
+      throw new CannotReadZipEntryException(null, file);
     }
   }
 
-  private void addReferencedResourceFiles(File base, YamlMap yaml) {
+  private File from(File yaml) throws IOException {
+    return zip(yaml, (file, filesByPath) -> addReferencedFilesIn(file, filesByPath));
+  }
+
+  private void addReferencedFilesIn(File file, Map<File, String> filesByPath) {
+    YamlMap yaml = addReferencedFilesIn(file, file, new AtomicInteger(), filesByPath);
+    try {
+      File yamlFile = new File(Files.createTempDirectory("ia-import").toFile(), MAIN_YAML_FILE_NAME);
+      copy(yaml.toStream(), yamlFile);
+      addPath(yamlFile, yamlFile.getName(), filesByPath);
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to create temporary directory", e);
+    }
+  }
+
+  private YamlMap addReferencedFilesIn(File root, File file, AtomicInteger numIncludedFiles,
+      Map<File, String> filesByPath) {
+    addLocalPropertiesFile(file, filesByPath);
+    YamlMap yaml = parseYaml(file);
+    addExternalResourceFiles(root, file, yaml, numIncludedFiles, filesByPath);
+    addIncludedYamlFiles(root, file, numIncludedFiles, filesByPath, yaml);
+    return yaml;
+  }
+
+  private void addIncludedYamlFiles(File root, File file, AtomicInteger numIncludedFiles, Map<File, String> filesByPath,
+      YamlMap yaml) {
+    ListIterator<Value> includes = yaml.get("includes").toList().listIterator();
+    while (includes.hasNext()) {
+      File reference = addReferencedFile(root, file, includes.next(), numIncludedFiles, filesByPath);
+      includes.set(new Value(filesByPath.get(reference)));
+    }
+  }
+
+  private void addExternalResourceFiles(File root, File file, YamlMap yaml, AtomicInteger numIncludedFiles,
+      Map<File, String> filesByPath) {
     yaml.visit(visit -> {
       YamlMap map = visit.getMap();
-      if (map.containsKey(RESOURCE_KEY)) {
-        File reference = addReferencedFile(base, map.get(RESOURCE_KEY));
-        map.put(RESOURCE_KEY, entries.get(reference));
+      if (map.containsKey("resource")) {
+        File reference = addReferencedFile(root, file, map.get("resource"), numIncludedFiles, filesByPath);
+        map.put("resource", filesByPath.get(reference));
       }
     });
   }
 
-  private void addIncludedYamlFiles(File base, YamlMap yaml) {
-    ListIterator<Value> includes = yaml.get(INCLUDES_KEY).toList().listIterator();
-    while (includes.hasNext()) {
-      File reference = addReferencedFile(base, includes.next());
-      includes.set(new Value(entries.get(reference)));
-    }
-  }
-
-  private void addLocalPropertiesFile(File file) {
-    Optional.of(file.getName())
-        .filter(CONFIGURATION_FILE_NAME::equals)
-        .map(ignored -> new File(file.getParentFile(), LOCAL_PROPERTIES_FILE_NAME))
-        .filter(File::isFile)
-        .ifPresent(this::addPath);
-  }
-
-  private File addReferencedFile(File base, Value reference) {
-    File result = resolve(base, reference);
-    String path = makeRelative(result).orElseGet(() -> pathForExternalEntry(result));
-    addPath(result, path);
-    if (isYamlFile(path)) {
-      addReferencedFilesIn(result);
-    }
-    return result;
-  }
-
-  private File resolve(File base, Value reference) {
-    return new File(resolve(base, reference.toString())).getAbsoluteFile();
-  }
-
-  private String resolve(File base, String reference) {
-    return base.toURI().resolve(toUnix(reference)).toString().substring(5); // After "file:"
-  }
-
-  private String toUnix(String path) {
-    return stripWindowsDrive(path.replace(File.separator, "/"));
-  }
-
-  private String stripWindowsDrive(String path) {
-    if (path.matches("[A-Z]:/.*")) {
-      return path.substring(2);
-    }
-    return path;
-  }
-
-  private Optional<String> makeRelative(File path) {
+  private YamlMap parseYaml(File file) {
+    YamlMap yaml;
     try {
-      String otherPath = path.getCanonicalPath();
-      return otherPath.startsWith(rootPath)
-          ? Optional.of(otherPath.substring(rootPath.length()))
+      yaml = YamlMap.from(file);
+    } catch (IOException | YAMLException e) {
+      throw new InvalidZipEntryException(file, e);
+    }
+    return yaml;
+  }
+
+  private void addLocalPropertiesFile(File file, Map<File, String> filesByPath) {
+    if (MAIN_YAML_FILE_NAME.equals(file.getName())) {
+      File propertiesFile = new File(file.getParentFile(), MAIN_PROPERTIES_FILE_NAME);
+      if (propertiesFile.isFile()) {
+        addPath(propertiesFile, propertiesFile.getName(), filesByPath);
+      }
+    }
+  }
+
+  private void copy(InputStream source, File destination) {
+    try (InputStream input = source) {
+      try (OutputStream output = new FileOutputStream(destination)) {
+        IOUtils.copy(input, output);
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to", e);
+    }
+  }
+
+  private File addReferencedFile(File root, File source, Value reference, AtomicInteger numIncludedFiles,
+      Map<File, String> filesByPath) {
+    String path = uriToPath(source.toURI().resolve(toRelativeUri(reference, filesByPath)));
+    File result = new File(path);
+    path = getRelativePath(root, path)
+        .orElseGet(() -> String.format("%d-%s", numIncludedFiles.getAndIncrement(), result.getName()));
+    addPath(result, path, filesByPath);
+    if (FilenameUtils.isExtension(path, "yml")) {
+      addReferencedFilesIn(root, result, numIncludedFiles, filesByPath);
+    }
+    return result.getAbsoluteFile();
+  }
+
+  private String uriToPath(URI uri) {
+    return uri.toString().substring(5); // After "file:"
+  }
+
+  private String toRelativeUri(Value reference, Map<File, String> files) {
+    String result = toUnix(reference.toString());
+    ResourceResolver resourceResolver = name -> {
+      return files.entrySet().stream()
+          .filter(e -> e.getValue().equals(name))
+          .map(Entry::getKey)
+          .findAny()
+          .map(this::contentsOf)
+          .orElseThrow(() -> new UnknownResourceException(name, null));
+    };
+    return ConfigurationPropertiesFactory.newInstance(resourceResolver).apply(result);
+  }
+
+  private String contentsOf(File file) {
+    try (InputStream input = new FileInputStream(file)) {
+      return IOUtils.toString(input, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      throw new UnknownResourceException(file.getName(), e);
+    }
+  }
+
+  private void addPath(File file, String path, Map<File, String> filesByPath) {
+    filesByPath.putIfAbsent(file.getAbsoluteFile(), toUnix(path));
+  }
+
+  private Optional<String> getRelativePath(File source, String path) {
+    try {
+      String sourcePath = source.getParentFile().getCanonicalPath() + File.separator;
+      String otherPath = new File(path).getCanonicalPath();
+      return otherPath.startsWith(sourcePath)
+          ? Optional.of(otherPath.substring(sourcePath.length()))
           : Optional.empty();
     } catch (IOException e) {
       return Optional.empty();
     }
   }
 
-  private String pathForExternalEntry(File entry) {
-    return String.format("%d-%s", numExternalEntries++, entry.getName());
+  private String toUnix(String path) {
+    String result = FilenameUtils.separatorsToUnix(path);
+    int prefixLength = FilenameUtils.getPrefixLength(result);
+    return prefixLength <= 1 ? result : result.substring(prefixLength - 1);
   }
 
-  private void addPath(File file) {
-    addPath(file, file.getName());
+  private File zip(File file, BiConsumer<File, Map<File, String>> fileAdder) throws IOException {
+    return createZipArchive(collectFilesToZip(file, fileAdder));
   }
 
-  private void addPath(File file, String path) {
-    entries.putIfAbsent(file.getAbsoluteFile(), toUnix(path));
-  }
-
-  private boolean isYamlFile(String path) {
-    return YAML_FILE_EXTENSIONS.contains(FilenameUtils.getExtension(path));
-  }
-
-  private void copy(InputStream source, File destination) throws IOException {
-    try (InputStream input = source) {
-      try (OutputStream output = new FileOutputStream(destination)) {
-        IOUtils.copy(input, output);
-      }
-    }
-  }
-
-  private void addParentPropertiesFiles() {
-    List<File> propertiesFiles = new ArrayList<>();
-    File currentDir = new File(root.getAbsolutePath()).getParentFile();
-    while (currentDir != null) {
-      addPropertiesFilesIn(currentDir, propertiesFiles);
-      if (hasAllPropertiesFiles(propertiesFiles)) {
-        break;
-      }
-      currentDir = currentDir.getParentFile();
-    }
-    for (int i = 0; i < propertiesFiles.size(); i++) {
-      addPath(propertiesFiles.get(i), String.format("%d.properties", i));
-    }
-  }
-
-  private void addPropertiesFilesIn(File dir, List<File> propertiesFiles) {
-    filesIn(dir)
-        .filter(file -> "properties".equals(FilenameUtils.getExtension(file.getName())))
-        .forEach(file -> propertiesFiles.add(0, file));
-  }
-
-  private Stream<File> filesIn(File dir) {
-    return Optional.ofNullable(dir.listFiles())
-        .map(Arrays::stream)
-        .orElse(Stream.empty());
-  }
-
-  private boolean hasAllPropertiesFiles(Collection<File> propertiesFiles) {
-    return hasMaximumPropertiesFiles(propertiesFiles) || hasTopLevelPropertiesFile(propertiesFiles);
-  }
-
-  private boolean hasMaximumPropertiesFiles(Collection<File> propertiesFiles) {
-    return propertiesFiles.size() >= MAX_PARENT_PROPERTIES_FILES_PER_ZIP;
-  }
-
-  private boolean hasTopLevelPropertiesFile(Collection<File> propertiesFiles) {
-    return propertiesFiles.stream()
-        .map(File::getName)
-        .anyMatch(TOP_LEVEL_PROPERTIES_FILE_NAME::equals);
-  }
-
-  private File zipEntries() throws IOException {
-    File result = new File(TEMP_DIR.toFile(), "import_configuration_" + OffsetDateTime.now() + ".zip");
-    try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(result))) {
-      for (Entry<File, String> entry : entries.entrySet()) {
-        addEntry(entry.getValue(), entry.getKey(), zip);
-      }
+  private Map<File, String> collectFilesToZip(File base, BiConsumer<File, Map<File, String>> fileAdder)
+      throws EmptyZipException {
+    Map<File, String> result = new HashMap<>();
+    addParentPropertiesFiles(base.getParentFile(), result);
+    fileAdder.accept(base, result);
+    if (result.isEmpty()) {
+      throw new EmptyZipException();
     }
     return result;
   }
 
-  private void addEntry(String name, File source, ZipOutputStream zip) throws IOException {
-    try (InputStream input = new FileInputStream(source)) {
-      zip.putNextEntry(new ZipEntry(name));
-      IOUtils.copy(input, zip);
-      zip.closeEntry();
+  private void addParentPropertiesFiles(File directory, Map<File, String> filesByPath) {
+    List<File> propertiesFiles = new ArrayList<>();
+    File currentDir = new File(directory.getAbsolutePath()).getParentFile();
+    while (currentDir != null) {
+      final File[] files = currentDir.listFiles();
+      if (files != null) {
+        Arrays.stream(files).filter(file -> file.getName().endsWith(".properties"))
+            .forEach(file -> propertiesFiles.add(0, file));
+      }
+      if (propertiesFiles.size() >= MAX_PARENT_PROPERTIES_FILES_PER_ZIP) {
+        break;
+      }
+      currentDir = currentDir.getParentFile();
+      if (propertiesFiles.stream().map(File::getName).anyMatch("default.properties"::equals)) {
+        break;
+      }
     }
+    for (int i = 0; i < propertiesFiles.size(); i++) {
+      addPath(propertiesFiles.get(i), String.format("%d.properties", i), filesByPath);
+    }
+  }
+
+  private File createZipArchive(Map<File, String> filesByName) throws IOException {
+    if (filesByName.isEmpty()) {
+      throw new EmptyZipException();
+    }
+    String fileName = "import_configuration" + System.currentTimeMillis() + ".zip";
+    File result = new File(TEMP_DIR.toFile(), fileName);
+
+    try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(result))) {
+      for (Entry<File, String> entry : filesByName.entrySet()) {
+        String zipFilePath = entry.getValue();
+        File file = checkFileExists(entry.getKey().getAbsolutePath());
+        try (InputStream in = new FileInputStream(file)) {
+          ZipEntry fileEntry = new ZipEntry(zipFilePath);
+          zip.putNextEntry(fileEntry);
+          IOUtils.copy(in, zip);
+          zip.closeEntry();
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private static File checkFileExists(String path) {
+    File result = new File(path);
+    checkFileExists(result);
+    return result;
   }
 
 }

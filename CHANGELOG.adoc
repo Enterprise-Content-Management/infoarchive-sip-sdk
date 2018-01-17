@@ -6,6 +6,14 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 9.11.2 - 2018-01-17
+
+=== Fixed 
+
+- Minor fix in `ZipConfiguration`
+
+
+
 == 9.11.1 - 2018-01-17
 
 === Fixed 

@@ -130,7 +130,7 @@ public class WhenZippingConfigurations {
     zipYaml();
   }
 
-  @Test(expected = CannotReadZipEntryException.class)
+  @Test(expected = InvalidZipEntryException.class)
   public void shouldNotAllowInvalidYamlInZip() throws IOException {
     yaml = yamlFileContaining("foo: bar: baz");
 
