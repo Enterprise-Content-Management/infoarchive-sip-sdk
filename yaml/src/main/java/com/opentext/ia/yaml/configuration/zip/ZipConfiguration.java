@@ -47,8 +47,11 @@ public class ZipConfiguration {
 
   private static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir")).toAbsolutePath().normalize();
   private static final int MAX_PARENT_PROPERTIES_FILES_PER_ZIP = 10;
+  private static final String TOP_LEVEL_PROPERTIES_FILE_NAME = "default.properties";
   private static final String MAIN_PROPERTIES_FILE_NAME = "configuration.properties";
   private static final String MAIN_YAML_FILE_NAME = "configuration.yml";
+  private static final String INCLUDES = "includes";
+  private static final String RESOURCE = "resource";
 
   public static File of(File source) throws IOException {
     File yaml = source;
@@ -71,7 +74,7 @@ public class ZipConfiguration {
   }
 
   private File from(File yaml) throws IOException {
-    return zip(yaml, (file, filesByPath) -> addReferencedFilesIn(file, filesByPath));
+    return zip(yaml, this::addReferencedFilesIn);
   }
 
   private void addReferencedFilesIn(File file, Map<File, String> filesByPath) {
@@ -96,7 +99,7 @@ public class ZipConfiguration {
 
   private void addIncludedYamlFiles(File root, File file, AtomicInteger numIncludedFiles, Map<File, String> filesByPath,
       YamlMap yaml) {
-    ListIterator<Value> includes = yaml.get("includes").toList().listIterator();
+    ListIterator<Value> includes = yaml.get(INCLUDES).toList().listIterator();
     while (includes.hasNext()) {
       File reference = addReferencedFile(root, file, includes.next(), numIncludedFiles, filesByPath);
       includes.set(new Value(filesByPath.get(reference)));
@@ -107,9 +110,9 @@ public class ZipConfiguration {
       Map<File, String> filesByPath) {
     yaml.visit(visit -> {
       YamlMap map = visit.getMap();
-      if (map.containsKey("resource")) {
-        File reference = addReferencedFile(root, file, map.get("resource"), numIncludedFiles, filesByPath);
-        map.put("resource", filesByPath.get(reference));
+      if (map.containsKey(RESOURCE)) {
+        File reference = addReferencedFile(root, file, map.get(RESOURCE), numIncludedFiles, filesByPath);
+        map.put(RESOURCE, filesByPath.get(reference));
       }
     });
   }
@@ -162,14 +165,12 @@ public class ZipConfiguration {
 
   private String toRelativeUri(Value reference, Map<File, String> files) {
     String result = toUnix(reference.toString());
-    ResourceResolver resourceResolver = name -> {
-      return files.entrySet().stream()
+    ResourceResolver resourceResolver = name -> files.entrySet().stream()
           .filter(e -> e.getValue().equals(name))
           .map(Entry::getKey)
           .findAny()
           .map(this::contentsOf)
           .orElseThrow(() -> new UnknownResourceException(name, null));
-    };
     return ConfigurationPropertiesFactory.newInstance(resourceResolver).apply(result);
   }
 
@@ -227,17 +228,19 @@ public class ZipConfiguration {
         Arrays.stream(files).filter(file -> file.getName().endsWith(".properties"))
             .forEach(file -> propertiesFiles.add(0, file));
       }
-      if (propertiesFiles.size() >= MAX_PARENT_PROPERTIES_FILES_PER_ZIP) {
+      if (hasReachedTopDirectoryOrMaximumNumberOfFiles(propertiesFiles)) {
         break;
       }
       currentDir = currentDir.getParentFile();
-      if (propertiesFiles.stream().map(File::getName).anyMatch("default.properties"::equals)) {
-        break;
-      }
     }
     for (int i = 0; i < propertiesFiles.size(); i++) {
       addPath(propertiesFiles.get(i), String.format("%d.properties", i), filesByPath);
     }
+  }
+
+  private boolean hasReachedTopDirectoryOrMaximumNumberOfFiles(List<File> propertiesFiles) {
+    return propertiesFiles.size() >= MAX_PARENT_PROPERTIES_FILES_PER_ZIP ||
+        propertiesFiles.stream().map(File::getName).anyMatch(TOP_LEVEL_PROPERTIES_FILE_NAME::equals);
   }
 
   private File createZipArchive(Map<File, String> filesByName) throws IOException {
