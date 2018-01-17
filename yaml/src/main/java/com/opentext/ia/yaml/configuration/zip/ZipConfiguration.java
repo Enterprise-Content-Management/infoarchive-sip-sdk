@@ -239,8 +239,8 @@ public class ZipConfiguration {
   }
 
   private boolean hasReachedTopDirectoryOrMaximumNumberOfFiles(List<File> propertiesFiles) {
-    return propertiesFiles.size() >= MAX_PARENT_PROPERTIES_FILES_PER_ZIP ||
-        propertiesFiles.stream().map(File::getName).anyMatch(TOP_LEVEL_PROPERTIES_FILE_NAME::equals);
+    return propertiesFiles.size() >= MAX_PARENT_PROPERTIES_FILES_PER_ZIP
+        || propertiesFiles.stream().map(File::getName).anyMatch(TOP_LEVEL_PROPERTIES_FILE_NAME::equals);
   }
 
   private File createZipArchive(Map<File, String> filesByName) throws IOException {
