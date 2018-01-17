@@ -74,6 +74,7 @@ class InsertDefaultValues extends PathVisitor {
         "keepXmlOnRejInvEnabled", false,
         "keepSipAfterCommitEnabled", false,
         "logStoreEnabled", true,
+        "managedItemPartitionScheme", "DAILY",
         "pdiXmlHashEnforced", false,
         "pdiXmlHashValidationEnabled", true,
         "pushRetentionOnRejInvEnabled", false,
