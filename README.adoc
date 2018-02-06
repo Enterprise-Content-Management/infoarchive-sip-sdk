@@ -5,9 +5,7 @@ image:https://sonarcloud.io/api/badges/measure?key=com.opentext.ia:infoarchive-s
 image:https://img.shields.io/maven-central/v/com.opentext.ia/infoarchive-sdk-core.svg[title="Maven Central", link="https://repo1.maven.org/maven2/com/opentext/ia/"]
 image:https://javadocio-badges.herokuapp.com/com.opentext.ia/infoarchive-sdk-core/badge.svg[title="Javadoc", link="http://www.javadoc.io/doc/com.opentext.ia/infoarchive-sdk-core"]
 
-++++
-<script type='text/javascript' src='https://www.openhub.net/p/infoarchive-sdk/widgets/project_thin_badge?format=js'></script>
-++++
++++<script type='text/javascript' src='https://www.openhub.net/p/infoarchive-sdk/widgets/project_thin_badge?format=js'></script>+++
 
 = OpenText InfoArchive SDK
 
