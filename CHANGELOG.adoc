@@ -10,7 +10,8 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 === Fixed
 
-- `ArchiveClient.query()` is now deprecated, since searching by AIC will be deprecated in the server starting with 16EP4
+- `ArchiveClient.query()` is now deprecated, since searching by AIC will be deprecated in the server starting with 
+16EP4. This method will be removed in version 10 of the SDK.
 
 
 == 9.11.2 - 2018-01-17
