@@ -86,6 +86,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   @Override
+  @Deprecated
   public QueryResult query(SearchQuery query, String aic, String schema, int pageSize) throws IOException {
     String formattedQuery = queryFormatter.format(query);
     String baseUri = resourceCache.getDipResourceUriByAicName().get(aic);

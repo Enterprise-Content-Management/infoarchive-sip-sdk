@@ -49,7 +49,9 @@ public interface ArchiveClient {
    * @param pageSize The page size of the result set.
    * @return A QueryResult
    * @throws IOException When an I/O error occurs
+   * @deprecated Use {@linkplain #search(SearchQuery, SearchComposition)} instead.
    */
+  @Deprecated
   QueryResult query(SearchQuery query, String aic, String schema, int pageSize) throws IOException;
 
   /**

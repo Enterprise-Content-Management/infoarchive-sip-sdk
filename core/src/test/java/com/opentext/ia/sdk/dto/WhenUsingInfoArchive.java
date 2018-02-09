@@ -504,6 +504,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
+  @Deprecated
   public void shouldQuerySuccessfully() throws IOException {
     when(aics.getItems()).thenReturn(Stream.of(aic));
     Link dipLink = new Link();
