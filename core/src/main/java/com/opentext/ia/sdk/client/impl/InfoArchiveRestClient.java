@@ -85,6 +85,16 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     }
   }
 
+  /**
+   * Execute a query against the Archive.
+   * @param query The query.
+   * @param aic The name of the AIC.
+   * @param schema The result set schema.
+   * @param pageSize The page size of the result set.
+   * @return A QueryResult
+   * @throws IOException When an I/O error occurs
+   * @deprecated Use {@linkplain #search(SearchQuery, SearchComposition)} instead.
+   */
   @Override
   @Deprecated
   public QueryResult query(SearchQuery query, String aic, String schema, int pageSize) throws IOException {
