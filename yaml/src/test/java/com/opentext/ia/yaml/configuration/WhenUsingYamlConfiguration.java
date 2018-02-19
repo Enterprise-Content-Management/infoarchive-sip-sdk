@@ -12,9 +12,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.atteo.evo.inflector.English;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.Entry;
@@ -70,10 +68,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   private static final String EXPORT_PIPELINE = "exportPipeline";
   private static final String TRANSFORMATIONS = English.plural(TRANSFORMATION);
   private static final String XQUERY = "xquery";
-  private static final String INCLUDES = "includes";
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
 
@@ -785,192 +780,6 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldIncludeConfiguration() {
-    String key1 = English.plural(someName());
-    String key2 = someName();
-    String value = someName();
-    String included = new YamlMap()
-        .put(key1, Arrays.asList(new YamlMap().put(key2, value)))
-        .toString();
-    String include = someYamlFileName();
-    resourceResolver = resolveResource(include, included);
-    yaml.put(INCLUDES, Arrays.asList(include));
-
-    normalizeYaml();
-
-    assertValue("Included value", value, yaml.get(key1, 0, key2));
-    assertTrue("Includes should be removed", yaml.get(INCLUDES).isEmpty());
-  }
-
-  private String someYamlFileName() {
-    return someFileName("yml");
-  }
-
-  @Test
-  public void shouldFailToIncludeDuplicateEntry() throws Exception {
-    String key = English.plural(someName());
-    String included = new YamlMap()
-        .put(key, someName())
-        .toString();
-    String include = someYamlFileName();
-    resourceResolver = resolveResource(include, included);
-    yaml.put(key, someName())
-        .put(INCLUDES, Arrays.asList(include));
-
-    thrown.expect(IllegalArgumentException.class);
-    normalizeYaml();
-  }
-
-  @Test
-  public void shouldIgnoreDuplicateEntryConfiguredAsExisting() throws Exception {
-    String type = someName();
-    String collection = English.plural(type);
-    String name = someName();
-    String included = new YamlMap()
-        .put(type, new YamlMap()
-                .put(NAME, name)
-                .put(CONFIGURE, ObjectConfiguration.USE_EXISTING.toString()))
-        .toString();
-    String include = someYamlFileName();
-    resourceResolver = resolveResource(include, included);
-    yaml.put(collection, Arrays.asList(new YamlMap().put(NAME, name)))
-        .put(INCLUDES, Arrays.asList(include));
-
-    normalizeYaml();
-
-    assertValue(NAME, name, yaml.get(collection, 0, NAME));
-    assertFalse("Singular should not be added", yaml.containsKey(type));
-  }
-
-  @Test
-  public void shouldIgnoreDuplicateEntriesConfiguredAsExisting() throws Exception {
-    String type = someName();
-    String collection = English.plural(type);
-    String name = someName();
-    String included = new YamlMap()
-        .put(collection, Arrays.asList(new YamlMap()
-                .put(NAME, name)
-                .put(CONFIGURE, ObjectConfiguration.USE_EXISTING.toString())))
-        .toString();
-    String include = someYamlFileName();
-    resourceResolver = resolveResource(include, included);
-    yaml.put(collection, Arrays.asList(new YamlMap().put(NAME, name)))
-        .put(INCLUDES, Arrays.asList(include));
-
-    normalizeYaml();
-
-    Value object = yaml.get(collection, 0);
-    assertValue(NAME, name, object.toMap().get(NAME));
-    assertValue(CONFIGURE, "", yaml.get(CONFIGURE));
-  }
-
-  @Test
-  public void shouldReplaceOriginalEntryConfiguredAsExisting() throws Exception {
-    String type = someName();
-    String collection = English.plural(type);
-    String name = someName();
-    String property = someName();
-    String value = someName();
-    String included1 = new YamlMap()
-        .put(type, new YamlMap().put(NAME, name).put(CONFIGURE, ObjectConfiguration.USE_EXISTING.toString()))
-        .toString();
-    String include1 = someYamlFileName();
-    String included2 = new YamlMap()
-        .put(collection, Arrays.asList(new YamlMap().put(NAME, name).put(property, value)))
-        .toString();
-    String include2 = someYamlFileName();
-    resourceResolver = resource -> {
-      if (resource.equals(include1)) {
-        return included1;
-      }
-      if (resource.equals(include2)) {
-        return included2;
-      }
-      throw new UnknownResourceException(resource, null);
-    };
-    yaml.put(INCLUDES, Arrays.asList(include1, include2));
-
-    normalizeYaml();
-
-    assertTrue("Singular should not be added", yaml.get(type).isEmpty());
-    YamlMap map = yaml.get(collection, 0).toMap();
-    assertValue(NAME, name, map.get(NAME));
-    assertValue("Other property", value, map.get(property));
-  }
-
-  @Test
-  public void shouldIgnoreDuplicateVersionEntry() throws Exception {
-    String included = new YamlMap()
-        .put(VERSION, VERSION_1)
-        .toString();
-    String include = someYamlFileName();
-    resourceResolver = resolveResource(include, included);
-    yaml.put(VERSION, VERSION_1)
-        .put(INCLUDES, Arrays.asList(include));
-
-    normalizeYaml();
-
-    assertValue(VERSION, VERSION_1, yaml.get(VERSION));
-  }
-
-  @Test
-  public void shouldIgnoreDuplicateNamespaceEntry() throws Exception {
-    YamlMap namespace1 = someNamespace();
-    YamlMap namespace2 = someNamespace();
-    String included = new YamlMap()
-        .put("namespace", namespace1)
-        .put("namespaces", Arrays.asList(namespace2))
-        .toString();
-    String include = someYamlFileName();
-    resourceResolver = resolveResource(include, included);
-    yaml.put("namespace", someName())
-        .put("namespaces", Arrays.asList(namespace2))
-        .put(INCLUDES, Arrays.asList(include));
-
-    normalizeYaml();
-
-    // Should not throw exception
-  }
-
-  private YamlMap someNamespace() {
-    return new YamlMap().put("uri", someUri()).put("prefix", someName());
-  }
-
-  private String someUri() {
-    return String.format("http://%s.com/%s", someName(), someName());
-  }
-
-  @Test
-  public void shouldResolveInlineResourcesRelativeToIncludedResource() throws Exception {
-    String dir = someName();
-    String file = someHtmlFileName();
-    String relativeFile = dir + '/' + file;
-    String key = someName() + 'n';
-    String included = new YamlMap()
-        .put(key, new YamlMap()
-            .put(NAME, someName())
-            .put(CONTENT, new YamlMap()
-                .put(RESOURCE, file)))
-        .toString();
-    String include = dir + '/' + someYamlFileName();
-    String text = randomString(64);
-    resourceResolver = name -> {
-      if (name.equals(include)) {
-        return included;
-      }
-      if (name.equals(relativeFile)) {
-        return text;
-      }
-      throw new UnknownResourceException(name, null);
-    };
-    yaml.put(INCLUDES, Arrays.asList(include));
-
-    normalizeYaml();
-
-    assertValue("Included resource should be resolved", text, yaml.get(English.plural(key), 0, CONTENT, TEXT));
-  }
-
-  @Test
   public void shouldSubstituteProperties() {
     String collection = English.plural(someName());
     String intProperty = someName();
@@ -982,40 +791,6 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     assertValue("Substituted value", "thud", yaml.get(collection, 0, NAME));
     assertEquals("Ignored value", intValue, yaml.get(collection, 0, intProperty).toInt());
-  }
-
-  @Test
-  public void shouldSubstitutePropertiesInInlinedYaml() {
-    String collection = English.plural(someName());
-    resourceResolver = ResourceResolver.fromClasspath();
-    yaml.put(collection, Arrays.asList(new YamlMap().put(NAME, "${qux}")))
-        .put(INCLUDES, Arrays.asList("include/configuration.yml"));
-
-    normalizeYaml();
-
-    assertValue("Substituted value", "thud", yaml.get(collection, 0, NAME));
-    assertValue("Inherited inline value", "bar", yaml.get("inc", 0, "foo"));
-    assertValue("Overridden inline value", "xyzzy", yaml.get("inc", 0, NAME));
-  }
-
-  @Test
-  public void shouldInlineBasedOnSubstitutedProperty() {
-    resourceResolver = ResourceResolver.fromClasspath("/stores");
-    YamlMap map = YamlMap.from(resourceResolver.apply("configuration.yml"));
-
-    normalizeYaml(map);
-
-    assertValue("Store name", "aws-s3", map.get(STORES, 0, NAME));
-  }
-
-  @Test
-  public void shouldInlineNestedIncludes() {
-    resourceResolver = ResourceResolver.fromClasspath("/nested-includes");
-    yaml.put(INCLUDES, Arrays.asList("root.yml"));
-
-    normalizeYaml(yaml);
-
-    assertValue("Inlined value", "bar", yaml.get("foo"));
   }
 
   @Test

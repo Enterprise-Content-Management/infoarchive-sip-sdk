@@ -22,6 +22,7 @@ public class IncludeExternalYaml implements Visitor {
   private static final String VERSION = "version";
   private static final String INCLUDES = "includes";
   private static final String CONFIGURE = "configure";
+  private static final String RESOURCE = "resource";
 
   private final ResourceResolver resourceResolver;
   private final ConfigurationProperties parent;
@@ -41,7 +42,21 @@ public class IncludeExternalYaml implements Visitor {
     YamlMap yaml = visit.getMap();
     YamlSequence includeFiles = yaml.get(INCLUDES).toList();
     yaml.remove(INCLUDES);
-    includeFiles.forEach(value -> include(value.toString(), yaml));
+    includeFiles.forEach(value -> include(value, yaml));
+  }
+
+  private void include(Value include, YamlMap target) {
+    String resource;
+    if (include.isMap()) {
+      YamlMap map = include.toMap();
+      if (ObjectConfiguration.parse(map.get(CONFIGURE).toString()).shouldIgnoreObject()) {
+        return;
+      }
+      resource = map.get(RESOURCE).toString();
+    } else {
+      resource = include.toString();
+    }
+    include(resource, target);
   }
 
   private void include(String resource, YamlMap target) {

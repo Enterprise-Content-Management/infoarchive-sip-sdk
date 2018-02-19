@@ -58,6 +58,7 @@ public class ZipConfiguration {
     if (yaml == null) {
       throw new EmptyZipException();
     }
+    yaml = yaml.getAbsoluteFile();
     if (yaml.isDirectory()) {
       yaml = new File(yaml, MAIN_YAML_FILE_NAME);
     }
