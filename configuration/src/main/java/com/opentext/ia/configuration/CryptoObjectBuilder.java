@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.configuration;
 
+
 /**
  * Build a crypto object.
  * @author Ray Sinnema

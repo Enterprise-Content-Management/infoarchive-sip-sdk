@@ -6,10 +6,15 @@ package com.opentext.ia.configuration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,6 +55,7 @@ public class WhenBuildingConfigurations {
       + "    element email { text }\n"
       + "  }*\n"
       + "}";
+  private static final String PDI_NAME = "myPdi";
   private static final String SPACE_ROOT_FOLDER_NAME = "mySpaceRootFolder";
   private static final String HOLDING_NAME = "myHolding";
   private static final String XDB_MODE = "xdbMode";
@@ -61,6 +67,8 @@ public class WhenBuildingConfigurations {
   private static final String XDB_BOOTSTRAP = "xhives://xdb.com:2345";
   private static final String XDB_CLUSTER_NAME = "myXdbCluster";
   private static final String XDB_DATABASE_NAME = "myXdbDatabase";
+  private static final String CONTENT1 = "foo";
+  private static final String CONTENT2 = "bar";
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -346,8 +354,6 @@ public class WhenBuildingConfigurations {
     ConfigurationObject pdiSchema = configuration.getPdiSchema(configuration.getApplication());
 
     assertRandomName(pdiSchema);
-    assertProperties(pdiSchema,
-        "format", "xsd");
   }
 
   @Test
@@ -356,8 +362,11 @@ public class WhenBuildingConfigurations {
         .named(APPLICATION_NAME)
         .withPdiSchema()
             .named(PDI_SCHEMA_NAME)
-            .ofType(PDI_SCHEMA_FORMAT)
-            .as(PDI_SCHEMA_TEXT)
+            .withContent()
+                .ofType(PDI_SCHEMA_FORMAT)
+                .as(PDI_SCHEMA_TEXT)
+            .end()
+        .end()
     .build();
     ConfigurationObject pdiSchema = configuration.getPdiSchema(configuration.getApplication());
 
@@ -579,6 +588,50 @@ public class WhenBuildingConfigurations {
     assertProperties(xdbDatabase,
         NAME, XDB_DATABASE_NAME,
         "adminPassword", SOME_PASSWORD);
+  }
+
+  @Test
+  public void shouldUseDefaultPropertiesForPdi() {
+    configuration = builder.withApplication()
+        .withPdi()
+    .build();
+    ConfigurationObject pdi = configuration.getPdi(configuration.getApplication());
+
+    assertRandomName(pdi);
+  }
+
+  @Test
+  public void shouldSetPropertiesForPdi() {
+    configuration = builder.withApplication()
+        .named(APPLICATION_NAME)
+        .withPdi()
+            .named(PDI_NAME)
+    .build();
+    ConfigurationObject pdi = configuration.getPdi(configuration.getApplication());
+
+    assertProperties(pdi,
+        APPLICATION, APPLICATION_NAME,
+        NAME, PDI_NAME);
+  }
+
+  @Test
+  public void shouldAddMultipleContentObjectsToPdi() throws IOException {
+    try (InputStream content2 = IOUtils.toInputStream(CONTENT2, StandardCharsets.UTF_8)) {
+      configuration = builder.withApplication()
+          .named(APPLICATION_NAME)
+          .withPdi()
+              .named(PDI_NAME)
+              .withContent()
+                  .as(CONTENT1)
+              .end()
+              .withContent()
+                  .as(content2)
+              .end()
+      .build();
+    }
+    ConfigurationObject pdi = configuration.getPdi(configuration.getApplication());
+
+    assertProperties(pdi, "content", Arrays.asList(CONTENT1, CONTENT2));
   }
 
 }

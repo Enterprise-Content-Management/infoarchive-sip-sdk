@@ -152,7 +152,7 @@ subprojects {
 
 project(':infoarchive-configuration') {
   configurations {
-    compile.extendsFrom evoInflector, json
+    compile.extendsFrom commonsIo, evoInflector, json
   }
 }
 

@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.configuration;
 
+
 /**
  * Build an application.
  * @author Ray Sinnema
@@ -69,6 +70,15 @@ public class ApplicationBuilder<C extends Configuration<?>>
 
   public PdiSchemaBuilder<C> withPdiSchema() {
     return new PdiSchemaBuilder<>(this);
+  }
+
+  /**
+   * Start building a PDI.
+   * @return A builder for the new PDI
+   * @since 9.13.0
+   */
+  public PdiBuilder<C> withPdi() {
+    return new PdiBuilder<>(this);
   }
 
   public HoldingBuilder<C> withHolding() {

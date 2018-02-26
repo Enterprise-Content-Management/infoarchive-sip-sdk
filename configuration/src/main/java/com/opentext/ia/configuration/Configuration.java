@@ -359,4 +359,25 @@ public interface Configuration<T> {
    */
   List<T> getXdbClusters();
 
+  /**
+   * Returns the first configured pdi for the given application.
+   * @param application The owner of the pdi
+   * @return The first configured pdi for the given application
+   * @throws IllegalArgumentException when no pdi are configured for the given application
+   * @since 9.13.0
+   */
+  default T getPdi(T application) {
+    return first(getPdis(application));
+  }
+
+  /**
+   * Returns all configured pdi for the given application.
+   * @param application The owner of the pdi
+   * @return All configured pdi for the given application
+   * @throws IllegalArgumentException when no pdi are configured for the given application
+   * @since 9.13.0
+   */
+  List<T> getPdis(T application);
+
+
 }

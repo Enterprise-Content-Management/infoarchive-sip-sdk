@@ -115,6 +115,11 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   }
 
   @Override
+  public List<YamlMap> getPdis(YamlMap application) {
+    return childList(application, APPLICATION, "pdi");
+  }
+
+  @Override
   public List<YamlMap> getHoldings(YamlMap application) {
     return childList(application, APPLICATION, "holding");
   }

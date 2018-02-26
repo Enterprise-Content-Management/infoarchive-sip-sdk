@@ -56,7 +56,19 @@ public class ConfigurationObject {
    * @param value The value to set the property to
    */
   public void setProperty(String name, Object value) {
-    properties.put(name, value == null ? JSONObject.NULL : value);
+    properties.put(name, toJsonValue(value));
+  }
+
+  @SuppressWarnings("rawtypes")
+  private Object toJsonValue(Object value) {
+    if (value == null) {
+      return JSONObject.NULL;
+    }
+    return value;
+  }
+
+  public boolean hasProperty(String name) {
+    return properties.has(name) && properties.get(name) != JSONObject.NULL;
   }
 
   /**

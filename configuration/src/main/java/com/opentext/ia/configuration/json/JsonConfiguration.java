@@ -78,6 +78,11 @@ public class JsonConfiguration implements Configuration<ConfigurationObject> {
   }
 
   @Override
+  public List<ConfigurationObject> getPdis(ConfigurationObject application) {
+    return childrenOf(application, "pdis");
+  }
+
+  @Override
   public List<ConfigurationObject> getHoldings(ConfigurationObject application) {
     return childrenOf(application, "holdings");
   }

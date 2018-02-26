@@ -52,6 +52,10 @@ public abstract class BaseBuilder<P extends BaseBuilder<?, C>, C extends Configu
     }
   }
 
+  protected boolean hasProperty(String name) {
+    return object.hasProperty(name);
+  }
+
   /**
    * End this builder.
    * @return The parent builder
