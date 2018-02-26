@@ -380,4 +380,11 @@ public interface Configuration<T> {
   List<T> getPdis(T application);
 
 
+  /**
+   * Returns all the content objects owned by a given object.
+   * @param owner The owning object
+   * @return All the content objects owned by the given owner
+   */
+  List<T> getContentOwnedBy(T owner);
+
 }

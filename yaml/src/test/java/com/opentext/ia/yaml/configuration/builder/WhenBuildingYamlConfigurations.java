@@ -51,4 +51,22 @@ public class WhenBuildingYamlConfigurations {
     assertTrue("Default description", application.get("description").isEmpty());
   }
 
+  @Test
+  public void shouldExtractPdiWithMultipleContentObjects() {
+    YamlMapConfiguration configuration = builder.withApplication()
+        .withPdi()
+            .withContent()
+                .as("foo")
+            .end()
+            .withContent()
+                .as("bar")
+            .end()
+    .build();
+
+    YamlMap application = configuration.getApplication();
+    YamlMap pdi = configuration.getPdi(application);
+
+    assertEquals("# content objects", 2, pdi.get("content").toList().size());
+  }
+
 }

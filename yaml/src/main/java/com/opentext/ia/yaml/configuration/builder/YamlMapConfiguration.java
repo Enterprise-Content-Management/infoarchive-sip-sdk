@@ -152,4 +152,11 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
     return toList(streamOfType(XDB_CLUSTER));
   }
 
+  @Override
+  public List<YamlMap> getContentOwnedBy(YamlMap owner) {
+    return owner.get("content").toList().stream()
+        .map(Value::toMap)
+        .collect(Collectors.toList());
+  }
+
 }

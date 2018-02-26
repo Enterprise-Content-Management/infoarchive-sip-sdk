@@ -4,17 +4,22 @@
 package com.opentext.ia.configuration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,7 +31,7 @@ import com.opentext.ia.configuration.json.JsonConfigurationProducer;
 
 public class WhenBuildingConfigurations {
 
-  private static final Pattern NAME_PATTERN = Pattern.compile("[a-z]{1,3}(?<uuid>.*)");
+  private static final Pattern NAME_PATTERN = Pattern.compile("[a-z]{1,3}_(?<uuid>.*)");
   private static final String NAME = "name";
   private static final String TYPE = "type";
   private static final String DESCRIPTION = "description";
@@ -121,10 +126,12 @@ public class WhenBuildingConfigurations {
   }
 
   private void assertUuid(String message, String actual) {
+    String uuid = actual.contains("-") ? actual : String.format("%s-%s-%s-%s-%s", actual.substring(0, 8),
+        actual.substring(8, 12), actual.substring(12, 16), actual.substring(16, 20), actual.substring(20));
     try {
-      UUID.fromString(actual);
+      UUID.fromString(uuid);
     } catch (IllegalArgumentException e) {
-      fail(message + " is not a UUID");
+      fail(message + " is not a UUID: " + actual);
     }
   }
 
@@ -631,7 +638,18 @@ public class WhenBuildingConfigurations {
     }
     ConfigurationObject pdi = configuration.getPdi(configuration.getApplication());
 
-    assertProperties(pdi, "content", Arrays.asList(CONTENT1, CONTENT2));
+    Object contents = pdi.getProperties().get("content");
+    assertNotNull("Missing contents", contents);
+    assertEquals("Contents", JSONArray.class, contents.getClass());
+
+    JSONArray contentObjects = (JSONArray)contents;
+    assertEquals("# content objects", 2, contentObjects.length());
+
+    List<String> texts = StreamSupport.stream(contentObjects.spliterator(), false)
+        .map(JSONObject.class::cast)
+        .map(o -> o.getString("text"))
+        .collect(Collectors.toList());
+    assertEquals("Texts", Arrays.asList(CONTENT1, CONTENT2), texts);
   }
 
 }

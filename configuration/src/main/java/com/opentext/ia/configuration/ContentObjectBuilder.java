@@ -3,8 +3,8 @@
  */
 package com.opentext.ia.configuration;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Builder for configuration objects with content.
@@ -28,21 +28,17 @@ public class ContentObjectBuilder<P extends BaseBuilder<?, C>, S extends Content
   }
 
   public void addContent(String format, String text) {
+    JSONObject content = new JSONObject();
+    content.put("format", format);
+    content.put("text", text);
+    JSONArray contents;
     if (hasProperty(CONTENT_PROPERTY)) {
-      Object current = getProperty(CONTENT_PROPERTY);
-      if (current instanceof String) {
-        Collection<String> contents = new ArrayList<>();
-        contents.add((String)current);
-        contents.add(text);
-        setProperty(CONTENT_PROPERTY, contents);
-      } else {
-        @SuppressWarnings("unchecked")
-        Collection<String> contents = (Collection<String>)current;
-        contents.add(text);
-      }
+      contents = (JSONArray)getProperty(CONTENT_PROPERTY);
     } else {
-      setProperty(CONTENT_PROPERTY, text);
+      contents = new JSONArray();
+      setProperty(CONTENT_PROPERTY, contents);
     }
+    contents.put(content);
   }
 
 }

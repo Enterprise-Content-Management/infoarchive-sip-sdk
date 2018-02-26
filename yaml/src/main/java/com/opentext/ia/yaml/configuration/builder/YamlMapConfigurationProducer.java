@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 import com.opentext.ia.configuration.ConfigurationObject;
 import com.opentext.ia.configuration.ConfigurationProducer;
-import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
 
 
@@ -53,19 +52,20 @@ public class YamlMapConfigurationProducer implements ConfigurationProducer<YamlM
 
   private Object jsonToYaml(Object value) {
     Object result;
-    if (value instanceof JSONObject) {
+    if (value == JSONObject.NULL) {
+      result = null;
+    } else if (value instanceof JSONObject) {
       YamlMap subObject = new YamlMap();
       copy((JSONObject)value, subObject);
       result = subObject;
     } else if (value instanceof JSONArray) {
-      List<Value> sequence = new ArrayList<>();
+      List<Object> sequence = new ArrayList<>();
       JSONArray array = (JSONArray)value;
       for (Object item : array) {
-        sequence.add(new Value(jsonToYaml(item)));
+        Object yaml = jsonToYaml(item);
+        sequence.add(yaml);
       }
       result = sequence;
-    } else if (value == JSONObject.NULL) {
-      result = null;
     } else {
       result = value;
     }

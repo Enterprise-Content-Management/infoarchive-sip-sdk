@@ -5,6 +5,9 @@ package com.opentext.ia.configuration.json;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.json.JSONObject;
 
 import com.opentext.ia.configuration.Configuration;
 import com.opentext.ia.configuration.ConfigurationObject;
@@ -110,6 +113,25 @@ public class JsonConfiguration implements Configuration<ConfigurationObject> {
   @Override
   public List<ConfigurationObject> getXdbClusters() {
     return childrenOf(container, "xdbClusters");
+  }
+
+  @Override
+  public List<ConfigurationObject> getContentOwnedBy(ConfigurationObject owner) {
+    JSONObject properties = owner.getProperties();
+    if (!properties.has("content")) {
+      return Collections.emptyList();
+    }
+    return properties.getJSONArray("content").toList().stream()
+        .map(this::jsonToContent)
+        .collect(Collectors.toList());
+  }
+
+  private ConfigurationObject jsonToContent(Object object) {
+    ConfigurationObject result = new ConfigurationObject("content");
+    JSONObject json = (JSONObject)object;
+    json.keySet().forEach(key ->
+        result.setProperty(key, json.getString(key)));
+    return result;
   }
 
 }

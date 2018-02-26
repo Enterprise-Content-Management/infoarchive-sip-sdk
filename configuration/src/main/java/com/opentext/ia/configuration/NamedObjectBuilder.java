@@ -22,7 +22,7 @@ public class NamedObjectBuilder<P extends BaseBuilder<?, C>, S extends NamedObje
   }
 
   private String typePrefix(String type) {
-    return type.substring(0, Math.min(type.length(), 3));
+    return type.substring(0, Math.min(type.length(), 3)) + '_';
   }
 
   /**

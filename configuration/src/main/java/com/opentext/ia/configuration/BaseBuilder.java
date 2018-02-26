@@ -35,7 +35,7 @@ public abstract class BaseBuilder<P extends BaseBuilder<?, C>, C extends Configu
   }
 
   protected String someName() {
-    return UUID.randomUUID().toString();
+    return UUID.randomUUID().toString().replaceAll("-", "");
   }
 
   protected Object getProperty(String name) {
