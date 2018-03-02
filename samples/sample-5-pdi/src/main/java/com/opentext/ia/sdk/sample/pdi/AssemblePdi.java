@@ -49,13 +49,14 @@ public class AssemblePdi {
     // Collect the PDI XML in an in-memory buffer. For large PDIs, use a FileBuffer instead.
     DataBuffer dataBuffer = new MemoryBuffer();
     pdiAssembler.start(dataBuffer);
-
-    // Assemble the PDI by adding domain objects to it.
-    // In this sample, the domain objects are the strings "foo" and "bar".
-    pdiAssembler.add(wrapDomainObject("foo"));
-    pdiAssembler.add(wrapDomainObject("bar"));
-
-    pdiAssembler.end();
+    try {
+      // Assemble the PDI by adding domain objects to it.
+      // In this sample, the domain objects are the strings "foo" and "bar".
+      pdiAssembler.add(wrapDomainObject("foo"));
+      pdiAssembler.add(wrapDomainObject("bar"));
+    } finally {
+      pdiAssembler.end();
+    }
     try (InputStream pdi = dataBuffer.openForReading()) {
       System.out.println(IOUtils.toString(pdi, StandardCharsets.UTF_8));
     }
