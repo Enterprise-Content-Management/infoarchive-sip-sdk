@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2017 by OpenText Corporation. All Rights Reserved.
  */
-
 package com.opentext.ia.sdk.sample.authenticate;
 
 import com.opentext.ia.sdk.support.http.Header;

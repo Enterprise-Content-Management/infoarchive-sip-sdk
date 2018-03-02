@@ -34,13 +34,17 @@ public class HashedContents<S> {
     return source;
   }
 
+  public Map<String, ContentInfo> getContentInfo() {
+    return contentInfo;
+  }
+
   /**
    * Return a hash code value for this object.
    * @return A hash code value for this object
    */
   @Override
   public int hashCode() {
-    return Objects.hash(source, getContentInfo());
+    return Objects.hash(source, contentInfo);
   }
 
   /**
@@ -55,7 +59,7 @@ public class HashedContents<S> {
     }
     @SuppressWarnings("unchecked")
     HashedContents<S> other = (HashedContents<S>)obj;
-    return source.equals(other.source) && getContentInfo().equals(other.getContentInfo());
+    return source.equals(other.source) && contentInfo.equals(other.contentInfo);
   }
 
   /**
@@ -64,15 +68,11 @@ public class HashedContents<S> {
    */
   @Override
   public String toString() {
-    return source + " with contents " + getContentInfo().entrySet()
+    return source + " with contents " + contentInfo.entrySet()
       .stream()
       .map(e -> "- " + e.getKey() + "=" + e.getValue())
       .collect(Collectors.joining(System.lineSeparator()));
 
-  }
-
-  public Map<String, ContentInfo> getContentInfo() {
-    return contentInfo;
   }
 
 }
