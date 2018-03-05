@@ -20,6 +20,8 @@ import com.opentext.ia.configuration.ConfigurationObject;
  */
 public class JsonConfiguration implements Configuration<ConfigurationObject> {
 
+  private static final String CONTENT = "content";
+
   private final ConfigurationObject container;
 
   public JsonConfiguration(ConfigurationObject container) {
@@ -118,16 +120,16 @@ public class JsonConfiguration implements Configuration<ConfigurationObject> {
   @Override
   public List<ConfigurationObject> getContentOwnedBy(ConfigurationObject owner) {
     JSONObject properties = owner.getProperties();
-    if (!properties.has("content")) {
+    if (!properties.has(CONTENT)) {
       return Collections.emptyList();
     }
-    return properties.getJSONArray("content").toList().stream()
+    return properties.getJSONArray(CONTENT).toList().stream()
         .map(this::jsonToContent)
         .collect(Collectors.toList());
   }
 
   private ConfigurationObject jsonToContent(Object object) {
-    ConfigurationObject result = new ConfigurationObject("content");
+    ConfigurationObject result = new ConfigurationObject(CONTENT);
     JSONObject json = (JSONObject)object;
     json.keySet().forEach(key ->
         result.setProperty(key, json.getString(key)));
