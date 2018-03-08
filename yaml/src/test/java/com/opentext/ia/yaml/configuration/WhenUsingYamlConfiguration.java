@@ -81,15 +81,15 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String pluralType = English.plural(someType());
     yaml.put(singularType, Arrays.asList(externalContentTo(resource)));
     yaml.put(pluralType, externalContentTo(resource));
-    String nonContent = English.plural(someName());
-    yaml.put(nonContent, Arrays.asList(new YamlMap().put(CONTENT, Arrays.asList(externalResourceTo(resource)))));
+    String multipleContent = English.plural(someName());
+    yaml.put(multipleContent, Arrays.asList(new YamlMap().put(CONTENT, Arrays.asList(externalResourceTo(resource)))));
 
     normalizeYaml();
 
     assertContentIsInlined("list", expected, yaml.get(singularType, 0));
     assertContentIsInlined("map", expected, yaml.get(pluralType));
-    assertValue(String.format("Invalid content structure inlined%n%s", yaml), resource,
-        yaml.get(nonContent, 0, CONTENT, 0, RESOURCE));
+    assertValue(String.format("Multiple content objects not inlinedinlined%n%s", yaml), expected,
+        yaml.get(multipleContent, 0, CONTENT, 0, TEXT));
   }
 
   private String someName() {
