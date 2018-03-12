@@ -43,7 +43,7 @@ class FileResolver implements ResourceResolver, ResourcesResolver {
   @Override
   public List<String> resolve(String pattern) {
     Pattern regex = Pattern.compile(toRegex(pattern));
-    Predicate<File> filter = (file) -> regex.matcher(relativePathOf(file)).matches();
+    Predicate<File> filter = file -> regex.matcher(relativePathOf(file)).matches();
     return resolve(dir, filter);
   }
 
