@@ -6,6 +6,15 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 9.13.2 - 2018-03-12
+
+=== Fixed
+
+- During YAML normalization, the default value will be used if a property has an empty value in a `.properties` file
+- When inlining YAML files, YAML normalization merges items of the same type instead of throwing an exception 
+
+
+
 == 9.13.1 - 2018-03-08
 
 === Fixed

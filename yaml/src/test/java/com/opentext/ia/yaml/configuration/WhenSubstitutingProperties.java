@@ -28,10 +28,16 @@ public class WhenSubstitutingProperties {
     assertProperty("Don't substitute if not found and no default", "${grault}", "corge");
     assertProperty("Keep prefix and suffix", "hamANDeggs", "spam");
     assertProperty("Multiple subsitutions", "http://localhost:8765/services", "url");
+    assertProperty("Multiple subsitutions", "http://localhost:8765/services", "url");
+    assertPropertyExpression("Empty value should not override", "bottle", "${empty:bottle}");
   }
 
   private void assertProperty(String message, String expected, String name) {
-    assertEquals(message, expected, propertyResolver.apply(String.format("${%s}", name)));
+    assertPropertyExpression(message, expected, String.format("${%s}", name));
+  }
+
+  private void assertPropertyExpression(String message, String expected, String expression) {
+    assertEquals(message, expected, propertyResolver.apply(expression));
   }
 
   @Test

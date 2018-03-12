@@ -4,6 +4,7 @@
 package com.opentext.ia.yaml.configuration;
 
 import java.net.URI;
+import java.util.Arrays;
 
 import org.atteo.evo.inflector.English;
 
@@ -125,8 +126,15 @@ public class IncludeExternalYaml implements Visitor {
           .put(key, value);
       return;
     }
-    throw new IllegalArgumentException(String.format(
-        "Duplicate key '%s': cannot set to '%s' because it's already set to '%s'", key, value, targetValue));
+    if (target.containsKey(type)) {
+      target.replace(type, collection, Arrays.asList(targetValue));
+    }
+    YamlSequence values = target.get(collection).toList();
+    if (value.isList()) {
+      values.addAll(value.toList());
+    } else {
+      values.add(value);
+    }
   }
 
   private boolean canConfigure(Value value) {

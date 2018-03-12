@@ -88,6 +88,9 @@ public class ConfigurationProperties implements Function<String, String> {
 
   private String lookup(String name) {
     String result = properties.getProperty(name);
+    if (result != null && result.trim().isEmpty()) {
+      result = null;
+    }
     if (result == null && parent != null) {
       result = parent.lookup(name);
     }

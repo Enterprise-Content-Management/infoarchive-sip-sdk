@@ -10,9 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 
 import org.atteo.evo.inflector.English;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.Value;
@@ -31,9 +29,12 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   private static final String CONTENT = "content";
   private static final String RESOURCE = "resource";
   private static final String TEXT = "text";
+  private static final String APPLICATION = "application";
+  private static final String APPLICATIONS = English.plural(APPLICATION);
+  private static final String FOO = "foo";
+  private static final String BAR = "bar";
+  private static final String BAZ = "baz";
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
 
@@ -86,21 +87,6 @@ public class WhenIncludingExternalConfigurations extends TestCase {
 
   private void assertValue(String message, String expected, Value actual) {
     assertEquals(message, expected, actual.toString());
-  }
-
-  @Test
-  public void shouldFailToIncludeDuplicateEntry() throws Exception {
-    String key = English.plural(someName());
-    String included = new YamlMap()
-        .put(key, someName())
-        .toString();
-    String include = someYamlFileName();
-    resourceResolver = resolveResource(include, included);
-    yaml.put(key, someName())
-        .put(INCLUDES, Arrays.asList(include));
-
-    thrown.expect(IllegalArgumentException.class);
-    normalizeYaml();
   }
 
   @Test
@@ -307,6 +293,39 @@ public class WhenIncludingExternalConfigurations extends TestCase {
     normalizeYaml();
 
     assertFalse("Value should not be included", yaml.containsKey(key1));
+  }
+
+  @Test
+  public void shouldMergedInlinedYaml() throws Exception {
+    resourceResolver = name -> {
+      switch (name) {
+        case FOO:
+          return new YamlMap()
+              .put(APPLICATION, new YamlMap()
+                  .put(NAME, FOO))
+              .toString();
+        case BAR:
+          return new YamlMap()
+              .put(APPLICATION, new YamlMap()
+                  .put(NAME, BAR))
+              .toString();
+        case BAZ:
+          return new YamlMap()
+              .put(APPLICATIONS, Arrays.asList(new YamlMap()
+                  .put(NAME, BAZ)))
+              .toString();
+        default:
+          throw new UnknownResourceException(name, null);
+      }
+    };
+    yaml.put("includes", Arrays.asList(FOO, BAR, BAZ));
+
+    normalizeYaml();
+
+    YamlMap inlined = yaml.sort();
+    assertValue(BAR, BAR, inlined.get(APPLICATIONS, 0, NAME));
+    assertValue(BAZ, BAZ, inlined.get(APPLICATIONS, 1, NAME));
+    assertValue(FOO, FOO, inlined.get(APPLICATIONS, 2, NAME));
   }
 
 }
