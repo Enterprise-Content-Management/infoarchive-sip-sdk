@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.Entry;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
+import com.opentext.ia.yaml.core.YamlSequence;
 import com.opentext.ia.yaml.resource.ResourceResolver;
 import com.opentext.ia.yaml.resource.UnknownResourceException;
 
@@ -801,6 +803,34 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     normalizeYaml(yaml);
 
     assertValue("Resolved value", "fred", yaml.get("gnus", 0, "gnat"));
+  }
+
+  @Test
+  public void shouldInlineFileResourcesByPattern() {
+    resourceResolver = ResourceResolver.fromFile(new File("src/test/resources/nested-includes/root.yml"));
+    yaml.put(DATABASES, Arrays.asList(new YamlMap()
+        .put(NAME, someName())
+        .put(METADATA, Arrays.asList(new YamlMap()
+            .put(RESOURCE, "**/*.yml")))));
+
+    normalizeYaml(yaml);
+
+    YamlSequence contents = yaml.get(DATABASES, 0, METADATA).toList();
+    assertTrue("# inlined:\n" + yaml, contents.size() > 1);
+  }
+
+  @Test
+  public void shouldInlineFileResourcesByPatterns() {
+    resourceResolver = ResourceResolver.fromFile(new File("src/test/resources/configuration.properties"));
+    yaml.put(DATABASES, Arrays.asList(new YamlMap()
+        .put(NAME, someName())
+        .put(METADATA, Arrays.asList(new YamlMap()
+            .put(RESOURCE, Arrays.asList("nested-includes/*.yml", "*.properties"))))));
+
+    normalizeYaml(yaml);
+
+    YamlSequence contents = yaml.get(DATABASES, 0, METADATA).toList();
+    assertTrue("# inlined:\n" + yaml, contents.size() > 1);
   }
 
 }

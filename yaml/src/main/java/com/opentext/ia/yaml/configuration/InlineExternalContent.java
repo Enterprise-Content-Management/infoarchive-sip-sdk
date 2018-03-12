@@ -8,18 +8,19 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.opentext.ia.yaml.core.PathVisitor;
+import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.Visit;
 import com.opentext.ia.yaml.core.YamlMap;
-import com.opentext.ia.yaml.resource.ResourceResolver;
+import com.opentext.ia.yaml.resource.ResourcesResolver;
 
 
 class InlineExternalContent extends PathVisitor {
 
   static final List<String> RESOURCE_CONTAINER_PATHS = Arrays.asList(
-      "/.+/content",
-      "/.+/content/\\d+",
+      "/.+/content(/\\d+)?",
       "/customPresentationConfiguration(s/[^/]+)?/htmlTemplate",
       "/database(s/[^/]+)?/metadata/\\d+",
       "/transformation(s/[^/]+)?/xquery",
@@ -31,10 +32,10 @@ class InlineExternalContent extends PathVisitor {
   private static final String RESOURCE = "resource";
   private static final Collection<String> SEGMENTS_WITH_FORMAT = Arrays.asList("content");
 
-  private final ResourceResolver resolver;
+  private final ResourcesResolver resolver;
   private final Map<String, String> formatByExtension = new HashMap<>();
 
-  InlineExternalContent(ResourceResolver resolver) {
+  InlineExternalContent(ResourcesResolver resolver) {
     super(RESOURCE_CONTAINER_PATHS);
     this.resolver = resolver;
     formatByExtension.put("xpl", "xproc");
@@ -50,13 +51,44 @@ class InlineExternalContent extends PathVisitor {
   @Override
   public void accept(Visit visit) {
     YamlMap yaml = visit.getMap();
-    String resourceName = yaml.get(RESOURCE).toString();
+    String path = visit.getPath();
+    Value resource = yaml.get(RESOURCE);
+    if (resource.isScalar()) {
+      processResource(yaml, path, resource.toString());
+    } else if (resource.isList()) {
+      resource.toList().forEach(item ->
+          processResource(yaml, path, item.toString()));
+    }
+  }
+
+  private void processResource(YamlMap yaml, String path, String resourceName) {
     inlineResource(yaml, resourceName);
-    optionallySetFormat(visit.getPath(), yaml, resourceName);
+    optionallySetFormat(path, yaml, resourceName);
   }
 
   private void inlineResource(YamlMap yaml, String resourceName) {
-    yaml.replace(RESOURCE, TEXT, resolver.apply(resourceName));
+    List<String> texts = resolver.resolve(resourceName);
+    if (yaml.containsKey(RESOURCE)) {
+      switch (texts.size()) {
+        case 0:
+          yaml.remove(RESOURCE);
+          break;
+        case 1:
+          yaml.replace(RESOURCE, TEXT, texts.get(0));
+          break;
+        default:
+          yaml.replace(RESOURCE, TEXT, texts);
+          break;
+      }
+    } else {
+      Value current = yaml.get(TEXT);
+      if (current.isList()) {
+        current.toList().addAll(texts.stream().map(Value::new).collect(Collectors.toList()));
+      } else {
+        texts.add(0, current.toString());
+        yaml.replace(TEXT, texts);
+      }
+    }
   }
 
   private void optionallySetFormat(String path, YamlMap yaml, String resourceName) {

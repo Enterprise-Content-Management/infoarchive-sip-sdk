@@ -21,6 +21,7 @@ import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.Visitor;
 import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.resource.ResourceResolver;
+import com.opentext.ia.yaml.resource.ResourcesResolver;
 
 
 /**
@@ -31,6 +32,7 @@ import com.opentext.ia.yaml.resource.ResourceResolver;
 public class YamlConfiguration {
 
   private static final Collection<Class<? extends Visitor>> YAML_NORMALIZATION_CLASSES = Arrays.asList(
+      CombineSequencesOfTexts.class,
       EnsureVersion.class,
       ConvertTopLevelSingularObjectsToSequences.class,
       InsertDefaultReferences.class,
@@ -98,13 +100,16 @@ public class YamlConfiguration {
     normalizations(resolver).forEach(this.yaml::visit);
   }
 
-  private Stream<Visitor> normalizations(ResourceResolver resolver) {
+  private Stream<Visitor> normalizations(ResourceResolver resourceResolver) {
+    ResourcesResolver resourcesResolver = resourceResolver instanceof ResourcesResolver
+        ? (ResourcesResolver)resourceResolver
+        : ResourcesResolver.basedOn(resourceResolver);
     return Stream.concat(
         Stream.of(new StringSubstitutor(properties)),
         Stream.concat(
             Stream.concat(
-                Stream.of(new IncludeExternalYaml(resolver, properties)),
-                Stream.of(new InlineExternalContent(resolver))),
+                Stream.of(new IncludeExternalYaml(resourceResolver, properties)),
+                Stream.of(new InlineExternalContent(resourcesResolver))),
         YAML_NORMALIZATION_CLASSES.stream().map(this::newVisitor)));
   }
 

@@ -17,9 +17,7 @@ public interface ResourceResolver extends Function<String, String> {
    * @return a resolver that can't resolve anything
    */
   static ResourceResolver none() {
-    return name -> {
-      throw new UnknownResourceException(name, null);
-    };
+    return new RejectResourcesResolver();
   }
 
   /**
