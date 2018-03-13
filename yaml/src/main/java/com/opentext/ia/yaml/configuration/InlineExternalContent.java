@@ -15,6 +15,7 @@ import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.Visit;
 import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.resource.ResourcesResolver;
+import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 
 class InlineExternalContent extends PathVisitor {
@@ -71,8 +72,7 @@ class InlineExternalContent extends PathVisitor {
     if (yaml.containsKey(RESOURCE)) {
       switch (texts.size()) {
         case 0:
-          yaml.remove(RESOURCE);
-          break;
+          throw new UnknownResourceException(resourceName, null);
         case 1:
           yaml.replace(RESOURCE, TEXT, texts.get(0));
           break;

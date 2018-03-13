@@ -31,6 +31,7 @@ import com.opentext.ia.yaml.core.YamlMap;
 public class WhenZippingConfigurations extends TestCase {
 
   private static final String CONFIGURATION_FILE_NAME = "configuration.yml";
+  private static final String INCLUDES = "includes";
   private static final String CONTENT = "content";
   private static final String RESOURCE = "resource";
 
@@ -67,12 +68,16 @@ public class WhenZippingConfigurations extends TestCase {
 
   private File newFile(File dir, String name, String content) throws IOException {
     File result = new File(dir, name);
-    try (OutputStream output = new FileOutputStream(result)) {
+    setContent(result, content);
+    return result;
+  }
+
+  private void setContent(File file, String content) throws IOException {
+    try (OutputStream output = new FileOutputStream(file)) {
       try (Reader input = new StringReader(content)) {
         IOUtils.copy(input, output, StandardCharsets.UTF_8);
       }
     }
-    return result;
   }
 
   private Map<String, InputStream> zipYaml() throws IOException {
@@ -120,7 +125,7 @@ public class WhenZippingConfigurations extends TestCase {
 
   private File yamlFileIncluding(File includedYaml) throws IOException {
     return yamlFileContaining(new YamlMap()
-        .put("includes", Arrays.asList(includedYaml.getAbsolutePath())));
+        .put(INCLUDES, Arrays.asList(includedYaml.getAbsolutePath())));
   }
 
   @Test
@@ -160,13 +165,13 @@ public class WhenZippingConfigurations extends TestCase {
   public void shouldAddReferencedResourcesUsingWildcards() throws IOException {
     String extension = '.' + randomString(3);
     File resource1 = newFile("resource1" + extension, "ipsum");
-    File resource2 = newFile("resource2" + extension, "ipsum");
+    File resource2 = newFile("resource2" + extension, "lorem");
     String pattern = "*" + extension;
     String key = someName();
     yaml = yamlFileContaining(new YamlMap()
-    .put(key, new YamlMap()
-        .put(CONTENT, new YamlMap()
-            .put(RESOURCE, pattern))));
+        .put(key, new YamlMap()
+            .put(CONTENT, new YamlMap()
+                .put(RESOURCE, pattern))));
 
     Map<String, InputStream> zipEntries = zipYaml();
 
@@ -175,6 +180,38 @@ public class WhenZippingConfigurations extends TestCase {
 
     YamlMap configuration = YamlMap.from(zipEntries.get(CONFIGURATION_FILE_NAME));
     assertEquals("Pattern", pattern, configuration.get(key, CONTENT, RESOURCE).toString());
+  }
+
+  @Test
+  public void shouldAddReferencedResourcesUsingWildcardsInIncludedYamlFiles() throws IOException {
+    File subFolder = tempFolder.newFolder("include");
+    String extension = '.' + randomString(3);
+    File resource1 = newFile(subFolder, "resource1" + extension, randomString(13));
+    File resource2 = newFile(subFolder, "resource2" + extension, randomString(13));
+    File resource3 = newFile(subFolder, "resource3.html", "<html><body><h1>Hello</h1></body></html>");
+    String pattern = "*" + extension;
+    YamlMap includedYaml = new YamlMap()
+        .put(someName(), new YamlMap()
+            .put(CONTENT, new YamlMap()
+                .put(RESOURCE, pattern)))
+        .put("customPresentationConfiguration", new YamlMap()
+            .put("name", "Baseball-SearchByPlayerNameView")
+            .put("htmlTemplate", new YamlMap()
+                .put("resource", resource3.getName())));
+
+    File included = newFile(subFolder, "configuration.yml", includedYaml.toString());
+    YamlMap configuration = new YamlMap()
+        .put(INCLUDES, Arrays.asList(
+            String.format("%s/%s", subFolder.getName(), included.getName())));
+    yaml = tempFolder.newFile(CONFIGURATION_FILE_NAME);
+    setContent(yaml, configuration.toString());
+
+    Map<String, InputStream> zipEntries = zipYaml();
+
+    Arrays.asList(resource1, resource2, resource3).forEach(file -> {
+      String path = String.format("%s/%s", subFolder.getName(), file.getName());
+      assertZipEntry("Missing resource", path::equals, zipEntries);
+    });
   }
 
 }

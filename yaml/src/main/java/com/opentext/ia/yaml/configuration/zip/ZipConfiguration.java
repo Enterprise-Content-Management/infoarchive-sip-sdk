@@ -47,11 +47,12 @@ import com.opentext.ia.yaml.resource.UnknownResourceException;
  */
 public class ZipConfiguration {
 
+  static final String MAIN_YAML_FILE_NAME = "configuration.yml";
+
   private static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir")).toAbsolutePath().normalize();
   private static final int MAX_PARENT_PROPERTIES_FILES_PER_ZIP = 10;
   private static final String TOP_LEVEL_PROPERTIES_FILE_NAME = "default.properties";
   private static final String MAIN_PROPERTIES_FILE_NAME = "configuration.properties";
-  private static final String MAIN_YAML_FILE_NAME = "configuration.yml";
   private static final String INCLUDES = "includes";
   private static final String RESOURCE = "resource";
 
@@ -123,7 +124,7 @@ public class ZipConfiguration {
     yaml.visit(visit -> {
       YamlMap map = visit.getMap();
       if (map.containsKey(RESOURCE)) {
-        List<File> resolvedFiles = new FilesSelector(root.getParentFile()).apply(map.get(RESOURCE).toString());
+        List<File> resolvedFiles = new FilesSelector(file.getParentFile()).apply(map.get(RESOURCE).toString());
         if (resolvedFiles.size() == 1) {
           File reference = addReferencedFile(root, file, resolvedFiles.get(0).getAbsolutePath(), numIncludedFiles,
               filesByPath);

@@ -9,7 +9,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -54,6 +56,21 @@ public class RandomAccessZipFile extends HashMap<String, InputStream> {
       // Won't happen with in-memory manipulations
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    return entrySet().stream()
+        .map(e -> String.format("%s=%s", e.getKey(), toString(e.getValue())))
+        .collect(Collectors.joining(System.lineSeparator()));
+  }
+
+  private String toString(InputStream input) {
+    try {
+      return IOUtils.toString(input, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      return "Error serializing " + input;
+    }
   }
 
 }
