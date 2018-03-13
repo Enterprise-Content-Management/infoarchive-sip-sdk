@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
@@ -42,9 +41,13 @@ class FileResolver implements ResourceResolver, ResourcesResolver {
 
   @Override
   public List<String> resolve(String pattern) {
-    Pattern regex = Pattern.compile(toRegex(pattern));
-    Predicate<File> filter = file -> regex.matcher(relativePathOf(file)).matches();
-    return resolve(dir, filter);
+    return resolve(dir, new MatchesWildcardPattern<>(pattern, this::relativePathOf));
+  }
+
+  private String relativePathOf(File file) {
+    return file.getAbsolutePath()
+        .substring(dir.getAbsolutePath().length() + 1)
+        .replace(File.separatorChar, '/');
   }
 
   private List<String> resolve(File root, Predicate<File> filter) {
@@ -61,20 +64,6 @@ class FileResolver implements ResourceResolver, ResourcesResolver {
         .map(file -> resolve(file, filter))
         .forEach(result::addAll);
     return result;
-  }
-
-  private String toRegex(String pattern) {
-    return pattern
-        .replace(".", "\\.")
-        .replace("?", ".")
-        .replace("**/", "([^/]+/)+")
-        .replace("*", "[^/]*");
-  }
-
-  private String relativePathOf(File file) {
-    return file.getAbsolutePath()
-        .substring(dir.getAbsolutePath().length() + 1)
-        .replace(File.separatorChar, '/');
   }
 
 }
