@@ -437,7 +437,7 @@ public class YamlMap {
   }
 
   private void appendText(YamlIndent indent, int currentLineLength, String text, StringBuilder builder) {
-    if (text.isEmpty() || text.matches("([\"%@].*)|(.*#.*)")) {
+    if (text.isEmpty() || text.matches("([\"%@*].*)|(.*#.*)")) {
       builder.append('\'').append(text.replace("'", "''")).append('\'');
     } else if (text.startsWith("'")) {
       builder.append('"').append(text.replace("\"", "\\\"")).append('"');
