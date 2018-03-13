@@ -25,6 +25,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
   private static final String CI_STORE = "ciStore";
   private static final String MANAGED_ITEM_STORE = "managedItemStore";
   private static final String XDB_STORE = "xdbStore";
+  private static final String DATABASE = "database";
   private static final String SEARCH = "search";
   private static final String SEARCH_COMPOSITION = "searchComposition";
   private static final String EXPORT_PIPELINE = "exportPipeline";
@@ -46,7 +47,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/confirmations/\\d+", Arrays.asList(APPLICATION, "deliveryChannel"));
     result.put("/customPresentationConfigurations/\\d+", Arrays.asList(EXPORT_PIPELINE));
     result.put("/databases/\\d+", Arrays.asList(APPLICATION, CI_STORE, MANAGED_ITEM_STORE, XDB_STORE));
-    result.put("/databaseCryptoes/\\d+", Arrays.asList(APPLICATION, "database"));
+    result.put("/databaseCryptoes/\\d+", Arrays.asList(APPLICATION, DATABASE));
     result.put("/deliveryChannels/\\d+", Arrays.asList(APPLICATION, STORE));
     result.put("/exportConfigurations/\\d+", Arrays.asList("pipeline", "transformation"));
     result.put("/holds/\\d+", Arrays.asList(TENANT));
@@ -73,8 +74,8 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/customPresentation", Arrays.asList(APPLICATION, TENANT));
     result.put("/retentionPolicies/\\d+", Arrays.asList(TENANT));
     result.put("/rules/\\d+", Arrays.asList(APPLICATION));
-    result.put("/schemas/\\d+", Arrays.asList("database", XDB_STORE));
-    result.put("/searches/\\d+", Arrays.asList("aic", APPLICATION, "database", "query"));
+    result.put("/schemas/\\d+", Arrays.asList(DATABASE, XDB_STORE));
+    result.put("/searches/\\d+", Arrays.asList("aic", APPLICATION, DATABASE, "query"));
     result.put("/searchGroups/\\d+", Arrays.asList(APPLICATION));
     result.put("/searchCompositions/\\d+", Arrays.asList(SEARCH));
     result.put("/spaces/\\d+", Arrays.asList(APPLICATION));
