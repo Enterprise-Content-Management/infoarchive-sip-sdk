@@ -6,7 +6,7 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
-== 9.14.0 - 2018-03-12
+== 9.14.0 - 2018-03-13
 
 === Added
 
@@ -16,7 +16,8 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 === Fixed
 
 - During YAML normalization, the default value will be used if a property has an empty value in a `.properties` file
-- When inlining YAML files, YAML normalization merges items of the same type instead of throwing an exception 
+- When inlining YAML files, YAML normalization merges items of the same type instead of throwing an exception
+- When serializing a `YamlMap` to string, text values that start with `*` are now properly quoted
 
 
 
