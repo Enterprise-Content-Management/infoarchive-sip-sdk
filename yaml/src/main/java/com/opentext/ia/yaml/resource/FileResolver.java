@@ -8,11 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
@@ -41,29 +37,9 @@ class FileResolver implements ResourceResolver, ResourcesResolver {
 
   @Override
   public List<String> resolve(String pattern) {
-    return resolve(dir, new MatchesWildcardPattern<>(pattern, this::relativePathOf));
-  }
-
-  private String relativePathOf(File file) {
-    return file.getAbsolutePath()
-        .substring(dir.getAbsolutePath().length() + 1)
-        .replace(File.separatorChar, '/');
-  }
-
-  private List<String> resolve(File root, Predicate<File> filter) {
-    List<File> files = Optional.ofNullable(root.listFiles())
-        .map(Arrays::asList)
-        .orElse(Collections.emptyList());
-    List<String> result = files.stream()
-        .filter(File::isFile)
-        .filter(filter)
+    return new FilesSelector(dir).apply(pattern).stream()
         .map(this::resolve)
         .collect(Collectors.toList());
-    files.stream()
-        .filter(File::isDirectory)
-        .map(file -> resolve(file, filter))
-        .forEach(result::addAll);
-    return result;
   }
 
 }

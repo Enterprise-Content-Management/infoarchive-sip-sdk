@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.yaml.configuration.zip;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -23,12 +24,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.YamlMap;
 
 
-public class WhenZippingConfigurations {
+public class WhenZippingConfigurations extends TestCase {
 
   private static final String CONFIGURATION_FILE_NAME = "configuration.yml";
+  private static final String CONTENT = "content";
+  private static final String RESOURCE = "resource";
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -46,7 +50,7 @@ public class WhenZippingConfigurations {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntries("Missing configuration file", CONFIGURATION_FILE_NAME::equals, zipEntries);
+    assertZipEntry("Missing configuration file", CONFIGURATION_FILE_NAME::equals, zipEntries);
   }
 
   private File yamlFileContaining(YamlMap content) throws IOException {
@@ -75,7 +79,7 @@ public class WhenZippingConfigurations {
     return new RandomAccessZipFile(ZipConfiguration.of(yaml));
   }
 
-  private void assertZipEntries(String message, Predicate<String> expected, Map<String, InputStream> actual) {
+  private void assertZipEntry(String message, Predicate<String> expected, Map<String, InputStream> actual) {
     assertTrue(message, actual.keySet().stream().anyMatch(expected));
   }
 
@@ -86,14 +90,14 @@ public class WhenZippingConfigurations {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntries("Missing external resource", resource.getName()::equals, zipEntries);
+    assertZipEntry("Missing external resource", resource.getName()::equals, zipEntries);
   }
 
   private File yamlFileReferencingResource(File resource) throws IOException {
     return yamlFileContaining(new YamlMap()
-        .put("foo", new YamlMap()
-            .put("content", new YamlMap()
-                .put("resource", resource.getAbsolutePath()))));
+        .put(someName(), new YamlMap()
+            .put(CONTENT, new YamlMap()
+                .put(RESOURCE, resource.getAbsolutePath()))));
   }
 
   @Test
@@ -103,11 +107,15 @@ public class WhenZippingConfigurations {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntries("Missing included YAML file", includedYaml.getName()::equals, zipEntries);
+    assertZipEntry("Missing included YAML file", includedYaml.getName()::equals, zipEntries);
   }
 
   private YamlMap someYaml() {
-    return new YamlMap().put("foo", "bar");
+    return new YamlMap().put(someName(), someName());
+  }
+
+  private String someName() {
+    return randomString(5);
   }
 
   private File yamlFileIncluding(File includedYaml) throws IOException {
@@ -122,7 +130,7 @@ public class WhenZippingConfigurations {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntries("Missing properties file", properties.getName()::equals, zipEntries);
+    assertZipEntry("Missing properties file", properties.getName()::equals, zipEntries);
   }
 
   @Test(expected = EmptyZipException.class)
@@ -145,7 +153,28 @@ public class WhenZippingConfigurations {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntries("Missing included YAML file", expectedName::equals, zipEntries);
+    assertZipEntry("Missing included YAML file", expectedName::equals, zipEntries);
+  }
+
+  @Test
+  public void shouldAddReferencedResourcesUsingWildcards() throws IOException {
+    String extension = '.' + randomString(3);
+    File resource1 = newFile("resource1" + extension, "ipsum");
+    File resource2 = newFile("resource2" + extension, "ipsum");
+    String pattern = "*" + extension;
+    String key = someName();
+    yaml = yamlFileContaining(new YamlMap()
+    .put(key, new YamlMap()
+        .put(CONTENT, new YamlMap()
+            .put(RESOURCE, pattern))));
+
+    Map<String, InputStream> zipEntries = zipYaml();
+
+    assertZipEntry("Missing resource #1", resource1.getName()::equals, zipEntries);
+    assertZipEntry("Missing resource #2", resource2.getName()::equals, zipEntries);
+
+    YamlMap configuration = YamlMap.from(zipEntries.get(CONFIGURATION_FILE_NAME));
+    assertEquals("Pattern", pattern, configuration.get(key, CONTENT, RESOURCE).toString());
   }
 
 }

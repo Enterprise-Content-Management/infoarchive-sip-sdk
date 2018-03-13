@@ -10,6 +10,7 @@ import java.io.OutputStream;
 
 import org.junit.rules.TemporaryFolder;
 
+
 public class TestCase {
 
   private final RandomData random = new RandomData();

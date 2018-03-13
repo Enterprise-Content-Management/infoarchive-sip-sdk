@@ -32,8 +32,10 @@ import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import com.opentext.ia.yaml.configuration.ConfigurationPropertiesFactory;
+import com.opentext.ia.yaml.configuration.ObjectConfiguration;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
+import com.opentext.ia.yaml.resource.FilesSelector;
 import com.opentext.ia.yaml.resource.ResourceResolver;
 import com.opentext.ia.yaml.resource.UnknownResourceException;
 
@@ -102,7 +104,16 @@ public class ZipConfiguration {
       YamlMap yaml) {
     ListIterator<Value> includes = yaml.get(INCLUDES).toList().listIterator();
     while (includes.hasNext()) {
-      File reference = addReferencedFile(root, file, includes.next(), numIncludedFiles, filesByPath);
+      Value include = includes.next();
+      if (include.isMap()) {
+        YamlMap map = include.toMap();
+        ObjectConfiguration configuration = ObjectConfiguration.parse(map.get("configure").toString());
+        if (configuration.shouldIgnoreObject()) {
+          continue;
+        }
+        include = map.get(RESOURCE);
+      }
+      File reference = addReferencedFile(root, file, include.toString(), numIncludedFiles, filesByPath);
       includes.set(new Value(filesByPath.get(reference)));
     }
   }
@@ -112,8 +123,16 @@ public class ZipConfiguration {
     yaml.visit(visit -> {
       YamlMap map = visit.getMap();
       if (map.containsKey(RESOURCE)) {
-        File reference = addReferencedFile(root, file, map.get(RESOURCE), numIncludedFiles, filesByPath);
-        map.put(RESOURCE, filesByPath.get(reference));
+        List<File> resolvedFiles = new FilesSelector(root.getParentFile()).apply(map.get(RESOURCE).toString());
+        if (resolvedFiles.size() == 1) {
+          File reference = addReferencedFile(root, file, resolvedFiles.get(0).getAbsolutePath(), numIncludedFiles,
+              filesByPath);
+          map.put(RESOURCE, filesByPath.get(reference));
+        } else {
+          resolvedFiles.forEach(f ->
+              addReferencedFile(root, f, f.getAbsolutePath(), numIncludedFiles, filesByPath));
+          // Leave pattern as-is
+        }
       }
     });
   }
@@ -147,7 +166,7 @@ public class ZipConfiguration {
     }
   }
 
-  private File addReferencedFile(File root, File source, Value reference, AtomicInteger numIncludedFiles,
+  private File addReferencedFile(File root, File source, String reference, AtomicInteger numIncludedFiles,
       Map<File, String> filesByPath) {
     String path = uriToPath(source.toURI().resolve(toRelativeUri(reference, filesByPath)));
     File result = new File(path);
@@ -164,8 +183,8 @@ public class ZipConfiguration {
     return uri.toString().substring(5); // After "file:"
   }
 
-  private String toRelativeUri(Value reference, Map<File, String> files) {
-    String result = toUnix(reference.toString());
+  private String toRelativeUri(String reference, Map<File, String> files) {
+    String result = toUnix(reference);
     ResourceResolver resourceResolver = name -> files.entrySet().stream()
           .filter(e -> e.getValue().equals(name))
           .map(Entry::getKey)
