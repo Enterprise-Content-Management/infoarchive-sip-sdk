@@ -3,6 +3,8 @@
  */
 package com.opentext.ia.yaml.resource;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -15,6 +17,10 @@ import java.util.regex.Pattern;
  */
 public class MatchesWildcardPattern<T> implements Predicate<T> {
 
+  private static final Collection<String> SPECIAL_CHARACTERS = Arrays.asList(
+      "\\", // Must be first
+      "^", "$", ".", "+", "-", "|", "&", "(", ")", "[", "]", "{", "}", "<", ">");
+
   private final Function<T, String> objectToPath;
   private final Pattern pathPattern;
 
@@ -24,8 +30,11 @@ public class MatchesWildcardPattern<T> implements Predicate<T> {
   }
 
   private String toPathRegex(String pattern) {
-    return pattern
-        .replace(".", "\\.")
+    String result = pattern;
+    for (String specialCharacter : SPECIAL_CHARACTERS) {
+      result = result.replace(specialCharacter, '\\' + specialCharacter);
+    }
+    return result
         .replace("?", "[^/]")
         .replace("**/", "([^/]+/)+")
         .replace("*", "[^/]*");
