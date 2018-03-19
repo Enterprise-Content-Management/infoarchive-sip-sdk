@@ -6,6 +6,15 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 9.15.0 - 2018-03-19
+
+=== Added
+
+- During YAML normalization, binary resources are not inlined. Use `binary: true` to indicate a binary resource, or
+use a `format` or file extension that is considered binary. For now, only `zip` is supported.
+
+
+
 == 9.14.1 - 2018-03-14
 
 === Fixed

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -19,9 +18,7 @@ import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.Entry;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
-import com.opentext.ia.yaml.core.YamlSequence;
 import com.opentext.ia.yaml.resource.ResourceResolver;
-import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 
 public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
@@ -37,7 +34,6 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   private static final String CONTENT = "content";
   private static final String FORMAT = "format";
   private static final String XML = "xml";
-  private static final String RESOURCE = "resource";
   private static final String TEXT = "text";
   private static final String TENANTS = "tenants";
   private static final String TENANT = "tenant";
@@ -62,37 +58,13 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   private static final String INDEXES = "indexes";
   private static final String PATH_VALUE_INDEX = "path.value.index";
   private static final String PATH = "path";
-  private static final String HTML_TEMPLATE = "htmlTemplate";
   private static final String FILE_SYSTEM_FOLDERS = "fileSystemFolders";
   private static final String DATABASES = "databases";
-  private static final String METADATA = "metadata";
   private static final String EXPORT_TRANSFORMATION = "exportTransformation";
   private static final String EXPORT_PIPELINE = "exportPipeline";
-  private static final String TRANSFORMATIONS = English.plural(TRANSFORMATION);
-  private static final String XQUERY = "xquery";
 
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
-
-  @Test
-  public void shouldInlineResources() throws Exception {
-    String expected = someName();
-    String resource = someTextFileName();
-    resourceResolver = resolveResource(resource, expected);
-    String singularType = someType();
-    String pluralType = English.plural(someType());
-    yaml.put(singularType, Arrays.asList(externalContentTo(resource)));
-    yaml.put(pluralType, externalContentTo(resource));
-    String multipleContent = English.plural(someName());
-    yaml.put(multipleContent, Arrays.asList(new YamlMap().put(CONTENT, Arrays.asList(externalResourceTo(resource)))));
-
-    normalizeYaml();
-
-    assertContentIsInlined("list", expected, yaml.get(singularType, 0));
-    assertContentIsInlined("map", expected, yaml.get(pluralType));
-    assertValue(String.format("Multiple content objects not inlinedinlined%n%s", yaml), expected,
-        yaml.get(multipleContent, 0, CONTENT, 0, TEXT));
-  }
 
   private String someName() {
     return randomString(5);
@@ -100,25 +72,6 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   private String someType() {
     return randomString(8);
-  }
-
-  private String someFileName(String extension) {
-    return someName() + '.' + extension;
-  }
-
-  private YamlMap externalResourceTo(String resource) {
-    return new YamlMap().put(RESOURCE, resource);
-  }
-
-  private YamlMap externalContentTo(String resource) {
-    return new YamlMap()
-        .put(NAME, someName())
-        .put(CONTENT, externalResourceTo(resource));
-  }
-
-  private void assertContentIsInlined(String type, String expected, Value owner) {
-    assertValue(String.format("Content in %s not inlined:%n%s", type, yaml), expected,
-        owner.toMap().get(CONTENT, TEXT));
   }
 
   private void normalizeYaml() {
@@ -131,177 +84,6 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   private void assertValue(String message, String expected, Value actual) {
     assertEquals(message, expected, actual.toString());
-  }
-
-  @Test
-  public void shouldInlineNormalizedCustomPresentationHtmlTemplate() throws Exception {
-    String expected = someName();
-    String resource = someHtmlFileName();
-    resourceResolver = resolveResource(resource, expected);
-    yaml.put("customPresentationConfigurations", Arrays.asList(new YamlMap()
-        .put(NAME, someName())
-        .put(HTML_TEMPLATE, new YamlMap()
-            .put(RESOURCE, resource))));
-
-    normalizeYaml();
-
-    assertCustomPresentationHasInlinedHtmlTemplate(expected);
-  }
-
-  private ResourceResolver resolveResource(String supported, String resolution) {
-    return name -> {
-      if (name.equals(supported)) {
-        return resolution;
-      }
-      throw new UnknownResourceException(name, null);
-    };
-  }
-
-  private void assertCustomPresentationHasInlinedHtmlTemplate(String expected) {
-    assertEquals("Inlined resource", expected,
-        yaml.get(English.plural("customPresentationConfiguration"), 0, HTML_TEMPLATE, TEXT).toString());
-  }
-
-  @Test
-  public void shouldInlineSingleCustomPresentationHtmlTemplate() throws Exception {
-    String expected = someName();
-    String resource = someHtmlFileName();
-    resourceResolver = resolveResource(resource, expected);
-    yaml.put("customPresentationConfiguration", new YamlMap()
-        .put(NAME, someName())
-        .put(HTML_TEMPLATE, new YamlMap()
-            .put(RESOURCE, resource)));
-
-    normalizeYaml();
-
-    assertCustomPresentationHasInlinedHtmlTemplate(expected);
-  }
-
-  @Test
-  public void shouldInlineNamedCustomPresentationHtmlTemplate() throws Exception {
-    String expected = someName();
-    String resource = someHtmlFileName();
-    resourceResolver = resolveResource(resource, expected);
-    yaml.put("customPresentationConfigurations", new YamlMap()
-        .put(someName(), new YamlMap()
-            .put(HTML_TEMPLATE, new YamlMap()
-                .put(RESOURCE, resource))));
-
-    normalizeYaml();
-
-    assertCustomPresentationHasInlinedHtmlTemplate(expected);
-  }
-
-  private String someHtmlFileName() {
-    return someFileName("html");
-  }
-
-  @Test
-  public void shouldInlineNormalizedDatabaseMetadata() throws Exception {
-    String expected = someName();
-    String resource = someXmlFile();
-    resourceResolver = resolveResource(resource, expected);
-    yaml.put(DATABASES, Arrays.asList(new YamlMap()
-        .put(NAME, someName())
-        .put(METADATA, Arrays.asList(new YamlMap()
-            .put(RESOURCE, resource)))));
-
-    normalizeYaml();
-
-    assertDatabaseMetadataIsInlined(expected);
-  }
-
-  private void assertDatabaseMetadataIsInlined(String expected) {
-    YamlMap databaseMetadata = yaml.get(DATABASES, 0, METADATA, 0).toMap();
-    assertEquals("Metadata", expected, databaseMetadata.get(TEXT).toString());
-  }
-
-  @Test
-  public void shouldInlineSingleDatabaseMetadata() throws Exception {
-    String expected = someName();
-    String resource = someXmlFile();
-    resourceResolver = resolveResource(resource, expected);
-    yaml.put("database", new YamlMap()
-        .put(NAME, someName())
-        .put(METADATA, Arrays.asList(new YamlMap()
-            .put(RESOURCE, resource))));
-
-    normalizeYaml();
-
-    assertDatabaseMetadataIsInlined(expected);
-  }
-
-  @Test
-  public void shouldInlineNamedDatabaseMetadata() throws Exception {
-    String expected = someName();
-    String resource = someXmlFile();
-    resourceResolver = resolveResource(resource, expected);
-    yaml.put(DATABASES, new YamlMap()
-        .put(someName(), new YamlMap()
-            .put(METADATA, Arrays.asList(new YamlMap()
-                .put(RESOURCE, resource)))));
-
-    normalizeYaml();
-
-    assertDatabaseMetadataIsInlined(expected);
-  }
-
-  private String someXmlFile() {
-    return someFileName(XML);
-  }
-
-  @Test
-  public void shouldInlineNormalizedTransformationXQuery() throws Exception {
-    String expected = someName();
-    String resource = someTextFileName();
-    resourceResolver = resolveResource(resource, expected);
-    yaml.put(TRANSFORMATIONS, Arrays.asList(new YamlMap()
-        .put(NAME, someName())
-        .put(XQUERY, new YamlMap()
-            .put(RESOURCE, resource))));
-
-    normalizeYaml();
-
-    assertTransformationXQueryIsInlined(expected);
-  }
-
-  private void assertTransformationXQueryIsInlined(String expected) {
-    assertEquals("Inlined transformation xquery", expected,
-        yaml.get(TRANSFORMATIONS, 0, XQUERY, TEXT).toString());
-  }
-
-  @Test
-  public void shouldInlineSingleTransformationXQuery() throws Exception {
-    String expected = someName();
-    String resource = someTextFileName();
-    resourceResolver = resolveResource(resource, expected);
-    yaml.put(TRANSFORMATION, new YamlMap()
-        .put(NAME, someName())
-        .put(XQUERY, new YamlMap()
-            .put(RESOURCE, resource)));
-
-    normalizeYaml();
-
-    assertTransformationXQueryIsInlined(expected);
-  }
-
-  @Test
-  public void shouldInlineNamedTransformationXQuery() throws Exception {
-    String expected = someName();
-    String resource = someTextFileName();
-    resourceResolver = resolveResource(resource, expected);
-    yaml.put(TRANSFORMATIONS, new YamlMap()
-        .put(someName(), new YamlMap()
-            .put(XQUERY, new YamlMap()
-                .put(RESOURCE, resource))));
-
-    normalizeYaml();
-
-    assertTransformationXQueryIsInlined(expected);
-  }
-
-  private String someTextFileName() {
-    return someFileName("txt");
   }
 
   @Test
@@ -803,34 +585,6 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     normalizeYaml(yaml);
 
     assertValue("Resolved value", "fred", yaml.get("gnus", 0, "gnat"));
-  }
-
-  @Test
-  public void shouldInlineFileResourcesByPattern() {
-    resourceResolver = ResourceResolver.fromFile(new File("src/test/resources/nested-includes/root.yml"));
-    yaml.put(DATABASES, Arrays.asList(new YamlMap()
-        .put(NAME, someName())
-        .put(METADATA, Arrays.asList(new YamlMap()
-            .put(RESOURCE, "**/*.yml")))));
-
-    normalizeYaml(yaml);
-
-    YamlSequence contents = yaml.get(DATABASES, 0, METADATA).toList();
-    assertTrue("# inlined:\n" + yaml, contents.size() > 1);
-  }
-
-  @Test
-  public void shouldInlineFileResourcesByPatterns() {
-    resourceResolver = ResourceResolver.fromFile(new File("src/test/resources/configuration.properties"));
-    yaml.put(DATABASES, Arrays.asList(new YamlMap()
-        .put(NAME, someName())
-        .put(METADATA, Arrays.asList(new YamlMap()
-            .put(RESOURCE, Arrays.asList("nested-includes/*.yml", "*.properties"))))));
-
-    normalizeYaml(yaml);
-
-    YamlSequence contents = yaml.get(DATABASES, 0, METADATA).toList();
-    assertTrue("# inlined:\n" + yaml, contents.size() > 1);
   }
 
 }

@@ -32,6 +32,7 @@ class InlineExternalContent extends PathVisitor {
   private static final String FORMAT = "format";
   private static final String RESOURCE = "resource";
   private static final Collection<String> SEGMENTS_WITH_FORMAT = Arrays.asList("content");
+  private static final Collection<String> BINARY_EXTENSIONS = Arrays.asList("zip");
 
   private final ResourcesResolver resolver;
   private final Map<String, String> formatByExtension = new HashMap<>();
@@ -63,8 +64,25 @@ class InlineExternalContent extends PathVisitor {
   }
 
   private void processResource(YamlMap yaml, String path, String resourceName) {
+    if (isBinary(yaml, resourceName)) {
+      return;
+    }
     inlineResource(yaml, resourceName);
     optionallySetFormat(path, yaml, resourceName);
+  }
+
+  private boolean isBinary(YamlMap yaml, String resourceName) {
+    if (yaml.get("binary").toBoolean()) {
+      return true;
+    }
+    if (BINARY_EXTENSIONS.contains(yaml.get(FORMAT).toString())) {
+      return true;
+    }
+    int index = resourceName.lastIndexOf('.');
+    if (index < 0) {
+      return false;
+    }
+    return BINARY_EXTENSIONS.contains(resourceName.substring(index + 1));
   }
 
   private void inlineResource(YamlMap yaml, String resourceName) {
