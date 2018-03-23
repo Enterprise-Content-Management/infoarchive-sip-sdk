@@ -14,8 +14,15 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apache.commons.io.IOUtils;
@@ -30,10 +37,12 @@ import com.opentext.ia.yaml.core.YamlMap;
 
 public class WhenZippingConfigurations extends TestCase {
 
+  private static final String INCLUDED_RESOURCE_NAME = "included.txt";
   private static final String CONFIGURATION_FILE_NAME = "configuration.yml";
-  private static final String INCLUDES = "includes";
+  private static final String NAME = "name";
   private static final String CONTENT = "content";
   private static final String RESOURCE = "resource";
+  private static final String INCLUDES = "includes";
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -73,6 +82,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   private void setContent(File file, String content) throws IOException {
+    file.getParentFile().mkdirs();
     try (OutputStream output = new FileOutputStream(file)) {
       try (Reader input = new StringReader(content)) {
         IOUtils.copy(input, output, StandardCharsets.UTF_8);
@@ -85,7 +95,8 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   private void assertZipEntry(String message, Predicate<String> expected, Map<String, InputStream> actual) {
-    assertTrue(message, actual.keySet().stream().anyMatch(expected));
+    Set<String> keys = actual.keySet();
+    assertTrue(message + ":\n" + keys, keys.stream().anyMatch(expected));
   }
 
   @Test
@@ -152,13 +163,33 @@ public class WhenZippingConfigurations extends TestCase {
 
   @Test
   public void shouldAvoidNameConflictsWhenIncludingFilesOutsideTheDirectoryTree() throws IOException {
-    File includedYaml = newFile(tempFolder.newFolder(), "include.yaml", someYaml().toString());
-    String expectedName = "0-" + includedYaml.getName();
+    File otherFolder = tempFolder.newFolder();
+    File includedFile1 = newFile(otherFolder, INCLUDED_RESOURCE_NAME, "foo");
+    File includedFile2 = newFile(new File(otherFolder, "subfolder"), INCLUDED_RESOURCE_NAME, "bar");
+    File includedYaml = newFile(otherFolder, "include.yml",
+        someYamlReferencing(Arrays.asList(INCLUDED_RESOURCE_NAME, "subfolder/included.txt")));
+    String expectedYamlName = "0-" + includedYaml.getName();
+    String expectedFileName1 = "0-" + includedFile1.getName();
+    String expectedFileName2 = "1-" + includedFile2.getName();
     yaml = yamlFileIncluding(includedYaml);
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntry("Missing included YAML file", expectedName::equals, zipEntries);
+    assertZipEntry("Missing included YAML file", expectedYamlName::equals, zipEntries);
+    assertZipEntry("Missing included text file #1", expectedFileName1::equals, zipEntries);
+    assertZipEntry("Missing included text file #2", expectedFileName2::equals, zipEntries);
+    YamlMap zipped = YamlMap.from(zipEntries.get(CONFIGURATION_FILE_NAME));
+    assertEquals("Included file", expectedYamlName, zipped.get(INCLUDES, 0).toString());
+  }
+
+  private String someYamlReferencing(Collection<String> resources) {
+    return new YamlMap()
+        .put("pdiSchema", new YamlMap()
+            .put(NAME, someName())
+            .put(CONTENT, new YamlMap()
+                .put("format", "txt")
+                .put(RESOURCE, resources))
+            ).toString();
   }
 
   @Test
@@ -195,11 +226,11 @@ public class WhenZippingConfigurations extends TestCase {
             .put(CONTENT, new YamlMap()
                 .put(RESOURCE, pattern)))
         .put("customPresentationConfiguration", new YamlMap()
-            .put("name", "Baseball-SearchByPlayerNameView")
+            .put(NAME, "Baseball-SearchByPlayerNameView")
             .put("htmlTemplate", new YamlMap()
-                .put("resource", resource3.getName())));
+                .put(RESOURCE, resource3.getName())));
 
-    File included = newFile(subFolder, "configuration.yml", includedYaml.toString());
+    File included = newFile(subFolder, CONFIGURATION_FILE_NAME, includedYaml.toString());
     YamlMap configuration = new YamlMap()
         .put(INCLUDES, Arrays.asList(
             String.format("%s/%s", subFolder.getName(), included.getName())));
@@ -211,6 +242,81 @@ public class WhenZippingConfigurations extends TestCase {
     Arrays.asList(resource1, resource2, resource3).forEach(file -> {
       String path = String.format("%s/%s", subFolder.getName(), file.getName());
       assertZipEntry("Missing resource", path::equals, zipEntries);
+    });
+  }
+
+  @Test
+  public void shouldSubstitutePropertiesToDeterminePathsToResources() throws IOException {
+    String text = randomString();
+    File resourceFile = newFile(someName() + ".txt", text);
+    newFile("configuration.properties", "name=" + resourceFile.getName());
+    yaml = newFile("configuration.yml", new YamlMap()
+        .put("pdiSchema", new YamlMap()
+            .put("name", someName())
+            .put("content", new YamlMap()
+                .put("format", "txt")
+                .put("resource", "${name}")))
+        .toString());
+
+    Map<String, InputStream> zipEntries = zipYaml();
+
+    assertZipEntry("Resource not included: " + resourceFile.getName(), resourceFile.getName()::equals, zipEntries);
+  }
+
+  @Test
+  public void shouldResolvePathsUpAndDownTheFolderHierarchy() throws IOException {
+    File upFile = new File("../up.yml");
+    try {
+      setContent(upFile, "application:\n  name: test");
+      File baseDir = new File("config");
+      baseDir.mkdirs();
+      try {
+        File downIncludedFile = new File("config/sub/included.txt");
+        setContent(downIncludedFile, "ape");
+        File downFile = new File("config/sub/down.yml");
+        setContent(downFile, "pdiSchema:\n  name: test\n  content:\n    format: txt\n    resource: included.txt");
+        File yamlFile = new File(baseDir, "configuration.yml");
+        setContent(yamlFile, "includes:\n- ../../up.yml\n- sub/down.yml");
+        File zipFile = ZipConfiguration.of(baseDir);
+        try {
+          RandomAccessZipFile zipEntries = new RandomAccessZipFile(zipFile);
+          assertZipEntry("Up include missing", "0-up.yml"::equals, zipEntries);
+          assertZipEntry("Down include missing", "sub/down.yml"::equals, zipEntries);
+          assertZipEntry("Down resource missing", "sub/included.txt"::equals, zipEntries);
+          YamlMap map = YamlMap.from(zipEntries.get("sub/down.yml"));
+          assertEquals("Resource", INCLUDED_RESOURCE_NAME, map.get("pdiSchema", "content", "resource").toString());
+        } finally {
+          delete(zipFile);
+        }
+      } finally {
+        delete(baseDir);
+      }
+    } finally {
+      delete(upFile);
+    }
+  }
+
+  private void delete(File file) throws IOException {
+    if (file.isDirectory()) {
+      deleteRecursive(file);
+    } else if (file.isFile()) {
+      Files.delete(file.toPath());
+    }
+  }
+
+  private void deleteRecursive(File root) throws IOException {
+    Files.walkFileTree(root.toPath(), new SimpleFileVisitor<Path>() {
+      @Override
+      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        Files.delete(file);
+        return super.visitFile(file, attrs);
+      }
+
+      @Override
+      public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+        Files.delete(dir);
+        return super.postVisitDirectory(dir, exc);
+      }
     });
   }
 

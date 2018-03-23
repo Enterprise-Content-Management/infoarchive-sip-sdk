@@ -508,52 +508,6 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForJobDefinition() {
-    configuration = builder.withJobDefinition().build();
-    ConfigurationObject jobDefinition = configuration.getJobDefinition();
-
-    assertRandomName(jobDefinition);
-    assertProperties(jobDefinition,
-        "applicationScoped", true,
-        "tenantScoped", true,
-        "systemScoped", true,
-        "readOnly", false,
-        "maxAttempts", "1",
-        "expirationInterval", "60000",
-        "rescheduleInterval", "60000");
-  }
-
-  @Test
-  public void shouldSetPropertiesForJobDefinition() {
-    configuration = builder.withJobDefinition()
-        .named("myJobDefinition")
-        .withDescription(DESCRIPTIVE_TEXT)
-        .handledBy("myHandler")
-        .readOnly()
-        .scopedToTenant()
-        .attemptMax(2)
-        .expireAfter(1000)
-        .rescheduleAfter(1000)
-        .withProperty("ape", "bear")
-        .withProperty("cheetah", "dingo")
-    .build();
-    ConfigurationObject jobDefinition = configuration.getJobDefinition();
-
-    assertProperties(jobDefinition,
-        NAME, "myJobDefinition",
-        DESCRIPTION, DESCRIPTIVE_TEXT,
-        "handlerName", "myHandler",
-        "readOnly", true,
-        "applicationScoped", false,
-        "maxAttempts", "2",
-        "expirationInterval", "1000",
-        "rescheduleInterval", "1000");
-    JSONObject properties = jobDefinition.getProperties().optJSONObject("properties");
-    assertProperty("bear", properties, "ape");
-    assertProperty("dingo", properties, "cheetah");
-  }
-
-  @Test
   public void shouldUseDefaultPropertiesForXdbCluster() {
     configuration = builder.withXdbCluster().build();
     ConfigurationObject xdbCluster = configuration.getXdbCluster();

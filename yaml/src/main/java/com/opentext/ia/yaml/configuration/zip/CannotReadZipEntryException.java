@@ -16,7 +16,7 @@ public class CannotReadZipEntryException extends RuntimeException {
   private final File file;
 
   public CannotReadZipEntryException(Exception e, File file) {
-    super(e);
+    super("Cannot read file for inclusion into ZIP: " + file, e);
     this.file = file;
   }
 
