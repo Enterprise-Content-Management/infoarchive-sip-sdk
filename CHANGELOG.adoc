@@ -6,12 +6,32 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 10.0.0 - TBD
+
+=== Removed
+
+- `ConfigurationBuilder.withJobDefinition()`
+
+
+=== Added
+
+- Added `ZipBuilder`
+- Support additional binary formats during YAML normalization: `custom`, `pdf`
+
+
+=== Fixed
+
+- Some fixes in `ZipConfiguration` (which now uses the new `ZipBuilder`)
+
+
+
 == 9.15.0 - 2018-03-19
 
 === Added
 
-- During YAML normalization, binary resources are not inlined. Use `binary: true` to indicate a binary resource, or
-use a `format` or file extension that is considered binary. For now, only `zip` is supported.
+- Added support for binary resources in YAML: during normalization these are not inlined. Use `binary: true` to 
+indicate a binary resource, or use a `format` or file extension that is considered binary. For now, only `zip` is 
+supported
 
 
 
