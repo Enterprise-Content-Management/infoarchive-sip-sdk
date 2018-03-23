@@ -32,7 +32,7 @@ class InlineExternalContent extends PathVisitor {
   private static final String FORMAT = "format";
   private static final String RESOURCE = "resource";
   private static final Collection<String> SEGMENTS_WITH_FORMAT = Arrays.asList("content");
-  private static final Collection<String> BINARY_EXTENSIONS = Arrays.asList("zip");
+  private static final Collection<String> BINARY_EXTENSIONS = Arrays.asList("custom", "pdf", "zip");
 
   private final ResourcesResolver resolver;
   private final Map<String, String> formatByExtension = new HashMap<>();
