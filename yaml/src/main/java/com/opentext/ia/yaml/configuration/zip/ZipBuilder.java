@@ -78,7 +78,7 @@ public class ZipBuilder {
     String result = file.getAbsolutePath();
     if (result.startsWith(basePath)) {
       // Inside base directory => use relative path (which will be unique)
-      result = result.substring(basePath.length());
+      result = FilenameUtils.separatorsToUnix(result.substring(basePath.length()));
     } else {
       // Outside base directory => ensure unique name
       String ext = FilenameUtils.getExtension(result);

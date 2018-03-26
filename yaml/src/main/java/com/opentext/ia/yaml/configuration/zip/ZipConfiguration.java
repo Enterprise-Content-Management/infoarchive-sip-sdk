@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Consumer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import com.opentext.ia.yaml.configuration.ConfigurationPropertiesFactory;
@@ -92,7 +93,7 @@ public class ZipConfiguration {
         || propertiesFiles.stream().map(File::getName).anyMatch(TOP_LEVEL_PROPERTIES_FILE_NAME::equals);
   }
 
- private void addFromYaml(File file) {
+ private void addFromYaml(File file) throws IOException {
     addLocalPropertiesFile(file);
     YamlMap yaml = parseYaml(file);
     addIncludedYamlFiles(file, yaml);
@@ -115,7 +116,7 @@ public class ZipConfiguration {
     }
   }
 
-  private void addIncludedYamlFiles(File base, YamlMap yaml) {
+  private void addIncludedYamlFiles(File base, YamlMap yaml) throws IOException {
     ListIterator<Value> includes = yaml.get(INCLUDES).toList().listIterator();
     while (includes.hasNext()) {
       Value include = includes.next();
@@ -133,7 +134,7 @@ public class ZipConfiguration {
     }
   }
 
-  private MappedFile mapFile(File base, Value value) {
+  private MappedFile mapFile(File base, Value value) throws IOException {
     String pathInYaml = value.toString();
     String pathAfterPropertySubstitution = substituteProperties(pathInYaml);
     File file = resolveFile(base, pathAfterPropertySubstitution);
@@ -163,10 +164,16 @@ public class ZipConfiguration {
     return ConfigurationPropertiesFactory.newInstance(builder.getResourceResolver()).apply(value);
   }
 
-  private File resolveFile(File base, String path) {
+  private File resolveFile(File base, String path) throws IOException {
     URI baseUri = base.getParentFile().toURI();
-    String result = baseUri.resolve(path).toString().substring(5); // After "file:"
-    return new File(result);
+    String result = baseUri.resolve(toUnix(path)).toString().substring(5); // After "file:"
+    return new File(result).getCanonicalFile();
+  }
+
+  private String toUnix(String path) {
+    String result = FilenameUtils.separatorsToUnix(path);
+    int prefixLength = FilenameUtils.getPrefixLength(result);
+    return prefixLength <= 1 ? result : result.substring(prefixLength - 1);
   }
 
   private void addExternalResourceFiles(File base, YamlMap yaml) {
