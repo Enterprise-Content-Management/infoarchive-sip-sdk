@@ -24,6 +24,12 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 - Some fixes in `ZipConfiguration` (which now uses the new `ZipBuilder`)
 
 
+== 9.16.0
+
+WARNING: Version 9.16.0 violated semantic versioning and should have been 10.0.0.
+
+
+
 
 == 9.15.0 - 2018-03-19
 
