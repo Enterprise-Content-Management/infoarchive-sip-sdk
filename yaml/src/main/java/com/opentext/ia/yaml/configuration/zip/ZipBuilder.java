@@ -20,6 +20,9 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
+import com.opentext.ia.yaml.resource.ResourceResolver;
+import com.opentext.ia.yaml.resource.UnknownResourceException;
+
 
 /**
  *  Build a zip from files on the file system.
@@ -143,6 +146,24 @@ public class ZipBuilder {
       return IOUtils.toInputStream((String)source, StandardCharsets.UTF_8);
     }
     return new FileInputStream((File)source);
+  }
+
+  public ResourceResolver getResourceResolver() {
+    return name -> {
+      Object source = entries.entrySet().stream()
+          .filter(e -> e.getValue().equals(name))
+          .map(Entry::getKey)
+          .findFirst()
+          .orElseThrow(() -> new UnknownResourceException(name, null));
+      if (source instanceof String) {
+        return (String)source;
+      }
+      try (InputStream input = toInputStream(source)) {
+        return IOUtils.toString(input, StandardCharsets.UTF_8);
+      } catch (IOException e) {
+        throw new UnknownResourceException(name, e);
+      }
+    };
   }
 
   @Override

@@ -4,11 +4,8 @@
 package com.opentext.ia.yaml.configuration.zip;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,7 +13,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Consumer;
 
-import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import com.opentext.ia.yaml.configuration.ConfigurationPropertiesFactory;
@@ -24,7 +20,6 @@ import com.opentext.ia.yaml.configuration.ObjectConfiguration;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.resource.FilesSelector;
-import com.opentext.ia.yaml.resource.ResourceResolver;
 
 
 /**
@@ -140,7 +135,7 @@ public class ZipConfiguration {
 
   private MappedFile mapFile(File base, Value value) {
     String pathInYaml = value.toString();
-    String pathAfterPropertySubstitution = substituteProperties(base, pathInYaml);
+    String pathAfterPropertySubstitution = substituteProperties(pathInYaml);
     File file = resolveFile(base, pathAfterPropertySubstitution);
     return mapFile(base, pathInYaml, pathAfterPropertySubstitution, file);
   }
@@ -164,24 +159,14 @@ public class ZipConfiguration {
     return new MappedFile(file, path);
   }
 
-  private String substituteProperties(File file, String value) {
-    // TODO: This doesn't always work. Need the .properties files that are stored in the ZIP as input
-    ResourceResolver resourceResolver = name -> textIn(resolveFile(file, name));
-    return ConfigurationPropertiesFactory.newInstance(resourceResolver).apply(value);
+  private String substituteProperties(String value) {
+    return ConfigurationPropertiesFactory.newInstance(builder.getResourceResolver()).apply(value);
   }
 
   private File resolveFile(File base, String path) {
     URI baseUri = base.getParentFile().toURI();
     String result = baseUri.resolve(path).toString().substring(5); // After "file:"
     return new File(result);
-  }
-
-  private String textIn(File file) {
-    try (InputStream input = new FileInputStream(file)) {
-      return IOUtils.toString(input, StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      return "";
-    }
   }
 
   private void addExternalResourceFiles(File base, YamlMap yaml) {
@@ -203,7 +188,7 @@ public class ZipConfiguration {
 
   private void addExternalResourceFile(File base, Value resourcePattern, Consumer<String> updateYaml) {
     String pathInYaml = resourcePattern.toString();
-    String pathAfterPropertySubstitution = substituteProperties(base, pathInYaml);
+    String pathAfterPropertySubstitution = substituteProperties(pathInYaml);
     List<File> files = new FilesSelector(base.getParentFile()).apply(pathAfterPropertySubstitution);
     if (files.size() == 1) {
       String newPathInYaml = mapFile(base, pathInYaml, pathAfterPropertySubstitution, files.get(0)).path;
