@@ -13,12 +13,12 @@ import com.opentext.ia.yaml.core.Visit;
 import com.opentext.ia.yaml.core.YamlMap;
 
 
-class ExpandResultMasterNamespaces extends PathVisitor {
+class ExpandNamespaceUrisToNamespaceObjects extends PathVisitor {
 
   private static final String NAMESPACES = "namespaces";
 
-  ExpandResultMasterNamespaces() {
-    super(Arrays.asList("/resultMasters/\\d++"));
+  ExpandNamespaceUrisToNamespaceObjects() {
+    super(Arrays.asList("/resultMasters/\\d++", "/queries/\\d+"));
   }
 
   @Override

@@ -498,6 +498,24 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
+  public void shouldExpandNamespaceInQuery() {
+    String prefix = "n";
+    String uri = randomUri();
+    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+            .put(PREFIX, prefix)
+            .put(URI, uri)))
+        .put("queries", Arrays.asList(new YamlMap()
+            .put(NAME, someName())
+            .put(NAMESPACES, Arrays.asList(prefix))));
+
+    normalizeYaml();
+
+    YamlMap namespace = yaml.get("queries", 0, NAMESPACES, 0).toMap();
+    assertValue("Namespace prefix", prefix, namespace.get("prefix"));
+    assertValue("Namespace URI", uri, namespace.get("uri"));
+  }
+
+  @Test
   public void shouldNotAddReferencesToPseudoContent() {
     addNamedObjectsFor(APPLICATION, "store");
     addPseudoContent(EXPORT_PIPELINE, EXPORT_TRANSFORMATION, "valueList");

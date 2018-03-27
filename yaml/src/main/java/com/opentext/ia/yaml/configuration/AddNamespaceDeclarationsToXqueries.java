@@ -12,10 +12,10 @@ import com.opentext.ia.yaml.core.Visitor;
 import com.opentext.ia.yaml.core.YamlMap;
 
 
-class AddNamespaceDeclarationsToQueries implements Visitor {
+class AddNamespaceDeclarationsToXqueries implements Visitor {
 
   private static final String NL = System.getProperty("line.separator");
-  static final String NAMESPACES = "namespaces";
+  private static final String NAMESPACES = "namespaces";
 
   @Override
   public void accept(Visit visit) {

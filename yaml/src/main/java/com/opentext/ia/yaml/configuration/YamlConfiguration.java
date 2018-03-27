@@ -50,14 +50,14 @@ public class YamlConfiguration {
       InsertDefaultValues.class,
       InsertDefaultParentForFileSystemFolder.class,
       InsertDefaultParentForXdbDatabase.class,
-      AddNamespaceDeclarationsToQueries.class,
+      AddNamespaceDeclarationsToXqueries.class,
       ReplacePdiIndexNamespaceWithUri.class,
       ReplaceIngestIndexNamespaceWithUri.class,
       ReplacePdiResultSchemaNamespaceWithUri.class,
       ReplacePdiYamlWithXml.class,
       ReplaceResultConfigurationHelperYamlWithXml.class,
       ReplaceIngestYamlWithXml.class,
-      ExpandResultMasterNamespaces.class
+      ExpandNamespaceUrisToNamespaceObjects.class
   );
   private static final String NAME = "name";
   private final YamlMap yaml;

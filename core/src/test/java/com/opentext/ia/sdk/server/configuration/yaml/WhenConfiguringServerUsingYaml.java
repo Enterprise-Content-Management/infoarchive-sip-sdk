@@ -85,7 +85,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
 
   private Map<String, String> normalizeWhitespace(Map<String, String> map) {
     for (Entry<String, String> entry : map.entrySet()) {
-      map.put(entry.getKey(), entry.getValue().replaceAll("\\s+", " ").trim());
+      map.replace(entry.getKey(), entry.getValue().replaceAll("\\s+", " ").trim());
     }
     return map;
   }

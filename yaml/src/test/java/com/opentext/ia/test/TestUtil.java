@@ -34,7 +34,7 @@ public final class TestUtil {
 
   private static <T> String join(Collection<T> items) {
     return items.stream()
-      .map(i -> String.valueOf(i))
+      .map(String::valueOf)
       .collect(Collectors.joining(System.lineSeparator()));
   }
 

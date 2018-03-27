@@ -132,11 +132,13 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
           QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, "resultRootNsEnabled");
       Map<Value, Value> namespaceUriByPrefix = new LinkedHashMap<>();
       query.get(NAMESPACES).toList().stream()
-          .forEach(prefix -> {
-            Value namespaceUri = lookupNamespace("prefix", prefix, "uri");
-            namespaceUriByPrefix.put(prefix, namespaceUri);
+          .map(Value::toMap)
+          .forEach(namespace -> {
+            Value prefix = namespace.get("prefix");
+            Value uri = namespace.get("uri");
+            namespaceUriByPrefix.put(prefix, uri);
             appendTemplated(prefix, QUERY_NAMESPACE_PREFIX_TEMPLATE, name);
-            appendTemplated(namespaceUri, QUERY_NAMESPACE_URI_TEMPLATE, name);
+            appendTemplated(uri, QUERY_NAMESPACE_URI_TEMPLATE, name);
           });
       putTemplated(namespaceUriByPrefix.values().iterator().next(), QUERY_RESULT_SCHEMA_TEMPLATE, name);
       YamlMap xdbPdiConfigs = query.get("xdbPdiConfigs").toMap();
