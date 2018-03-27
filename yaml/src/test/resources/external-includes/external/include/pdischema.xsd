@@ -1,0 +1,10 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:ia:en:xsd:sapconnector.1.0" targetNamespace="urn:ia:en:xsd:sapconnector.1.0" elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+
+  <xs:complexType name="documents">
+    <xs:sequence>
+      <xs:element name="document" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

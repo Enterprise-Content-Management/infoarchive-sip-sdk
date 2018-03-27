@@ -1,0 +1,4 @@
+pdiSchema:
+  content:
+    format: xsd
+    resource: pdischema.xsd

@@ -14,11 +14,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -265,59 +260,20 @@ public class WhenZippingConfigurations extends TestCase {
 
   @Test
   public void shouldResolvePathsUpAndDownTheFolderHierarchy() throws IOException {
-    File upFile = new File("../up.yml");
-    try {
-      setContent(upFile, "application:\n  name: test");
-      File baseDir = new File("config");
-      baseDir.mkdirs();
-      try {
-        File downIncludedFile = new File("config/sub/included.txt");
-        setContent(downIncludedFile, "ape");
-        File downFile = new File("config/sub/down.yml");
-        setContent(downFile, "pdiSchema:\n  name: test\n  content:\n    format: txt\n    resource: included.txt");
-        File yamlFile = new File(baseDir, "configuration.yml");
-        setContent(yamlFile, "includes:\n- ../../up.yml\n- sub/down.yml");
-        File zipFile = ZipConfiguration.of(baseDir);
-        try {
-          RandomAccessZipFile zipEntries = new RandomAccessZipFile(zipFile);
-          assertZipEntry("Up include missing", "0-up.yml"::equals, zipEntries);
-          assertZipEntry("Down include missing", "sub/down.yml"::equals, zipEntries);
-          assertZipEntry("Down resource missing", "sub/included.txt"::equals, zipEntries);
-          YamlMap map = YamlMap.from(zipEntries.get("sub/down.yml"));
-          assertEquals("Resource", INCLUDED_RESOURCE_NAME, map.get("pdiSchema", "content", "resource").toString());
-        } finally {
-          delete(zipFile);
-        }
-      } finally {
-        delete(baseDir);
-      }
-    } finally {
-      delete(upFile);
-    }
-  }
+    File dir = new File("src/test/resources/external-includes/root");
+    Map<String, InputStream> zip = new RandomAccessZipFile(ZipConfiguration.of(dir));
 
-  private void delete(File file) throws IOException {
-    if (file.isDirectory()) {
-      deleteRecursive(file);
-    } else if (file.isFile()) {
-      Files.delete(file.toPath());
-    }
-  }
+    YamlMap map = YamlMap.from(zip.get(CONFIGURATION_FILE_NAME));
+    String zipEntry = map.get("includes", 0).toString();
+    assertTrue("Missing root include: " + zipEntry, zip.containsKey(zipEntry));
 
-  private void deleteRecursive(File root) throws IOException {
-    Files.walkFileTree(root.toPath(), new SimpleFileVisitor<Path>() {
-      @Override
-      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        Files.delete(file);
-        return super.visitFile(file, attrs);
-      }
+    map = YamlMap.from(zip.get(zipEntry));
+    zipEntry = map.get("includes", 0).toString();
+    assertTrue("Missing external include: " + zipEntry, zip.containsKey(zipEntry));
 
-      @Override
-      public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-        Files.delete(dir);
-        return super.postVisitDirectory(dir, exc);
-      }
-    });
+    map = YamlMap.from(zip.get(zipEntry));
+    zipEntry = map.get("pdiSchema", "content", "resource").toString();
+    assertTrue("Missing external resource: " + zipEntry, zip.containsKey(zipEntry));
   }
 
 }

@@ -138,15 +138,15 @@ public class ZipConfiguration {
     String pathInYaml = value.toString();
     String pathAfterPropertySubstitution = substituteProperties(pathInYaml);
     File file = resolveFile(base, pathAfterPropertySubstitution);
-    return mapFile(base, pathInYaml, pathAfterPropertySubstitution, file);
+    return mapFile(pathInYaml, pathAfterPropertySubstitution, file);
   }
 
-  private MappedFile mapFile(File base, String pathInYaml, String pathAfterPropertySubstitution, File file) {
+  private MappedFile mapFile(String pathInYaml, String pathAfterPropertySubstitution, File file) {
     String pathInZip = builder.add(file);
     String path;
     if (pathInYaml.equals(pathAfterPropertySubstitution)) {
       // No property substitution has taken place
-      if (file.getPath().startsWith(base.getParent() + File.separator)) {
+      if (file.getPath().startsWith(root.getParent() + File.separator)) {
         // Included file is in same directory as YAML file or lower => leave the path as is
         path = pathAfterPropertySubstitution;
       } else {
@@ -198,7 +198,7 @@ public class ZipConfiguration {
     String pathAfterPropertySubstitution = substituteProperties(pathInYaml);
     List<File> files = new FilesSelector(base.getParentFile()).apply(pathAfterPropertySubstitution);
     if (files.size() == 1) {
-      String newPathInYaml = mapFile(base, pathInYaml, pathAfterPropertySubstitution, files.get(0)).path;
+      String newPathInYaml = mapFile(pathInYaml, pathAfterPropertySubstitution, files.get(0)).path;
       updateYaml.accept(newPathInYaml);
     } else {
       files.forEach(builder::add);
