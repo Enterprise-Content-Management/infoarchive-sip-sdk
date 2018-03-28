@@ -6,11 +6,19 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 10.0.4 - 2018-03-28
+
+=== Fixed
+
+- Fixed serialization of YAML 
+
+
+
 == 10.0.3 - 2018-03-28
 
 === Fixed
 
-- Fixed serialization of YAML when value contains a colon 
+- Fixed serialization of YAML 
 
 
 

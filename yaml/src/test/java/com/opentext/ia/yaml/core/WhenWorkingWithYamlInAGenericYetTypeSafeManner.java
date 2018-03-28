@@ -40,7 +40,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   private static final String EMPTY = "Empty";
   private static final String NAME = "name";
   private static final String SAMPLE_YAML_STRING = String.format(
-      "root:%n- property: value%n  sequence:%n  - one%n  - two%n  nested:%n    foo: bar%n  key: 'value:with:colon'%n");
+      "root:%n- property: value%n  sequence:%n  - one%n  - two%n  nested:%n    foo: bar%n  key: 'value: with: colons'%n");
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -272,6 +272,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertToString("Empty string", new YamlMap().put("foobar", ""));
     assertToString("Start with double quote", new YamlMap().put("foo", "\"bar"));
     assertToString("Containing quote", new YamlMap().put("fo'o", "ba\"r"));
+    assertToString("Containing :", new YamlMap().put("quuux", "ba:r"));
     assertToString("Start with %", new YamlMap().put("gnugnat", "%qux"));
     assertToString("Start with @", new YamlMap().put("quux", "@q"));
     assertToString("Map in map in list", new YamlMap().put("pdiSchemas", Arrays.asList(new YamlMap()
@@ -289,7 +290,6 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertToString("Starting with quote, containing double quote", new YamlMap().put("qq", "'qwe\"rty"),
         "qq: \"'qwe\\\"rty\"%n");
     assertToString("Containing tab", new YamlMap().put("tab", "b\tar"), "tab: b  ar%n");
-    assertToString("Containing :", new YamlMap().put("quuux", "ba:r"), "quuux: 'ba:r'%n");
     assertToString("New lines", new YamlMap().put("gnat", new YamlMap().put("spam", "ham\neggs")
         .put("spam2", Arrays.asList("ham2\reggs2", "yuck\n\rpuck"))),
         "gnat:%n  spam: |%n    ham%n    eggs%n  spam2:%n  - |%n    ham2%n    eggs2%n  - |%n    yuck%n    puck%n");
