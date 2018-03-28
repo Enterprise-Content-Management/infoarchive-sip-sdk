@@ -437,15 +437,31 @@ public class YamlMap {
   }
 
   private void appendText(YamlIndent indent, int currentLineLength, String text, StringBuilder builder) {
-    if (text.isEmpty() || text.matches("([\"%@*].*)|(.*#.*)")) {
-      builder.append('\'').append(text.replace("'", "''")).append('\'');
-    } else if (text.startsWith("'")) {
-      builder.append('"').append(text.replace("\"", "\\\"")).append('"');
+    if (needsToBeSingleQuoted(text)) {
+      appendSingleQuoted(text, builder);
+    } else if (needsToBeDoubleQuoted(text)) {
+      appendDoubleQuoted(text, builder);
     } else if (MAX_LINE_LENGTH < currentLineLength + text.length()) {
       appendWrappedText(indent.inText(), currentLineLength, text, builder);
     } else {
       builder.append(text);
     }
+  }
+
+  private boolean needsToBeSingleQuoted(String text) {
+    return text.isEmpty() || text.matches("([\"%@*].*)|(.*[#:].*)");
+  }
+
+  private void appendSingleQuoted(String text, StringBuilder builder) {
+    builder.append('\'').append(text.replace("'", "''")).append('\'');
+  }
+
+  private boolean needsToBeDoubleQuoted(String text) {
+    return text.startsWith("'");
+  }
+
+  private void appendDoubleQuoted(String text, StringBuilder builder) {
+    builder.append('"').append(text.replace("\"", "\\\"")).append('"');
   }
 
   private void appendWrappedText(YamlIndent indent, int currentLineLength, String text, StringBuilder builder) {
