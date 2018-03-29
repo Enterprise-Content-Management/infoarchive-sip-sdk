@@ -39,6 +39,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     Map<String, Collection<String>> result = new HashMap<>();
     result.put("/.*/content", Arrays.asList(APPLICATION, STORE));
     result.put("/.+/((.+\\.)?q|.+Q)uery", Arrays.asList(NAMESPACE));
+    result.put("/accessNodes/\\d+", Arrays.asList(APPLICATION));
     result.put("/aics/\\d+", Arrays.asList(APPLICATION));
     result.put("/aips/\\d+", Arrays.asList(APPLICATION, "xdbLibrary"));
     result.put("/applicationCategories/\\d+", Arrays.asList(TENANT));
