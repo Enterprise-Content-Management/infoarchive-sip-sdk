@@ -154,8 +154,8 @@ public class ZipConfiguration {
         path = pathInZip;
       }
     } else {
-      // Properties were substituted => leave the expression alone
-      path = pathInYaml;
+      // Properties were substituted => use the modified path in the ZIP
+      path = pathInZip;
     }
     return new MappedFile(file, path);
   }

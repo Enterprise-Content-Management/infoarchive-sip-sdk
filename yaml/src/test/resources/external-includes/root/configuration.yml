@@ -1,2 +1,2 @@
 includes:
-- ../external/configuration.yml
+- ../external/${include}.yml
