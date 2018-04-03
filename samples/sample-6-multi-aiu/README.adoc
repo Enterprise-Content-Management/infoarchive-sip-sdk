@@ -64,7 +64,7 @@ public interface Aiu {
 ----
 
 If you don't like to change your existing domain object classes by having them implement the `Aiu` interface, you
-can always resort to explicit type checking:
+can replace the polymorphic call to `Aiu.addTo()` with explicit type checking:
 
 [source,java]
 ----
