@@ -8,7 +8,7 @@ same PDI?
 == Option 1: Flexible domain object
 
 One option is to capture all the different kinds of AIU in a single domain object using some flexible structure. For
-instance, you could make you domain object a map of key/value pairs, where different AIUs use different keys. Then
+instance, you could make your domain object a map of key/value pairs, where different AIUs use different keys. Then
 you could write code like this to store the AIUs in the PDI:
 
 [source,java]
@@ -83,4 +83,4 @@ PdiAssembler<Object> pdiAssembler = new XmlPdiAssembler<Object>(NAMESPACE, "aiu"
 ----
 
 This may get a little convoluted, in which case you may want to extract the code for each type of domain object into
-a separate method or class.
+a separate method or even class.
