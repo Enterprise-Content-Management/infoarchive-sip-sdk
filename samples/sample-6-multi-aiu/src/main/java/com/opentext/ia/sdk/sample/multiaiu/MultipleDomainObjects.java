@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.sample.pdi;
+package com.opentext.ia.sdk.sample.multiaiu;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,17 +20,14 @@ import com.opentext.ia.sdk.support.io.DataBuffer;
 import com.opentext.ia.sdk.support.io.MemoryBuffer;
 
 
-/**
- * Sample program that shows how to assemble just the PDI XML from some data.
- */
-public class AssemblePdi {
+public class MultipleDomainObjects {
 
-  private static final URI NAMESPACE = URI.create("urn:opentext:ia:schema:sample:text:1.0");
+  private static final URI NAMESPACE = URI.create("urn:opentext:ia:schema:sample:multiple:1.0");
 
   @SuppressWarnings("PMD.AvoidPrintStackTrace")
   public static void main(String[] args) {
     try {
-      new AssemblePdi().run();
+      new MultipleDomainObjects().run();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -38,11 +35,11 @@ public class AssemblePdi {
 
   @SuppressWarnings("PMD.SystemPrintln")
   private void run() throws IOException {
-    // Assembler for PDI, where the domain object is of type String
-    PdiAssembler<String> pdiAssembler = new XmlPdiAssembler<String>(NAMESPACE, "message") {
+    // Assembler for PDI, where the domain object is flexible
+    PdiAssembler<Aiu> pdiAssembler = new XmlPdiAssembler<Aiu>(NAMESPACE, "aiu") {
       @Override
-      protected void doAdd(String domainObject, Map<String, ContentInfo> ignored) {
-        getBuilder().element("text", domainObject);
+      protected void doAdd(Aiu aiu, Map<String, ContentInfo> ignored) {
+        aiu.addTo(getBuilder());
       }
     };
 
@@ -51,9 +48,9 @@ public class AssemblePdi {
     pdiAssembler.start(dataBuffer);
     try {
       // Assemble the PDI by adding domain objects to it.
-      // In this sample, the domain objects are the strings "foo" and "bar".
-      pdiAssembler.add(wrapDomainObject("foo"));
-      pdiAssembler.add(wrapDomainObject("bar"));
+      // In this sample, the domain objects are flexible objects
+      pdiAssembler.add(wrapDomainObject(new Animal("Gnu")));
+      pdiAssembler.add(wrapDomainObject(new Person("Remon", "Sinnema")));
     } finally {
       pdiAssembler.end();
     }
@@ -62,10 +59,10 @@ public class AssemblePdi {
     }
   }
 
-  private HashedContents<String> wrapDomainObject(String domainObject) {
+  private HashedContents<Aiu> wrapDomainObject(Aiu aiu) {
     // The HashedContents class enriches the domain object with information about content objects. We don't need that
     // in this simple sample, so we just pass in an empty map.
-    return new HashedContents<>(domainObject, Collections.emptyMap());
+    return new HashedContents<>(aiu, Collections.emptyMap());
   }
 
 }

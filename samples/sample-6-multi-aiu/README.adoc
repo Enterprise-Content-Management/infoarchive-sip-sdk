@@ -1,0 +1,86 @@
+= Example: Multiple types of AIU
+
+The examples so far have assumed that there is only one type of domain object that you want to archive. The OAIS term
+for this is Archival Information Unit (AIU). But what if you have multiple types of AIU that you want to archive in the
+same PDI?
+
+
+== Option 1: Flexible domain object
+
+One option is to capture all the different kinds of AIU in a single domain object using some flexible structure. For
+instance, you could make you domain object a map of key/value pairs, where different AIUs use different keys. Then
+you could write code like this to store the AIUs in the PDI:
+
+[source,java]
+----
+PdiAssembler<Map<String, String>> pdiAssembler = new XmlPdiAssembler<Map<String, String>>(NAMESPACE, "aiu") {
+  @Override
+  protected void doAdd(Map<String, String> aiu, Map<String, ContentInfo> ignored) {
+    aiu.forEach((key, value) -> getBuilder().element(key, value));
+  }
+};
+----
+
+Instead of a `Map`, you can use any flexible data structure. You could even let the domain object be a `String`
+that contains the XML to go into the PDI:
+
+[source,java]
+----
+PdiAssembler<String> pdiAssembler = new XmlPdiAssembler<String>(NAMESPACE, "aiu") {
+  @Override
+  protected void doAdd(String xml, Map<String, ContentInfo> ignored) {
+    getBuilder().xml(xml);
+  }
+};
+----
+
+
+== Option 2: Multiple domain objects
+
+While flexible domain objects get the job done, they go against the very idea of a domain object. After all, the whole
+point is to be able to re-use a concept from your problem domain, maybe even a class you're already using in your
+application code.
+
+You also want domain objects to be type-safe, so the compiler can help you catch errors. Flexible domain objects can't
+be type-safe, or else they wouldn't be flexible. 
+
+So a better option is to keep your multiple domain objects as-is, and introduce a level of indirection via a new `Aiu`
+interface:
+
+[source,java]
+----
+PdiAssembler<Aiu> pdiAssembler = new XmlPdiAssembler<Aiu>(NAMESPACE, "aiu") {
+  @Override
+  protected void doAdd(Aiu aiu, Map<String, ContentInfo> ignored) {
+    aiu.addTo(getBuilder());
+  }
+};
+
+public interface Aiu {
+
+  void addTo(XmlBuilder<Void> builder);
+
+}
+----
+
+If you don't like to change your existing domain object classes by having them implement the `Aiu` interface, you
+can always resort to explicit type checking:
+
+[source,java]
+----
+PdiAssembler<Object> pdiAssembler = new XmlPdiAssembler<Object>(NAMESPACE, "aiu") {
+  @Override
+  protected void doAdd(Object domainObject, Map<String, ContentInfo> ignored) {
+    if (domainObject instanceof Person) {
+      Person person = (Person)domainObject;
+      // Type-safe code for adding a Person
+    } else if (domainObject instanceof Animal) {
+      Animal animal = (Animal)domainObject;
+      // Type-safe code for adding an Animal
+    }
+  }
+};
+----
+
+This may get a little convoluted, in which case you may want to extract the code for each type of domain object into
+a separate method or class.
