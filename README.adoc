@@ -32,7 +32,7 @@ The SDK consists of the following jars:
 proof of concept phase and _not ready for production_
 * `infoarchive-yaml` contains code for working with InfoArchive configurations in YAML
 
-All jars can be found in the https://repo1.maven.org/maven2/com/emc/ia/[Central Repository]. The easiest way to get
+All jars can be found in the https://repo1.maven.org/maven2/com/opentext/ia/[Central Repository]. The easiest way to get
 them is through a dependency management system like http://gradle.org/[Gradle] or https://maven.apache.org/[Maven].
 For the latest version, see the `maven-central` badge at the top of this page.
 
