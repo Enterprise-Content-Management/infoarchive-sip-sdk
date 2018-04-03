@@ -42,6 +42,7 @@ subprojects {
     httpmime
     jacksonCore
     jacksonDatabind
+    jacksonDatabindXml
     json
     semVer
     validation
@@ -61,8 +62,9 @@ subprojects {
     evoInflector "org.atteo:evo-inflector:$evoInflectorVersion"
     httpclient "org.apache.httpcomponents:httpclient:$httpclientVersion"
     httpmime "org.apache.httpcomponents:httpmime:$httpmimeVersion"
-    jacksonCore "com.fasterxml.jackson.core:jackson-core:$jacksonCoreVersion"
-    jacksonDatabind "com.fasterxml.jackson.core:jackson-databind:$jacksonCoreVersion"
+    jacksonCore "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    jacksonDatabind "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    jacksonDatabindXml "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion"
     json "org.json:json:$jsonVersion"
     junit "junit:junit:$junitVersion"
     mockito "org.mockito:mockito-core:$mockitoVersion"

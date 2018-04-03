@@ -1,3 +1,7 @@
+configurations {
+  compile.extendsFrom jacksonDatabindXml
+}
+
 dependencies {
   compile project(':infoarchive-sdk-core')
 }

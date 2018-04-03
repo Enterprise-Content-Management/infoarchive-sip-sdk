@@ -5,7 +5,7 @@ for this is Archival Information Unit (AIU). But what if you have multiple types
 same PDI?
 
 
-== Option 1: Flexible domain object
+== Option 1: One flexible domain object
 
 One option is to capture all the different kinds of AIU in a single domain object using some flexible structure. For
 instance, you could make your domain object a map of key/value pairs, where different AIUs use different keys. Then
@@ -84,3 +84,30 @@ PdiAssembler<Object> pdiAssembler = new XmlPdiAssembler<Object>(NAMESPACE, "aiu"
 
 This may get a little convoluted, in which case you may want to extract the code for each type of domain object into
 a separate method or even class.
+
+
+== Option 3: One serialization method for multiple domain objects
+
+Another option is a hybrid of the previous two options: you keep multiple domain objects, but use a single
+serialization method that works for all of them. This isn't always possible, but when it is, it offers the best of both
+worlds: multiple domain objects that provide type-safe access and a single block of code for serialization.
+
+Here's an example using Jackson's 
+`https://fasterxml.github.io/jackson-dataformat-xml/javadoc/2.9/com/fasterxml/jackson/dataformat/xml/XmlMapper.html[XmlMapper]`:
+
+
+[source,java]
+----
+PdiAssembler<Object> pdiAssembler = new XmlPdiAssembler<Object>(NAMESPACE, "aiu") {
+  private final ObjectMapper mapper = new XmlMapper();
+
+  @Override
+  protected void doAdd(Object domainObject, Map<String, ContentInfo> ignored) {
+    try {
+      getBuilder().xml(mapper.writeValueAsString(domainObject));
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+};
+----
