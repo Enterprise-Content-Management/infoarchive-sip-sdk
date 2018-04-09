@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.yaml.configuration.zip;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -24,10 +25,12 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.YamlMap;
+import com.opentext.ia.yaml.core.YamlSyntaxErrorException;
 
 
 public class WhenZippingConfigurations extends TestCase {
@@ -41,6 +44,8 @@ public class WhenZippingConfigurations extends TestCase {
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
   private File folder;
   private File yaml;
 
@@ -149,8 +154,11 @@ public class WhenZippingConfigurations extends TestCase {
     zipYaml();
   }
 
-  @Test(expected = InvalidZipEntryException.class)
+  @Test
   public void shouldNotAllowInvalidYamlInZip() throws IOException {
+    thrown.expect(InvalidZipEntryException.class);
+    thrown.expectCause(instanceOf(YamlSyntaxErrorException.class)); // Provide uniform interface to YAML syntax errors
+
     yaml = yamlFileContaining("foo: bar: baz");
 
     zipYaml();
