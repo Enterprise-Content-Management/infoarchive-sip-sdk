@@ -17,26 +17,6 @@ import java.util.Collections;
 public interface ZipCustomization {
 
   /**
-   * Additional entry to be added to the ZIP file.
-   */
-  public interface ExtraZipEntry {
-
-    /**
-     * Returns the name for the ZIP entry.
-     * @return the name for the ZIP entry
-     */
-    String getName();
-
-    /**
-     * Returns the content for the ZIP entry.
-     * @return the content for the ZIP entry
-     */
-    InputStream getContent();
-
-  }
-
-
-  /**
    * Customize the ZIP entry.
    * @param name the name of the ZIP entry
    * @param content the content of the ZIP entry
@@ -60,6 +40,14 @@ public interface ZipCustomization {
    */
   static ZipCustomization none() {
     return (name, input) -> input;
+  }
+
+  /**
+   * Returns a builder object for easily creating customizations.
+   * @return a builder object for easily creating customizations
+   */
+  static ZipCustomizationBuilder builder() {
+    return new ZipCustomizationBuilder();
   }
 
 }

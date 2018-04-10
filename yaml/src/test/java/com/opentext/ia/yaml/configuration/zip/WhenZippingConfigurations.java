@@ -7,8 +7,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,7 +24,6 @@ import java.util.function.Predicate;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -289,28 +286,31 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  @Ignore("TODO: Implement")
   public void shouldCustomizeZipConfiguration() throws IOException {
     File dir = new File("src/test/resources/customize");
     String key = someName();
     String value = someName();
+    String version = "2.0";
+    String entryName = someName();
+    String entryContent = someName();
 
-    Map<String, InputStream> zip = new RandomAccessZipFile(ZipConfiguration.of(dir, (name, input) -> {
-      if (name.endsWith(".properties")) {
-        Properties properties = new Properties();
-        properties.load(input);
-        properties.put(key, value);
-        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-          properties.store(output, null);
-          return new ByteArrayInputStream(output.toByteArray());
-        }
-      }
-      return input;
-    }));
+    Map<String, InputStream> zip = new RandomAccessZipFile(
+        ZipConfiguration.of(dir, ZipCustomization.builder()
+            .properties((name, properties) -> properties.put(key, value))
+            .yaml((name, map) -> map.put("version", version))
+            .extra(() -> ExtraZipEntry.of(entryName, entryContent))
+            .build()));
 
     Properties properties = new Properties();
     properties.load(zip.get("configuration.properties"));
     assertEquals("Value", value, properties.getProperty(key));
+
+    assertEquals("Version", version,
+        YamlMap.from(zip.get("configuration.yml")).get("version").toString());
+
+    assertTrue("Missing extra content", zip.containsKey(entryName));
+    assertEquals("Extra content", entryContent,
+        IOUtils.toString(zip.get(entryName), StandardCharsets.UTF_8));
   }
 
 }

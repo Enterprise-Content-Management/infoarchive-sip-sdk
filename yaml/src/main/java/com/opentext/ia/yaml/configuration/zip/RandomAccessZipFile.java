@@ -50,10 +50,12 @@ public class RandomAccessZipFile extends HashMap<String, InputStream> {
   @Override
   public InputStream get(Object key) {
     InputStream result = super.get(key);
-    try {
-      result.reset();
-    } catch (IOException e) {
-      // Won't happen with in-memory manipulations
+    if (result != null) {
+      try {
+        result.reset();
+      } catch (IOException e) {
+        // Won't happen with in-memory manipulations
+      }
     }
     return result;
   }

@@ -61,7 +61,6 @@ public class ZipConfiguration {
 
   private final ZipBuilder builder;
   private final File root;
-  private final ZipCustomization customization;
 
   public ZipConfiguration(File yaml) {
     this(yaml, ZipCustomization.none());
@@ -69,8 +68,7 @@ public class ZipConfiguration {
 
   public ZipConfiguration(File yaml, ZipCustomization customization) {
     this.root = yaml.getAbsoluteFile();
-    this.customization = customization;
-    builder = new ZipBuilder(yaml.getParentFile());
+    builder = new ZipBuilder(yaml.getParentFile(), customization);
   }
 
   private File build() throws IOException {

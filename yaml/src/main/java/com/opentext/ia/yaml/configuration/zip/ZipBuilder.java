@@ -35,12 +35,18 @@ public class ZipBuilder {
   private final Map<Object, String> entries = new HashMap<>();
   private final String basePath;
   private final Map<String, Integer> numExternalFilesByExtension = new HashMap<>();
+  private final ZipCustomization customization;
 
   public ZipBuilder(File baseDir) {
+    this(baseDir, ZipCustomization.none());
+  }
+
+  public ZipBuilder(File baseDir, ZipCustomization customization) {
     if (!baseDir.isDirectory()) {
       throw new IllegalArgumentException("Not a directory: " + baseDir);
     }
     this.basePath = baseDir.getAbsolutePath() + File.separator;
+    this.customization = customization;
   }
 
   /**
@@ -128,14 +134,13 @@ public class ZipBuilder {
 
     try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(result))) {
       for (Entry<Object, String> entry : entries.entrySet()) {
-        zip.putNextEntry(new ZipEntry(entry.getValue()));
         try (InputStream input = toInputStream(entry.getKey())) {
-          IOUtils.copy(input, zip);
-        } catch (IOException e) {
-          throw new InvalidZipEntryException(entry.getValue(), e);
+          addEntry(ExtraZipEntry.of(entry.getValue(),
+              customization.customize(entry.getValue(),  input)), zip);
         }
-        zip.closeEntry();
       }
+      customization.extraEntries().forEach(entry -> addEntry(entry, zip));
+      zip.closeEntry();
     }
 
     return result;
@@ -146,6 +151,17 @@ public class ZipBuilder {
       return IOUtils.toInputStream((String)source, StandardCharsets.UTF_8);
     }
     return new FileInputStream((File)source);
+  }
+
+  private void addEntry(ExtraZipEntry entry, ZipOutputStream zip) {
+    try {
+      zip.putNextEntry(new ZipEntry(entry.getName()));
+      try (InputStream input = entry.getContent()) {
+        IOUtils.copy(input, zip);
+      }
+    } catch (IOException e) {
+      throw new InvalidZipEntryException(entry.getName(), e);
+    }
   }
 
   public ResourceResolver getResourceResolver() {
