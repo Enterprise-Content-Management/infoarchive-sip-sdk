@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Function;
 
 
 /**
@@ -15,6 +16,15 @@ import java.util.Collections;
  */
 @FunctionalInterface
 public interface ZipCustomization {
+
+  /**
+   * Initialize the customization.
+   * @param names the names of all the ZIP entries
+   * @param contentSupplier the supplier of the content for a ZIP entry
+   */
+  default void init(Collection<String> names, Function<String, InputStream> contentSupplier) {
+    // By default, do nothing
+  }
 
   /**
    * Customize the ZIP entry.

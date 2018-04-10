@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -133,6 +134,7 @@ public class ZipBuilder {
     File result = new File(TEMP_DIR.toFile(), fileName);
 
     try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(result))) {
+      customization.init(entries.values(), name -> streamFor(name));
       for (Entry<Object, String> entry : entries.entrySet()) {
         try (InputStream input = toInputStream(entry.getKey())) {
           addEntry(ExtraZipEntry.of(entry.getValue(),
@@ -144,6 +146,22 @@ public class ZipBuilder {
     }
 
     return result;
+  }
+
+  private InputStream streamFor(String name) {
+    return entries.entrySet().stream()
+        .filter(e -> name.equals(e.getValue()))
+        .map(Entry::getKey)
+        .map(source -> {
+          try {
+            return toInputStream(source);
+          } catch (IOException e1) {
+            return null;
+          }
+        })
+        .filter(Objects::nonNull)
+        .findFirst()
+        .orElse(null);
   }
 
   private InputStream toInputStream(Object source) throws IOException {

@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,13 @@ public class ZipCustomizationBuilder {
 
   private final Collection<ZipEntryCustomization> entryCustomizations = new ArrayList<>();
   private final Collection<Supplier<ExtraZipEntry>> extraZipEntrySuppliers = new ArrayList<>();
+  private BiConsumer<Collection<String>, Function<String, InputStream>> initializer = (names, contentSupplier) -> { };
+
+  public ZipCustomizationBuilder init(
+      BiConsumer<Collection<String>, Function<String, InputStream>> initializeCustomization) {
+    this.initializer = initializeCustomization;
+    return this;
+  }
 
   public ZipCustomizationBuilder properties(BiConsumer<String, Properties> propertiesCustomizer) {
     return with(new PropertiesZipEntryCustomization(propertiesCustomizer));
@@ -47,11 +55,8 @@ public class ZipCustomizationBuilder {
   public ZipCustomization build() {
     return new ZipCustomization() {
       @Override
-      public Collection<ExtraZipEntry> extraEntries() {
-        return extraZipEntrySuppliers.stream()
-            .map(Supplier::get)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+      public void init(Collection<String> names, Function<String, InputStream> contentSupplier) {
+        initializer.accept(names, contentSupplier);
       }
 
       @Override
@@ -62,6 +67,14 @@ public class ZipCustomizationBuilder {
         return entryCustomization.isPresent()
             ? entryCustomization.get().customize(content)
                 : content;
+      }
+
+      @Override
+      public Collection<ExtraZipEntry> extraEntries() {
+        return extraZipEntrySuppliers.stream()
+            .map(Supplier::get)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
       }
     };
   }

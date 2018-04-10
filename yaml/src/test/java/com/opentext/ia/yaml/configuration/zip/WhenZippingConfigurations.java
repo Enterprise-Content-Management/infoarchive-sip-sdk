@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 import org.apache.commons.io.IOUtils;
@@ -38,6 +39,7 @@ public class WhenZippingConfigurations extends TestCase {
 
   private static final String INCLUDED_RESOURCE_NAME = "included.txt";
   private static final String CONFIGURATION_FILE_NAME = "configuration.yml";
+  private static final String CONFIGURATION_PROPERTIES = "configuration.properties";
   private static final String NAME = "name";
   private static final String CONTENT = "content";
   private static final String RESOURCE = "resource";
@@ -142,7 +144,7 @@ public class WhenZippingConfigurations extends TestCase {
 
   @Test
   public void shouldAddParentPropertiesFiles() throws IOException {
-    File properties = newFile("configuration.properties", "foo=bar");
+    File properties = newFile(CONFIGURATION_PROPERTIES, "foo=bar");
     yaml = yamlFileContaining(new YamlMap());
 
     Map<String, InputStream> zipEntries = zipYaml();
@@ -253,8 +255,8 @@ public class WhenZippingConfigurations extends TestCase {
   public void shouldSubstitutePropertiesToDeterminePathsToResources() throws IOException {
     String text = randomString();
     File resourceFile = newFile(someName() + ".txt", text);
-    newFile("configuration.properties", "name=" + resourceFile.getName());
-    yaml = newFile("configuration.yml", new YamlMap()
+    newFile(CONFIGURATION_PROPERTIES, "name=" + resourceFile.getName());
+    yaml = newFile(CONFIGURATION_FILE_NAME, new YamlMap()
         .put("pdiSchema", new YamlMap()
             .put("name", someName())
             .put("content", new YamlMap()
@@ -293,20 +295,31 @@ public class WhenZippingConfigurations extends TestCase {
     String version = "2.0";
     String entryName = someName();
     String entryContent = someName();
+    final AtomicBoolean initialized = new AtomicBoolean();
 
     Map<String, InputStream> zip = new RandomAccessZipFile(
         ZipConfiguration.of(dir, ZipCustomization.builder()
-            .properties((name, properties) -> properties.put(key, value))
-            .yaml((name, map) -> map.put("version", version))
-            .extra(() -> ExtraZipEntry.of(entryName, entryContent))
+            .init((names, contentSupplier) -> {
+              assertTrue("Missing " + CONFIGURATION_FILE_NAME, names.contains(CONFIGURATION_FILE_NAME));
+              assertTrue("Missing " + CONFIGURATION_PROPERTIES, names.contains(CONFIGURATION_PROPERTIES));
+              initialized.set(true);
+            })
+            .properties((name, properties) ->
+                properties.put(key, value))
+            .yaml((name, map) ->
+                map.put("version", version))
+            .extra(() ->
+                ExtraZipEntry.of(entryName, entryContent))
             .build()));
 
+    assertTrue("Not initialized", initialized.get());
+
     Properties properties = new Properties();
-    properties.load(zip.get("configuration.properties"));
+    properties.load(zip.get(CONFIGURATION_PROPERTIES));
     assertEquals("Value", value, properties.getProperty(key));
 
     assertEquals("Version", version,
-        YamlMap.from(zip.get("configuration.yml")).get("version").toString());
+        YamlMap.from(zip.get(CONFIGURATION_FILE_NAME)).get("version").toString());
 
     assertTrue("Missing extra content", zip.containsKey(entryName));
     assertEquals("Extra content", entryContent,
