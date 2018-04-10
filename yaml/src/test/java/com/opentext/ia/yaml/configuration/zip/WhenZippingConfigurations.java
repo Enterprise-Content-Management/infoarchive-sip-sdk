@@ -6,6 +6,8 @@ package com.opentext.ia.yaml.configuration.zip;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,11 +19,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -274,6 +278,31 @@ public class WhenZippingConfigurations extends TestCase {
     map = YamlMap.from(zip.get(zipEntry));
     zipEntry = map.get("pdiSchema", "content", "resource").toString();
     assertTrue("Missing external resource: " + zipEntry, zip.containsKey(zipEntry));
+  }
+
+  @Test
+  @Ignore("TODO: Implement")
+  public void shouldCustomizeZipConfiguration() throws IOException {
+    File dir = new File("src/test/resources/customize");
+    String key = someName();
+    String value = someName();
+
+    Map<String, InputStream> zip = new RandomAccessZipFile(ZipConfiguration.of(dir, (name, input) -> {
+      if (name.endsWith(".properties")) {
+        Properties properties = new Properties();
+        properties.load(input);
+        properties.put(key, value);
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+          properties.store(output, null);
+          return new ByteArrayInputStream(output.toByteArray());
+        }
+      }
+      return input;
+    }));
+
+    Properties properties = new Properties();
+    properties.load(zip.get("configuration.properties"));
+    assertEquals("Value", value, properties.getProperty(key));
   }
 
 }

@@ -41,6 +41,10 @@ public class ZipConfiguration {
   private static final String RESOURCE = "resource";
 
   public static File of(File source) throws IOException {
+    return of(source, ZipCustomization.none());
+  }
+
+  public static File of(File source, ZipCustomization customization) throws IOException {
     File yaml = source;
     if (yaml == null) {
       throw new EmptyZipException();
@@ -52,14 +56,20 @@ public class ZipConfiguration {
     if (!yaml.isFile()) {
       throw new EmptyZipException();
     }
-    return new ZipConfiguration(yaml).build();
+    return new ZipConfiguration(yaml, customization).build();
   }
 
   private final ZipBuilder builder;
   private final File root;
+  private final ZipCustomization customization;
 
   public ZipConfiguration(File yaml) {
+    this(yaml, ZipCustomization.none());
+  }
+
+  public ZipConfiguration(File yaml, ZipCustomization customization) {
     this.root = yaml.getAbsoluteFile();
+    this.customization = customization;
     builder = new ZipBuilder(yaml.getParentFile());
   }
 
