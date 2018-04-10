@@ -34,7 +34,7 @@ class YamlSyntaxErrorPrettifier  {
         return itemOutsideSequence(e);
       }
     }
-    return e;
+    return new YamlSyntaxErrorException(e.getMessage(), e);
   }
 
   private Optional<YamlLine> getLine(String text, int index) throws IOException {
