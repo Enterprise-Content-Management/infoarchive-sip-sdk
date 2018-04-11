@@ -134,7 +134,7 @@ public class ZipBuilder {
     File result = new File(TEMP_DIR.toFile(), fileName);
 
     try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(result))) {
-      customization.init(entries.values(), name -> streamFor(name));
+      customization.init(entries.values(), this::streamFor);
       for (Entry<Object, String> entry : entries.entrySet()) {
         try (InputStream input = toInputStream(entry.getKey())) {
           addEntry(ExtraZipEntry.of(entry.getValue(),
