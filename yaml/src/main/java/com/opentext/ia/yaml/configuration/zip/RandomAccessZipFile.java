@@ -21,7 +21,7 @@ import org.apache.commons.io.IOUtils;
 /**
  * In-memory map representation of a ZIP file, where the keys correspond to the names of the ZIP entries and the
  * values to their content. The content streams can be read multiple times, because they are stored in memory.
- * @author ray
+ * @author Ray Sinnema
  * @since 9.10.0
  */
 public class RandomAccessZipFile extends HashMap<String, InputStream> {

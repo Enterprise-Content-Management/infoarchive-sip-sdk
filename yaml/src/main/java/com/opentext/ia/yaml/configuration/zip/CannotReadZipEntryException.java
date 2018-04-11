@@ -8,7 +8,7 @@ import java.io.File;
 
 /**
  * Exception that indicates a file could not be added to a ZIP because it can't be read or has syntax errors.
- * @author ray
+ * @author Ray Sinnema
  * @since 9.10.0
  */
 public class CannotReadZipEntryException extends RuntimeException {

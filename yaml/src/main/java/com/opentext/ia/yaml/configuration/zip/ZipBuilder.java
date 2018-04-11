@@ -27,7 +27,7 @@ import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 /**
  *  Build a zip from files on the file system.
- *  @since 19.6.0
+ *  @since 9.6.0
  */
 public class ZipBuilder {
 

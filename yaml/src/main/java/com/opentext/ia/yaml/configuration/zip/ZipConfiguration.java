@@ -25,7 +25,7 @@ import com.opentext.ia.yaml.resource.FilesSelector;
 
 /**
  * Zip file that holds a YAML configuration for InfoArchive and all the files it references.
- * @author ray
+ * @author Ray Sinnema
  * @since 9.10.0
  */
 public class ZipConfiguration {

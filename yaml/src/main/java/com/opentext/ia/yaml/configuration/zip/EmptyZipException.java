@@ -8,7 +8,7 @@ import java.io.IOException;
 
 /**
  * Exception that indicates a zip file can't be created because it contains no entries.
- * @author ray
+ * @author Ray Sinnema
  * @since 9.10.0
  */
 public class EmptyZipException extends IOException {
