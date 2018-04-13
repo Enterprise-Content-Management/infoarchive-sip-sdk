@@ -82,7 +82,7 @@ PdiAssembler<Map<String, String>> pdiAssembler = new XmlPdiAssembler<Map<String,
 ----
 
 Instead of a `Map`, you can use any flexible data structure. For example, when you want to create an AIU for each row
-in a SQL query (for a number of different queries), you could then use the `ResultSet` as your flexible data structure.
+in a SQL query (for a number of different queries), you could use the `ResultSet` as your flexible data structure.
 
 You could even let the domain object be a `String` that contains the XML to directly go into the PDI:
 
