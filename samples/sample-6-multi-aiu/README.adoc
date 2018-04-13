@@ -5,47 +5,35 @@ for this is Archival Information Unit (AIU). But what if you have multiple types
 same PDI?
 
 
-== Option 1: One flexible domain object
+== Option 1: Multiple domain objects
 
-One option is to capture all the different kinds of AIU in a single domain object using some flexible structure. For
-instance, you could make your domain object a map of key/value pairs, where different AIUs use different keys. Then
-you could write code like this to store the AIUs in the PDI:
+The simplest solution is to explicitly check which type of domain object is being added to the PDI:
 
 [source,java]
 ----
-PdiAssembler<Map<String, String>> pdiAssembler = new XmlPdiAssembler<Map<String, String>>(NAMESPACE, "aiu") {
+PdiAssembler<Object> pdiAssembler = new XmlPdiAssembler<Object>(NAMESPACE, "aiu") {
   @Override
-  protected void doAdd(Map<String, String> aiu, Map<String, ContentInfo> ignored) {
-    aiu.forEach((key, value) -> getBuilder().element(key, value));
+  protected void doAdd(Object domainObject, Map<String, ContentInfo> ignored) {
+    if (domainObject instanceof Person) {
+      Person person = (Person)domainObject;
+      // Type-safe code for adding a Person
+    } else if (domainObject instanceof Animal) {
+      Animal animal = (Animal)domainObject;
+      // Type-safe code for adding an Animal
+    } else {
+      throw new IllegalArgumentException("Not an AIU: " + domainObject.getClass().getName());
+    }
   }
 };
 ----
 
-Instead of a `Map`, you can use any flexible data structure. You could even let the domain object be a `String`
-that contains the XML to go into the PDI:
+The downside of this approach is that the compiler can't help you anymore, unless all your domain objects share a
+common ancestor. This means you can run into problems at runtime rather than at compile time, and you may have to throw
+an exception when an incorrect type of object is passed in.
 
-[source,java]
-----
-PdiAssembler<String> pdiAssembler = new XmlPdiAssembler<String>(NAMESPACE, "aiu") {
-  @Override
-  protected void doAdd(String xml, Map<String, ContentInfo> ignored) {
-    getBuilder().xml(xml);
-  }
-};
-----
-
-
-== Option 2: Multiple domain objects
-
-While flexible domain objects get the job done, they go against the very idea of a domain object. After all, the whole
-point is to be able to re-use a concept from your problem domain, maybe even a class you're already using in your
-application code.
-
-You also want domain objects to be type-safe, so the compiler can help you catch errors. Flexible domain objects can't
-be type-safe, or else they wouldn't be flexible. 
-
-So a better option is to keep your multiple domain objects as-is, and introduce a level of indirection via a new `Aiu`
-interface:
+Another disadvantage is that the code may get a little convoluted, in which case you may want to extract the code for
+each type of domain object into a separate method or even class. You can take that to it's logical extreme by 
+introducing a new `Aiu` interface that all your domain objects implement:
 
 [source,java]
 ----
@@ -61,36 +49,60 @@ public interface Aiu {
   void addTo(XmlBuilder<Void> builder);
 
 }
+
+public class Person implements Aiu {
+  
+  public void addTo(XmlBuilder<Void> builder) {
+    // Type-safe code for adding a Person
+  }
+  
+  // Existing methods...
+}
 ----
 
-If you don't like to change your existing domain object classes by having them implement the `Aiu` interface, you
-can replace the polymorphic call to `Aiu.addTo()` with explicit type checking:
+This requires changes to your domain object classes, which may not be what you want.
+
+
+== Option 2: One flexible object
+
+If your application doesn't already have domain objects, for instance when you're writing an ETL tool specifically for
+building SIPs, then you can use a single flexible data structure instead of multiple different domain objects. 
+
+For instance, you could use a map of key/value pairs, where different types of AIUs use different keys.
+Then you could write code like this to store the AIUs in the PDI:
 
 [source,java]
 ----
-PdiAssembler<Object> pdiAssembler = new XmlPdiAssembler<Object>(NAMESPACE, "aiu") {
+PdiAssembler<Map<String, String>> pdiAssembler = new XmlPdiAssembler<Map<String, String>>(NAMESPACE, "aiu") {
   @Override
-  protected void doAdd(Object domainObject, Map<String, ContentInfo> ignored) {
-    if (domainObject instanceof Person) {
-      Person person = (Person)domainObject;
-      // Type-safe code for adding a Person
-    } else if (domainObject instanceof Animal) {
-      Animal animal = (Animal)domainObject;
-      // Type-safe code for adding an Animal
-    }
+  protected void doAdd(Map<String, String> aiu, Map<String, ContentInfo> ignored) {
+    aiu.forEach((key, value) -> getBuilder().element(key, value));
   }
 };
 ----
 
-This may get a little convoluted, in which case you may want to extract the code for each type of domain object into
-a separate method or even class.
+Instead of a `Map`, you can use any flexible data structure. For example, when you want to create an AIU for each row
+in a SQL query (for a number of different queries), you could then use the `ResultSet` as your flexible data structure.
+
+You could even let the domain object be a `String` that contains the XML to directly go into the PDI:
+
+[source,java]
+----
+PdiAssembler<String> pdiAssembler = new XmlPdiAssembler<String>(NAMESPACE, "aiu") {
+  @Override
+  protected void doAdd(String xml, Map<String, ContentInfo> ignored) {
+    getBuilder().xml(xml);
+  }
+};
+----
+
 
 
 == Option 3: One serialization method for multiple domain objects
 
-Another option is a hybrid of the previous two options: you keep multiple domain objects, but use a single
-serialization method that works for all of them. This isn't always possible, but when it is, it offers the best of both
-worlds: multiple domain objects that provide type-safe access and a single block of code for serialization.
+You can get the best of both worlds by combining the previous two options: you keep multiple domain objects, but use a
+single serialization method that works for all of them. This isn't always possible, but when it is, it offers both
+type-safe access and a single block of code for serialization.
 
 Here's an example using Jackson's 
 `https://fasterxml.github.io/jackson-dataformat-xml/javadoc/2.9/com/fasterxml/jackson/dataformat/xml/XmlMapper.html[XmlMapper]`:
@@ -111,3 +123,6 @@ PdiAssembler<Object> pdiAssembler = new XmlPdiAssembler<Object>(NAMESPACE, "aiu"
   }
 };
 ----
+
+You may have to add annotations like `@JsonProperty` and `@JsonIgnore` to your domain object classes to get XML
+that validates against your schema.
