@@ -3,6 +3,8 @@
  */
 package com.opentext.ia.configuration;
 
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Builder for named configuration objects.
@@ -16,9 +18,28 @@ package com.opentext.ia.configuration;
 public class NamedObjectBuilder<P extends BaseBuilder<?, C>, S extends NamedObjectBuilder<?, ?, C>,
     C extends Configuration<?>> extends BaseBuilder<P, C> {
 
+  private static final Collection<String> COMMON_TYPE_PREFIXES = Arrays.asList(
+      "xdb", "space", "search", "root", "query");
+
   protected NamedObjectBuilder(P parent, String type) {
     super(parent, type);
-    named(typePrefix(type) + someName());
+    named(typePrefix(removeCommonTypePrefixes(type)) + someName());
+  }
+
+  private String removeCommonTypePrefixes(String type) {
+    StringBuilder result = new StringBuilder(type);
+    boolean found;
+    do {
+      found = false;
+      for (String prefix : COMMON_TYPE_PREFIXES) {
+        if (result.length() > prefix.length() && result.toString().startsWith(prefix)) {
+          found = true;
+          result.delete(0, prefix.length());
+          result.setCharAt(0, Character.toLowerCase(result.charAt(0)));
+        }
+      }
+    } while (found);
+    return result.toString();
   }
 
   private String typePrefix(String type) {
