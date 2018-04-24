@@ -34,15 +34,21 @@
    </module>
 
   <module name="UniqueProperties"/>
-  
+
+  <!-- Enable @SuppressWarnings annotation to suppress false positives -->
   <module name="SuppressWarningsFilter"/>
   
   <module name="TreeWalker">
+    <module name="SuppressionCommentFilter">
+      <property name="offCommentFormat" value="stop visibility check"/>
+      <property name="onCommentFormat" value="resume visibility check"/>
+      <property name="checkFormat" value="VisibilityModifier"/>
+    </module>
+    
+    <module name="SuppressionCommentFilter"/>
+
     <!-- Needed for SuppressWarningsFilter -->
     <module name="SuppressWarningsHolder" />
-    
-    <!-- Needed for SuppressionCommentFilter -->
-    <module name="FileContentsHolder"/>
 
     <!-- Checks for Javadoc comments.                     -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html -->
@@ -74,7 +80,7 @@
     </module>
     <module name="ImportOrder">
       <property name="option" value="top"/>
-      <property name="groups" value="java,javax,org,net,com,radl"/>
+      <property name="groups" value="java,javax,org,net,com"/>
       <property name="separated" value="true"/>
     </module>
     <module name="RedundantImport"/>
@@ -158,7 +164,10 @@
     <module name="MutableException"/>
     <module name="OneTopLevelClass"/>
     <module name="VisibilityModifier">
-      <property name="ignoreAnnotationCanonicalNames" value="org.junit.Rule,org.junit.runners.Parameterized.Parameter"/>
+      <!-- Avoid accessor method generation -->
+      <property name="packageAllowed" value="true"/>
+      <property name="ignoreAnnotationCanonicalNames" 
+          value="org.junit.Rule,org.junit.ClassRule,org.junit.runners.Parameterized.Parameter"/>
     </module>
 
     <!-- Miscellaneous other checks.                   -->

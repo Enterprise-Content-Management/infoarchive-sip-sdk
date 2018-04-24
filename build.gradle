@@ -102,7 +102,7 @@ subprojects {
   apply plugin: 'checkstyle'
   checkstyle {
     configFile = rootProject.file('config/checkstyle.xml')
-    toolVersion = '8.1'
+    toolVersion = '8.9'
     ignoreFailures = false
   }
 
