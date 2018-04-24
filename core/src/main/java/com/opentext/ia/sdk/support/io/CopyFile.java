@@ -4,11 +4,11 @@
 package com.opentext.ia.sdk.support.io;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import org.apache.commons.io.IOUtils;
 
@@ -45,8 +45,8 @@ public final class CopyFile {
   }
 
   private void copyToFile(File destination) {
-    try (InputStream src = new FileInputStream(source)) {
-      try (OutputStream dst = new FileOutputStream(destination)) {
+    try (InputStream src = Files.newInputStream(source.toPath(), StandardOpenOption.READ)) {
+      try (OutputStream dst = Files.newOutputStream(destination.toPath(), StandardOpenOption.CREATE_NEW)) {
         IOUtils.copy(src, dst);
       }
     } catch (IOException e) {

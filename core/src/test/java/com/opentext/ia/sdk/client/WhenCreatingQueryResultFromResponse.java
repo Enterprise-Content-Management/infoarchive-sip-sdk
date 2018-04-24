@@ -3,8 +3,12 @@
  */
 package com.opentext.ia.sdk.client;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +37,7 @@ public class WhenCreatingQueryResultFromResponse {
   public void shouldReturnNullIfResponseBodyIsNull() throws IOException {
     Response response = mock(Response.class);
     Runnable closer = mock(Runnable.class);
-    assertNull(factory.create(response, closer));
+    assertNull("Missing query result", factory.create(response, closer));
     verify(closer).run();
   }
 
@@ -55,12 +59,11 @@ public class WhenCreatingQueryResultFromResponse {
     when(response.getHeaderValue("resultSetQuota", 0)).thenReturn(resultSetQuota);
 
     try (QueryResult result = factory.create(response, () -> { })) {
-
-      assertEquals(cacheOutAipIgnored, result.isCacheOutAipIgnored());
-      assertEquals(aipQuota, result.getAipQuota());
-      assertEquals(aiuQuota, result.getAiuQuota());
-      assertEquals(resultSetCount, result.getResultSetCount());
-      assertEquals(resultSetQuota, result.getResultSetQuota());
+      assertEquals("Is cache-out of AIPs ignored", cacheOutAipIgnored, result.isCacheOutAipIgnored());
+      assertEquals("AIP quota", aipQuota, result.getAipQuota());
+      assertEquals("AIU quota", aiuQuota, result.getAiuQuota());
+      assertEquals("# results", resultSetCount, result.getResultSetCount());
+      assertEquals("Result set quota", resultSetQuota, result.getResultSetQuota());
 
       verify(body, never()).close();
       verify(response, never()).close();

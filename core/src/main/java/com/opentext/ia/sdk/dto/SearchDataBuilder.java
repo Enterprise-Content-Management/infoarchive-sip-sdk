@@ -11,37 +11,38 @@ import com.opentext.ia.sdk.support.xml.XmlBuilder;
 
 public final class SearchDataBuilder {
 
-  private static final String CRITERION = "criterion";
-  private static final String NAME = "name";
-  private static final String OPERATOR = "operator";
-  private static final String VALUE = "value";
+  private static final String CRITERION_ELEM = "criterion";
+  private static final String NAME_ELEM = "name";
+  private static final String OPERATOR_ELEM = "operator";
+  private static final String VALUE_ELEM = "value";
 
   private final StringWriter output = new StringWriter();
-  private final XmlBuilder<Void> builder;
-
-  private SearchDataBuilder() {
-    builder = XmlBuilder.newDocument(new PrintWriter(output)).element("data");
-  }
+  private final XmlBuilder<Void> xmlBuilder;
 
   public static SearchDataBuilder builder() {
     return new SearchDataBuilder();
   }
 
+  private SearchDataBuilder() {
+    xmlBuilder = XmlBuilder.newDocument(new PrintWriter(output)).element("data");
+  }
+
   private SearchDataBuilder criterion(String field, String operator, String value) {
-    builder.element(CRITERION)
-        .element(NAME, field)
-        .element(OPERATOR, operator)
-        .element(VALUE, value)
-        .end();
+    xmlBuilder.element(CRITERION_ELEM)
+        .element(NAME_ELEM, field)
+        .element(OPERATOR_ELEM, operator)
+        .element(VALUE_ELEM, value)
+    .end();
     return this;
   }
 
+  @SuppressWarnings("PMD.UseObjectForClearerAPI")
   private SearchDataBuilder criterion(String field, String operator, String value1, String value2) {
-    builder.element(CRITERION)
-        .element(NAME, field)
-        .element(OPERATOR, operator)
-        .element(VALUE, value1)
-        .element(VALUE, value2)
+    xmlBuilder.element(CRITERION_ELEM)
+        .element(NAME_ELEM, field)
+        .element(OPERATOR_ELEM, operator)
+        .element(VALUE_ELEM, value1)
+        .element(VALUE_ELEM, value2)
     .end();
     return this;
   }
@@ -71,7 +72,7 @@ public final class SearchDataBuilder {
   }
 
   public String build() {
-    builder.build();
+    xmlBuilder.build();
     return output.toString();
   }
 

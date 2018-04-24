@@ -11,13 +11,14 @@ public class Namespace extends JavaBean {
   private String uri;
   private String prefix;
 
-  public Namespace() {
-  }
-
   public Namespace(String prefix, String uri) {
     super();
     this.prefix = prefix;
     this.uri = uri;
+  }
+
+  public Namespace() {
+    // Alternative no-arg constructor
   }
 
   public String getUri() {

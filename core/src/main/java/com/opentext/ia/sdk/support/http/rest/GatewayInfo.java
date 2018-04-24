@@ -22,11 +22,10 @@ public final class GatewayInfo {
   private final String clientSecret;
 
   public static Optional<GatewayInfo> optional(String gatewayUri, String clientId, String clientSecret) {
-    if ((gatewayUri == null) || (clientId == null) || (clientSecret == null)) {
+    if (gatewayUri == null || clientId == null || clientSecret == null) {
       return Optional.empty();
-    } else {
-      return Optional.of(new GatewayInfo(gatewayUri, clientId, clientSecret));
     }
+    return Optional.of(new GatewayInfo(gatewayUri, clientId, clientSecret));
   }
 
   public GatewayInfo(final String gatewayUrl, final String clientId, final String clientSecret) {

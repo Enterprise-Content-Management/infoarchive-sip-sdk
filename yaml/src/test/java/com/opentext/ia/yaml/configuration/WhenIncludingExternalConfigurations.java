@@ -90,7 +90,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldIgnoreDuplicateEntryConfiguredAsExisting() throws Exception {
+  public void shouldIgnoreDuplicateEntryConfiguredAsExisting() {
     String type = someName();
     String collection = English.plural(type);
     String name = someName();
@@ -111,7 +111,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldIgnoreDuplicateEntriesConfiguredAsExisting() throws Exception {
+  public void shouldIgnoreDuplicateEntriesConfiguredAsExisting() {
     String type = someName();
     String collection = English.plural(type);
     String name = someName();
@@ -133,7 +133,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldReplaceOriginalEntryConfiguredAsExisting() throws Exception {
+  public void shouldReplaceOriginalEntryConfiguredAsExisting() {
     String type = someName();
     String collection = English.plural(type);
     String name = someName();
@@ -167,7 +167,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldIgnoreDuplicateVersionEntry() throws Exception {
+  public void shouldIgnoreDuplicateVersionEntry() {
     String included = new YamlMap()
         .put(VERSION, VERSION_1)
         .toString();
@@ -182,7 +182,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldIgnoreDuplicateNamespaceEntry() throws Exception {
+  public void shouldIgnoreDuplicateNamespaceEntry() {
     YamlMap namespace1 = someNamespace();
     YamlMap namespace2 = someNamespace();
     String included = new YamlMap()
@@ -209,7 +209,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldResolveInlineResourcesRelativeToIncludedResource() throws Exception {
+  public void shouldResolveInlineResourcesRelativeToIncludedResource() {
     String dir = someName();
     String file = someHtmlFileName();
     String relativeFile = dir + '/' + file;
@@ -296,7 +296,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldMergedInlinedYaml() throws Exception {
+  public void shouldMergedInlinedYaml() {
     resourceResolver = name -> {
       switch (name) {
         case FOO:

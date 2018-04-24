@@ -4,9 +4,10 @@
 package com.opentext.ia.test;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import org.junit.rules.TemporaryFolder;
 
@@ -21,7 +22,7 @@ public class TestCase {
 
   protected File file(TemporaryFolder temporaryFolder, byte[] contents) throws IOException {
     File result = temporaryFolder.newFile();
-    try (OutputStream stream = new FileOutputStream(result)) {
+    try (OutputStream stream = Files.newOutputStream(result.toPath(), StandardOpenOption.WRITE)) {
       stream.write(contents);
     }
     return result;

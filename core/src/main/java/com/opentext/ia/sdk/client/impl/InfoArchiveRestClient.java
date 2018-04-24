@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -18,7 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ContentResult;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
@@ -33,7 +33,6 @@ import com.opentext.ia.sdk.dto.SearchResults;
 import com.opentext.ia.sdk.dto.export.ExportConfiguration;
 import com.opentext.ia.sdk.dto.export.ExportTransformation;
 import com.opentext.ia.sdk.dto.query.Comparison;
-import com.opentext.ia.sdk.dto.query.Item;
 import com.opentext.ia.sdk.dto.query.SearchQuery;
 import com.opentext.ia.sdk.support.http.BinaryPart;
 import com.opentext.ia.sdk.support.http.MediaTypes;
@@ -122,30 +121,32 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private String getXmlStringFromSearchQuery(SearchQuery searchQuery) {
     SearchDataBuilder searchDataBuilder = SearchDataBuilder.builder();
-    for (Item item: searchQuery.getItems()) {
-      if (item instanceof Comparison) {
-        Comparison comparison = (Comparison)item;
-        switch (comparison.getOperator()) {
-          case EQUAL: searchDataBuilder.isEqual(comparison.getName(), comparison.getValue().get(0));
-            break;
-          case NOT_EQUAL:
-            searchDataBuilder.isNotEqual(comparison.getName(), comparison.getValue().get(0));
-            break;
-          case STARTS_WITH:
-            searchDataBuilder.startsWith(comparison.getName(), comparison.getValue().get(0));
-            break;
-          case BETWEEN:
-            searchDataBuilder.between(comparison.getName(), comparison.getValue().get(0), comparison.getValue().get(1));
-            break;
-          default:
-            break;
-        }
-      }
-    }
+    searchQuery.getItems().stream()
+        .filter(item -> item instanceof Comparison)
+        .map(Comparison.class::cast)
+        .forEach(comparison -> addComparison(comparison, searchDataBuilder));
     return searchDataBuilder.build()
         .replaceFirst("<\\?.*\\?>", "")
         .replace(" ", "")
         .replace(System.lineSeparator(), "");
+  }
+
+  private void addComparison(Comparison comparison, SearchDataBuilder searchDataBuilder) {
+    switch (comparison.getOperator()) {
+      case EQUAL: searchDataBuilder.isEqual(comparison.getName(), comparison.getValue().get(0));
+        break;
+      case NOT_EQUAL:
+        searchDataBuilder.isNotEqual(comparison.getName(), comparison.getValue().get(0));
+        break;
+      case STARTS_WITH:
+        searchDataBuilder.startsWith(comparison.getName(), comparison.getValue().get(0));
+        break;
+      case BETWEEN:
+        searchDataBuilder.between(comparison.getName(), comparison.getValue().get(0), comparison.getValue().get(1));
+        break;
+      default:
+        break;
+    }
   }
 
   @Override
@@ -179,16 +180,19 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   private String getValidJsonRequestForExport(String exportConfigurationUri, List<SearchResult> searchResults) {
     JsonNodeFactory jsonNodeFactory = new ObjectMapper().getNodeFactory();
     ObjectNode root = jsonNodeFactory.objectNode();
-    ArrayNode includedRows = jsonNodeFactory.arrayNode();
-    for (SearchResult searchResult: searchResults) {
-      for (Row row: searchResult.getRows()) {
-        includedRows.add(row.getId());
-      }
-    }
-    TextNode exportConfiguration = jsonNodeFactory.textNode(exportConfigurationUri);
-    root.set("exportConfiguration", exportConfiguration);
-    root.set("includedRows", includedRows);
+    root.set("exportConfiguration", jsonNodeFactory.textNode(exportConfigurationUri));
+    root.set("includedRows", getIncludedRows(searchResults, jsonNodeFactory));
     return root.toString();
+  }
+
+  private ArrayNode getIncludedRows(List<SearchResult> searchResults, JsonNodeFactory jsonNodeFactory) {
+    ArrayNode result = jsonNodeFactory.arrayNode();
+    searchResults.stream()
+        .map(SearchResult::getRows)
+        .flatMap(Collection::stream)
+        .map(Row::getId)
+        .forEach(result::add);
+    return result;
   }
 
   @Override

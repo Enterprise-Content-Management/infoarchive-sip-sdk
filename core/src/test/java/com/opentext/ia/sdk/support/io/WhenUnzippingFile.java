@@ -5,7 +5,13 @@ package com.opentext.ia.sdk.support.io;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
@@ -25,7 +31,7 @@ public class WhenUnzippingFile extends TestCase {
     String entry = randomString();
     byte[] expected = randomBytes();
     File zip = temporaryFolder.newFile();
-    try (OutputStream out = new FileOutputStream(zip)) {
+    try (OutputStream out = Files.newOutputStream(zip.toPath(), StandardOpenOption.CREATE)) {
       ZipAssembler zipper = new DefaultZipAssembler();
       zipper.begin(out);
       zipper.addEntry(entry, new ByteArrayInputStream(expected), new NoHashAssembler());

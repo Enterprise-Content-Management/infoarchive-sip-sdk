@@ -27,6 +27,7 @@ class InsertDefaultValues extends PathVisitor {
   private static final String BASE64 = "base64";
   private static final Map<String, Collection<Default>> DEFAULT_PROPERTIES_BY_PATH_REGEX = defaultValuesByPathRegex();
 
+  @SuppressWarnings("PMD.ExcessiveMethodLength")
   private static Map<String, Collection<Default>> defaultValuesByPathRegex() {
     Map<String, Collection<Default>> result = new HashMap<>();
     result.put("/.+/path.value.index", Default.of("build.without.logging", false,

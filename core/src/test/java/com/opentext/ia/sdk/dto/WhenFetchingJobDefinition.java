@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -25,9 +25,4 @@ public class WhenFetchingJobDefinition {
     assertEquals("Reception Format", instance.getHandlerName(), HANDLERNAME);
   }
 
-  @Test
-  public void invokeJobDefinitions() {
-    JobDefinitions defs = new JobDefinitions();
-    assertNotNull(defs);
-  }
 }

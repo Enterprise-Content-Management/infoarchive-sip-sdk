@@ -9,6 +9,7 @@ import java.util.Comparator;
 
 class DefaultYamlComparator implements Comparator<String>, Serializable {
 
+  private static final long serialVersionUID = -3260643414688936598L;
   private static final String VERSION = "version";
   private static final String NAME = "name";
 

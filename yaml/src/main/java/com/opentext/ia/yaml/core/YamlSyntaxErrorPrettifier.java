@@ -75,11 +75,14 @@ class YamlSyntaxErrorPrettifier  {
         Integer expected = spaces.iterator().next();
         return String.format("%d %s", expected, English.plural(SPACE, expected));
       case 2:
-        StringBuilder result = new StringBuilder();
         Iterator<Integer> values = spaces.iterator();
-        result.append("either ").append(values.next());
-        result.append(" or ").append(values.next()).append(" spaces");
-        return result.toString();
+        return new StringBuilder()
+            .append("either ")
+            .append(values.next())
+            .append(" or ")
+            .append(values.next())
+            .append(" spaces")
+            .toString();
       default:
         return String.format("one of %s spaces", spaces);
     }

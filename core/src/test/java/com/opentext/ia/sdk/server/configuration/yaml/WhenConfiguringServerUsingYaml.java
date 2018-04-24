@@ -53,7 +53,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   }
 
   @Test
-  public void shouldDeferToServerWhenItSupportsYamlConfiguration() throws Exception {
+  public void shouldDeferToServerWhenItSupportsYamlConfiguration() throws IOException {
     String configurationUri = randomUri();
     Services services = new Services();
     services.getLinks().put(LINK_CONFIGURATION, new Link(configurationUri));
@@ -66,7 +66,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   }
 
   @Test
-  public void shouldConfigureFromClientWhenServerDoesntSupportsYamlConfiguration() throws Exception {
+  public void shouldConfigureFromClientWhenServerDoesntSupportsYamlConfiguration() throws IOException {
     Services services = new Services();
     when(httpClient.get(anyString(), any(), eq(Services.class))).thenReturn(services);
 

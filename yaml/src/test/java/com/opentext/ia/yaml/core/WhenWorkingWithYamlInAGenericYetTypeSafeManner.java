@@ -362,7 +362,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSortWithDefaultComparator() throws Exception {
+  public void shouldSortWithDefaultComparator() {
     yaml.put("cheetah", "dingo");
     yaml.put("ape", "bear");
 
@@ -378,7 +378,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSortWithProvidedComparator() throws Exception {
+  public void shouldSortWithProvidedComparator() {
     yaml.put("elephant", "fox");
     yaml.put("giraffe", "hyena");
 
@@ -386,7 +386,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSortRecursively() throws Exception {
+  public void shouldSortRecursively() {
     yaml.put("iguana", new YamlMap()
         .put("leopard", Arrays.asList(new YamlMap()
             .put("opossum", "parrot")
@@ -455,7 +455,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSortAnyMap() throws Exception {
+  public void shouldSortAnyMap() {
     Map<String, String> wrapped = new TreeMap<>((a, b) -> b.compareTo(a));
     wrapped.put("F", "G");
     wrapped.put("D", "E");
@@ -468,7 +468,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldVisitMap() throws Exception {
+  public void shouldVisitMap() {
     yaml.put("aardvark", Arrays.asList(
         new YamlMap()
             .put("bee", "cobra")
@@ -573,7 +573,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldResolveOffsetDateTime() throws Exception {
+  public void shouldResolveOffsetDateTime() {
     assertStringField("odt", "2002-05-30T12:00:00Z");
     assertStringField("ms", "2017-10-06T10:59:11.477+02:00");
   }

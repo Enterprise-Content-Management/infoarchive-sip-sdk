@@ -11,6 +11,8 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.opentext.ia.yaml.resource.ResourceResolver;
 
 
@@ -88,7 +90,7 @@ public class ConfigurationProperties implements Function<String, String> {
 
   private String lookup(String name) {
     String result = properties.getProperty(name);
-    if (result != null && result.trim().isEmpty()) {
+    if (StringUtils.isBlank(result)) {
       result = null;
     }
     if (result == null && parent != null) {

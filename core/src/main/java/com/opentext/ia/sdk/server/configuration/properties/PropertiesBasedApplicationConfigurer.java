@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.dto.Aic;
@@ -126,8 +128,11 @@ import com.opentext.ia.sdk.support.io.RuntimeIoException;
  * Configure an InfoArchive application based on properties in a map. This is less convenient for repeating and/or
  * hierarchical configuration. For a more convenient way of specifying the configuration, see
  * {@linkplain YamlBasedApplicationConfigurer}.
+ *
  */
-@SuppressWarnings("PMD.ExcessiveClassLength")
+// TODO: Make this deprecated
+@SuppressWarnings({ "PMD.ExcessiveClassLength", "PMD.ExcessiveImports", "PMD.CouplingBetweenObjects",
+  "PMD.CyclomaticComplexity", "PMD.UseObjectForClearerAPI" })
 public class PropertiesBasedApplicationConfigurer implements ApplicationConfigurer, InfoArchiveLinkRelations,
     InfoArchiveConfigurationProperties {
 
@@ -419,17 +424,9 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private Collection<String> commaSeparatedItems(String items) {
-    return isBlank(items) ? Collections.emptyList() : Arrays.stream(items.split("\\s*,\\s*"))
-        .filter(this::isNotBlank)
+    return StringUtils.isBlank(items) ? Collections.emptyList() : Arrays.stream(items.split("\\s*,\\s*"))
+        .filter(StringUtils::isNotBlank)
         .collect(Collectors.toList());
-  }
-
-  private boolean isNotBlank(String text) {
-    return !isBlank(text);
-  }
-
-  private boolean isBlank(String value) {
-    return value == null || value.trim().isEmpty();
   }
 
   private FileSystemFolder ensureFileSystemFolder(String name) throws IOException {
@@ -467,11 +464,11 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
 
   private Store createStore(String name, String storeType, String fileSystemFolderUri, String type) {
     Store result = createObject(name, Store.class);
-    if (isNotBlank(storeType)) {
+    if (StringUtils.isNotBlank(storeType)) {
       result.setStoreType(storeType);
     }
     result.setFileSystemFolder(fileSystemFolderUri);
-    if (isNotBlank(type)) {
+    if (StringUtils.isNotBlank(type)) {
       result.setType(type);
     }
     return result;
@@ -912,14 +909,16 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   private List<Namespace> createNamespaces(String name) {
     RepeatingConfigReader reader = new RepeatingConfigReader("namespace", resolveTemplatedKeys(Arrays.asList(
         QUERY_NAMESPACE_PREFIX_TEMPLATE, QUERY_NAMESPACE_URI_TEMPLATE), name));
-    List<Map<String, String>> namespaceCfgs = reader.read(configuration);
-    List<Namespace> result = new ArrayList<>();
-    for (Map<String, String> cfg : namespaceCfgs) {
-      Namespace namespace = new Namespace();
-      namespace.setPrefix(cfg.get(resolveTemplatedKey(QUERY_NAMESPACE_PREFIX_TEMPLATE, name)));
-      namespace.setUri(cfg.get(resolveTemplatedKey(QUERY_NAMESPACE_URI_TEMPLATE, name)));
-      result.add(namespace);
-    }
+    List<Map<String, String>> namespaceConfigurations = reader.read(configuration);
+    return namespaceConfigurations.stream()
+        .map(namespaceConfiguration -> toNamespace(name, namespaceConfiguration))
+        .collect(Collectors.toList());
+  }
+
+  private Namespace toNamespace(String name, Map<String, String> cfg) {
+    Namespace result = new Namespace();
+    result.setPrefix(cfg.get(resolveTemplatedKey(QUERY_NAMESPACE_PREFIX_TEMPLATE, name)));
+    result.setUri(cfg.get(resolveTemplatedKey(QUERY_NAMESPACE_URI_TEMPLATE, name)));
     return result;
   }
 
@@ -930,15 +929,17 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private List<XdbPdiConfig> createXdbPdiConfigs(String name) {
-    List<XdbPdiConfig> result = new ArrayList<>();
-    for (Map<String, String> cfg : getPdiConfigs(name)) {
-      XdbPdiConfig xdbPdi = new XdbPdiConfig();
-      xdbPdi.setEntityPath(cfg.get(resolveTemplatedKey(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name)));
-      xdbPdi.setSchema(cfg.get(resolveTemplatedKey(QUERY_XDBPDI_SCHEMA_TEMPLATE, name)));
-      xdbPdi.setTemplate(cfg.get(resolveTemplatedKey(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name)));
-      xdbPdi.setOperands(createOperands(name, xdbPdi.getSchema()));
-      result.add(xdbPdi);
-    }
+    return getPdiConfigs(name).stream()
+        .map(pdiConfig -> toXdbPdiConfig(name, pdiConfig))
+        .collect(Collectors.toList());
+  }
+
+  private XdbPdiConfig toXdbPdiConfig(String name, Map<String, String> pdiConfig) {
+    XdbPdiConfig result = new XdbPdiConfig();
+    result.setEntityPath(pdiConfig.get(resolveTemplatedKey(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name)));
+    result.setSchema(pdiConfig.get(resolveTemplatedKey(QUERY_XDBPDI_SCHEMA_TEMPLATE, name)));
+    result.setTemplate(pdiConfig.get(resolveTemplatedKey(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name)));
+    result.setOperands(createOperands(name, result.getSchema()));
     return result;
   }
 
@@ -949,15 +950,18 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private List<Operand> createOperands(String name, String schema) {
-    List<Operand> result = new ArrayList<>();
-    for (Map<String, String> cfg : getOperandConfigs(name, schema)) {
-      Operand operand = new Operand();
-      operand.setIndex(Boolean.parseBoolean(cfg.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_INDEX, name, schema))));
-      operand.setType(cfg.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_TYPE, name, schema)));
-      operand.setName(cfg.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_NAME, name, schema)));
-      operand.setPath(cfg.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_PATH, name, schema)));
-      result.add(operand);
-    }
+    return getOperandConfigs(name, schema).stream()
+        .map(operandConfiguration -> toOperand(name, schema, operandConfiguration))
+        .collect(Collectors.toList());
+  }
+
+  private Operand toOperand(String name, String schema, Map<String, String> operandConfiguration) {
+    Operand result = new Operand();
+    result.setIndex(Boolean.parseBoolean(operandConfiguration.get(
+        resolveTemplatedKey(QUERY_XDBPDI_OPERAND_INDEX, name, schema))));
+    result.setType(operandConfiguration.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_TYPE, name, schema)));
+    result.setName(operandConfiguration.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_NAME, name, schema)));
+    result.setPath(operandConfiguration.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_PATH, name, schema)));
     return result;
   }
 
@@ -983,7 +987,7 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
 
   private int getOptionalInt(String name, int defaultValue) {
     String value = configuration.get(name);
-    return isBlank(value) ? defaultValue : Integer.parseInt(value);
+    return StringUtils.isBlank(value) ? defaultValue : Integer.parseInt(value);
   }
 
   private void ensureResultConfigurationHelper() throws IOException {
@@ -1030,7 +1034,7 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
 
   private void ensureSearchComposition(String searchName) throws IOException {
     String name = templatedString(SEARCH_COMPOSITION_NAME, searchName);
-    if (isBlank(name)) {
+    if (StringUtils.isBlank(name)) {
       name = "Set 1";
     }
     SearchComposition composition = ensureNamedItem(cache.getSearch(), LINK_SEARCH_COMPOSITIONS,

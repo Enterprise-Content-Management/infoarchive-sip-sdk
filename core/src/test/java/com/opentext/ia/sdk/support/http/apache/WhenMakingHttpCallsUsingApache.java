@@ -207,7 +207,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
-  public void shouldDelete() throws Exception {
+  public void shouldDelete() throws IOException {
     String uri = randomString();
 
     httpClient.delete(uri, Collections.emptyList());

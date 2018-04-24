@@ -13,4 +13,6 @@ import java.io.IOException;
  */
 public class EmptyZipException extends IOException {
 
+  private static final long serialVersionUID = -1100311472760889720L;
+
 }

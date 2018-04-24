@@ -4,10 +4,10 @@
 package com.opentext.ia.sdk.sip.active;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.function.BiConsumer;
 
@@ -82,7 +82,7 @@ public class ActiveArchiver<D> {
   private void sipAssembled(FileGenerationMetrics metrics) {
     File file = metrics.getFile();
     try {
-      try (InputStream sip = new FileInputStream(file)) {
+      try (InputStream sip = Files.newInputStream(file.toPath(), StandardOpenOption.READ)) {
         archiveClient.ingestDirect(sip);
       }
       Files.delete(file.toPath());

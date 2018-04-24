@@ -125,8 +125,9 @@ subprojects {
 
   apply plugin: 'pmd'
   pmd {
+    ruleSets = []
     ruleSetFiles = rootProject.files('config/pmd.xml')
-    toolVersion = '5.4.1'
+    toolVersion = '6.2.0'
     ignoreFailures = false
   }
 
@@ -161,7 +162,7 @@ project(':infoarchive-configuration') {
 
 project(':infoarchive-yaml') {
   configurations {
-    compile.extendsFrom commonsIo, evoInflector, yaml
+    compile.extendsFrom commonsIo, commonsLang, evoInflector, yaml
   }
   dependencies {
     compile project(':infoarchive-configuration')

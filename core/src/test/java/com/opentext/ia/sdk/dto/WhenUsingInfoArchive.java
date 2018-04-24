@@ -67,7 +67,7 @@ import com.opentext.ia.sdk.support.io.RuntimeIoException;
 import com.opentext.ia.test.TestCase;
 
 
-@SuppressWarnings("PMD.NcssMethodCount")
+@SuppressWarnings("PMD") // TODO: Clean this up
 public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations {
 
   private static final String BILLBOARD_URI = "http://foo.com/bar";
@@ -405,7 +405,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   private ArchiveClient configureServer(Map<String, String> config) throws IOException {
-    return archiveClient = ArchiveClients.configuringApplicationUsing(new PropertiesBasedApplicationConfigurer(config), connection);
+    return archiveClient = ArchiveClients.configuringApplicationUsing(
+        new PropertiesBasedApplicationConfigurer(config), connection);
   }
 
   @Test

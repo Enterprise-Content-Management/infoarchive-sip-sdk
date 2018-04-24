@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+@SuppressWarnings("PMD")
 public class SearchConfigBuilder {
 
   private String name;

@@ -4,13 +4,13 @@
 package com.opentext.ia.yaml.configuration.zip;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -133,7 +133,8 @@ public class ZipBuilder {
     String fileName = "import_configuration" + System.currentTimeMillis() + ".zip";
     File result = new File(TEMP_DIR.toFile(), fileName);
 
-    try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(result))) {
+    try (ZipOutputStream zip = new ZipOutputStream(
+        Files.newOutputStream(result.toPath(), StandardOpenOption.CREATE_NEW))) {
       customization.init(entries.values(), this::streamFor);
       for (Entry<Object, String> entry : entries.entrySet()) {
         try (InputStream input = toInputStream(entry.getKey())) {
@@ -168,7 +169,7 @@ public class ZipBuilder {
     if (source instanceof String) {
       return IOUtils.toInputStream((String)source, StandardCharsets.UTF_8);
     }
-    return new FileInputStream((File)source);
+    return Files.newInputStream(((File)source).toPath(), StandardOpenOption.READ);
   }
 
   private void addEntry(ExtraZipEntry entry, ZipOutputStream zip) {

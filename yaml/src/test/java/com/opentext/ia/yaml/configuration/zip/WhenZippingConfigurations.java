@@ -8,13 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -86,7 +87,8 @@ public class WhenZippingConfigurations extends TestCase {
 
   private void setContent(File file, String content) throws IOException {
     file.getParentFile().mkdirs();
-    try (OutputStream output = new FileOutputStream(file)) {
+    try (OutputStream output = Files.newOutputStream(file.toPath(),
+        StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
       try (Reader input = new StringReader(content)) {
         IOUtils.copy(input, output, StandardCharsets.UTF_8);
       }

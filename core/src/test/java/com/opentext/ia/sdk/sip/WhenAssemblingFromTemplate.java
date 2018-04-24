@@ -4,8 +4,10 @@
 package com.opentext.ia.sdk.sip;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,10 +33,10 @@ public class WhenAssemblingFromTemplate extends TestCase {
     PrintWriter writer = new PrintWriter(output);
     Template<Map<String, ? extends Object>> template =
         new FixedHeaderAndFooterTemplate<Map<String, ? extends Object>>(header, footer) {
-
           @Override
           public void writeRow(Map<String, ? extends Object> values, Map<String, ContentInfo> contentInfo,
               PrintWriter writer) {
+            // Do nothing
           }
         };
 

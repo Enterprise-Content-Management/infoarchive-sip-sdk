@@ -4,12 +4,11 @@
 package com.opentext.ia.sdk.support.io;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 /**
  * Buffer that stores data in a file.
@@ -27,8 +26,7 @@ public class FileBuffer implements DataBuffer {
 
   private static File tempFile() {
     try {
-      return Files.createTempFile(null, null)
-        .toFile();
+      return Files.createTempFile(null, null).toFile();
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
@@ -44,12 +42,12 @@ public class FileBuffer implements DataBuffer {
 
   @Override
   public OutputStream openForWriting() throws IOException {
-    return new FileOutputStream(file);
+    return Files.newOutputStream(file.toPath(), StandardOpenOption.CREATE);
   }
 
   @Override
   public InputStream openForReading() throws IOException {
-    return new FileInputStream(file);
+    return Files.newInputStream(file.toPath(), StandardOpenOption.READ);
   }
 
   @Override

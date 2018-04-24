@@ -8,6 +8,8 @@ import java.io.File;
 
 public class InvalidZipEntryException extends RuntimeException {
 
+  private static final long serialVersionUID = -8791605031232020041L;
+
   private final File file;
 
   public InvalidZipEntryException(Object source, Throwable cause) {

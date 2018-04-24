@@ -3,10 +3,16 @@
  */
 package com.opentext.ia.sdk.support.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
@@ -44,7 +50,7 @@ public class WhenCopyingFiles {
   }
 
   private String getContents(File destination) throws IOException {
-    try (InputStream stream = new FileInputStream(destination)) {
+    try (InputStream stream = Files.newInputStream(destination.toPath(), StandardOpenOption.READ)) {
       return IOUtils.toString(stream, StandardCharsets.UTF_8);
     }
   }

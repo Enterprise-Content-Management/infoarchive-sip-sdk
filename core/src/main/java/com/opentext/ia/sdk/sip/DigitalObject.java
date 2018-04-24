@@ -6,12 +6,12 @@ package com.opentext.ia.sdk.sip;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -48,8 +48,8 @@ public interface DigitalObject extends Supplier<InputStream> {
   static DigitalObject fromFile(String referenceInformation, File file) {
     return fromSupplier(referenceInformation, file::length, () -> {
       try {
-        return new FileInputStream(file);
-      } catch (FileNotFoundException e) {
+        return Files.newInputStream(file.toPath(), StandardOpenOption.READ);
+      } catch (IOException e) {
         throw new RuntimeIoException(e);
       }
     });

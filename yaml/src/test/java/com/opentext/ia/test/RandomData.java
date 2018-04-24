@@ -17,8 +17,6 @@ public final class RandomData {
   private static final int MAX_INTEGER = 1000;
   private static final double MIN_DOUBLE = 0;
   private static final double MAX_DOUBLE = 1000;
-  private static final short MIN_SHORT = 0;
-  private static final short MAX_SHORT = Short.MAX_VALUE;
 
   private final Random random;
 
@@ -59,18 +57,6 @@ public final class RandomData {
       throw new IllegalArgumentException(String.format("Min (%d) must be less than max (%d)", min, max));
     }
     return min + random.nextInt(max - min);
-  }
-
-  public short shortInteger() {
-    return shortInteger(MIN_SHORT, MAX_SHORT);
-  }
-
-  public short shortInteger(int max) {
-    return shortInteger(MIN_SHORT, max);
-  }
-
-  public short shortInteger(int min, int max) {
-    return (short)integer(min, max);
   }
 
   public byte[] bytes() {

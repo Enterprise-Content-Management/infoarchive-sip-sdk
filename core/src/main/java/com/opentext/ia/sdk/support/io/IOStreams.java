@@ -50,7 +50,7 @@ public final class IOStreams {
       }
       try {
         closeable.close();
-      } catch (IOException e) {
+      } catch (IOException ignored) {
         // Ignore
       }
     }

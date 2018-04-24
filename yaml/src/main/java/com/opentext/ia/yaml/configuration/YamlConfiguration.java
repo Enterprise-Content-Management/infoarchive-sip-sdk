@@ -4,11 +4,12 @@
 package com.opentext.ia.yaml.configuration;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +29,7 @@ import com.opentext.ia.yaml.resource.ResourcesResolver;
  * InfoArchive server configuration in YAML format.
  * @since 6.0.0
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "PMD.CouplingBetweenObjects" })
 public class YamlConfiguration {
 
   private static final Collection<Class<? extends Visitor>> YAML_NORMALIZATION_CLASSES = Arrays.asList(
@@ -69,7 +70,7 @@ public class YamlConfiguration {
    * @throws IOException When an I/O error occurs
    */
   public YamlConfiguration(File yaml) throws IOException {
-    this(new FileInputStream(yaml), ResourceResolver.fromFile(yaml));
+    this(Files.newInputStream(yaml.toPath(), StandardOpenOption.READ), ResourceResolver.fromFile(yaml));
   }
 
   /**
@@ -81,7 +82,7 @@ public class YamlConfiguration {
     this(YamlMap.from(yaml), resolver);
     try {
       yaml.close();
-    } catch (final IOException ioe) {
+    } catch (final IOException ignored) {
       // ignore
     }
   }

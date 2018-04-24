@@ -4,12 +4,13 @@
 package com.opentext.ia.sdk.support.xml;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -24,6 +25,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -171,7 +173,7 @@ public final class XmlUtil {
       StringBuilder builder) {
     Node previousSibling = node.getPreviousSibling();
     if (previousSibling != null && previousSibling.getNodeType() == Node.TEXT_NODE
-        && !previousSibling.getNodeValue().trim().isEmpty()) {
+        && StringUtils.isNotBlank(previousSibling.getNodeValue())) {
       builder.append(NL);
     }
     Element element = (Element)node;
@@ -256,9 +258,7 @@ public final class XmlUtil {
       text.append(child.getNodeValue());
       child = child.getNextSibling();
     }
-    return text.length() > 0 && !text.toString()
-      .trim()
-      .isEmpty();
+    return StringUtils.isNotBlank(text);
   }
 
   private static void appendChildren(Node node, String indentation, Namespaces namespaces,
@@ -355,7 +355,7 @@ public final class XmlUtil {
       throw new IllegalArgumentException("Missing file: " + file.getAbsolutePath());
     }
     try {
-      try (InputStream stream = new FileInputStream(file)) {
+      try (InputStream stream = Files.newInputStream(file.toPath(), StandardOpenOption.READ)) {
         return parse(stream);
       }
     } catch (IOException e) {
@@ -465,7 +465,7 @@ public final class XmlUtil {
     }
   }
 
-  @SuppressWarnings("PMD.AvoidCatchingNPE") // Want better error message
+  @SuppressWarnings({ "PMD.AvoidCatchingNPE", "PMD.AvoidCatchingGenericException" }) // Want better error message
   public static Validator newXmlSchemaValidator(InputStream xmlSchema) {
     try {
       return SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)

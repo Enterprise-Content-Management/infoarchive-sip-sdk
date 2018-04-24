@@ -3,7 +3,9 @@
  */
 package com.opentext.ia.sdk.support.http;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -61,7 +63,7 @@ public class WhenWorkingWithHttp extends TestCase {
   }
 
   @Test
-  public void shouldHandleTextData() throws Exception {
+  public void shouldHandleTextData() throws IOException {
     String expected = randomString(8);
     assertNull("GET", client.get(uri, headers, String.class));
     assertEquals("PUT",  expected, client.put(uri,  headers, String.class, expected));
@@ -69,7 +71,7 @@ public class WhenWorkingWithHttp extends TestCase {
   }
 
   @Test
-  public void shouldHandleBinaryData() throws Exception {
+  public void shouldHandleBinaryData() throws IOException {
     byte[] expected = randomBytes();
 
     assertResponse("GET", new byte[0], client.get(uri, headers, InputStream.class));

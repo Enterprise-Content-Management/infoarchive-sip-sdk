@@ -3,13 +3,22 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ClassUtils;
@@ -136,7 +145,7 @@ public class WhenTransferringDataUsingObjects extends AbstractDtoTestCase {
     if (is(clazz, boolean.class)) {
       return false;
     }
-    if (is(clazz, int.class, long.class, byte.class, short.class)) {
+    if (is(clazz, int.class, long.class, byte.class)) {
       return 0;
     }
     if (is(clazz, char.class)) {

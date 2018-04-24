@@ -4,10 +4,11 @@
 package com.opentext.ia.yaml.resource;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ class FileResolver implements ResourceResolver, ResourcesResolver {
   }
 
   private String resolve(File file) {
-    try (InputStream input = new FileInputStream(file)) {
+    try (InputStream input = Files.newInputStream(file.toPath(), StandardOpenOption.READ)) {
       return IOUtils.toString(input, StandardCharsets.UTF_8);
     } catch (IOException e) {
       throw new UnknownResourceException(file.getName(), e);

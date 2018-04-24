@@ -6,10 +6,11 @@ package com.opentext.ia.yaml.configuration.zip;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -26,8 +27,10 @@ import org.apache.commons.io.IOUtils;
  */
 public class RandomAccessZipFile extends HashMap<String, InputStream> {
 
+  private static final long serialVersionUID = -6051477492129864201L;
+
   public RandomAccessZipFile(File input) throws IOException {
-    this(new FileInputStream(input));
+    this(Files.newInputStream(input.toPath(), StandardOpenOption.READ));
   }
 
   public RandomAccessZipFile(InputStream input) throws IOException {
@@ -53,7 +56,7 @@ public class RandomAccessZipFile extends HashMap<String, InputStream> {
     if (result != null) {
       try {
         result.reset();
-      } catch (IOException e) {
+      } catch (IOException ignored) {
         // Won't happen with in-memory manipulations
       }
     }

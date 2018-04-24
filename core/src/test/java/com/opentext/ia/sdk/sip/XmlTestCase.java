@@ -4,9 +4,10 @@
 package com.opentext.ia.sdk.sip;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import org.w3c.dom.Document;
 
@@ -14,10 +15,11 @@ import com.opentext.ia.sdk.support.io.RepeatableInputStream;
 import com.opentext.ia.sdk.support.xml.XmlUtil;
 import com.opentext.ia.test.TestCase;
 
+
 public class XmlTestCase extends TestCase {
 
   protected Document assertValidXmlFile(File file, String documentType, String schema) throws IOException {
-    try (InputStream stream = new FileInputStream(file)) {
+    try (InputStream stream = Files.newInputStream(file.toPath(), StandardOpenOption.READ)) {
       return assertValidXml(stream, documentType, schema);
     }
   }

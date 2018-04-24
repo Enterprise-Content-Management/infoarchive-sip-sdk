@@ -13,6 +13,8 @@ import java.io.File;
  */
 public class CannotReadZipEntryException extends RuntimeException {
 
+  private static final long serialVersionUID = 5528438643799316589L;
+
   private final File file;
 
   public CannotReadZipEntryException(Exception e, File file) {

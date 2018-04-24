@@ -12,6 +12,8 @@ import java.util.TreeSet;
 
 public class DefaultYamlSequenceComparator implements Comparator<Object>, Serializable {
 
+  private static final long serialVersionUID = 448436871382368502L;
+
   @Override
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public int compare(Object o1, Object o2) {

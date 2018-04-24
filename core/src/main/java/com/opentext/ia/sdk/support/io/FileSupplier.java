@@ -65,7 +65,6 @@ public final class FileSupplier {
    */
   public static Supplier<File> fromDirectory(File dir, String prefix, String suffix) {
     return new Supplier<File>() {
-
       private int count;
 
       @Override

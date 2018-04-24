@@ -3,7 +3,11 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import javax.validation.ValidationException;
 import javax.xml.transform.stream.StreamSource;
@@ -23,10 +27,10 @@ public class XmlSchemaValidator implements Validator {
   /**
    * Create an instance.
    * @param xmlSchema The XML Schema to use for validation
-   * @throws FileNotFoundException When the schema could not be found
+   * @throws IOException When the schema could not be found
    */
-  public XmlSchemaValidator(File xmlSchema) throws FileNotFoundException {
-    this(new FileInputStream(xmlSchema));
+  public XmlSchemaValidator(File xmlSchema) throws IOException {
+    this(Files.newInputStream(xmlSchema.toPath(), StandardOpenOption.READ));
   }
 
   /**

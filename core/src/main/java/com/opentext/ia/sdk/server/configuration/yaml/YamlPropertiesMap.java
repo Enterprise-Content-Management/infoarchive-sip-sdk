@@ -18,6 +18,7 @@ import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
 
 
+@SuppressWarnings({ "PMD.TooManyMethods", "PMD.UseObjectForClearerAPI" })
 class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveConfigurationProperties {
 
   private static final long serialVersionUID = 3429860978620277558L;
@@ -35,6 +36,7 @@ class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveCo
     flatten();
   }
 
+  @SuppressWarnings("PMD.ExcessiveMethodLength")
   private void flatten() {
     putFrom("tenant",
         TENANT_NAME, NAME);

@@ -41,7 +41,7 @@ public class WhenInliningExternalResources extends TestCase {
   private ResourceResolver resourceResolver = ResourceResolver.none();
 
   @Test
-  public void shouldInlineResources() throws Exception {
+  public void shouldInlineResources() {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -113,7 +113,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNormalizedCustomPresentationHtmlTemplate() throws Exception {
+  public void shouldInlineNormalizedCustomPresentationHtmlTemplate() {
     String expected = someName();
     String resource = someHtmlFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -133,7 +133,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineSingleCustomPresentationHtmlTemplate() throws Exception {
+  public void shouldInlineSingleCustomPresentationHtmlTemplate() {
     String expected = someName();
     String resource = someHtmlFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -148,7 +148,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNamedCustomPresentationHtmlTemplate() throws Exception {
+  public void shouldInlineNamedCustomPresentationHtmlTemplate() {
     String expected = someName();
     String resource = someHtmlFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -167,7 +167,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNormalizedDatabaseMetadata() throws Exception {
+  public void shouldInlineNormalizedDatabaseMetadata() {
     String expected = someName();
     String resource = someXmlFile();
     resourceResolver = resolveResource(resource, expected);
@@ -187,7 +187,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineSingleDatabaseMetadata() throws Exception {
+  public void shouldInlineSingleDatabaseMetadata() {
     String expected = someName();
     String resource = someXmlFile();
     resourceResolver = resolveResource(resource, expected);
@@ -202,7 +202,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNamedDatabaseMetadata() throws Exception {
+  public void shouldInlineNamedDatabaseMetadata() {
     String expected = someName();
     String resource = someXmlFile();
     resourceResolver = resolveResource(resource, expected);
@@ -221,7 +221,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNormalizedTransformationXQuery() throws Exception {
+  public void shouldInlineNormalizedTransformationXQuery() {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -241,7 +241,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineSingleTransformationXQuery() throws Exception {
+  public void shouldInlineSingleTransformationXQuery() {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -256,7 +256,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNamedTransformationXQuery() throws Exception {
+  public void shouldInlineNamedTransformationXQuery() {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);

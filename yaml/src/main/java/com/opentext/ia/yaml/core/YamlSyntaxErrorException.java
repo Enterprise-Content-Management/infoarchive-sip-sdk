@@ -8,6 +8,8 @@ import org.yaml.snakeyaml.error.MarkedYAMLException;
 
 public class YamlSyntaxErrorException extends MarkedYAMLException {
 
+  private static final long serialVersionUID = 161482397942714795L;
+
   public YamlSyntaxErrorException(String message, MarkedYAMLException cause) {
     super(cause.getContext(), cause.getContextMark(), message, cause.getProblemMark());
   }

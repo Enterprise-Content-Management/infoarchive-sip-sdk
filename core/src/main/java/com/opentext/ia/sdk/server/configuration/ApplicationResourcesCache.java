@@ -8,10 +8,22 @@ import java.util.List;
 import java.util.Map;
 
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
-import com.opentext.ia.sdk.dto.*;
+import com.opentext.ia.sdk.dto.Application;
+import com.opentext.ia.sdk.dto.CryptoObject;
+import com.opentext.ia.sdk.dto.JobDefinition;
+import com.opentext.ia.sdk.dto.PdiSchema;
+import com.opentext.ia.sdk.dto.Search;
+import com.opentext.ia.sdk.dto.SearchComposition;
+import com.opentext.ia.sdk.dto.Services;
+import com.opentext.ia.sdk.dto.Space;
+import com.opentext.ia.sdk.dto.SpaceRootFolder;
+import com.opentext.ia.sdk.dto.SpaceRootXdbLibrary;
+import com.opentext.ia.sdk.dto.Tenant;
+import com.opentext.ia.sdk.dto.XForm;
+import com.opentext.ia.sdk.dto.XdbFederation;
 
 
-@SuppressWarnings("PMD.TooManyFields")
+@SuppressWarnings({ "PMD.TooManyFields", "PMD.ExcessivePublicCount" })
 public class ApplicationResourcesCache {
 
   private Services services;

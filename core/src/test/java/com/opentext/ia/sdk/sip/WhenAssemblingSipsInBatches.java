@@ -17,10 +17,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -168,7 +169,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
     Consumer<FileGenerationMetrics> sipValidatingCallback = fgm -> {
       numSips.incrementAndGet();
       File zip = fgm.getFile();
-      try (InputStream sip = new FileInputStream(zip)) {
+      try (InputStream sip = Files.newInputStream(zip.toPath(), StandardOpenOption.READ)) {
         String packageInformation = getPackageInformation(sip);
         assertEquals("Is last", getSeqNo(packageInformation) > 1, isLast(packageInformation));
       } catch (IOException e) {

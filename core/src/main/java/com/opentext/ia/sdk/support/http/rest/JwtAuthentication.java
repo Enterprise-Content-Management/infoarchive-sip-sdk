@@ -4,8 +4,14 @@
 package com.opentext.ia.sdk.support.http.rest;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.datetime.DefaultClock;
@@ -28,7 +34,7 @@ public final class JwtAuthentication implements AuthenticationStrategy {
   private final String password;
   private final HttpClient httpClient;
   private final Clock clock;
-  private volatile AuthenticationSuccess authenticationResult;
+  private AuthenticationSuccess authenticationResult;
   private Timer timer;
 
   public static Optional<AuthenticationStrategy> optional(String username, String password, GatewayInfo gatewayInfo,
@@ -55,7 +61,7 @@ public final class JwtAuthentication implements AuthenticationStrategy {
   }
 
   private String requireNonEmpty(String value, String message) {
-    if (value == null || value.trim().isEmpty()) {
+    if (StringUtils.isBlank(value)) {
       throw new IllegalArgumentException(message);
     }
     return value;

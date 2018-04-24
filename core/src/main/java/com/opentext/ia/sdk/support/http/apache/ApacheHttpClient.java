@@ -120,9 +120,9 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   private void setHeaders(HttpRequestBase request, Collection<Header> headers) {
-    for (Header header : headers) {
-      request.addHeader(new BasicHeader(header.getName(), header.getValue()));
-    }
+    headers.stream()
+        .map(header -> new BasicHeader(header.getName(), header.getValue()))
+        .forEach(request::addHeader);
   }
 
   @SuppressWarnings("PMD.AvoidRethrowingException")
@@ -144,16 +144,7 @@ public class ApacheHttpClient implements HttpClient {
 
   @SuppressWarnings("PMD.AvoidRethrowingException")
   protected <T> T execute(HttpRequestBase request, ResponseFactory<T> factory) throws IOException {
-    CloseableHttpResponse httpResponse;
-    try {
-      httpResponse = client.execute(request);
-    } catch (HttpResponseException e) {
-      throw new HttpException(e.getStatusCode(), e);
-    } catch (HttpException e) {
-      throw e;
-    } catch (IOException e) {
-      throw new HttpException(500, e);
-    }
+    CloseableHttpResponse httpResponse = execute(request);
     Runnable closeResponse = () -> {
       IOStreams.close(httpResponse);
       request.releaseConnection();
@@ -161,15 +152,8 @@ public class ApacheHttpClient implements HttpClient {
     boolean shouldCloseResponse = true;
     try {
       StatusLine statusLine = httpResponse.getStatusLine();
-      int statusCode = statusLine.getStatusCode();
-      if (!isOk(statusCode)) {
-        HttpEntity entity = httpResponse.getEntity();
-        String body = toString(entity);
-        String method = request.getMethod();
-        URI uri = request.getURI();
-        String reasonPhrase = statusLine.getReasonPhrase();
-        throw new HttpException(statusCode, String.format("%n%s %s%n==> %d %s%n%s", method, uri, statusCode,
-            reasonPhrase, body));
+      if (!isOk(statusLine)) {
+        throw requestFailed(request, httpResponse, statusLine);
       }
       T result = factory.create(new ApacheResponse(httpResponse), closeResponse);
       shouldCloseResponse = false;
@@ -183,6 +167,28 @@ public class ApacheHttpClient implements HttpClient {
     }
   }
 
+  private HttpException requestFailed(HttpRequestBase request, CloseableHttpResponse httpResponse,
+      StatusLine statusLine) throws IOException {
+    int statusCode = statusLine.getStatusCode();
+    HttpEntity entity = httpResponse.getEntity();
+    String body = toString(entity);
+    String method = request.getMethod();
+    URI uri = request.getURI();
+    String reasonPhrase = statusLine.getReasonPhrase();
+    return new HttpException(statusCode, String.format("%n%s %s%n==> %d %s%n%s", method, uri, statusCode,
+        reasonPhrase, body));
+  }
+
+  private CloseableHttpResponse execute(HttpRequestBase request) throws HttpException {
+    try {
+      return client.execute(request);
+    } catch (HttpResponseException e) {
+      throw new HttpException(e.getStatusCode(), e);
+    } catch (IOException e) {
+      throw new HttpException(500, e);
+    }
+  }
+
   private String toString(HttpEntity entity) throws IOException {
     return entity == null ? "" : EntityUtils.toString(entity);
   }
@@ -192,11 +198,11 @@ public class ApacheHttpClient implements HttpClient {
     return response -> {
       try {
         StatusLine statusLine = response.getStatusLine();
-        int status = statusLine.getStatusCode();
         HttpEntity entity = response.getEntity();
         boolean isBinary = InputStream.class.equals(type);
         String body = isBinary ? "<binary>" : toString(entity);
-        if (!isOk(status)) {
+        if (!isOk(statusLine)) {
+          int status = statusLine.getStatusCode();
           throw new HttpException(status, String.format("%n%s %s%n%s==> %d %s%n%s%s", method, uri, toString(headers),
               status, statusLine.getReasonPhrase(), toString(response.getAllHeaders()), body));
         }
@@ -218,7 +224,8 @@ public class ApacheHttpClient implements HttpClient {
         .collect(Collectors.joining(NL));
   }
 
-  private boolean isOk(int status) {
+  private boolean isOk(StatusLine statusLine) {
+    int status = statusLine.getStatusCode();
     return STATUS_CODE_RANGE_MIN <= status && status < STATUS_CODE_RANGE_MAX;
   }
 

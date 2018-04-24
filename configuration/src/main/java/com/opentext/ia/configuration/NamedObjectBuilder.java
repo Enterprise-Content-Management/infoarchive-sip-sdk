@@ -5,6 +5,7 @@ package com.opentext.ia.configuration;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Builder for named configuration objects.
@@ -28,18 +29,25 @@ public class NamedObjectBuilder<P extends BaseBuilder<?, C>, S extends NamedObje
 
   private String removeCommonTypePrefixes(String type) {
     StringBuilder result = new StringBuilder(type);
-    boolean found;
-    do {
-      found = false;
-      for (String prefix : COMMON_TYPE_PREFIXES) {
-        if (result.length() > prefix.length() && result.toString().startsWith(prefix)) {
-          found = true;
-          result.delete(0, prefix.length());
-          result.setCharAt(0, Character.toLowerCase(result.charAt(0)));
-        }
-      }
-    } while (found);
+    int len = result.length();
+    Optional<String> typePrefix = getCommonTypePrefix(result, len);
+    while (typePrefix.isPresent()) {
+      int prefixLength = typePrefix.get().length();
+      result.delete(0, prefixLength);
+      len -= prefixLength;
+      result.setCharAt(0, Character.toLowerCase(result.charAt(0)));
+      typePrefix = getCommonTypePrefix(result, len);
+    }
     return result.toString();
+  }
+
+  private Optional<String> getCommonTypePrefix(StringBuilder type, int len) {
+    return COMMON_TYPE_PREFIXES.stream()
+        .filter(prefix -> {
+          int prefixLength = prefix.length();
+          return len > prefixLength && prefix.equals(type.substring(0, prefixLength));
+        })
+        .findFirst();
   }
 
   private String typePrefix(String type) {

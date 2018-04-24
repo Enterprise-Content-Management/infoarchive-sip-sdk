@@ -3,7 +3,11 @@
  */
 package com.opentext.ia.sdk.support;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -67,18 +71,18 @@ public class RepeatingConfigReader {
 
   private String formatErrorMessage(List<List<String>> values, List<Integer> sizes) {
     StringBuilder result = new StringBuilder(256);
-    result.append("All configuration items in the ");
-    result.append(name);
-    result.append(" configuration group must have the same number of values. Number of values found for each item: ");
+    result.append("All configuration items in the ")
+        .append(name)
+        .append(" configuration group must have the same number of values. Number of values found for each item: ");
     for (int i = 0; i < fields.size(); ++i) {
       if (i > 0) {
         result.append(", ");
       }
-      result.append(fields.get(i));
-      result.append(": ");
-      result.append(sizes.get(i));
-      result.append(' ');
-      result.append(values.get(i));
+      result.append(fields.get(i))
+          .append(": ")
+          .append(sizes.get(i))
+          .append(' ')
+          .append(values.get(i));
     }
     result.append('.');
     return result.toString();
@@ -87,8 +91,7 @@ public class RepeatingConfigReader {
   private static List<String> getComponents(String value) {
     List<String> result = new ArrayList<>();
     int offset = 0;
-    int index = 0;
-    while ((index = value.indexOf(',', offset)) != -1) {
+    for (int index = value.indexOf(',', offset); index != -1; index = value.indexOf(',', offset)) {
       result.add(value.substring(offset, index));
       offset = index + 1;
     }

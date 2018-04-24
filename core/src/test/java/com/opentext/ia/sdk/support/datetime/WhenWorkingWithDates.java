@@ -3,7 +3,8 @@
  */
 package com.opentext.ia.sdk.support.datetime;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -28,16 +29,12 @@ public class WhenWorkingWithDates {
     offset = Math.abs(offset);
     int tzHour = offset / 60 / 60;
     int tzMinute = offset / 60 % 60;
-    String expected = String.format("%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS%2$s", dateTime, sign);
-    if (tzHour == 0 && tzMinute == 0) {
-      expected += "Z";
-    } else {
-      expected += String.format("%02d:%02d", tzHour, tzMinute);
-    }
+    String expectedDateTime = String.format("%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS%2$s", dateTime, sign);
+    String expectedTimeZone = tzHour == 0 && tzMinute == 0 ? "Z" : String.format("%02d:%02d", tzHour, tzMinute);
 
     String actual = Dates.toIso(dateTime);
 
-    assertEquals("Date time", expected, actual);
+    assertEquals("Date time", expectedDateTime + expectedTimeZone, actual);
   }
 
   @SuppressWarnings("deprecation")

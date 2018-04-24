@@ -17,6 +17,7 @@ import com.opentext.ia.sdk.support.io.EncodedHash;
  * Information Package (SIP), describing the contents of the SIP. It is probably easiest created using a
  * {@linkplain #builder() builder}.
  */
+@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public class PackagingInformation {
 
   private DataSubmissionSession dss;

@@ -6,10 +6,10 @@ package com.opentext.ia.yaml.core;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,6 +35,7 @@ import org.yaml.snakeyaml.representer.Representer;
 /**
  * Type-safe access to a <a href="http://www.yaml.org/spec/1.2/spec.html">YAML</a> map.
  */
+@SuppressWarnings("unchecked")
 public class YamlMap {
 
   private static final int MAX_LINE_LENGTH = 80;
@@ -127,7 +128,7 @@ public class YamlMap {
     if (!yaml.isFile()) {
       return new YamlMap();
     }
-    try (InputStream input = new FileInputStream(yaml)) {
+    try (InputStream input = Files.newInputStream(yaml.toPath())) {
       return from(input);
     }
   }
@@ -136,7 +137,6 @@ public class YamlMap {
     this(null);
   }
 
-  @SuppressWarnings("unchecked")
   public YamlMap(Object data) {
     this.data = data instanceof Map ? (Map<String, Object>)data : new LinkedHashMap<>();
   }
@@ -328,7 +328,6 @@ public class YamlMap {
     return result;
   }
 
-  @SuppressWarnings("unchecked")
   private void sortRecursively(Map<String, Object> map, Comparator<String> comparator,
       Predicate<String> entriesFilter) {
     map.keySet().stream()
@@ -363,7 +362,6 @@ public class YamlMap {
     map.put(key, sortedList);
   }
 
-  @SuppressWarnings("unchecked")
   private void sortListItem(List<Object> sortedList, int index, Comparator<String> comparator,
       Predicate<String> entriesFilter, ListContent content) {
     Object value = sortedList.get(index);
@@ -426,7 +424,6 @@ public class YamlMap {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private void appendEntry(YamlIndent indent, Map.Entry<String, Object> entry, StringBuilder builder,
       AtomicBoolean differenceFound) {
     int len = builder.length();
@@ -466,7 +463,7 @@ public class YamlMap {
   }
 
   private boolean needsToBeDoubleQuoted(String text) {
-    return text.startsWith("'");
+    return text.charAt(0) == '\'';
   }
 
   private void appendDoubleQuoted(String text, StringBuilder builder) {
@@ -498,7 +495,6 @@ public class YamlMap {
     return result;
   }
 
-  @SuppressWarnings("unchecked")
   private void appendCollection(YamlIndent indent, int currentLineLength, Collection<?> collection,
       StringBuilder builder, AtomicBoolean differenceFound) {
     int len = builder.length();

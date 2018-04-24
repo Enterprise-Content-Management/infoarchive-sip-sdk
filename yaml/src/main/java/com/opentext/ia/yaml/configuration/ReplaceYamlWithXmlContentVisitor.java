@@ -28,6 +28,7 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
   private final String itemTag;
   private final Object[] itemProperties;
 
+  @SuppressWarnings("PMD.ArrayIsStoredDirectly")
   ReplaceYamlWithXmlContentVisitor(String type, String rootTag, String itemTag, Object... itemProperties) {
     super(type);
     this.rootTag = rootTag;

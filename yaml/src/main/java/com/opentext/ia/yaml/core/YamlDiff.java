@@ -16,13 +16,13 @@ public class YamlDiff {
   static final String NO_VALUE = "<<no value>>";
   static final String SAME_VALUE = "...";
 
-  private final YamlMap left;
-  private final YamlMap right;
+  private final YamlMap source;
+  private final YamlMap target;
 
-  public YamlDiff(YamlMap left, YamlMap right) {
-    this.left = YamlMap.from(left).sort();
-    this.right = YamlMap.from(right).sort();
-    diffMaps(this.left, this.right);
+  public YamlDiff(YamlMap source, YamlMap target) {
+    this.source = YamlMap.from(source).sort();
+    this.target = YamlMap.from(target).sort();
+    diffMaps(this.source, this.target);
   }
 
   private void diffMaps(YamlMap yaml1, YamlMap yaml2) {
@@ -130,16 +130,16 @@ public class YamlDiff {
   }
 
   public YamlMap left() {
-    return left;
+    return source;
   }
 
   public YamlMap right() {
-    return right;
+    return target;
   }
 
   @Override
   public String toString() {
-    return String.format("%s%n---%n%s", left.toString().trim(), right.toString().trim());
+    return String.format("%s%n---%n%s", source.toString().trim(), target.toString().trim());
   }
 
 }

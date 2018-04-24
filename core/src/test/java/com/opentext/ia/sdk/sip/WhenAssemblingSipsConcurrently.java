@@ -5,6 +5,7 @@ package com.opentext.ia.sdk.sip;
 
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -30,7 +31,8 @@ public class WhenAssemblingSipsConcurrently extends TestCase {
   private static final long MAX_WAIT_THREAD_TERMINATION_MS = 1000;
 
   @Test
-  public void shouldNotFail() throws Exception {
+  @SuppressWarnings("PMD.AvoidCatchingGenericException")
+  public void shouldNotFail() throws InterruptedException, IOException {
     URI entityUri = URI.create("urn:com.opentext.ia.sdk.test.concurrent:1.0");
     String entityName = "concurrent";
     PackagingInformation prototype = PackagingInformation.builder()
@@ -74,7 +76,7 @@ public class WhenAssemblingSipsConcurrently extends TestCase {
           while (canRun.get()) {
             try {
               assembler.add(randomString());
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
               canRun.set(false);
               error.set("Failed to add object to SIP: " + e.getMessage());
             }

@@ -12,10 +12,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -66,7 +67,7 @@ public class WhenGeneratingFiles extends TestCase {
     File generated = generator.generate(Collections.singletonList(randomString()))
       .getFile();
 
-    try (InputStream stream = new FileInputStream(generated)) {
+    try (InputStream stream = Files.newInputStream(generated.toPath(), StandardOpenOption.READ)) {
       assertArrayEquals("Content", content, IOUtils.toByteArray(stream));
     }
   }

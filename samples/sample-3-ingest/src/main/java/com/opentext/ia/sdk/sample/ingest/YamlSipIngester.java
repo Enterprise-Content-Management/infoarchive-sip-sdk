@@ -4,10 +4,11 @@
 package com.opentext.ia.sdk.sample.ingest;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -17,18 +18,25 @@ import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
 import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedApplicationConfigurer;
-import com.opentext.ia.sdk.sip.*;
+import com.opentext.ia.sdk.sip.ContentInfo;
+import com.opentext.ia.sdk.sip.DigitalObject;
+import com.opentext.ia.sdk.sip.DigitalObjectsExtraction;
+import com.opentext.ia.sdk.sip.FileGenerationMetrics;
+import com.opentext.ia.sdk.sip.FileGenerator;
+import com.opentext.ia.sdk.sip.PackagingInformation;
+import com.opentext.ia.sdk.sip.SipAssembler;
+import com.opentext.ia.sdk.sip.XmlPdiAssembler;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 import com.opentext.ia.sdk.support.io.StringStream;
 import com.opentext.ia.yaml.configuration.YamlConfiguration;
 import com.opentext.ia.yaml.resource.ResourceResolver;
 
 
+@SuppressWarnings("PMD")
 public class YamlSipIngester {
 
   private static final String SAMPLE_FILES_PATH = "src/main/resources";
 
-  @SuppressWarnings("PMD.AvoidPrintStackTrace")
   public static void main(String[] args) {
     try {
       String rootPath = new File(".").getCanonicalPath();
@@ -38,7 +46,6 @@ public class YamlSipIngester {
     }
   }
 
-  @SuppressWarnings("PMD.SystemPrintln")
   private void run(String rootPath) throws IOException {
     // Load the configuration
     YamlConfiguration configuration = null;
@@ -92,11 +99,11 @@ public class YamlSipIngester {
     // the SIP we've just assembled.
     // Use ArchiveClients.usingAlreadyConfiguredServer() instead if you already configured the server with application,
     // holding, etc.
-    ArchiveClient archiveClient = ArchiveClients.configuringApplicationUsing(new YamlBasedApplicationConfigurer(configuration),
-        newArchiveConnection());
+    ArchiveClient archiveClient = ArchiveClients.configuringApplicationUsing(
+        new YamlBasedApplicationConfigurer(configuration), newArchiveConnection());
 
     // Ingest the SIP into InfoArchive
-    try (InputStream sip = new FileInputStream(assembledSip)) {
+    try (InputStream sip = Files.newInputStream(assembledSip.toPath(), StandardOpenOption.READ)) {
       String aipId = archiveClient.ingestDirect(sip);
       System.out.println("SIP ingested as AIP " + aipId);
     }

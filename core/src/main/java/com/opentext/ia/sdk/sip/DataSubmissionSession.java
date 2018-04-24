@@ -12,6 +12,7 @@ import com.opentext.ia.sdk.sip.PackagingInformation.PackagingInformationBuilder;
  * <a href="http://public.ccsds.org/publications/archive/650x0m2.pdf">Data Submission Session</a>. A DSS is probably
  * easiest created using a {@linkplain DataSubmissionSession#builder() builder}.
  */
+@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public class DataSubmissionSession {
 
   private final String id;

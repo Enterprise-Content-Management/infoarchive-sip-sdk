@@ -3,9 +3,15 @@
  */
 package com.opentext.ia.sdk.support.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
@@ -51,7 +57,7 @@ public class WhenBufferingDataToFile extends TestCase {
       stream.write(expected);
     }
 
-    try (InputStream stream = new FileInputStream(file)) {
+    try (InputStream stream = Files.newInputStream(file.toPath(), StandardOpenOption.READ)) {
       assertArrayEquals("Written bytes", expected, contentOf(stream));
     }
   }
@@ -59,7 +65,7 @@ public class WhenBufferingDataToFile extends TestCase {
   @Test
   public void shouldReportLength() throws IOException {
     file = folder.newFile();
-    try (OutputStream stream = new FileOutputStream(file)) {
+    try (OutputStream stream = Files.newOutputStream(file.toPath(), StandardOpenOption.WRITE)) {
       stream.write(randomBytes());
     }
     buffer = new FileBuffer(file);

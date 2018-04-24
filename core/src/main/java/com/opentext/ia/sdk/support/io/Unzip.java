@@ -23,14 +23,14 @@ public class Unzip {
     return new Unzip(file);
   }
 
-  private final File file;
+  private final File zip;
 
   /**
    * Process a named entry in a given ZIP file.
    * @param file The ZIP file to process
    */
   public Unzip(File file) {
-    this.file = file;
+    this.zip = file;
   }
 
   /**
@@ -41,7 +41,7 @@ public class Unzip {
    * @return The result of processing the entry
    */
   public <T> T andProcessEntry(String entry, Function<InputStream, T> processor) {
-    try (ZipFile zipFile = new ZipFile(file)) {
+    try (ZipFile zipFile = new ZipFile(zip)) {
       return processEntry(zipFile, entry, processor);
     } catch (IOException e) {
       throw new RuntimeIoException(e);

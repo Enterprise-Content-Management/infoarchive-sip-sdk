@@ -16,11 +16,10 @@ public final class NonExpiringTokenAuthentication implements AuthenticationStrat
   private final String token;
 
   public static Optional<AuthenticationStrategy> optional(String token, String user, String password) {
-    if ((user == null) && (password == null) && (token != null)) {
+    if (user == null && password == null && token != null) {
       return Optional.of(new NonExpiringTokenAuthentication(token));
-    } else {
-      return Optional.empty();
     }
+    return Optional.empty();
   }
 
   public NonExpiringTokenAuthentication(String token) {

@@ -3,7 +3,35 @@
  */
 package com.opentext.ia.sdk.sample.ingest;
 
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.*;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.AIC_NAME;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.APPLICATION_NAME;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.CRITERIA_INDEXED;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.CRITERIA_LABEL;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.CRITERIA_NAME;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.CRITERIA_PKEYMAXATTR;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.CRITERIA_PKEYMINATTR;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.CRITERIA_PKEYVALUESATTR;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.CRITERIA_TYPE;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.HOLDING_NAME;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.INGEST_XML;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PDI_SCHEMA;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PDI_SCHEMA_NAME;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PDI_XML;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_NAME;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_NAMESPACE_PREFIX_TEMPLATE;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_NAMESPACE_URI_TEMPLATE;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_RESULT_ROOT_ELEMENT_TEMPLATE;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_RESULT_SCHEMA_TEMPLATE;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_XDBPDI_ENTITY_PATH_TEMPLATE;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_XDBPDI_OPERAND_INDEX;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_XDBPDI_OPERAND_NAME;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_XDBPDI_OPERAND_PATH;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_XDBPDI_OPERAND_TYPE;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_XDBPDI_SCHEMA_TEMPLATE;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.QUERY_XDBPDI_TEMPLATE_TEMPLATE;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.RESULT_HELPER_SCHEMA_TEMPLATE;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.RESULT_HELPER_XML;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +39,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 
@@ -19,10 +51,18 @@ import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
 import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer;
 import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
-import com.opentext.ia.sdk.sip.*;
+import com.opentext.ia.sdk.sip.ContentInfo;
+import com.opentext.ia.sdk.sip.DigitalObject;
+import com.opentext.ia.sdk.sip.DigitalObjectsExtraction;
+import com.opentext.ia.sdk.sip.FileGenerationMetrics;
+import com.opentext.ia.sdk.sip.FileGenerator;
+import com.opentext.ia.sdk.sip.PackagingInformation;
+import com.opentext.ia.sdk.sip.SipAssembler;
+import com.opentext.ia.sdk.sip.XmlPdiAssembler;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 
 
+@SuppressWarnings("PMD")
 public class SipIngester {
 
   private static final String SAMPLE_HOLDING = "Animals";
@@ -31,7 +71,6 @@ public class SipIngester {
   private static final String SAMPLE_FILES_PATH = "src/main/resources";
   private static final String DATATYPE_STRING = "STRING";
 
-  @SuppressWarnings("PMD.AvoidPrintStackTrace")
   public static void main(String[] args) {
     try {
       String rootPath = new File(".").getCanonicalPath();
@@ -41,7 +80,6 @@ public class SipIngester {
     }
   }
 
-  @SuppressWarnings("PMD.SystemPrintln")
   private void run(String rootPath) throws IOException {
     // Tell InfoArchive where and how to archive the data
     URI entityUri = URI.create(SAMPLE_NAMESPACE);

@@ -87,14 +87,14 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldAddDefaultVersionWhenNotSpecified() throws Exception {
+  public void shouldAddDefaultVersionWhenNotSpecified() {
     normalizeYaml();
 
     assertValue("Default version", VERSION_1, yaml.get(VERSION));
   }
 
   @Test
-  public void shouldNotOverwriteSpecifiedVersion() throws Exception {
+  public void shouldNotOverwriteSpecifiedVersion() {
     YamlConfiguration configuration = new YamlConfiguration("version: 2.0.0");
 
     assertValue("Version", "2.0.0", configuration.getMap().get(VERSION));
@@ -238,7 +238,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldReplaceNestedMapOfMapsWithSequence() throws Exception {
+  public void shouldReplaceNestedMapOfMapsWithSequence() {
     String query = someName();
     String operand = someName();
     String path = someName();
@@ -257,7 +257,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldAddNamespaceDeclarationsToXquery() throws Exception {
+  public void shouldAddNamespaceDeclarationsToXquery() {
     String prefix = "n";
     String uri = randomUri();
     String text = "current-dateTime()";
@@ -276,7 +276,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldReplacePdiSchemaNamespaceWithName() throws Exception {
+  public void shouldReplacePdiSchemaNamespaceWithName() {
     String prefix = "n";
     String uri = randomUri();
     yaml.put(NAMESPACES, Arrays.asList(new YamlMap()

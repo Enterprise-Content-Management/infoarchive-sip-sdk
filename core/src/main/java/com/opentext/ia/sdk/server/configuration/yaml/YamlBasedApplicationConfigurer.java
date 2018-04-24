@@ -3,7 +3,16 @@
  */
 package com.opentext.ia.sdk.server.configuration.yaml;
 
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.*;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.HTTP_CLIENT_CLASSNAME;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PROXY_HOST;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PROXY_PORT;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_AUTHENTICATION_GATEWAY;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_AUTHENTICATION_PASSWORD;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_AUTHENTICATION_TOKEN;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_AUTHENTICATION_USER;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_CLIENT_ID;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_CLIENT_SECRET;
+import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_URI;
 
 import java.io.IOException;
 import java.util.Map;
@@ -35,6 +44,7 @@ public class YamlBasedApplicationConfigurer implements ApplicationConfigurer {
 
   private static ApplicationConfigurer defaultClientSideApplicationConfigurer(YamlConfiguration yaml,
       ArchiveConnection connection) {
+    // TODO: Implement this directly instead of going through properties
     // Flatten the YAML to properties and re-use the properties-based configurer
     return new PropertiesBasedApplicationConfigurer(yamlToMap(yaml, connection));
   }

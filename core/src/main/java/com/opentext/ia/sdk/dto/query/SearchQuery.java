@@ -12,12 +12,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 
-@JsonRootName(value = "data")
+@JsonRootName("data")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class SearchQuery {
 
   private final List<Item> items;
-
   private final List<OrderBy> orderBys;
 
   public SearchQuery() {

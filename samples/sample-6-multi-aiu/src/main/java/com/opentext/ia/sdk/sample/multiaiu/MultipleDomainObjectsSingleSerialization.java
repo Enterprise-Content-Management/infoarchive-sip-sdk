@@ -23,11 +23,11 @@ import com.opentext.ia.sdk.support.io.DataBuffer;
 import com.opentext.ia.sdk.support.io.MemoryBuffer;
 
 
+@SuppressWarnings("PMD")
 public class MultipleDomainObjectsSingleSerialization {
 
   private static final URI NAMESPACE = URI.create("urn:opentext:ia:schema:sample:multiple:1.0");
 
-  @SuppressWarnings("PMD.AvoidPrintStackTrace")
   public static void main(String[] args) {
     try {
       new MultipleDomainObjectsSingleSerialization().run();
@@ -36,7 +36,6 @@ public class MultipleDomainObjectsSingleSerialization {
     }
   }
 
-  @SuppressWarnings("PMD.SystemPrintln")
   private void run() throws IOException {
     // Assembler for PDI, where the domain object is flexible
     PdiAssembler<Object> pdiAssembler = new XmlPdiAssembler<Object>(NAMESPACE, "aiu") {

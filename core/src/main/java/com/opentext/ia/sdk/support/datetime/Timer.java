@@ -17,7 +17,7 @@ public class Timer {
   private final long millis;
   private final Runnable process;
   private final Clock clock;
-  private final Runnable ring = this::ring; // Create only one instance of this lambda
+  private final Runnable ring = this::handleRing; // Create only one instance of this lambda
 
   /**
    * Create the timer using the default clock.
@@ -48,7 +48,7 @@ public class Timer {
     clock.schedule(TASK_NAME, millis, TimeUnit.MILLISECONDS, ring);
   }
 
-  private void ring() {
+  private void handleRing() {
     try {
       process.run();
     } finally {
