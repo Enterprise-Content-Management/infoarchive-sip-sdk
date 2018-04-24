@@ -13,10 +13,6 @@ buildscript {
 
 import org.gradle.api.logging.StandardOutputListener
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '4.3.1'
-}
-
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
