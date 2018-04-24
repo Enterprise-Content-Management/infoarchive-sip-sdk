@@ -44,6 +44,9 @@ public class YamlMap {
   private Map<String, Object> data;
 
   public static YamlMap from(YamlMap source) {
+    if (source == null) {
+      throw new IllegalArgumentException("Missing YAML");
+    }
     return from(source.toString());
   }
 
@@ -53,13 +56,17 @@ public class YamlMap {
    * @return A <code>YamlMap</code> corresponding to the provided YAML string
    */
   public static YamlMap from(String yaml) {
-    if (yaml == null) {
-      throw new IllegalArgumentException("Missing YAML");
-    }
+    assertNotNull(yaml);
     try (InputStream input = streamOf(yaml)) {
       return from(input);
     } catch (IOException e) {
       throw new IllegalArgumentException("Failed to parse YAML string", e);
+    }
+  }
+
+  private static void assertNotNull(Object yaml) {
+    if (yaml == null) {
+      throw new IllegalArgumentException("Missing YAML");
     }
   }
 
@@ -77,6 +84,7 @@ public class YamlMap {
   }
 
   public static YamlMap from(InputStream yaml, boolean canReset) {
+    assertNotNull(yaml);
     InputStream input = canReset ? yaml : inMemoryCopyOf(yaml);
     YamlMap result = new YamlMap();
     try {
@@ -115,6 +123,7 @@ public class YamlMap {
    * @throws IOException When an I/O error occurs
    */
   public static YamlMap from(File yaml) throws IOException {
+    assertNotNull(yaml);
     if (!yaml.isFile()) {
       return new YamlMap();
     }
