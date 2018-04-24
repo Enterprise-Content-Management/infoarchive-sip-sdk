@@ -42,19 +42,6 @@ public interface ArchiveClient {
   String ingestDirect(InputStream sip) throws IOException;
 
   /**
-   * Execute a query against the Archive.
-   * @param query The query.
-   * @param aic The name of the AIC.
-   * @param schema The result set schema.
-   * @param pageSize The page size of the result set.
-   * @return A QueryResult
-   * @throws IOException When an I/O error occurs
-   * @deprecated Use {@linkplain #search(SearchQuery, SearchComposition)} instead.
-   */
-  @Deprecated
-  QueryResult query(SearchQuery query, String aic, String schema, int pageSize) throws IOException;
-
-  /**
    * Fetch the content for the specified content id.
    * @param contentId The id of the content to fetch.
    * @return A ContentResult

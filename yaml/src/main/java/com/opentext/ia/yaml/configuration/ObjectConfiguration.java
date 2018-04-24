@@ -57,17 +57,6 @@ public enum ObjectConfiguration {
   /**
    * Returns whether the object may be created.
    * @return Whether the object may be created
-   * @deprecated Use {@linkplain #mayCreateObject()} instead.
-   * @since 9.8.0
-   */
-  @Deprecated
-  public boolean canConfigureObject() {
-    return mayCreateObject();
-  }
-
-  /**
-   * Returns whether the object may be created.
-   * @return Whether the object may be created
    * @since 9.8.0
    */
   public boolean mayCreateObject() {

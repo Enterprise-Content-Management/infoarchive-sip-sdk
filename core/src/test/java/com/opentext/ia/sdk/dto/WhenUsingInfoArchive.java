@@ -36,12 +36,9 @@ import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.ContentResult;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
-import com.opentext.ia.sdk.client.api.QueryResult;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
 import com.opentext.ia.sdk.client.impl.ContentResultFactory;
 import com.opentext.ia.sdk.client.impl.DefaultContentResult;
-import com.opentext.ia.sdk.client.impl.DefaultQueryResult;
-import com.opentext.ia.sdk.client.impl.QueryResultFactory;
 import com.opentext.ia.sdk.dto.ProductInfo.BuildProperties;
 import com.opentext.ia.sdk.dto.export.ExportConfiguration;
 import com.opentext.ia.sdk.dto.export.ExportConfigurations;
@@ -89,8 +86,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private ArchiveClient archiveClient;
   private Applications applications;
   private Application application;
-  private Aics aics;
-  private Aic aic;
   private XdbFederations federations;
 
   @Before
@@ -123,7 +118,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     Ingests ingests = mock(Ingests.class);
     XdbLibraries libraries = mock(XdbLibraries.class);
     Contents contents = new Contents();
-    aics = mock(Aics.class);
+    Aics aics = mock(Aics.class);
     LinkContainer aips = new LinkContainer();
     Queries queries = mock(Queries.class);
     QueryQuotas quotas = mock(QueryQuotas.class);
@@ -142,7 +137,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     CustomStorages customStorages = mock(CustomStorages.class);
     ContentAddressedStorages contentAddressedStorages = mock(ContentAddressedStorages.class);
 
-    aic = new Aic();
+    Aic aic = new Aic();
 
     links.put(InfoArchiveLinkRelations.LINK_TENANT, link);
     links.put(InfoArchiveLinkRelations.LINK_APPLICATIONS, link);
@@ -240,7 +235,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
         .thenReturn(new SearchComposition());
 
     when(aics.getItems()).thenReturn(Stream.of(aic));
-
   }
 
   private void prepareConfiguration() {
@@ -501,35 +495,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configureServer();
 
     // No error about being unable to create application
-  }
-
-  @Test
-  @Deprecated
-  public void shouldQuerySuccessfully() throws IOException {
-    when(aics.getItems()).thenReturn(Stream.of(aic));
-    Link dipLink = new Link();
-    dipLink.setHref(randomString());
-    aic.getLinks().put(LINK_DIP, dipLink);
-    aic.setName("MyAic");
-    UriBuilder uriBuilder = mock(UriBuilder.class);
-    String uri = randomString();
-    when(uriBuilder.build()).thenReturn(uri);
-    when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
-    when(restClient.uri(anyString())).thenReturn(uriBuilder);
-    QueryResultFactory queryResultFactory = mock(QueryResultFactory.class);
-    DefaultQueryResult queryResult = mock(DefaultQueryResult.class);
-    when(queryResultFactory.create(any(Response.class), any(Runnable.class))).thenReturn(queryResult);
-    when(restClient.get(eq(uri), any(QueryResultFactory.class))).thenReturn(queryResult);
-
-    SearchQuery query = new SearchQuery();
-    query.getItems().add(new Comparison("variable", Operator.EQUAL, "value"));
-    String aicName = "MyAic";
-    String schema = NAMESPACE;
-
-    configureServer();
-    QueryResult result = archiveClient.query(query, aicName, schema, 10);
-
-    assertEquals(queryResult, result);
   }
 
   @Test

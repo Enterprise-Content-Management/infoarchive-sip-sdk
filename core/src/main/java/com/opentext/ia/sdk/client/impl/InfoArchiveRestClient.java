@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ContentResult;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
-import com.opentext.ia.sdk.client.api.QueryResult;
 import com.opentext.ia.sdk.dto.IngestionResponse;
 import com.opentext.ia.sdk.dto.OrderItem;
 import com.opentext.ia.sdk.dto.ReceptionResponse;
@@ -35,7 +34,6 @@ import com.opentext.ia.sdk.dto.export.ExportConfiguration;
 import com.opentext.ia.sdk.dto.export.ExportTransformation;
 import com.opentext.ia.sdk.dto.query.Comparison;
 import com.opentext.ia.sdk.dto.query.Item;
-import com.opentext.ia.sdk.dto.query.QueryFormatter;
 import com.opentext.ia.sdk.dto.query.SearchQuery;
 import com.opentext.ia.sdk.support.http.BinaryPart;
 import com.opentext.ia.sdk.support.http.MediaTypes;
@@ -50,9 +48,7 @@ import com.opentext.ia.sdk.support.http.rest.RestClient;
  */
 public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRelations {
 
-  private final ResponseFactory<QueryResult> queryResultFactory = new QueryResultFactory();
   private final ResponseFactory<ContentResult> contentResultFactory = new ContentResultFactory();
-  private final QueryFormatter queryFormatter = new QueryFormatter();
 
   private final RestClient restClient;
   private final ApplicationIngestionResourcesCache resourceCache;
@@ -83,27 +79,6 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       return restClient.post(ingestDirectUri, IngestionResponse.class, new TextPart("format", "sip_zip"),
           new BinaryPart("sip", sip, "IASIP.zip")).getAipId();
     }
-  }
-
-  /**
-   * Execute a query against the Archive.
-   * @param query The query.
-   * @param aic The name of the AIC.
-   * @param schema The result set schema.
-   * @param pageSize The page size of the result set.
-   * @return A QueryResult
-   * @throws IOException When an I/O error occurs
-   * @deprecated Use {@linkplain #search(SearchQuery, SearchComposition)} instead.
-   */
-  @Override
-  @Deprecated
-  public QueryResult query(SearchQuery query, String aic, String schema, int pageSize) throws IOException {
-    String formattedQuery = queryFormatter.format(query);
-    String baseUri = resourceCache.getDipResourceUriByAicName().get(aic);
-    Objects.requireNonNull(baseUri, String.format("No DIP resource found for AIC %s", aic));
-    String queryUri = restClient.uri(baseUri).addParameter("query", formattedQuery).addParameter("schema", schema)
-        .addParameter("size", String.valueOf(pageSize)).build();
-    return restClient.get(queryUri, queryResultFactory);
   }
 
   @Override
