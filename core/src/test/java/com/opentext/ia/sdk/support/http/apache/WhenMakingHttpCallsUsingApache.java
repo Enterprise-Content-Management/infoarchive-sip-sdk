@@ -184,7 +184,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
 
   @Test
   public void shouldBuildUris() {
-    assertEquals("http://google.com/?q=foo+bar",
+    assertEquals("http://google.com?q=foo+bar",
         httpClient.uri("http://google.com").addParameter("q", "foo bar").build());
   }
 
