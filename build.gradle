@@ -209,6 +209,7 @@ project(':infoarchive-sdk-velocity') {
       exclude group: 'org.apache.struts'
       exclude module: 'commons-beanutils'
       exclude module: 'commons-chain'
+      exclude module: 'commons-collections'
       exclude module: 'commons-digester'
       exclude module: 'commons-logging'
       exclude module: 'commons-validator'
@@ -220,8 +221,8 @@ project(':infoarchive-sdk-velocity') {
   }
 
   dependencies {
-    velocity "org.apache.velocity:velocity:$velocityVersion"
-    velocityTools "org.apache.velocity:velocity-tools:$velocityToolsVersion"
+    velocity "org.apache.velocity:velocity-engine-core:$velocityVersion"
+    velocityTools "org.apache.velocity:velocity-tools:$velocityVersion"
     compile project(':infoarchive-sdk-core')
     testCompile project(':infoarchive-yaml').sourceSets.test.output
   }
