@@ -1,6 +1,6 @@
 buildscript {
   repositories {
-    mavenCentral()
+    maven { url mavenRepo }
     maven {
       url "https://plugins.gradle.org/m2/"
     }
