@@ -10,8 +10,14 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 === Removed
 
-- `com.opentext.ia.sdk.client.api.ArchiveClient.query(SearchQuery, String, String, int)`
-- `com.opentext.ia.yaml.configuration.ObjectConfiguration.canConfigureObject()` 
+- `com.opentext.ia.sdk.client.api.ArchiveClient.query()`
+- `com.opentext.ia.yaml.configuration.ObjectConfiguration.canConfigureObject()`
+
+
+=== Changed
+
+- `com.opentext.ia.sdk.sip.ContentAssemblerDefault.getMetrics()` now returns a read-only object
+- `com.opentext.ia.sdk.sip.ContentAssemblerDefault.getZip()` is now `protected` instead of `public`
 
 
 

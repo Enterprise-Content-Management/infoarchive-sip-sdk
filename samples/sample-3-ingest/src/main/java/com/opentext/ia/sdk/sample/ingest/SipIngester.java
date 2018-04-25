@@ -96,7 +96,7 @@ public class SipIngester {
 
     // Define a mapping from our domain object to the PDI XML
     XmlPdiAssembler<File> pdiAssembler;
-    try (InputStream schema = getClass().getResourceAsStream('/' + SAMPLE_SCHEMA)) {
+    try (InputStream schema = SipIngester.class.getResourceAsStream('/' + SAMPLE_SCHEMA)) {
       pdiAssembler = new XmlPdiAssembler<File>(entityUri, entityName, schema) {
         @Override
         protected void doAdd(File value, Map<String, ContentInfo> ignored) {
@@ -149,7 +149,7 @@ public class SipIngester {
   @SuppressWarnings("unchecked")
   private Map<String, String> sampleHoldingConfiguration() throws IOException {
     Map<String, String> result = new HashMap<>();
-    try (InputStream configuration = getClass().getResourceAsStream("/configuration.properties")) {
+    try (InputStream configuration = SipIngester.class.getResourceAsStream("/configuration.properties")) {
       Properties properties = new Properties();
       properties.load(configuration);
       properties.forEach((key, value) -> result.put(key.toString(), value.toString()));

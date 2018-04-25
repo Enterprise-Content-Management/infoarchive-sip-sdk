@@ -71,7 +71,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
     String object2 = randomString();
     String object3 = randomString();
     when(segmentationStrategy.shouldStartNewSip(anyString(), any(SipMetrics.class))).thenAnswer(invocation -> {
-      return object2 == invocation.getArgumentAt(0, String.class);
+      return object2.equals(invocation.getArgumentAt(0, String.class));
     });
     BatchSipAssembler<String> batcher = new BatchSipAssembler<>(sipAssembler, segmentationStrategy, () -> newFile());
 

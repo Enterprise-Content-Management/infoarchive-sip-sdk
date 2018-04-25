@@ -43,10 +43,6 @@ public class ContentAssemblerDefault<D> implements ContentAssembler<D> {
     this.metrics = aMetrics;
   }
 
-  public ZipAssembler getZip() {
-    return zip;
-  }
-
   public DigitalObjectsExtraction<D> getContentsExtraction() {
     return contentsExtraction;
   }
@@ -55,8 +51,8 @@ public class ContentAssemblerDefault<D> implements ContentAssembler<D> {
     return contentHashAssembler;
   }
 
-  public Counters getMetrics() {
-    return metrics;
+  public synchronized Counters getMetrics() {
+    return metrics.forReading();
   }
 
   @Override
@@ -72,30 +68,42 @@ public class ContentAssemblerDefault<D> implements ContentAssembler<D> {
     return result;
   }
 
-  private synchronized void incMetric(String metric, long delta) {
+  protected synchronized void incMetric(String metric, long delta) {
     if (metrics == null) {
       throw new IllegalStateException("Missing metrics; did youc call begin()?");
     }
     metrics.inc(metric, delta);
   }
 
-  protected ContentInfo addContent(String ri, DigitalObject digitalObject) throws IOException {
+  protected synchronized ContentInfo addContent(String ri, DigitalObject digitalObject) throws IOException {
     if (zip == null) {
       throw new IllegalStateException("Missing zip; did youc call begin()?");
     }
     try (InputStream stream = digitalObject.get()) {
-      Collection<EncodedHash> hashes =
-          zip.addEntry(digitalObject.getReferenceInformation(), stream, contentHashAssembler);
-      incMetric(SipMetrics.SIZE_DIGITAL_OBJECTS, contentHashAssembler.numBytesHashed());
+      String referenceInformation = digitalObject.getReferenceInformation();
+      Collection<EncodedHash> hashes;
+      long numBytesHashed;
+      synchronized (zip) {
+        hashes = zip.addEntry(referenceInformation, stream, contentHashAssembler);
+        numBytesHashed = contentHashAssembler.numBytesHashed();
+      }
+      incMetric(SipMetrics.SIZE_DIGITAL_OBJECTS, numBytesHashed);
       return new ContentInfo(ri, hashes);
     }
   }
 
   protected Collection<EncodedHash> contentHashFor(InputStream stream) throws IOException {
     final HashAssembler hashAssembler = getContentHashAssembler();
-    hashAssembler.initialize();
-    IOStreams.copy(stream, new NullOutputStream(), BUFFER_SIZE, hashAssembler);
-    return hashAssembler.get();
+    synchronized (hashAssembler) {
+      hashAssembler.initialize();
+      IOStreams.copy(stream, new NullOutputStream(), BUFFER_SIZE, hashAssembler);
+      return hashAssembler.get();
+    }
+  }
+
+  protected synchronized void addZipEntry(String name, InputStream content, HashAssembler hashAssembler)
+      throws IOException {
+    zip.addEntry(name, content, hashAssembler);
   }
 
 }

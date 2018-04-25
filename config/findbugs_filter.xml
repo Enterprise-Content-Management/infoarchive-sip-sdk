@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- FindBugs exclusion filter common to all IAIS projects -->
 <FindBugsFilter>
+  
   <Match>
     <Or>
       <!--Too many false positives -->
@@ -16,6 +17,29 @@
       <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
     </Or>
   </Match>
+  
+  <!-- Test class specific -->
+  <Match>
+    <Or>
+      <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME" />
+      <Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS" />
+      <Bug pattern="RV_RETURN_VALUE_IGNORED_INFERRED" />
+      <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" />
+      <Bug pattern="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" />
+      <Bug pattern="NP_NONNULL_PARAM_VIOLATION" />
+      <BUg pattern="NP_NULL_PARAM_DEREF" />
+      <Bug pattern="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS" />
+      <Bug pattern="NP_NULL_PARAM_DEREF_NONVIRTUAL" />
+      <!-- Could be done in @Before -->
+      <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
+      <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" />
+    </Or>
+    <Or>
+      <Class name="~.+\.When.+$" />
+      <Class name="~.+\.+TestCase$" />
+    </Or>
+  </Match>
+    
   <Match>
     <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
     <Class name="~com\.opentext\.ia\.sdk\.sip\.(DataSubmissionSession|PackagingInformation)(\$.*)?" />

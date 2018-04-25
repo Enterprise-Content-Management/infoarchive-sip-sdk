@@ -34,7 +34,7 @@ public class WhenAssemblingXmlPdis extends TestCase {
   }
 
   private void assemblePdi(InputStream schema) throws IOException {
-    Assembler<HashedContents<String>> pdiAssembler = new TestPdiAssembler(schema);
+    Assembler<HashedContents<String>> pdiAssembler = new TestPdiAssembler(schema, randomString());
     pdiAssembler.start(new MemoryBuffer());
     pdiAssembler.end();
   }
@@ -58,10 +58,10 @@ public class WhenAssemblingXmlPdis extends TestCase {
   }
 
 
-  private class TestPdiAssembler extends XmlPdiAssembler<String> {
+  private static class TestPdiAssembler extends XmlPdiAssembler<String> {
 
-    TestPdiAssembler(InputStream schema) {
-      super(URI.create("http://mycompany.com/ns/example"), randomString(), schema);
+    TestPdiAssembler(InputStream schema, String domainObjectName) {
+      super(URI.create("http://mycompany.com/ns/example"), domainObjectName, schema);
     }
 
     @Override

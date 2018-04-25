@@ -49,7 +49,7 @@ public class YamlSipIngester {
   private void run(String rootPath) throws IOException {
     // Load the configuration
     YamlConfiguration configuration = null;
-    try (InputStream yaml = getClass().getResourceAsStream("/configuration.yml")) {
+    try (InputStream yaml = YamlSipIngester.class.getResourceAsStream("/configuration.yml")) {
       configuration = new YamlConfiguration(yaml, ResourceResolver.fromClasspath());
     }
 
@@ -110,7 +110,7 @@ public class YamlSipIngester {
   }
 
   private ArchiveConnection newArchiveConnection() throws IOException {
-    try (InputStream connectionProperties = getClass().getResourceAsStream("/connection.properties")) {
+    try (InputStream connectionProperties = YamlSipIngester.class.getResourceAsStream("/connection.properties")) {
       return new PropertiesBasedArchiveConnection(connectionProperties);
     }
   }

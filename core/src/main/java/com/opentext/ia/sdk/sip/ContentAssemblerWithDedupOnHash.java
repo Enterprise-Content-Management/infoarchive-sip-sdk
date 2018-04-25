@@ -9,7 +9,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.opentext.ia.sdk.support.io.*;
+import com.opentext.ia.sdk.support.io.EncodedHash;
+import com.opentext.ia.sdk.support.io.HashAssembler;
+import com.opentext.ia.sdk.support.io.NoHashAssembler;
+import com.opentext.ia.sdk.support.io.RepeatableInputStream;
+import com.opentext.ia.sdk.support.io.ZipAssembler;
 
 /**
  * A ContentAssembler implementation which will perform deduplication based on the hash value of the content, i.e. a
@@ -51,8 +55,8 @@ public class ContentAssemblerWithDedupOnHash<D> extends ContentAssemblerDefault<
     }
 
     try (InputStream stream = memoryStream.get()) {
-      getZip().addEntry(ri, stream, noHashAssembler);
-      getMetrics().inc(SipMetrics.SIZE_DIGITAL_OBJECTS, getContentHashAssembler().numBytesHashed());
+      addZipEntry(ri, stream, noHashAssembler);
+      incMetric(SipMetrics.SIZE_DIGITAL_OBJECTS, getContentHashAssembler().numBytesHashed());
       contentInfo = new ContentInfo(ri, hashes);
       hashesToContentInfo.put(hashes, contentInfo);
     }

@@ -111,7 +111,7 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
   }
 
   private SipSegmentationStrategy<String> segmentOn(String segmentObject) {
-    return (domainObject, metrics) -> domainObject == segmentObject;
+    return (domainObject, metrics) -> domainObject.equals(segmentObject);
   }
 
   @Test

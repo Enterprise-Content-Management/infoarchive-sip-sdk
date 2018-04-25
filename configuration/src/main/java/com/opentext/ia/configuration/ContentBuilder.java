@@ -62,7 +62,7 @@ public class ContentBuilder<P extends ContentObjectBuilder<?, P, ?>> {
    * @return this builder
    */
   public ContentBuilder<P> fromResource(String name) {
-    try (InputStream content = getClass().getResourceAsStream(name)) {
+    try (InputStream content = ContentBuilder.class.getResourceAsStream(name)) {
       return as(content);
     } catch (IOException e) {
       throw new IllegalArgumentException("Failed to read resource: " + name, e);

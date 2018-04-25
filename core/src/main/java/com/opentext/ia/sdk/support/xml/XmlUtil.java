@@ -515,9 +515,9 @@ public final class XmlUtil {
   }
 
 
-  @SuppressWarnings("serial")
   private static class Namespaces extends HashMap<String, String> {
 
+    private static final long serialVersionUID = -2861002177169934851L;
     private static final String XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
 
     private final boolean includeRootNamespace;

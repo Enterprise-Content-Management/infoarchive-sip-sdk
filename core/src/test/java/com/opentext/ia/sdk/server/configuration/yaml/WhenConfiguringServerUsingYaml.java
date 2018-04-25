@@ -93,7 +93,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   private Map<String, String> loadProperties() throws IOException {
     Map<String, String> result = new HashMap<>();
     Properties properties = new Properties();
-    try (InputStream input = getClass().getResourceAsStream("/iaif/iaif.properties")) {
+    try (InputStream input = WhenConfiguringServerUsingYaml.class.getResourceAsStream("/iaif/iaif.properties")) {
       properties.load(input);
     }
     for (String name : properties.stringPropertyNames()) {
@@ -103,7 +103,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   }
 
   private Map<String, String> yamlToProperties() throws IOException {
-    try (InputStream input = getClass().getResourceAsStream("/iaif/iaif.yaml")) {
+    try (InputStream input = WhenConfiguringServerUsingYaml.class.getResourceAsStream("/iaif/iaif.yaml")) {
       YamlConfiguration configuration = new YamlConfiguration(input, ResourceResolver.fromClasspath("/iaif"));
       return new YamlPropertiesMap(configuration.getMap().sort());
     }

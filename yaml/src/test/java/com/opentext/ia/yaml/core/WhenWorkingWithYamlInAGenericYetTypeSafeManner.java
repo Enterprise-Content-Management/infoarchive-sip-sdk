@@ -382,7 +382,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put("elephant", "fox");
     yaml.put("giraffe", "hyena");
 
-    assertYaml("giraffe: hyena%nelephant: fox%n", yaml.sort((a, b) -> b.toString().compareTo(a.toString())));
+    assertYaml("giraffe: hyena%nelephant: fox%n", yaml.sort((a, b) -> b.compareTo(a)));
   }
 
   @Test

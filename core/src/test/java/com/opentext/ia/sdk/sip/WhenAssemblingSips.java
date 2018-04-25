@@ -3,13 +3,26 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -17,7 +30,14 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.w3c.dom.Element;
 
-import com.opentext.ia.sdk.support.io.*;
+import com.opentext.ia.sdk.support.io.ByteArrayInputOutputStream;
+import com.opentext.ia.sdk.support.io.DataBuffer;
+import com.opentext.ia.sdk.support.io.EncodedHash;
+import com.opentext.ia.sdk.support.io.Encoding;
+import com.opentext.ia.sdk.support.io.HashAssembler;
+import com.opentext.ia.sdk.support.io.HashFunction;
+import com.opentext.ia.sdk.support.io.MemoryBuffer;
+import com.opentext.ia.sdk.support.io.NoHashAssembler;
 import com.opentext.ia.sdk.support.xml.XmlUtil;
 
 
@@ -86,15 +106,15 @@ public class WhenAssemblingSips extends XmlTestCase {
     }
 
     SipMetrics metrics = sipAssembler.getMetrics();
-    assertEquals(SipMetrics.NUM_AIUS.toString(), 2, metrics.numAius());
-    assertEquals(SipMetrics.NUM_DIGITAL_OBJECTS.toString(), 3, metrics.numDigitalObjects());
-    assertEquals(SipMetrics.ASSEMBLY_TIME.toString(), time, metrics.assemblyTime(), DELTA_MS);
-    assertEquals(SipMetrics.SIZE_DIGITAL_OBJECTS.toString(), 3 * digitalObjectSize, metrics.digitalObjectsSize());
-    assertEquals(SipMetrics.SIZE_PDI.toString(), pdiSize, metrics.pdiSize());
+    assertEquals(SipMetrics.NUM_AIUS, 2, metrics.numAius());
+    assertEquals(SipMetrics.NUM_DIGITAL_OBJECTS, 3, metrics.numDigitalObjects());
+    assertEquals(SipMetrics.ASSEMBLY_TIME, time, metrics.assemblyTime(), DELTA_MS);
+    assertEquals(SipMetrics.SIZE_DIGITAL_OBJECTS, 3 * digitalObjectSize, metrics.digitalObjectsSize());
+    assertEquals(SipMetrics.SIZE_PDI, pdiSize, metrics.pdiSize());
     long packagingInformationSize = getPackagingInformationSize(packagingInformationPrototype, 2, Optional.of(hash));
-    assertEquals(SipMetrics.SIZE_SIP.toString(), pdiSize + 3 * digitalObjectSize + packagingInformationSize,
+    assertEquals(SipMetrics.SIZE_SIP, pdiSize + 3 * digitalObjectSize + packagingInformationSize,
         metrics.sipSize());
-    assertEquals(SipMetrics.SIZE_SIP_FILE.toString(), buffer.length(), metrics.sipFileSize());
+    assertEquals(SipMetrics.SIZE_SIP_FILE, buffer.length(), metrics.sipFileSize());
   }
 
   private long getPackagingInformationSize(PackagingInformation packagingInformationPrototype, long numAius,
@@ -205,7 +225,7 @@ public class WhenAssemblingSips extends XmlTestCase {
     sipAssembler.add(new Object());
 
     SipMetrics metrics = sipAssembler.getMetrics();
-    assertEquals(SipMetrics.SIZE_PDI.toString(), pdiSize, metrics.pdiSize());
+    assertEquals(SipMetrics.SIZE_PDI, pdiSize, metrics.pdiSize());
   }
 
 }
