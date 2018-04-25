@@ -1,8 +1,0 @@
-apply plugin: 'com.github.spotbugs'
-  
-spotbugs {
-  reportLevel = 'low'
-  toolVersion = '3.1.3'
-  ignoreFailures = false
-  excludeFilter = rootProject.file('config/findbugs_filter.xml')
-}

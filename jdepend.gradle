@@ -1,6 +1,6 @@
 buildscript {
   repositories {
-    mavenCentral()
+    maven { url mavenRepo }
   }
   dependencies {
     classpath 'guru.nidi:jdepend:2.9.5'
