@@ -211,6 +211,7 @@ project(':infoarchive-sdk-velocity') {
       exclude module: 'commons-chain'
       exclude module: 'commons-collections'
       exclude module: 'commons-digester'
+      exclude module: 'commons-lang'
       exclude module: 'commons-logging'
       exclude module: 'commons-validator'
       exclude module: 'dom4j'
