@@ -205,25 +205,11 @@ project(':infoarchive-sdk-stringtemplate') {
 project(':infoarchive-sdk-velocity') {
   configurations {
     velocity
-    velocityTools {
-      exclude group: 'org.apache.struts'
-      exclude module: 'commons-beanutils'
-      exclude module: 'commons-chain'
-      exclude module: 'commons-collections'
-      exclude module: 'commons-digester'
-      exclude module: 'commons-lang'
-      exclude module: 'commons-logging'
-      exclude module: 'commons-validator'
-      exclude module: 'dom4j'
-      exclude module: 'oro'
-      exclude module: 'sslext'
-    }
-    compile.extendsFrom commonsCollections, velocity, velocityTools
+    compile.extendsFrom commonsCollections, velocity
   }
 
   dependencies {
     velocity "org.apache.velocity:velocity-engine-core:$velocityVersion"
-    velocityTools "org.apache.velocity:velocity-tools:$velocityVersion"
     compile project(':infoarchive-sdk-core')
     testCompile project(':infoarchive-yaml').sourceSets.test.output
   }

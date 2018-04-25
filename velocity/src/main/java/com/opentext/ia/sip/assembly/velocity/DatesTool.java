@@ -3,7 +3,8 @@
  */
 package com.opentext.ia.sip.assembly.velocity;
 
-import org.apache.velocity.tools.ConversionUtils;
+import java.util.Calendar;
+import java.util.Date;
 
 import com.opentext.ia.sdk.support.datetime.Dates;
 
@@ -14,7 +15,25 @@ import com.opentext.ia.sdk.support.datetime.Dates;
 public class DatesTool {
 
   public String format(Object date) {
-    return Dates.toIso(ConversionUtils.toDate(date));
+    return Dates.toIso(toDate(date));
+  }
+
+  private Date toDate(Object obj) {
+    if (obj == null) {
+      return null;
+    }
+    if (obj instanceof Date) {
+      return (Date)obj;
+    }
+    if (obj instanceof Calendar) {
+      return ((Calendar)obj).getTime();
+    }
+    if (obj instanceof Number) {
+      Date result = new Date();
+      result.setTime(((Number)obj).longValue());
+      return result;
+    }
+    return null;
   }
 
 }
