@@ -1,3 +1,6 @@
+apply plugin: 'application'
+mainClassName = 'com.opentext.ia.sdk.sample.ingest.YamlSipIngester'
+
 dependencies {
   compile project(':infoarchive-sdk-core')
 }

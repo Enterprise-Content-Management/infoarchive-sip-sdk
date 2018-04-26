@@ -1,3 +1,6 @@
+apply plugin: 'application'
+mainClassName = 'com.opentext.ia.sdk.sample.multiaiu.MultipleDomainObjectsSingleSerialization'
+
 configurations {
   compile.extendsFrom jacksonDatabindXml
 }

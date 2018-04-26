@@ -1,3 +1,6 @@
+apply plugin: 'application'
+mainClassName = 'com.opentext.ia.sdk.sample.hello.HelloSip'
+
 dependencies {
   compile project(':infoarchive-sdk-core')
 }

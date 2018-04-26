@@ -1,3 +1,6 @@
+apply plugin: 'application'
+mainClassName = 'com.opentext.ia.sdk.sample.assemble.FileArchiver'
+
 dependencies {
   compile project(':infoarchive-sdk-core')
 }

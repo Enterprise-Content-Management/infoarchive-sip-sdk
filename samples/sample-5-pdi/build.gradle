@@ -1,3 +1,6 @@
+apply plugin: 'application'
+mainClassName = 'com.opentext.ia.sdk.sample.pdi.AssemblePdi'
+
 dependencies {
   compile project(':infoarchive-sdk-core')
 }
