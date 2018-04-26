@@ -37,7 +37,9 @@ public final class Authenticate {
   public static void main(String[] args) {
     HttpClient httpClient = new ApacheHttpClient();
     try {
-      System.out.println("Settings:");
+      System.out.println("Environment:");
+      System.getenv().forEach((key, value) -> System.out.printf("  %s=%s%n", key, value));
+      System.out.printf("%nSettings:%n");
       // Log in to the gateway with user name & password
       AuthenticationStrategy authentication = new JwtAuthentication(get(SETTING_USERNAME),
           get(SETTING_PASSWORD), new GatewayInfo(get(SETTING_GATEWAY_URL), get(SETTING_CLIENT_ID),
@@ -56,7 +58,7 @@ public final class Authenticate {
   private static String get(String name) {
     String result = System.getProperty(name,
         System.getenv().getOrDefault(name, DEFAULT_SETTINGS.getOrDefault(name, name)));
-    System.out.printf("%s=%s%n", name, result);
+    System.out.printf("  %s=%s%n", name, result);
     return result;
   }
 
