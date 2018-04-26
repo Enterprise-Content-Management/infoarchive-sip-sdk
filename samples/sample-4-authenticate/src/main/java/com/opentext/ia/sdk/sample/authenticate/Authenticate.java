@@ -23,7 +23,7 @@ public final class Authenticate {
   private static final String SETTING_CLIENT_ID = "client.id";
   private static final String SETTING_CLIENT_SECRET = "client.secret";
   // Make sure you have a running InfoArchive cluster with the following characteristics,
-  // or set system properties with the correct values
+  // or set system properties or environment variables with the correct values
   private static final Map<String, String> DEFAULT_SETTINGS = new HashMap<String, String>() {{
     put(SETTING_USERNAME, "sue@iacustomer.com");
     put(SETTING_PASSWORD, "password");
@@ -54,7 +54,8 @@ public final class Authenticate {
   }
 
   private static String get(String name) {
-    String result = System.getProperty(name, DEFAULT_SETTINGS.getOrDefault(name, name));
+    String result = System.getProperty(name,
+        System.getenv().getOrDefault(name, DEFAULT_SETTINGS.getOrDefault(name, name)));
     System.out.printf("%s=%s%n", name, result);
     return result;
   }
