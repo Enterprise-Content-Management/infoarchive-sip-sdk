@@ -12,6 +12,7 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 - `com.opentext.ia.sdk.client.api.ArchiveClient.query()`
 - `com.opentext.ia.yaml.configuration.ObjectConfiguration.canConfigureObject()`
+- Default values for receiver node SIP formats (IA server 16EP5 and later have this built in)
 
 
 === Changed
