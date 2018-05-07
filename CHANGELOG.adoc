@@ -6,7 +6,7 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
-== 11.0.0 - TBD
+== 11.0.0 - 2018-05-07
 
 === Removed
 
