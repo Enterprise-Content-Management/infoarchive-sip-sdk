@@ -222,7 +222,6 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     assertValue("holding.xdbMode", "PRIVATE", yaml.get(HOLDINGS, 0, "xdbMode"));
     assertValue("ingest.processors.format", XML, yaml.get(INGESTS, 0, "content", FORMAT));
     assertTrue("ingest.processors.xml", yaml.get(INGESTS, 0, "content", TEXT).toString().contains("sip.download"));
-    assertValue("receiverNode.sips.format", "sip_zip", yaml.get("receiverNodes", 0, "sips", 0, FORMAT));
   }
 
   @Test
