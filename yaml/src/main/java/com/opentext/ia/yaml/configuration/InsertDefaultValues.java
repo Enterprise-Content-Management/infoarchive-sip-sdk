@@ -4,7 +4,6 @@
 package com.opentext.ia.yaml.configuration;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -94,14 +93,7 @@ class InsertDefaultValues extends PathVisitor {
     result.put("/queryQuotas/\\d+", Default.of("aipQuota", 0,
         "aiuQuota", 0,
         "dipQuota", 0));
-    result.put("/receiverNodes/\\d+", Default.of("logLevel", "INFO",
-        "sips", Arrays.asList(
-            new YamlMap()
-                .put(FORMAT,  "sip_zip")
-                .put("extractorImpl", "com.emc.ia.reception.sip.extractor.impl.ZipSipExtractor"),
-            new YamlMap()
-                .put(FORMAT, "eas_sip_zip")
-                .put("extractorImpl", "com.emc.ia.reception.sip.extractor.impl.LegacyZipSipExtractor"))));
+    result.put("/receiverNodes/\\d+", Default.of("logLevel", "INFO"));
     result.put("/resultConfigurationHelpers/\\d+", Default.of("propagateChanges", false));
     result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+", Default.of("createCollectionEnabled", false,
         "exportEnabled", false));
