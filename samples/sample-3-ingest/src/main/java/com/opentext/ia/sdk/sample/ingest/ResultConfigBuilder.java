@@ -3,17 +3,12 @@
  */
 package com.opentext.ia.sdk.sample.ingest;
 
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE;
-
 import java.util.Map;
 
 
-@SuppressWarnings("PMD")
-public class ResultConfigBuilder {
+@SuppressWarnings({ "PMD", "deprecation" })
+public class ResultConfigBuilder
+    implements com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties {
 
   private final Map<String, String> values;
   private final SearchConfigBuilder parent;

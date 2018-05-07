@@ -3,16 +3,16 @@
  */
 package com.opentext.ia.sdk.server.configuration.yaml;
 
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.HTTP_CLIENT_CLASSNAME;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PROXY_HOST;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PROXY_PORT;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_AUTHENTICATION_GATEWAY;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_AUTHENTICATION_PASSWORD;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_AUTHENTICATION_TOKEN;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_AUTHENTICATION_USER;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_CLIENT_ID;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_CLIENT_SECRET;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_URI;
+import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.HTTP_CLIENT_CLASSNAME;
+import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.PROXY_HOST;
+import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.PROXY_PORT;
+import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_AUTHENTICATION_GATEWAY;
+import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_AUTHENTICATION_PASSWORD;
+import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_AUTHENTICATION_TOKEN;
+import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_AUTHENTICATION_USER;
+import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_CLIENT_ID;
+import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_CLIENT_SECRET;
+import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_URI;
 
 import java.io.IOException;
 import java.util.Map;
@@ -21,17 +21,19 @@ import java.util.function.BiFunction;
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
-import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer;
 import com.opentext.ia.sdk.support.http.MediaTypes;
 import com.opentext.ia.yaml.configuration.YamlConfiguration;
 
 
 /**
  * Configure an InfoArchive application using data in YAML format. This class also supports configuring more than one
- * application or non-application objects <em>provided the InfoArchive server supports this</em> (version 16.3 or
+ * application or non-application objects <em>provided the InfoArchive server supports this</em> (version 16EP3 or
  * newer).
+ * <dl><dt>Warning:</dt><dd>Support for client-side processing of declarative configuration will be removed in a
+ * future version.</dd>
  * @since 6.0.0
  */
+@SuppressWarnings("deprecation")
 public class YamlBasedApplicationConfigurer implements ApplicationConfigurer {
 
   private final YamlConfiguration yaml;
@@ -44,9 +46,10 @@ public class YamlBasedApplicationConfigurer implements ApplicationConfigurer {
 
   private static ApplicationConfigurer defaultClientSideApplicationConfigurer(YamlConfiguration yaml,
       ArchiveConnection connection) {
-    // TODO: Implement this directly instead of going through properties
+    // TODO: Remove support for client-side processing of declarative configuration
     // Flatten the YAML to properties and re-use the properties-based configurer
-    return new PropertiesBasedApplicationConfigurer(yamlToMap(yaml, connection));
+    return new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(
+        yamlToMap(yaml, connection));
   }
 
   private static Map<String, String> yamlToMap(YamlConfiguration yaml, ArchiveConnection connection) {

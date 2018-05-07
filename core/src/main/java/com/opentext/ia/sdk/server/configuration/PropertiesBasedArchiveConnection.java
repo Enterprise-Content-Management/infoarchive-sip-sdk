@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
-package com.opentext.ia.sdk.server.configuration.properties;
+package com.opentext.ia.sdk.server.configuration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +15,7 @@ import com.opentext.ia.sdk.client.api.ArchiveConnection;
 /**
  * {@linkplain ArchiveConnection} that initializes from {@linkplain Properties properties}.
  */
-public class PropertiesBasedArchiveConnection extends ArchiveConnection implements InfoArchiveConfigurationProperties {
+public class PropertiesBasedArchiveConnection extends ArchiveConnection implements InfoArchiveConnectionProperties {
 
   public PropertiesBasedArchiveConnection(InputStream configuration) throws IOException {
     this(readConfigurationFrom(configuration));

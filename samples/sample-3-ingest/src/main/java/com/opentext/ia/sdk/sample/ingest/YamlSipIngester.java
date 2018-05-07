@@ -16,7 +16,7 @@ import java.util.Map;
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
-import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
+import com.opentext.ia.sdk.server.configuration.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedApplicationConfigurer;
 import com.opentext.ia.sdk.sip.ContentInfo;
 import com.opentext.ia.sdk.sip.DigitalObject;

@@ -13,13 +13,13 @@ import java.util.function.Consumer;
 
 import org.atteo.evo.inflector.English;
 
-import com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
 
 
-@SuppressWarnings({ "PMD.TooManyMethods", "PMD.UseObjectForClearerAPI" })
-class YamlPropertiesMap extends HashMap<String, String> implements InfoArchiveConfigurationProperties {
+@SuppressWarnings({ "PMD.TooManyMethods", "PMD.UseObjectForClearerAPI", "deprecation" })
+class YamlPropertiesMap extends HashMap<String, String>
+    implements com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties {
 
   private static final long serialVersionUID = 3429860978620277558L;
   private static final String NAMESPACE = "namespace";

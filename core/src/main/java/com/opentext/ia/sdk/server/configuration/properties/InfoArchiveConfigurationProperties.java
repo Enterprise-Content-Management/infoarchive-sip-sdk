@@ -3,26 +3,20 @@
  */
 package com.opentext.ia.sdk.server.configuration.properties;
 
+import com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties;
+
 
 /**
  * Names of configuration properties.
+ * @deprecated Use declarative configuration in YAML format instead.
  */
-public interface InfoArchiveConfigurationProperties {
+@Deprecated
+public interface InfoArchiveConfigurationProperties extends InfoArchiveConnectionProperties {
 
-  String PREFIX = "ia.";
   String NAME = "name";
   String NAMES = "names";
   String TYPE = "type";
   String DESCRIPTION = "description";
-
-  String SERVER_PREFIX = PREFIX + "server.";
-  String SERVER_AUTHENTICATION_TOKEN = SERVER_PREFIX + "authentication.token";
-  String SERVER_AUTHENTICATION_USER = SERVER_PREFIX + "authentication.user";
-  String SERVER_AUTHENTICATION_PASSWORD = SERVER_PREFIX + "authentication.password";
-  String SERVER_AUTHENTICATION_GATEWAY = SERVER_PREFIX + "authentication.gateway";
-  String SERVER_CLIENT_ID = SERVER_PREFIX + "client_id";
-  String SERVER_CLIENT_SECRET = SERVER_PREFIX + "client_secret";
-  String SERVER_URI = SERVER_PREFIX + "uri";
 
   String TENANT_NAME = PREFIX + "tenant." + NAME;
 
@@ -129,11 +123,6 @@ public interface InfoArchiveConfigurationProperties {
   String JOB_CONFIRMATION = "Confirmation";
 
   String INGEST_XML = PREFIX + "ingest.xml";
-
-  String HTTP_CLIENT_CLASSNAME = PREFIX + "http.client";
-
-  String PROXY_HOST = "proxy.host";
-  String PROXY_PORT = "proxy.port";
 
   String EXPORT_PIPELINE_PREFIX = PREFIX + "exportpipeline.";
   String EXPORT_PIPELINE_TEMPLATE_PREFIX = PREFIX + "exportpipeline.%s.";

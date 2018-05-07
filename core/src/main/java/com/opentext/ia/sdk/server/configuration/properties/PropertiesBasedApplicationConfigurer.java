@@ -129,8 +129,9 @@ import com.opentext.ia.sdk.support.io.RuntimeIoException;
  * hierarchical configuration. For a more convenient way of specifying the configuration, see
  * {@linkplain YamlBasedApplicationConfigurer}.
  *
+ *@deprecated Use {@linkplain YamlBasedApplicationConfigurer} instead.
  */
-// TODO: Make this deprecated
+@Deprecated
 @SuppressWarnings({ "PMD.ExcessiveClassLength", "PMD.ExcessiveImports", "PMD.CouplingBetweenObjects",
   "PMD.CyclomaticComplexity", "PMD.UseObjectForClearerAPI" })
 public class PropertiesBasedApplicationConfigurer implements ApplicationConfigurer, InfoArchiveLinkRelations,

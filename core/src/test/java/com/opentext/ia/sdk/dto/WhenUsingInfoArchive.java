@@ -51,9 +51,7 @@ import com.opentext.ia.sdk.dto.query.Item;
 import com.opentext.ia.sdk.dto.query.Operator;
 import com.opentext.ia.sdk.dto.query.SearchQuery;
 import com.opentext.ia.sdk.dto.result.AllSearchComponents;
-import com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties;
-import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer;
-import com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedArchiveConnection;
+import com.opentext.ia.sdk.server.configuration.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.support.http.HttpException;
 import com.opentext.ia.sdk.support.http.MediaTypes;
 import com.opentext.ia.sdk.support.http.Part;
@@ -67,7 +65,7 @@ import com.opentext.ia.sdk.support.io.RuntimeIoException;
 import com.opentext.ia.test.TestCase;
 
 
-@SuppressWarnings("PMD") // TODO: Clean this up
+@SuppressWarnings({ "PMD", "deprecation" }) // TODO: Clean this up
 public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations {
 
   private static final String BILLBOARD_URI = "http://foo.com/bar";
@@ -238,29 +236,67 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   private void prepareConfiguration() {
-    configuration.put(InfoArchiveConfigurationProperties.SERVER_URI, BILLBOARD_URI);
-    configuration.put(InfoArchiveConfigurationProperties.SERVER_AUTHENTICATION_TOKEN, AUTH_TOKEN);
-    configuration.put(InfoArchiveConfigurationProperties.TENANT_NAME, TENANT_NAME);
-    configuration.put(InfoArchiveConfigurationProperties.DATABASE_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfigurationProperties.DATABASE_ADMIN_PASSWORD, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfigurationProperties.APPLICATION_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfigurationProperties.HOLDING_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfigurationProperties.RETENTION_POLICY_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfigurationProperties.PDI_XML, "");
-    configuration.put(InfoArchiveConfigurationProperties.PDI_SCHEMA_NAME, APPLICATION_NAME);
-    configuration.put(InfoArchiveConfigurationProperties.PDI_SCHEMA, "");
-    configuration.put(InfoArchiveConfigurationProperties.INGEST_XML, "");
-    configuration.put(InfoArchiveConfigurationProperties.SEARCH_DESCRIPTION, "Default emails search");
-    configuration.put(InfoArchiveConfigurationProperties.SEARCH_NESTED, Boolean.FALSE.toString());
-    configuration.put(InfoArchiveConfigurationProperties.SEARCH_NAME, "emailsSearch");
-    configuration.put(InfoArchiveConfigurationProperties.SEARCH_STATE, "DRAFT");
-    configuration.put(InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_NAME, "DefaultSearchComposition");
-    configuration.put(InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_XFORM_NAME, "Test Search Form");
-    configuration.put(InfoArchiveConfigurationProperties.SEARCH_DEFAULT_RESULT_MASTER, "");
-    configuration.put(InfoArchiveConfigurationProperties.SEARCH_DEFAULT_SEARCH, "");
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_URI,
+        BILLBOARD_URI);
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SERVER_AUTHENTICATION_TOKEN,
+        AUTH_TOKEN);
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.TENANT_NAME,
+        TENANT_NAME);
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.DATABASE_NAME,
+        APPLICATION_NAME);
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.DATABASE_ADMIN_PASSWORD,
+        APPLICATION_NAME);
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.APPLICATION_NAME,
+        APPLICATION_NAME);
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.HOLDING_NAME,
+        APPLICATION_NAME);
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.RETENTION_POLICY_NAME,
+        APPLICATION_NAME);
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PDI_XML, "");
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PDI_SCHEMA_NAME,
+        APPLICATION_NAME);
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PDI_SCHEMA, "");
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.INGEST_XML, "");
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_DESCRIPTION,
+        "Default emails search");
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_NESTED,
+        Boolean.FALSE.toString());
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_NAME,
+        "emailsSearch");
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_STATE, "DRAFT");
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_NAME,
+        "DefaultSearchComposition");
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_XFORM_NAME,
+        "Test Search Form");
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_DEFAULT_RESULT_MASTER,
+        "");
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_DEFAULT_SEARCH,
+        "");
 
-    configuration.put(InfoArchiveConfigurationProperties.PROXY_HOST, "localhost");
-    configuration.put(InfoArchiveConfigurationProperties.PROXY_PORT, "8080");
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PROXY_HOST, "localhost");
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PROXY_PORT, "8080");
 
     configuration.put("ia.aic.name", "MyAic");
     configuration.put("ia.aic.criteria.name", "name");
@@ -406,7 +442,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   private ArchiveClient configureServer(Map<String, String> config) throws IOException {
     return archiveClient = ArchiveClients.configuringApplicationUsing(
-        new PropertiesBasedApplicationConfigurer(config), connection);
+        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(config),
+        connection);
   }
 
   @Test
@@ -507,13 +544,17 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   @Test
   public void shouldRetryWhenTemporarilyUnavailable() throws IOException {
-    configuration.put(InfoArchiveConfigurationProperties.FEDERATION_NAME, randomString());
+    configuration.put(
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.FEDERATION_NAME,
+        randomString());
     when(restClient.createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD), eq(LINK_SELF)))
         .then(invocation -> {
       throw new HttpException(503, "");
     });
 
-    ArchiveClients.configuringApplicationUsing(new PropertiesBasedApplicationConfigurer(configuration), connection);
+    ArchiveClients.configuringApplicationUsing(
+        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(configuration),
+        connection);
 
     verify(restClient, times(5)).createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD),
         eq(LINK_SELF));

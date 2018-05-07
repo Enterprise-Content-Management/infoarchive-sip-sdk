@@ -3,22 +3,13 @@
  */
 package com.opentext.ia.sdk.sample.ingest;
 
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_AIC;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_NAME;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_XFORM;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_XFORM_NAME;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_DESCRIPTION;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_NAME;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_NESTED;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_QUERY;
-import static com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_STATE;
-
 import java.util.HashMap;
 import java.util.Map;
 
 
-@SuppressWarnings("PMD")
-public class SearchConfigBuilder {
+@SuppressWarnings({ "PMD", "deprecation" })
+public class SearchConfigBuilder
+    implements com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties {
 
   private String name;
   private String aic;
