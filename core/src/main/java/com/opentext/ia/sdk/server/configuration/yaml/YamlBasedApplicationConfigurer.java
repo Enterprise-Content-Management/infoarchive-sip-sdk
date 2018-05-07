@@ -30,7 +30,7 @@ import com.opentext.ia.yaml.configuration.YamlConfiguration;
  * application or non-application objects <em>provided the InfoArchive server supports this</em> (version 16EP3 or
  * newer).
  * <dl><dt>Warning:</dt><dd>Support for client-side processing of declarative configuration will be removed in a
- * future version.</dd>
+ * future version.</dd></dl>
  * @since 6.0.0
  */
 @SuppressWarnings("deprecation")
