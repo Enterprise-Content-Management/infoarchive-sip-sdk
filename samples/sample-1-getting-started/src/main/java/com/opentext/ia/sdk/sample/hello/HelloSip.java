@@ -8,7 +8,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 
-import com.opentext.ia.sdk.sip.*;
+import com.opentext.ia.sdk.sip.ContentInfo;
+import com.opentext.ia.sdk.sip.FileGenerator;
+import com.opentext.ia.sdk.sip.PackagingInformation;
+import com.opentext.ia.sdk.sip.PdiAssembler;
+import com.opentext.ia.sdk.sip.SipAssembler;
+import com.opentext.ia.sdk.sip.XmlPdiAssembler;
 
 
 public class HelloSip {
@@ -19,6 +24,7 @@ public class HelloSip {
       new HelloSip().run();
     } catch (IOException e) {
       e.printStackTrace();
+      System.exit(1);
     }
   }
 

@@ -10,8 +10,19 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Map;
 
-import com.opentext.ia.sdk.sip.*;
-import com.opentext.ia.sdk.support.io.*;
+import com.opentext.ia.sdk.sip.ContentInfo;
+import com.opentext.ia.sdk.sip.DigitalObject;
+import com.opentext.ia.sdk.sip.DigitalObjectsExtraction;
+import com.opentext.ia.sdk.sip.PackagingInformation;
+import com.opentext.ia.sdk.sip.PdiAssembler;
+import com.opentext.ia.sdk.sip.SipAssembler;
+import com.opentext.ia.sdk.sip.XmlPdiAssembler;
+import com.opentext.ia.sdk.support.io.Encoding;
+import com.opentext.ia.sdk.support.io.FileBuffer;
+import com.opentext.ia.sdk.support.io.HashAssembler;
+import com.opentext.ia.sdk.support.io.HashFunction;
+import com.opentext.ia.sdk.support.io.RuntimeIoException;
+import com.opentext.ia.sdk.support.io.SingleHashAssembler;
 
 
 public class FileArchiver {
@@ -32,6 +43,7 @@ public class FileArchiver {
       new FileArchiver().run(rootPath, sip);
     } catch (IOException e) {
       e.printStackTrace();
+      System.exit(1);
     }
   }
 
