@@ -55,7 +55,7 @@ public class FileArchiver {
   private void run(String rootPath, String sip) throws IOException {
     File sipFile = new File(sip).getCanonicalFile();
     sipFile.getParentFile().mkdirs();
-    System.out.printf("\nSample 2: Archiving files from %s into %s%n", rootPath,
+    System.out.printf("%nSample 2: Archiving files from %s into %s%n", rootPath,
         sipFile.getPath());
 
     // Tell InfoArchive where and how to archive the data
