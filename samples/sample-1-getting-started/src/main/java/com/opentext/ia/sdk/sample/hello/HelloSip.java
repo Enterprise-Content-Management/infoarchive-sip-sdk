@@ -16,9 +16,9 @@ import com.opentext.ia.sdk.sip.SipAssembler;
 import com.opentext.ia.sdk.sip.XmlPdiAssembler;
 
 
+@SuppressWarnings("PMD")
 public class HelloSip {
 
-  @SuppressWarnings("PMD.AvoidPrintStackTrace")
   public static void main(String[] args) {
     try {
       new HelloSip().run();
