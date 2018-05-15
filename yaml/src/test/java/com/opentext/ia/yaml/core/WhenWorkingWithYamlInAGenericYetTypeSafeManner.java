@@ -275,6 +275,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertToString("Containing :", new YamlMap().put("quuux", "ba:r"));
     assertToString("Start with %", new YamlMap().put("gnugnat", "%qux"));
     assertToString("Start with @", new YamlMap().put("quux", "@q"));
+    assertToString("Start with ,", new YamlMap().put("quuuux", ",q"));
     assertToString("Map in map in list", new YamlMap().put("pdiSchemas", Arrays.asList(new YamlMap()
         .put("content", new YamlMap()
             .put("format", "xml")))));
