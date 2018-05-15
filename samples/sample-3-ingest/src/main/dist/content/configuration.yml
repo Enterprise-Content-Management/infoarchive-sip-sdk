@@ -1,6 +1,6 @@
 tenant:
-  name: TENANT
-  configure: false
+  name: INFOARCHIVE
+  configure: use existing
 
 xdbFederation:
   name: animal
@@ -9,26 +9,63 @@ xdbFederation:
 
 xdbDatabase:
   name: animal2
-  adminPassword: test
+  adminPassword: catwalksacrosskeyboard
 
 application:
   name: Animals2
   description: Sample application
   category: Sample category
+  type: active archiving
+  archiveType: sip
+
+space:
+  name: zoo
+
+fileSystemRoot:
+  name: defaultFileSystemRoot
+  configure: create
+  description: Default FileSystemRoot
+  path: data/root
+
+spaceRootFolder:
+  name: zoo-root
+  fileSystemRoot: defaultFileSystemRoot
+
+fileSystemFolder:
+  name: default-folder
+  parentSpaceRootFolder: zoo-root 
+  subPath: stores/zoo
+
+store:
+  name: zoo
+  type: filesystem
+  status: online
+  fileSystemFolder: default-folder
+  storeType: result
 
 holding:
   name: Animals2
 
+ingestNode:
+  name: ingest_node_01
+  enumerationCutoffDays: 30
+  enumerationMinusRunning: true
+  logLevel: INFO
+
+receiverNode:
+  name: receiver_node_01
+
 aic:
   name: Animals2
   criteria:
-    name: animalName,filePath
-    label: Animal Name,File Path
-    type: STRING,STRING
-    pkeyminattr: ","
-    pkeymaxattr: ","
-    pkeyvaluesattr: ","
-    indexed: true,true
+  - name: animalName
+    label: Animal Name
+    type: STRING
+    indexed: true
+  - name: filePath
+    label: File Path
+    type: STRING
+    indexed: true
 
 namespace:
   prefix: n
@@ -36,46 +73,61 @@ namespace:
   
 query:
   name: DefaultQuery
+  aics:
+  - Animals2
   xdbpdis:
   - entity:
       path: /n:animals/n:animal
     template: return $aiu
     operands:
-    - name: animalName,filePath
-      path: n:animal_name,n:file_path
-      type: STRING,STRING
-      index: true,true
+    - name: animalName
+      path: n:animal_name
+      type: STRING
+      index: true
+    - name: filePath
+      path: n:file_path
+      type: STRING
+      index: true
 
 queryQuota:
   name: DefaultQuota
 
-resultHelper:
+resultConfigurationHelper:
   name: result_helper
   content:
     format: xml
     resource: DefaultResultHelper.xml
 
 search:
-  Find animals:
-    nested: false
-    state: DRAFT
-    inuse: true
-    compositions:
-    - name: Set 1
-      xform:
-        name: form
-        content:
-          format: xml
-          resource: FindAnimals.form.xml
-      result:
-        main:
-          name: animalName,filePath
-          label: Animal Name,File Path
-          path: n:animal_name,n:file_path
-          type: STRING,STRING
-          sort: NONE,NONE
+  name: Find animals
+  state: DRAFT
+  aic: Animals2
+  query: DefaultQuery
+  
+searchComposition:
+  name: Set 1
+  
+xform:
+  name: form
+  form:
+    resource: FindAnimals.form.xml
 
-retention-policy:
+resultMaster:
+  panels:
+  - name: Main
+    tabs:
+    - name: Tab 0
+      columns:
+      - name: animalName
+        label: Animal Name
+        path: n:animal_name
+        sort: NONE
+      - name: filePath
+        label: File Path
+        path: n:file_path
+        sort: NONE
+
+retentionPolicy:
   name: Animals2
 
 pdiSchema:
@@ -90,16 +142,10 @@ pdi:
     resource: pdi.xml
 
 ingest:
+  name: animal-ingest
   content:
     format: xml
     resource: ingest.xml
-
-fileSystemFolder:
-  name: Animals2-folder
-  subPath: stores/file_store_01
-
-store:
-  name: file_store_01
 
 retentionPolicy:
   name: PhoneCalls-policy
