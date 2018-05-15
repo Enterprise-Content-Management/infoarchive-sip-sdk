@@ -12,10 +12,14 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
+import com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties;
 import com.opentext.ia.sdk.server.configuration.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedApplicationConfigurer;
 import com.opentext.ia.sdk.sip.ContentInfo;
@@ -29,11 +33,16 @@ import com.opentext.ia.sdk.sip.XmlPdiAssembler;
 import com.opentext.ia.sdk.support.io.FileSupplier;
 import com.opentext.ia.sdk.support.io.StringStream;
 import com.opentext.ia.yaml.configuration.YamlConfiguration;
-import com.opentext.ia.yaml.resource.ResourceResolver;
 
 
 @SuppressWarnings("PMD")
-public class YamlSipIngester {
+public class YamlSipIngester implements InfoArchiveConnectionProperties {
+
+  private static final String SETTING_USERNAME = "username";
+  private static final String SETTING_PASSWORD = "password";
+  private static final String SETTING_GATEWAY_URL = "gateway.url";
+  private static final String SETTING_CLIENT_ID = "client.id";
+  private static final String SETTING_CLIENT_SECRET = "client.secret";
 
   public static void main(String[] args) {
     try {
@@ -53,11 +62,7 @@ public class YamlSipIngester {
     System.out.printf("%nSample 3: Assemble SIP from %s and ingest into InfoArchive%n", rootPath);
 
     // Load the configuration
-    YamlConfiguration configuration = null;
-    try (InputStream yaml = Files.newInputStream(new File(rootPath, "configuration.yml").toPath(),
-        StandardOpenOption.READ)) {
-      configuration = new YamlConfiguration(yaml, ResourceResolver.fromClasspath());
-    }
+    YamlConfiguration configuration = new YamlConfiguration(new File(rootPath, "configuration.yml"));
 
     // Tell InfoArchive where and how to archive the data
     URI entityUri = URI.create(configuration.getPdiSchemaName());
@@ -79,7 +84,7 @@ public class YamlSipIngester {
         @Override
         protected void doAdd(File value, Map<String, ContentInfo> ignored) {
           getBuilder()
-              .element("animal_name", value.getName().substring(0, value.getName().lastIndexOf(".")))
+              .element("animal_name", value.getName().substring(0, value.getName().lastIndexOf('.')))
               .element("file_path", relativePath(value, rootPath));
         }
       };
@@ -106,7 +111,7 @@ public class YamlSipIngester {
     // Use ArchiveClients.usingAlreadyConfiguredServer() instead if you already configured the server with application,
     // holding, etc.
     ArchiveClient archiveClient = ArchiveClients.configuringApplicationUsing(
-        new YamlBasedApplicationConfigurer(configuration), newArchiveConnection());
+        new YamlBasedApplicationConfigurer(configuration), newArchiveConnection(rootPath));
 
     // Ingest the SIP into InfoArchive
     try (InputStream sip = Files.newInputStream(assembledSip.toPath(), StandardOpenOption.READ)) {
@@ -115,14 +120,37 @@ public class YamlSipIngester {
     }
   }
 
-  private ArchiveConnection newArchiveConnection() throws IOException {
-    try (InputStream connectionProperties = YamlSipIngester.class.getResourceAsStream("/connection.properties")) {
-      return new PropertiesBasedArchiveConnection(connectionProperties);
+  private String relativePath(File file, String rootPath) {
+    return file.getAbsolutePath().substring(rootPath.length() + 1);
+  }
+
+  private ArchiveConnection newArchiveConnection(String rootPath) throws IOException {
+    try (InputStream connectionProperties = Files.newInputStream(new File(rootPath, "connection.properties").toPath(),
+        StandardOpenOption.READ)) {
+      Properties properties = new Properties();
+      properties.load(connectionProperties);
+      override(properties);
+      return new PropertiesBasedArchiveConnection(properties);
     }
   }
 
-  private String relativePath(File file, String rootPath) {
-    return file.getAbsolutePath().substring(rootPath.length() + 1);
+  private void override(Properties properties) {
+    override(SERVER_AUTHENTICATION_GATEWAY, SETTING_GATEWAY_URL, properties);
+    override(SERVER_AUTHENTICATION_USER, SETTING_USERNAME, properties);
+    override(SERVER_AUTHENTICATION_PASSWORD, SETTING_PASSWORD, properties);
+    override(SERVER_CLIENT_ID, SETTING_CLIENT_ID, properties);
+    override(SERVER_CLIENT_SECRET, SETTING_CLIENT_SECRET, properties);
+  }
+
+  private void override(String key, String overrideProperty, Properties properties) {
+    String override = get(overrideProperty);
+    if (StringUtils.isNotBlank(override)) {
+      properties.put(key, override);
+    }
+  }
+
+  private static String get(String name) {
+    return System.getProperty(name, System.getenv().get(name));
   }
 
 }

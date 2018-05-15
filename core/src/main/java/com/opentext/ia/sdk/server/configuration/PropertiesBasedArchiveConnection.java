@@ -22,9 +22,13 @@ public class PropertiesBasedArchiveConnection extends ArchiveConnection implemen
   }
 
   private static Map<String, String> readConfigurationFrom(InputStream configuration) throws IOException {
-    Map<String, String> result = new HashMap<>();
     Properties properties = new Properties();
     properties.load(configuration);
+    return toMap(properties);
+  }
+
+  private static Map<String, String> toMap(Properties properties) {
+    Map<String, String> result = new HashMap<>();
     properties.stringPropertyNames().forEach(name -> result.put(name, properties.getProperty(name)));
     return result;
   }
@@ -40,6 +44,16 @@ public class PropertiesBasedArchiveConnection extends ArchiveConnection implemen
     setHttpClientClassName(configuration.get(HTTP_CLIENT_CLASSNAME));
     setProxyHost(configuration.get(PROXY_HOST));
     setProxyPort(configuration.get(PROXY_PORT));
+  }
+
+  /**
+   * Initialize from properties.
+   * @param configuration the properties to initialize from
+   * @throws IOException when an I/O error occurs
+   * @since 11.1.0
+   */
+  public PropertiesBasedArchiveConnection(Properties configuration) throws IOException {
+    this(toMap(configuration));
   }
 
 }
