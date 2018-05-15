@@ -116,7 +116,7 @@ public class FileArchiver {
 
   private String escape(String path) {
     // For Windows
-    return path.replace("\\", "\\\\");
+    return path.replace('\\', '/');
   }
 
   private String relativePath(File file, String rootPath) {
