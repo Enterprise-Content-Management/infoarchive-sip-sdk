@@ -91,9 +91,11 @@ public class FileArchiver {
     // Assemble the SIP
     SipAssembler<File> assembler = SipAssembler.forPdiAndContentWithContentHashing(prototype, pdiAssembler,
         contentAssembler, contentHashAssembler);
-    assembler.start(new FileBuffer(new File(sip)));
+    File sipFile = new File(sip).getCanonicalFile();
+    sipFile.getParentFile().mkdirs();
+    assembler.start(new FileBuffer(sipFile));
     try {
-      addFilesIn(new File(rootPath), rootPath, relativePath(new File(sip), rootPath), assembler);
+      addFilesIn(new File(rootPath), rootPath, relativePath(sipFile, rootPath), assembler);
     } finally {
       assembler.end();
     }
