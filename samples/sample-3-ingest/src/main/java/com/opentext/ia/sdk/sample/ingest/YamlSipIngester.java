@@ -35,11 +35,13 @@ import com.opentext.ia.yaml.resource.ResourceResolver;
 @SuppressWarnings("PMD")
 public class YamlSipIngester {
 
-  private static final String SAMPLE_FILES_PATH = "src/main/resources";
-
   public static void main(String[] args) {
     try {
-      String rootPath = new File(".").getCanonicalPath();
+      File root = new File("content");
+      if (!root.isDirectory()) {
+        root = new File("src/main/dist/content");
+      }
+      String rootPath = root.getCanonicalPath();
       new YamlSipIngester().run(rootPath);
     } catch (IOException e) {
       e.printStackTrace(System.out);
@@ -52,7 +54,8 @@ public class YamlSipIngester {
 
     // Load the configuration
     YamlConfiguration configuration = null;
-    try (InputStream yaml = YamlSipIngester.class.getResourceAsStream("/configuration.yml")) {
+    try (InputStream yaml = Files.newInputStream(new File(rootPath, "configuration.yml").toPath(),
+        StandardOpenOption.READ)) {
       configuration = new YamlConfiguration(yaml, ResourceResolver.fromClasspath());
     }
 
@@ -90,9 +93,9 @@ public class YamlSipIngester {
     SipAssembler<File> sipAssembler = SipAssembler.forPdiAndContent(prototype, pdiAssembler, contentAssembler);
     FileGenerator<File> generator = new FileGenerator<>(sipAssembler, FileSupplier.fromTemporaryDirectory());
 
-    File f1 = new File(SAMPLE_FILES_PATH, "ape.dat");
-    File f2 = new File(SAMPLE_FILES_PATH, "bear.dat");
-    File f3 = new File(SAMPLE_FILES_PATH, "cobra.dat");
+    File f1 = new File(rootPath, "ape.dat");
+    File f2 = new File(rootPath, "bear.dat");
+    File f3 = new File(rootPath, "cobra.dat");
 
     FileGenerationMetrics metrics = generator.generate(Arrays.asList(f1, f2, f3));
     File assembledSip = metrics.getFile();
