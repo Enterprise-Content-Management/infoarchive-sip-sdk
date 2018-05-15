@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -140,6 +141,10 @@ public class YamlSipIngester implements InfoArchiveConnectionProperties {
     override(SERVER_AUTHENTICATION_PASSWORD, SETTING_PASSWORD, properties);
     override(SERVER_CLIENT_ID, SETTING_CLIENT_ID, properties);
     override(SERVER_CLIENT_SECRET, SETTING_CLIENT_SECRET, properties);
+    System.out.printf("  Connection properties:%n%s", properties.keySet().stream()
+        .map(String::valueOf)
+        .map(key -> String.format("  %s=%s", key, properties.getProperty(key)))
+        .collect(Collectors.joining(System.lineSeparator())));
   }
 
   private void override(String key, String overrideProperty, Properties properties) {
