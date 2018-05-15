@@ -43,6 +43,7 @@ public class YamlSipIngester {
       new YamlSipIngester().run(rootPath);
     } catch (IOException e) {
       e.printStackTrace();
+      System.exit(1);
     }
   }
 

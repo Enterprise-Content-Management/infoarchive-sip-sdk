@@ -47,6 +47,9 @@ public final class Authenticate {
 
       // Use this header in calls using the HTTP client
       System.out.printf("Header:%n%s%n", header);
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.exit(1);
     } finally {
       httpClient.close();
     }

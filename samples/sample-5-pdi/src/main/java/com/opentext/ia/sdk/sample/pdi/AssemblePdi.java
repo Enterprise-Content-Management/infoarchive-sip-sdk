@@ -33,6 +33,7 @@ public class AssemblePdi {
       new AssemblePdi().run();
     } catch (IOException e) {
       e.printStackTrace();
+      System.exit(1);
     }
   }
 

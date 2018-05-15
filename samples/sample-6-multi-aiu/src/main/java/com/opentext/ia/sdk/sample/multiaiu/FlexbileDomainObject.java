@@ -30,6 +30,7 @@ public class FlexbileDomainObject {
       new FlexbileDomainObject().run();
     } catch (IOException e) {
       e.printStackTrace();
+      System.exit(1);
     }
   }
 

@@ -30,6 +30,7 @@ public class MultipleDomainObjects {
       new MultipleDomainObjects().run();
     } catch (IOException e) {
       e.printStackTrace();
+      System.exit(1);
     }
   }
 
