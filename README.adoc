@@ -4,6 +4,7 @@ image:https://img.shields.io/codecov/c/github/Enterprise-Content-Management/info
 image:https://sonarcloud.io/api/badges/measure?key=com.opentext.ia:infoarchive-sdk&metric=sqale_debt_ratio[title="Technical Debt", link="https://sonarcloud.io/dashboard?id=com.opentext.ia:infoarchive-sdk"]
 image:https://img.shields.io/maven-central/v/com.opentext.ia/infoarchive-sdk-core.svg[title="Maven Central", link="https://repo1.maven.org/maven2/com/opentext/ia/"]
 image:https://javadocio-badges.herokuapp.com/com.opentext.ia/infoarchive-sdk-core/badge.svg[title="Javadoc", link="http://www.javadoc.io/doc/com.opentext.ia/infoarchive-sdk-core"]
+image:https://snyk.io/test/github/Enterprise-Content-Management/infoarchive-sip-sdk/badge.svg[title="Known Vulnerabilities", link="https://snyk.io/test/github/Enterprise-Content-Management/infoarchive-sip-sdk"]
 
 = OpenText InfoArchive SDK
 
