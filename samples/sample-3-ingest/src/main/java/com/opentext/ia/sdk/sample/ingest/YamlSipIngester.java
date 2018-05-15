@@ -42,12 +42,14 @@ public class YamlSipIngester {
       String rootPath = new File(".").getCanonicalPath();
       new YamlSipIngester().run(rootPath);
     } catch (IOException e) {
-      e.printStackTrace();
+      e.printStackTrace(System.out);
       System.exit(1);
     }
   }
 
   private void run(String rootPath) throws IOException {
+    System.out.printf("%nSample 3: Assemble SIP from %s and ingest into InfoArchive%n", rootPath);
+
     // Load the configuration
     YamlConfiguration configuration = null;
     try (InputStream yaml = YamlSipIngester.class.getResourceAsStream("/configuration.yml")) {
@@ -106,7 +108,7 @@ public class YamlSipIngester {
     // Ingest the SIP into InfoArchive
     try (InputStream sip = Files.newInputStream(assembledSip.toPath(), StandardOpenOption.READ)) {
       String aipId = archiveClient.ingestDirect(sip);
-      System.out.println("SIP ingested as AIP " + aipId);
+      System.out.println("  SIP ingested as AIP " + aipId);
     }
   }
 

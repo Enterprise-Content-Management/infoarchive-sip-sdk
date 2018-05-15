@@ -47,7 +47,7 @@ public class FileArchiver {
       String sip = arguments.next("build/files.zip");
       new FileArchiver().run(rootPath, sip);
     } catch (IOException e) {
-      e.printStackTrace();
+      e.printStackTrace(System.out);
       System.exit(1);
     }
   }
@@ -55,8 +55,7 @@ public class FileArchiver {
   private void run(String rootPath, String sip) throws IOException {
     File sipFile = new File(sip).getCanonicalFile();
     sipFile.getParentFile().mkdirs();
-    System.out.printf("%nSample 2: Archiving files from %s into %s%n", rootPath,
-        sipFile.getPath());
+    System.out.printf("%nSample 2: Archiving files from %s into %s%n", rootPath, sipFile.getPath());
 
     // Tell InfoArchive where and how to archive the data
     URI entityUri = URI.create("urn:com.opentext.ia.sdk.sample.file:1.0");

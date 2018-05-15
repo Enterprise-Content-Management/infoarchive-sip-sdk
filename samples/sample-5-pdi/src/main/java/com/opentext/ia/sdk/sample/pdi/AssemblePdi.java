@@ -32,12 +32,14 @@ public class AssemblePdi {
     try {
       new AssemblePdi().run();
     } catch (IOException e) {
-      e.printStackTrace();
+      e.printStackTrace(System.out);
       System.exit(1);
     }
   }
 
   private void run() throws IOException {
+    System.out.println("\nSample 5: Assembling just PDI, not the whole SIP");
+
     // Assembler for PDI, where the domain object is of type String
     PdiAssembler<String> pdiAssembler = new XmlPdiAssembler<String>(NAMESPACE, "message") {
       @Override

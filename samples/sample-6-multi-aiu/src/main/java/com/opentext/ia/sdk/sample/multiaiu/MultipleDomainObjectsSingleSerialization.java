@@ -32,12 +32,14 @@ public class MultipleDomainObjectsSingleSerialization {
     try {
       new MultipleDomainObjectsSingleSerialization().run();
     } catch (IOException e) {
-      e.printStackTrace();
+      e.printStackTrace(System.out);
       System.exit(1);
     }
   }
 
   private void run() throws IOException {
+    System.out.println("\nSample 6: Assembling multiple domain object types into a single PDI");
+
     // Assembler for PDI, where the domain object is flexible
     PdiAssembler<Object> pdiAssembler = new XmlPdiAssembler<Object>(NAMESPACE, "aiu") {
       private final ObjectMapper mapper = new XmlMapper();

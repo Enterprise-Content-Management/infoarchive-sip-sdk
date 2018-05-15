@@ -26,7 +26,7 @@ public class HelloSip {
     try {
       new HelloSip().run();
     } catch (IOException e) {
-      e.printStackTrace();
+      e.printStackTrace(System.out);
       System.exit(1);
     }
   }

@@ -35,6 +35,8 @@ public final class Authenticate {
   private Authenticate() { }
 
   public static void main(String[] args) {
+    System.out.println("\nSample 4: Authenticating");
+
     HttpClient httpClient = new ApacheHttpClient();
     try {
       // Log in to the gateway with user name & password
@@ -46,9 +48,9 @@ public final class Authenticate {
       Header header = authentication.issueAuthHeader();
 
       // Use this header in calls using the HTTP client
-      System.out.printf("Header:%n%s%n", header);
+      System.out.printf("  Header:%n%s%n", header);
     } catch (Exception e) {
-      e.printStackTrace();
+      e.printStackTrace(System.out);
       System.exit(1);
     } finally {
       httpClient.close();

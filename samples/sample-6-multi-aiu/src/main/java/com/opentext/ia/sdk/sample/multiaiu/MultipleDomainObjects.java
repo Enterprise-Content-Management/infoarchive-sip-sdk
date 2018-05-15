@@ -29,12 +29,14 @@ public class MultipleDomainObjects {
     try {
       new MultipleDomainObjects().run();
     } catch (IOException e) {
-      e.printStackTrace();
+      e.printStackTrace(System.out);
       System.exit(1);
     }
   }
 
   private void run() throws IOException {
+    System.out.println("\nSample 6: Assembling multiple domain object types into a single PDI");
+
     // Assembler for PDI, where the domain object is flexible
     PdiAssembler<Aiu> pdiAssembler = new XmlPdiAssembler<Aiu>(NAMESPACE, "aiu") {
       @Override
