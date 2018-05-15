@@ -1,10 +1,10 @@
 image:https://img.shields.io/badge/license-mpl2-ff69b4.svg[title="License: MPL2", link="https://www.mozilla.org/en-US/MPL/2.0/"]
 image:https://img.shields.io/travis/Enterprise-Content-Management/infoarchive-sip-sdk.svg[title="Travis", link="https://travis-ci.org/Enterprise-Content-Management/infoarchive-sip-sdk"]
 image:https://img.shields.io/codecov/c/github/Enterprise-Content-Management/infoarchive-sip-sdk.svg[title="Code coverage", link="https://codecov.io/github/Enterprise-Content-Management/infoarchive-sip-sdk"]
-image:https://sonarcloud.io/api/badges/measure?key=com.opentext.ia:infoarchive-sdk&metric=sqale_debt_ratio[title="Technical Debt", link="https://sonarcloud.io/dashboard?id=com.opentext.ia:infoarchive-sdk"]
+image:https://sonarcloud.io/api/project_badges/measure?project=com.opentext.ia:infoarchive-sdk&metric=sqale_rating[title="Technical Debt", link="https://sonarcloud.io/dashboard?id=com.opentext.ia:infoarchive-sdk"]
+image:https://snyk.io/test/github/Enterprise-Content-Management/infoarchive-sip-sdk/badge.svg[title="Known Vulnerabilities", link="https://snyk.io/test/github/Enterprise-Content-Management/infoarchive-sip-sdk"]
 image:https://img.shields.io/maven-central/v/com.opentext.ia/infoarchive-sdk-core.svg[title="Maven Central", link="https://repo1.maven.org/maven2/com/opentext/ia/"]
 image:https://javadocio-badges.herokuapp.com/com.opentext.ia/infoarchive-sdk-core/badge.svg[title="Javadoc", link="http://www.javadoc.io/doc/com.opentext.ia/infoarchive-sdk-core"]
-image:https://snyk.io/test/github/Enterprise-Content-Management/infoarchive-sip-sdk/badge.svg[title="Known Vulnerabilities", link="https://snyk.io/test/github/Enterprise-Content-Management/infoarchive-sip-sdk"]
 
 = OpenText InfoArchive SDK
 
