@@ -25,6 +25,7 @@ import com.opentext.ia.sdk.support.io.RuntimeIoException;
 import com.opentext.ia.sdk.support.io.SingleHashAssembler;
 
 
+@SuppressWarnings("PMD")
 public class FileArchiver {
 
   /**
@@ -34,7 +35,6 @@ public class FileArchiver {
    * <li>The path to the SIP archive to be built. The default value is <code>build/files.zip</code></li>
    * </ol>
    */
-  @SuppressWarnings("PMD.AvoidPrintStackTrace")
   public static void main(String[] args) {
     try {
       Arguments arguments = new Arguments(args);

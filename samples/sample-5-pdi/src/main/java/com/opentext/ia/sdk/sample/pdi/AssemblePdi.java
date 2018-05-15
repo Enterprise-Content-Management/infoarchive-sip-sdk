@@ -23,11 +23,11 @@ import com.opentext.ia.sdk.support.io.MemoryBuffer;
 /**
  * Sample program that shows how to assemble just the PDI XML from some data.
  */
+@SuppressWarnings("PMD")
 public class AssemblePdi {
 
   private static final URI NAMESPACE = URI.create("urn:opentext:ia:schema:sample:text:1.0");
 
-  @SuppressWarnings("PMD.AvoidPrintStackTrace")
   public static void main(String[] args) {
     try {
       new AssemblePdi().run();
@@ -37,7 +37,6 @@ public class AssemblePdi {
     }
   }
 
-  @SuppressWarnings("PMD.SystemPrintln")
   private void run() throws IOException {
     // Assembler for PDI, where the domain object is of type String
     PdiAssembler<String> pdiAssembler = new XmlPdiAssembler<String>(NAMESPACE, "message") {

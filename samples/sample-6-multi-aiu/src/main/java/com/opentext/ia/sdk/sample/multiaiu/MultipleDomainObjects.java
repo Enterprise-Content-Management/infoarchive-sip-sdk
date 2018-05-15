@@ -20,11 +20,11 @@ import com.opentext.ia.sdk.support.io.DataBuffer;
 import com.opentext.ia.sdk.support.io.MemoryBuffer;
 
 
+@SuppressWarnings("PMD")
 public class MultipleDomainObjects {
 
   private static final URI NAMESPACE = URI.create("urn:opentext:ia:schema:sample:multiple:1.0");
 
-  @SuppressWarnings("PMD.AvoidPrintStackTrace")
   public static void main(String[] args) {
     try {
       new MultipleDomainObjects().run();
@@ -34,7 +34,6 @@ public class MultipleDomainObjects {
     }
   }
 
-  @SuppressWarnings("PMD.SystemPrintln")
   private void run() throws IOException {
     // Assembler for PDI, where the domain object is flexible
     PdiAssembler<Aiu> pdiAssembler = new XmlPdiAssembler<Aiu>(NAMESPACE, "aiu") {
