@@ -55,7 +55,9 @@ public class FileArchiver {
   private void run(String rootPath, String sip) throws IOException {
     File sipFile = new File(sip).getCanonicalFile();
     sipFile.getParentFile().mkdirs();
-    System.out.printf("\nSample 2: Archiving files from %s into %s%n", rootPath, sipFile.getPath());
+    System.out.printf("\nSample 2: Archiving files from %s into %s%n", escape(rootPath),
+        escape(sipFile.getPath()));
+
     // Tell InfoArchive where and how to archive the data
     URI entityUri = URI.create("urn:com.opentext.ia.sdk.sample.file:1.0");
     String entityName = "file";
@@ -105,9 +107,16 @@ public class FileArchiver {
     } finally {
       assembler.end();
     }
+
+    // Show metrics about the assembly process
     SipMetrics metrics = assembler.getMetrics();
     System.out.printf("  Added %d files to SIP of %d bytes in %d ms%n", metrics.numDigitalObjects(),
         metrics.sipFileSize(), metrics.assemblyTime());
+  }
+
+  private String escape(String path) {
+    // For Windows
+    return path.replace("\\", "\\\\");
   }
 
   private String relativePath(File file, String rootPath) {
