@@ -16,6 +16,7 @@ import com.opentext.ia.sdk.sip.DigitalObjectsExtraction;
 import com.opentext.ia.sdk.sip.PackagingInformation;
 import com.opentext.ia.sdk.sip.PdiAssembler;
 import com.opentext.ia.sdk.sip.SipAssembler;
+import com.opentext.ia.sdk.sip.SipMetrics;
 import com.opentext.ia.sdk.sip.XmlPdiAssembler;
 import com.opentext.ia.sdk.support.io.Encoding;
 import com.opentext.ia.sdk.support.io.FileBuffer;
@@ -38,7 +39,11 @@ public class FileArchiver {
   public static void main(String[] args) {
     try {
       Arguments arguments = new Arguments(args);
-      String rootPath = new File(arguments.next(".")).getCanonicalPath();
+      File root = new File(arguments.next("content"));
+      if (!root.isDirectory()) {
+        root = new File(".");
+      }
+      String rootPath = root.getCanonicalPath();
       String sip = arguments.next("build/files.zip");
       new FileArchiver().run(rootPath, sip);
     } catch (IOException e) {
@@ -48,6 +53,9 @@ public class FileArchiver {
   }
 
   private void run(String rootPath, String sip) throws IOException {
+    File sipFile = new File(sip).getCanonicalFile();
+    sipFile.getParentFile().mkdirs();
+    System.out.printf("Archive files from %s into %s%n", rootPath, sipFile.getPath());
     // Tell InfoArchive where and how to archive the data
     URI entityUri = URI.create("urn:com.opentext.ia.sdk.sample.file:1.0");
     String entityName = "file";
@@ -91,14 +99,15 @@ public class FileArchiver {
     // Assemble the SIP
     SipAssembler<File> assembler = SipAssembler.forPdiAndContentWithContentHashing(prototype, pdiAssembler,
         contentAssembler, contentHashAssembler);
-    File sipFile = new File(sip).getCanonicalFile();
-    sipFile.getParentFile().mkdirs();
     assembler.start(new FileBuffer(sipFile));
     try {
       addFilesIn(new File(rootPath), rootPath, relativePath(sipFile, rootPath), assembler);
     } finally {
       assembler.end();
     }
+    SipMetrics metrics = assembler.getMetrics();
+    System.out.printf("Added %d files to SIP of %d bytes in %d ms%n", metrics.numDigitalObjects(),
+        metrics.sipFileSize(), metrics.assemblyTime());
   }
 
   private String relativePath(File file, String rootPath) {
@@ -129,7 +138,6 @@ public class FileArchiver {
     private final String[] args;
     private int index;
 
-    @SuppressWarnings("PMD.ArrayIsStoredDirectly")
     public Arguments(String[] args) {
       this.args = args;
     }
