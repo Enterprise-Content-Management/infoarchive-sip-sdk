@@ -1,58 +1,8 @@
-version: 1.0
+version: 1.0.0
 
-namespace:
-  prefix: n
-  uri: urn:opentext:ia:schema:sample:animal:1.0
-  
 tenant:
   name: INFOARCHIVE
   configure: use existing
-
-xdbFederation:
-  name: mainFederation
-  configure: create
-  bootstrap: xhive://localhost:2910
-  superUserPassword: test
-
-xdbDatabase:
-  name: Zoo-xdb
-  adminPassword: catwalksacrosskeyboard
-
-application:
-  name: Zoo
-  archiveType: sip
-  category: Examples
-  type: active archiving
-
-ingestNode:
-  name: ingest_node_01
-  enumerationCutoffDays: 30
-  enumerationMinusRunning: true
-  logLevel: INFO
-
-receiverNode:
-  name: receiver_node_01
-
-retentionPolicy:
-  name: Zoo-policy
-  agingStrategy:
-    type: duration
-    agingPeriod:
-      units: days
-      value: 89
-  dispositionStrategy:
-    type: destroy all
-
-space:
-  name: Zoo-space
-
-spaceRootXdbLibrary:
-  name: Zoo-root
-
-xdbLibrary:
-  name: Zoo-xdb-library
-  parentSpaceRootXdbLibrary: Zoo-root
-  subPath: aips/animals
 
 fileSystemRoot:
   name: defaultFileSystemRoot
@@ -60,96 +10,135 @@ fileSystemRoot:
   description: Default FileSystemRoot
   path: data/root
 
+xdbFederations:
+- name: mainFederation
+  bootstrap: xhive://127.0.0.1:2910
+  configure: create
+  superUserPassword: test
+- name: searchResultsFederation
+  bootstrap: xhive://127.0.0.1:2910
+  configure: create
+  superUserPassword: test
+
+application:
+  name: Animals
+  archiveType: sip
+  type: active archiving
+
+xdbDatabases:
+- name: Animals-xdb
+  configure: create
+  default: true
+  adminPassword: catwalksacrosskeyboard
+  xdbFederation: mainFederation
+- name: Search_Results-xdb
+  configure: create
+  adminPassword: dogwagstailinrain
+  xdbFederation: searchResultsFederation
+
+ingestNode:
+  name: ingest_node_01
+  enumerationCutoffDays: 10
+  enumerationMaxResultCount: 30
+  enumerationMinusRunning: true
+  logLevel: INFO
+
+receiverNode:
+  name: receiver_node_01
+
+space:
+  name: Animals-space
+
 spaceRootFolder:
-  name: Zoo-space-root-folder
-  fileSystemRoot: defaultFileSystemRoot
+  name: defaultFileSystemRoot
 
-fileSystemFolder:
-  name: default-folder
-  parentSpaceRootFolder: Zoo-space-root-folder 
-  subPath: stores/default
+fileSystemFolders:
+- name: animals
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/animals
+- name: animals-confirmation
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/animals-confirmation
 
-store:
-  name: Zoo-store
-  type: filesystem
-  fileSystemFolder: default-folder
-  storeType: result
+spaceRootXdbLibraries:
+- name: Animals-space-lib
+- name: Animals-space-search-results-lib
+  type: search results
+
+xdbLibrary:
+  name: Animals-holding-xdb-library
+  parentSpaceRootXdbLibrary: Animals-space-lib
+  subPath: aips/Animals-holding
+
+stores:
+- name: Animals-store
+  default: true
+  fileSystemFolder: animals
+- name: Animals-confirmation-store
+  fileSystemFolder: animals-confirmation
+  storeType: delivery channel
+
+xdbLibraryPolicy:
+  name: Animals-holding-xdb-library-policy
+  aipQuota: 10
+  aiuQuota: 100
 
 holding:
-  name: Zoo-holding
+  name: Animals-holding
+  defaultRetentionClass: default
   ingestNodes:
   - ingest_node_01
   pdiConfigs:
   - schema: urn:opentext:ia:schema:sample:animal:1.0
-  xdbLibraryParent: Zoo-xdb-library
+  priority: 1
+  retentionClasses:
+  - name: default
+    policies:
+    - Animals-rentention-policy
+  stagingStore: null
+  subPriorities:
+  - deadLine: 100
+    priority: 0
+  - deadLine: 200
+    priority: 1
+  xdbLibraryParent: Animals-holding-xdb-library
+  xdbMode: ${holding.xdbMode:PRIVATE}
 
-aic:
-  name: Zoo-aic
-  criteria:
-  - name: animalName
-    label: Animal Name
-    type: STRING
-    indexed: true
-  - name: filePath
-    label: File Path
-    type: STRING
-    indexed: true
+deliveryChannel:
+  name: default-delivery-channel
+  fileName: confirmation
+  overwrite: true
+  prefix: '%aip_id%-'
+  store: Animals-confirmation-store
+  subPath: confirmation/%ia_conf_type%
+  suffix: .xml
 
-query:
-  name: Zoo-query
-  aics:
-  - Zoo-aic
-  xdbpdis:
-  - entity:
-      path: /n:animals/n:animal
-    template: return $aiu
-    operands:
-    - name: animalName
-      path: n:animal_name
-      type: STRING
-      index: true
-    - name: filePath
-      path: n:file_path
-      type: STRING
-      index: true
+confirmation:
+  name: Animals-holding-confirmation
+  deliveryChannelParameters:
+    aip_id: '%ia_conf_aip_id%'
+    ia_conf_datetime: '%ia_conf_datetime%'
+    ia_conf_type: '%ia_conf_type%'
+  holdings:
+  - Animals-holding
+  types:
+  - receipt
 
-queryQuota:
-  name: Zoo-query-quota
+retentionPolicy:
+  name: Animals-rentention-policy
+  agingStrategy:
+    agingPeriod:
+      units: years
+      value: 7
+    type: duration
+  dispositionStrategy:
+    type: destroy all
 
-resultConfigurationHelper:
-  name: Zoo-result-configuration-helper
+pdi:
+  name: Animals-holding-pdi
   content:
     format: xml
-    resource: DefaultResultHelper.xml
-
-search:
-  name: Find animals
-  state: DRAFT
-  aic: Zoo-aic
-  query: Zoo-query
-  
-searchComposition:
-  name: Set 1
-  
-xform:
-  name: Zoo-xform
-  form:
-    resource: FindAnimals.form.xml
-
-resultMaster:
-  panels:
-  - name: Main
-    tabs:
-    - name: Tab 0
-      columns:
-      - name: animalName
-        label: Animal Name
-        path: n:animal_name
-        sort: NONE
-      - name: filePath
-        label: File Path
-        path: n:file_path
-        sort: NONE
+    resource: pdi.xml
 
 pdiSchema:
   name: urn:opentext:ia:schema:sample:animal:1.0
@@ -157,8 +146,78 @@ pdiSchema:
     format: xsd
     resource: pdi-schema.xsd
 
-pdi:
-  name: Zoo-pdi
+aic:
+  name: Animals-holding-aic
+  criteria:
+  - name: animal_name
+    label: Animal Name
+  holdings:
+  - Animals-holding
+
+order:
+  name: Animals-holding-order
+  duration: 86400
+  priority: 1
+
+query:
+  name: Animals-holding-query
+  aics:
+  - Animals-holding-aic
+  namespaces:
+  - prefix: n
+    uri: urn:opentext:ia:schema:sample:animal:1.0
+  quota: Animals-holding-quota
+  quotaAsync: Animals-holding-quota
+  resultSchema: urn:opentext:ia:schema:sample:animal:1.0
+  xdbPdiConfigs:
+  - entityPath: /n:animals/n:animal
+    operands:
+    - name: animal_name
+      path: n:animal_name
+    schema: urn:opentext:ia:schema:sample:animal:1.0
+
+queryQuota:
+  name: Animals-holding-quota
+
+resultConfigurationHelper:
+  name: urn:opentext:ia:schema:sample:animal:1.0
   content:
     format: xml
-    resource: pdi.xml
+    resource: DefaultResultHelper.xml
+  resultSchema:
+  - urn:opentext:ia:schema:sample:animal:1.0
+
+resultMaster:
+  namespaces:
+  - prefix: ia
+    uri: urn:x-emc:ia:schema:pdi
+  - prefix: n
+    uri: urn:opentext:ia:schema:sample:animal:1.0
+  panels:
+  - name: Main Panel
+    tabs:
+    - name: _ia_Default_Main_tab_
+      columns:
+      - name: animal_name
+        defaultSort: ASCENDING
+        label: Animal Name
+        path: n:animal_name
+        sortable: true
+        type: schema column name
+      - name: cid
+        dataType: CID
+        label: Cid
+        path: n:file_path/@ia:cid
+        type: content
+
+search:
+  name: Find by name
+  state: draft
+
+searchComposition:
+  name: Set 1
+
+xform:
+  name: Find by name
+  form:
+    resource: FindAnimals.form.xml

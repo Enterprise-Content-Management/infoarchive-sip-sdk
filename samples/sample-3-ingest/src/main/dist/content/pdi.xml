@@ -6,8 +6,7 @@
     <indexes>
       <path.value.index>
         <name>animal_name</name>
-        <path>/{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal/animal_name&lt;STRING>
-        </path>
+        <path>/{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal[{urn:opentext:ia:schema:sample:animal:1.0}animal_name&lt;STRING&gt;]</path>
         <compressed>false</compressed>
         <unique.keys>false</unique.keys>
         <concurrent>false</concurrent>
@@ -15,8 +14,7 @@
       </path.value.index>
       <path.value.index>
         <name>file_path</name>
-        <path>/{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal/file_path&lt;STRING>
-        </path>
+        <path>/{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal/{urn:opentext:ia:schema:sample:animal:1.0}file_path</path>
         <compressed>false</compressed>
         <unique.keys>false</unique.keys>
         <concurrent>false</concurrent>
@@ -26,65 +24,42 @@
   </data>
   <data>
     <id>pdi.aiu.id</id>
-    <select.query>
-      <![CDATA[
-        declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
-        for $animal in /n:animals/n:animal
-        return ($animal, $animal/text())
-      ]]>
-    </select.query>
+    <select.query><![CDATA[
+  declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
+  for $aiu in /n:animals/n:animal[n:animal_name]
+  return ($aiu, '')]]></select.query>
   </data>
   <data>
     <id>pdi.aiu.cnt</id>
-    <select.query>
-      <![CDATA[
-        declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
-        count(/n:animals/n:animal)
-      ]]>
-    </select.query>
+    <select.query><![CDATA[
+  declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
+  count(/n:animals/n:animal[n:animal_name])
+]]></select.query>
   </data>
   <data>
     <id>pdi.pkeys</id>
-    <pkey attr="string01">
-      <![CDATA[
-        declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
-        let $animals := (for $animal in /n:animals/n:animal/text()
-        order by $animal
-        return $animal)
-        return fn:upper-case(fn:substring($animals[1], 1, 1))
-      ]]>
-    </pkey>
-    <pkey attr="string02">
-      <![CDATA[
-        declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
-        let $animals := (for $animal in /n:animals/n:animal/text()
-        order by $animal descending
-        return $animal)
-        return fn:upper-case(fn:substring($animals[1], 1, 1))
-      ]]>
-    </pkey>
   </data>
   <data>
     <id>ri.init</id>
     <select.query><![CDATA[
-      declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
-      for $ci in distinct-values(/n:Animals/n:Animal/n:file_path)
-      order by $ci
-      return <content type="text/plain" filename="{ $ci }"/>
-    ]]></select.query>
+  declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
+  for $ci in distinct-values(/n:animals/n:animal/n:file_path)
+  order by $ci
+  return <content type="application/octet-stream" filename="{ $ci }"/>
+]]></select.query>
   </data>
   <data>
     <id>xdb.pdi.ci.id</id>
     <select.query><![CDATA[
-      declare variable $id as xs:string external;
-      declare variable $seqno_start as xs:long external;
-      declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
-      declare namespace ri = "urn:x-emc:ia:schema:ri";
-      let $pdi_uri := root(.)
-      let $ri_uri := replace(document-uri($pdi_uri), '\.pdi$', '.ri')
-      for $ri in doc($ri_uri)/ri:ris/ri:ri[@key]
-      for $n in /n:Animals/n:Aminal/n:file_path[. = $ri/@key]
-      return ($n,concat($id,":ci:", sum(($ri/@seqno,$seqno_start))))
-    ]]></select.query>
+  declare variable $id as xs:string external;
+  declare variable $seqno_start as xs:long external;
+  declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
+  declare namespace ri = "urn:x-emc:ia:schema:ri";
+  let $pdi_uri := root(.)
+  let $ri_uri := replace(document-uri($pdi_uri), '\.pdi$', '.ri')
+  for $ri in doc($ri_uri)/ri:ris/ri:ri[@key]
+  for $n in /n:animals/n:animal/n:file_path[. = $ri/@key]
+  return ($n,concat($id,":ci:", sum(($ri/@seqno,$seqno_start))))
+]]></select.query>
   </data>
 </datas>
