@@ -203,7 +203,7 @@ public class ApacheHttpClient implements HttpClient {
         String body = isBinary ? "<binary>" : toString(entity);
         if (!isOk(statusLine)) {
           int status = statusLine.getStatusCode();
-          throw new HttpException(status, String.format("%n%s %s%n%s==> %d %s%n%s%s", method, uri, toString(headers),
+          throw new HttpException(status, String.format("%n%s %s%n%s==> %d %s%n%s%n%s", method, uri, toString(headers),
               status, statusLine.getReasonPhrase(), toString(response.getAllHeaders()), body));
         }
         return isBinary ? binaryResponse(entity, type) : textResponse(body, type);
