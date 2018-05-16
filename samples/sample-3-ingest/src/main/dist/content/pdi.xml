@@ -64,4 +64,27 @@
       ]]>
     </pkey>
   </data>
+  <data>
+    <id>ri.init</id>
+    <select.query><![CDATA[
+      declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
+      for $ci in distinct-values(/n:Animals/n:Animal/n:file_path)
+      order by $ci
+      return <content type="text/plain" filename="{ $ci }"/>
+    ]]></select.query>
+  </data>
+  <data>
+    <id>xdb.pdi.ci.id</id>
+    <select.query><![CDATA[
+      declare variable $id as xs:string external;
+      declare variable $seqno_start as xs:long external;
+      declare namespace n = "urn:opentext:ia:schema:sample:animal:1.0";
+      declare namespace ri = "urn:x-emc:ia:schema:ri";
+      let $pdi_uri := root(.)
+      let $ri_uri := replace(document-uri($pdi_uri), '\.pdi$', '.ri')
+      for $ri in doc($ri_uri)/ri:ris/ri:ri[@key]
+      for $n in /n:Animals/n:Aminal/n:file_path[. = $ri/@key]
+      return ($n,concat($id,":ci:", sum(($ri/@seqno,$seqno_start))))
+    ]]></select.query>
+  </data>
 </datas>

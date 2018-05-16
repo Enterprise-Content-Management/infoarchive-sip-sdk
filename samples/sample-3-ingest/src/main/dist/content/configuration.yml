@@ -1,50 +1,28 @@
+version: 1.0
+
+namespace:
+  prefix: n
+  uri: urn:opentext:ia:schema:sample:animal:1.0
+  
 tenant:
   name: INFOARCHIVE
   configure: use existing
 
 xdbFederation:
-  name: animal
-  superUserPassword: test
+  name: mainFederation
+  configure: create
   bootstrap: xhive://localhost:2910
+  superUserPassword: test
 
 xdbDatabase:
-  name: animal2
+  name: Zoo-xdb
   adminPassword: catwalksacrosskeyboard
 
 application:
-  name: Animals2
-  description: Sample application
-  category: Sample category
-  type: active archiving
+  name: Zoo
   archiveType: sip
-
-space:
-  name: zoo
-
-fileSystemRoot:
-  name: defaultFileSystemRoot
-  configure: create
-  description: Default FileSystemRoot
-  path: data/root
-
-spaceRootFolder:
-  name: zoo-root
-  fileSystemRoot: defaultFileSystemRoot
-
-fileSystemFolder:
-  name: default-folder
-  parentSpaceRootFolder: zoo-root 
-  subPath: stores/zoo
-
-store:
-  name: zoo
-  type: filesystem
-  status: online
-  fileSystemFolder: default-folder
-  storeType: result
-
-holding:
-  name: Animals2
+  category: Examples
+  type: active archiving
 
 ingestNode:
   name: ingest_node_01
@@ -55,8 +33,58 @@ ingestNode:
 receiverNode:
   name: receiver_node_01
 
+retentionPolicy:
+  name: Zoo-policy
+  agingStrategy:
+    type: duration
+    agingPeriod:
+      units: days
+      value: 89
+  dispositionStrategy:
+    type: destroy all
+
+space:
+  name: Zoo-space
+
+spaceRootXdbLibrary:
+  name: Zoo-root
+
+xdbLibrary:
+  name: Zoo-xdb-library
+  parentSpaceRootXdbLibrary: Zoo-root
+  subPath: aips/animals
+
+fileSystemRoot:
+  name: defaultFileSystemRoot
+  configure: create
+  description: Default FileSystemRoot
+  path: data/root
+
+spaceRootFolder:
+  name: Zoo-space-root-folder
+  fileSystemRoot: defaultFileSystemRoot
+
+fileSystemFolder:
+  name: default-folder
+  parentSpaceRootFolder: Zoo-space-root-folder 
+  subPath: stores/default
+
+store:
+  name: Zoo-store
+  type: filesystem
+  fileSystemFolder: default-folder
+  storeType: result
+
+holding:
+  name: Zoo-holding
+  ingestNodes:
+  - ingest_node_01
+  pdiConfigs:
+  - schema: urn:opentext:ia:schema:sample:animal:1.0
+  xdbLibraryParent: Zoo-xdb-library
+
 aic:
-  name: Animals2
+  name: Zoo-aic
   criteria:
   - name: animalName
     label: Animal Name
@@ -67,14 +95,10 @@ aic:
     type: STRING
     indexed: true
 
-namespace:
-  prefix: n
-  uri: urn:opentext:ia:schema:sample:animal:1.0
-  
 query:
-  name: DefaultQuery
+  name: Zoo-query
   aics:
-  - Animals2
+  - Zoo-aic
   xdbpdis:
   - entity:
       path: /n:animals/n:animal
@@ -90,10 +114,10 @@ query:
       index: true
 
 queryQuota:
-  name: DefaultQuota
+  name: Zoo-query-quota
 
 resultConfigurationHelper:
-  name: result_helper
+  name: Zoo-result-configuration-helper
   content:
     format: xml
     resource: DefaultResultHelper.xml
@@ -101,14 +125,14 @@ resultConfigurationHelper:
 search:
   name: Find animals
   state: DRAFT
-  aic: Animals2
-  query: DefaultQuery
+  aic: Zoo-aic
+  query: Zoo-query
   
 searchComposition:
   name: Set 1
   
 xform:
-  name: form
+  name: Zoo-xform
   form:
     resource: FindAnimals.form.xml
 
@@ -127,33 +151,14 @@ resultMaster:
         path: n:file_path
         sort: NONE
 
-retentionPolicy:
-  name: Animals2
-
 pdiSchema:
+  name: urn:opentext:ia:schema:sample:animal:1.0
   content:
     format: xsd
     resource: pdi-schema.xsd
 
 pdi:
-  name: Animals2-pdi
+  name: Zoo-pdi
   content:
     format: xml
     resource: pdi.xml
-
-ingest:
-  name: animal-ingest
-  content:
-    format: xml
-    resource: ingest.xml
-
-retentionPolicy:
-  name: PhoneCalls-policy
-  agingStrategy:
-    type: duration
-    agingPeriod:
-      units: days
-      value: 89
-  dispositionStrategy:
-    type: destroy all
- 
