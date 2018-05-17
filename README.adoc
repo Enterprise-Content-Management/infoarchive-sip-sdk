@@ -31,7 +31,7 @@ The SDK consists of the following jars:
 * `infoarchive-sdk-velocity` contains code for working with the http://velocity.apache.org/[Velocity] template engine
 * `infoarchive-configuration` contains code for working with InfoArchive configurations. This is currently in the 
 proof of concept phase and _not ready for production_
-* `infoarchive-yaml` contains code for working with InfoArchive configurations in YAML
+* `infoarchive-yaml` contains code for working with InfoArchive https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/Declarative-Configuration[declarative configurations] in YAML
 
 All jars can be found in the https://repo1.maven.org/maven2/com/opentext/ia/[Central Repository]. The easiest way to get
 them is through a dependency management system like http://gradle.org/[Gradle] or https://maven.apache.org/[Maven].
