@@ -52,6 +52,7 @@ public class YamlConfiguration {
       InsertDefaultParentForFileSystemFolder.class,
       InsertDefaultParentForXdbDatabase.class,
       AddNamespaceDeclarationsToXqueries.class,
+      ReplaceXqueryQueyWithText.class,
       ReplacePdiIndexNamespaceWithUri.class,
       ReplaceIngestIndexNamespaceWithUri.class,
       ReplacePdiResultSchemaNamespaceWithUri.class,

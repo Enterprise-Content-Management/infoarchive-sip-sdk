@@ -46,6 +46,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   private static final String NAMESPACE = "namespace";
   private static final String PREFIX = "prefix";
   private static final String URI = "uri";
+  private static final String XQUERIES = "xqueries";
+  private static final String QUERY = "query";
   private static final String QUERIES = "queries";
   private static final String XDB_PDI_CONFIGS = "xdbPdiConfigs";
   private static final String OPERANDS = "operands";
@@ -256,7 +258,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldAddNamespaceDeclarationsToXquery() {
+  public void shouldAddNamespaceDeclarationsToXqueryFields() {
     String prefix = "n";
     String uri = randomUri();
     String text = "current-dateTime()";
@@ -272,6 +274,38 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     assertValue("Query", String.format("declare namespace %s = \"%s\";%n%s", prefix, uri, text),
         yaml.get("xdbLibraryPolicies", 0, "closeHintDateQuery"));
+  }
+
+  @Test
+  public void shouldAddNamespaceDeclarationsToXqueryObjects() {
+    String prefix = "n";
+    String uri = randomUri();
+    String text = "current-dateTime()";
+    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+            .put(PREFIX, prefix)
+            .put(URI, uri)))
+        .put(XQUERIES, Arrays.asList(new YamlMap()
+            .put(NAME, someName())
+            .put(QUERY, new YamlMap()
+                .put(TEXT, text))));
+
+    normalizeYaml();
+
+    assertValue("Query", String.format("declare namespace %s = \"%s\";%n%s", prefix, uri, text),
+        yaml.get(XQUERIES, 0, QUERY));
+  }
+
+  @Test
+  public void shouldReplaceXqueryQueryObjectWithText() {
+    String text = "current-dateTime()";
+    yaml.put(XQUERIES, Arrays.asList(new YamlMap()
+            .put(NAME, someName())
+            .put(QUERY, new YamlMap()
+                .put(TEXT, text))));
+
+    normalizeYaml();
+
+    assertValue("Query", text, yaml.get(XQUERIES, 0, QUERY));
   }
 
   @Test

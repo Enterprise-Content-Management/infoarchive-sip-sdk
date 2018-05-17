@@ -30,6 +30,8 @@ public class WhenInliningExternalResources extends TestCase {
   private static final String TRANSFORMATION = "transformation";
   private static final String TRANSFORMATIONS = English.plural(TRANSFORMATION);
   private static final String XQUERY = "xquery";
+  private static final String XQUERIES = English.plural(XQUERY);
+  private static final String QUERY = "query";
   private static final String HTML_TEMPLATE = "htmlTemplate";
   private static final String DATABASES = "databases";
   private static final String METADATA = "metadata";
@@ -313,6 +315,56 @@ public class WhenInliningExternalResources extends TestCase {
     YamlMap content = yaml.get(ACCESS_NODES, 0, CONTENT).toMap();
     assertValue("Original value should remain", resourceName, content.get(RESOURCE));
     assertTrue("No text should be added", content.get(TEXT).isEmpty());
+  }
+
+  @Test
+  public void shouldInlineNormalizedXQueryQuery() {
+    String expected = someName();
+    String resource = someTextFileName();
+    resourceResolver = resolveResource(resource, expected);
+    yaml.put(XQUERIES, Arrays.asList(new YamlMap()
+        .put(NAME, someName())
+        .put(QUERY, new YamlMap()
+            .put(RESOURCE, resource))));
+
+    normalizeYaml();
+
+    assertXQueryQueryIsInlined(expected);
+  }
+
+  private void assertXQueryQueryIsInlined(String expected) {
+    assertEquals("Inlined transformation xquery", expected,
+        yaml.get(XQUERIES, 0, QUERY).toString());
+  }
+
+  @Test
+  public void shouldInlineSingleXQueryQuery() {
+    String expected = someName();
+    String resource = someTextFileName();
+    resourceResolver = resolveResource(resource, expected);
+    yaml.put(XQUERY, new YamlMap()
+        .put(NAME, someName())
+        .put(QUERY, new YamlMap()
+            .put(RESOURCE, resource)));
+
+    normalizeYaml();
+
+    assertXQueryQueryIsInlined(expected);
+  }
+
+  @Test
+  public void shouldInlineNamedXQueryQuery() {
+    String expected = someName();
+    String resource = someTextFileName();
+    resourceResolver = resolveResource(resource, expected);
+    yaml.put(XQUERIES, new YamlMap()
+        .put(someName(), new YamlMap()
+            .put(QUERY, new YamlMap()
+                .put(RESOURCE, resource))));
+
+    normalizeYaml();
+
+    assertXQueryQueryIsInlined(expected);
   }
 
 }

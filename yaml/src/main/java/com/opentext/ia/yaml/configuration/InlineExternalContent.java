@@ -27,6 +27,7 @@ class InlineExternalContent extends PathVisitor {
       "/transformation(s/[^/]+)?/xquery",
       "/transformation(s/[^/]+)?/xslt",
       "/xform(s/[^/]+)?/form",
+      "/(xquery|xqueries/[^/]+)/query",
       "/xqueryModule(s/[^/]+)?/moduleContent");
   static final String TEXT = "text";
   private static final String FORMAT = "format";

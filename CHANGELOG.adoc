@@ -6,6 +6,14 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 11.0.1 - 2018-05-17
+
+=== Fixed
+
+- XQuery objects now support inlining of external resources
+- XQuery objects' `query` object is now translated to a string, even if it doesn't use namespaces
+
+
 == 11.0.0 - 2018-05-07
 
 === Removed
@@ -19,7 +27,6 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 - `com.opentext.ia.sdk.sip.ContentAssemblerDefault.getMetrics()` now returns a read-only object
 - `com.opentext.ia.sdk.sip.ContentAssemblerDefault.getZip()` is now `protected` instead of `public`
-
 
 
 == 10.1.0 - 2018-04-11
