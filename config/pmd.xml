@@ -33,8 +33,17 @@
     <exclude name="ShortMethodName" />
     <exclude name="ShortVariable" />
     <exclude name="TooManyStaticImports" />
+    <exclude name="ClassNamingConventions" />
   </rule>
   
+  <rule ref="category/java/codestyle.xml/ClassNamingConventions">
+    <properties>
+      <property name="classPattern" value="[A-Z][a-zA-Z0-9]+" />    
+      <property name="utilityClassPattern" description="Regex which applies to utility class names"
+        value="[A-Z][a-zA-Z0-9]+" />
+    </properties>
+  </rule>
+
   <rule ref="category/java/design.xml">
     <exclude name="DataClass" />
     <exclude name="GodClass" />
