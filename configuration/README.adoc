@@ -4,7 +4,7 @@ InfoArchive is a highly configurable platform for building archiving application
 of having many _configuration objects_.
 
 This project allows creating those configuration objects using the
-https://dzone.com/articles/design-patterns-the-builder-pattern[Builder] pattern. It provides generic builder classes
+https://dzone.com/articles/design-patterns-the-builder-pattern[Builder pattern]. It provides generic builder classes
 and a concrete implementation for JSON. You can use the built JSON when using the REST API, for example.
 
 WARNING: This project is incomplete. Many configuration objects and properties are still missing, but the general
@@ -34,6 +34,5 @@ Configuration<ConfigurationObject> configuration = new ConfigurationBuilder<>(pr
 ConfigurationObject application = configuration.getApplication(); // <3>
 ----
 <1> A `http://javadoc.io/page/com.opentext.ia/infoarchive-configuration/latest/com/opentext/ia/configuration/ConfigurationProducer.html[ConfigurationProducer]` determines what kinds of configuration objects are built
-<2> This is the actual http://javadoc.io/page/com.opentext.ia/infoarchive-configuration/latest/com/opentext/ia/configuration/ConfigurationBuilder.html[builder] pattern implementation 
+<2> This is the builder pattern http://javadoc.io/page/com.opentext.ia/infoarchive-configuration/latest/com/opentext/ia/configuration/ConfigurationBuilder.html[implementation] 
 <3> You can retrieve specific configuration objects from the built http://javadoc.io/page/com.opentext.ia/infoarchive-configuration/latest/com/opentext/ia/configuration/Configuration.html[configuration]; their type depends on the producer
-
