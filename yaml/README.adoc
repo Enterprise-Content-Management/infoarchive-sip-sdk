@@ -1,0 +1,13 @@
+== Introduction
+
+InfoArchive is a highly configurable platform for building archiving applications. This complexity comes at the cost
+of having many _configuration objects_.
+
+The `https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/configuration[infoarchive-configuration]`
+project helps with that by providing builders for those configuration objects. For end users, however, writing code is
+not an option. Enter https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/Declarative-Configuration[Declarative Configuration].
+This allows you to declare the configuration for an archive application in a single YAML file.
+
+This project provides a http://javadoc.io/page/com.opentext.ia/infoarchive-yaml/latest/com/opentext/ia/yaml/configuration/builder/YamlMapConfigurationProducer.html[builder] for creating such a YAML file. It also provides http://javadoc.io/page/com.opentext.ia/infoarchive-yaml/latest/com/opentext/ia/yaml/core/YamlMap.html[basic YAML functionality] and support for http://javadoc.io/page/com.opentext.ia/infoarchive-yaml/latest/com/opentext/ia/yaml/configuration/zip/ZipConfiguration.html[zipping] up a bunch of declarative configuration files.
+
+The declarative configuration format provides a number of features that make the YAML more readable. This means that the YAML structure doesn't precisely correspond to the structure of the InfoArchive configuration objects anymore. This project provides a http://javadoc.io/page/com.opentext.ia/infoarchive-yaml/latest/com/opentext/ia/yaml/configuration/YamlConfiguration.html[pre-processor] that normalizes user-provided YAML so that it matches the structure that InfoArchive expects.
