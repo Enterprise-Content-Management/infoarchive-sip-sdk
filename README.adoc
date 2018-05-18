@@ -26,10 +26,10 @@ must have access to a running InfoArchive server. The SDK supports version 4.0 o
 
 The SDK consists of the following jars:
 
-* `infoarchive-sdk-core` is the core of the SDK
-* `infoarchive-sdk-stringtemplate` contains code for working with the http://www.stringtemplate.org/[StringTemplate] template engine
-* `infoarchive-sdk-velocity` contains code for working with the http://velocity.apache.org/[Velocity] template engine
-* `infoarchive-configuration` contains code for working with InfoArchive configurations. This is currently in the 
+* `https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/core[infoarchive-sdk-core]` is the core of the SDK
+* `https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/stringtemplate[infoarchive-sdk-stringtemplate]` contains code for working with the http://www.stringtemplate.org/[StringTemplate] template engine
+* `https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/velocity[infoarchive-sdk-velocity]` contains code for working with the http://velocity.apache.org/[Velocity] template engine
+* `https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/configuration[infoarchive-configuration]` contains code for working with InfoArchive configurations. This is currently in the 
 proof of concept phase and _not ready for production_
 * `infoarchive-yaml` contains code for working with InfoArchive https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/Declarative-Configuration[declarative configurations] in YAML
 
