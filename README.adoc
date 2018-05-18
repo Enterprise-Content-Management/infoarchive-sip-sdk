@@ -8,18 +8,11 @@ image:https://javadocio-badges.herokuapp.com/com.opentext.ia/infoarchive-sdk-cor
 
 = OpenText InfoArchive SDK
 
-The http://documentum.opentext.com/infoarchive/[OpenText InfoArchive] SDK is a Java library that 
-makes it quick and easy to create SIPs regardless of what type of data it contains or where that data originates
-from. A SIP (_Submission Information Package_) is a package consisting of packaging information, meta-data (structured
-data in the form of XML) and optionally a collection of unstructured data files.
+The http://documentum.opentext.com/infoarchive/[OpenText InfoArchive] SDK is a Java library that makes it quick and easy to create SIPs regardless of what type of data it contains or where that data originates from. A SIP (_Submission Information Package_) is a package consisting of packaging information, meta-data (structured data in the form of XML) and optionally a collection of unstructured data files.
 
-The IA SDK aims to make the process of creating SIPs simpler by allowing a developer to dynamically assemble both
-the XML file containing the structured data as well as the entire SIP itself. It's especially easy to create SIPs from
-any collection or stream of Plain Old Java Objects regardless of if they represent files, SQL query result sets, emails, 
-tweets, etc.
+The IA SDK aims to make the process of creating SIPs simpler by allowing a developer to dynamically assemble both the XML file containing the structured data as well as the entire SIP itself. It's especially easy to create SIPs from any collection or stream of Plain Old Java Objects regardless of if they represent files, SQL query result sets, emails, tweets, etc.
 
-You can also use the SDK to ingest SIPs into InfoArchive and even to configure InfoArchive. For this functionality you 
-must have access to a running InfoArchive server. The SDK supports version 4.0 of InfoArchive and newer.
+You can also use the SDK to ingest SIPs into InfoArchive and even to configure InfoArchive. For this functionality you must have access to a running InfoArchive server. The SDK supports version 4.0 of InfoArchive and newer.
 
 
 == Overview
@@ -31,11 +24,9 @@ The SDK consists of the following jars:
 * `https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/velocity[infoarchive-sdk-velocity]` contains code for working with the http://velocity.apache.org/[Velocity] template engine
 * `https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/configuration[infoarchive-configuration]` contains code for working with InfoArchive configurations. This is currently in the 
 proof of concept phase and _not ready for production_
-* `infoarchive-yaml` contains code for working with InfoArchive https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/Declarative-Configuration[declarative configurations] in YAML
+* `https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/infoarchive-yaml[infoarchive-yaml]` contains code for working with InfoArchive https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/Declarative-Configuration[declarative configurations] in YAML
 
-All jars can be found in the https://repo1.maven.org/maven2/com/opentext/ia/[Central Repository]. The easiest way to get
-them is through a dependency management system like http://gradle.org/[Gradle] or https://maven.apache.org/[Maven].
-For the latest version, see the `maven-central` badge at the top of this page.
+All jars can be found in the https://repo1.maven.org/maven2/com/opentext/ia/[Central Repository]. The easiest way to get them is through a dependency management system like http://gradle.org/[Gradle] or https://maven.apache.org/[Maven]. For the latest version, see the `maven-central` badge at the top of this page.
 
 
 *Gradle*
@@ -62,24 +53,16 @@ dependencies {
 
 == Versioning
     
-The InfoArchive SDK uses https://semver.org[semantic versioning], which means that backwards incompatible changes will
-only occur in major versions. These 
-https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/breaking-changes[breaking changes] are
-documented on the wiki.
+The InfoArchive SDK uses https://semver.org[semantic versioning], which means that backwards incompatible changes will only occur in major versions. These https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/breaking-changes[breaking changes] are documented on the wiki.
 
-An overview of changes since version 6.1.0 can be found in the
-https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/blob/master/CHANGELOG.adoc[change log]. 
+An overview of changes since version 6.1.0 can be found in the https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/blob/master/CHANGELOG.adoc[change log].
 
 
 == Usage
 
-For an https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.4/presentation.pdf[introduction]
-to the SDK and some https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.4/lab.pdf[lab exercises],
-see the related https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab[lab] project.
-For examples on how to use the SDK, see the https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/samples[sample programs].
+For an https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.4/presentation.pdf[introduction] to the SDK and some https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/download/1.0.4/lab.pdf[lab exercises], see the related https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab[lab] project. For examples on how to use the SDK, see the https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/samples[sample programs].
 
 
 == Contributing
 
-See the https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/blob/master/CONTRIBUTING.adoc[CONTRIBUTING]
-file on how to get started.
+See the https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/blob/master/CONTRIBUTING.adoc[CONTRIBUTING] file on how to get started.
