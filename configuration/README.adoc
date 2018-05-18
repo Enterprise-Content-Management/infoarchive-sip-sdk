@@ -1,5 +1,3 @@
-== Introduction
-
 InfoArchive is a highly configurable platform for building archiving applications. This complexity comes at the cost
 of having many _configuration objects_.
 
