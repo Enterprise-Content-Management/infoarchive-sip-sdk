@@ -77,19 +77,12 @@ _Contributor License Agreement_ (CLA) when you submit a PR to verify this. *PRs 
 
 ==== Source Code Organization 
 
-Before you make any changes, you should familiarize yourself with the current source code. The code is split into four 
+Before you make any changes, you should familiarize yourself with the current source code. The code is split into 
 sub-projects, each of which is built into its own separate jar file:
 
-- *core* contains the main functionality, like assembling SIPs, configuring InfoArchive, and ingesting SIPs.
-- *stringtemplate* is a little sub-project that allows building the PDI part of a SIP using the
-http://www.stringtemplate.org/[StringTemplate] templating engine.
-- *velocity* is a little sub-project that allows building the PDI part of a SIP using the
-http://velocity.apache.org/[Velocity] templating engine.
-- *yaml* allows working with YAML files in general, and InfoArchive 
-https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/Declarative-Configuration[declarative configuration]
-files in particular.
+image::component-sdk.png[]
 
-Each sub-project uses packages to further organize the code.
+Each sub-project has more information.
 
 
 ==== Setting Up Your Environment
@@ -103,7 +96,9 @@ respectively.
 
 At a minimum the build must pass, which you can verify by running `gradlew` from the root of the project. When you
 submit a PR, this build is run on https://travis-ci.org/Enterprise-Content-Management/infoarchive-sip-sdk[Travis CI]
-automatically. *PRs with failing checks will not be merged*.
+automatically.
+
+*PRs with failing checks will not be merged.*
 
 The build runs several checks:
 
