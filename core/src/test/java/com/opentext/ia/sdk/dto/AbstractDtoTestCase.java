@@ -32,7 +32,7 @@ abstract class AbstractDtoTestCase {
     Collection<File> result = new ArrayList<>();
     File rootDir = new File(root);
     collectFilesIn(rootDir, acceptableFiles, result);
-    Path rootPath = rootDir.toPath();
+    Path rootPath = rootDir.toPath(); // NOPMD premature declaration false positive
     return result.stream()
         .map(file -> rootPath.relativize(file.toPath()).toString());
   }
