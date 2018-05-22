@@ -153,6 +153,19 @@ subprojects {
   
     apply plugin: 'idea'
   }
+  
+  distributions {
+    main {
+      contents {
+        from(jar) {          
+          into 'libs'
+        }
+        from(configurations.runtime) {
+          into 'libs'
+        }
+      }
+    }
+  }
 }
 
 
