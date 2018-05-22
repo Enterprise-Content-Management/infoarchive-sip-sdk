@@ -4,13 +4,18 @@
 package com.opentext.ia.sdk.support.http.rest;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.opentext.ia.sdk.support.http.BinaryPart;
 import com.opentext.ia.sdk.support.http.Header;
 import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.http.JsonFormatter;
@@ -155,6 +160,23 @@ public class RestClient implements Closeable, StandardLinkRelations {
 
   private String toJson(Object object) throws IOException {
     return formatter.format(object);
+  }
+
+  public <T> T upload(LinkContainer state, String linkRelation, File file, Class<T> type) throws IOException {
+    return upload(state, linkRelation, file, type, "file");
+  }
+
+  public <T> T upload(LinkContainer state, String linkRelation, File file, Class<T> type, String partName)
+      throws IOException {
+    try (InputStream data = Files.newInputStream(file.toPath(), StandardOpenOption.READ)) {
+      return upload(state, linkRelation, data, type, partName);
+    }
+  }
+
+  public <T> T upload(LinkContainer state, String linkRelation, InputStream data, Class<T> type, String partName)
+      throws IOException {
+    Link link = linkIn(state, linkRelation);
+    return post(link.getHref(), type, new BinaryPart(partName, data, ""));
   }
 
   @Override
