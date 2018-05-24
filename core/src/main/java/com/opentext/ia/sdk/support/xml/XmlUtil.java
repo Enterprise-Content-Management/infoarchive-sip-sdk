@@ -507,13 +507,29 @@ public final class XmlUtil {
   }
 
   public static String escape(String text) {
-    return text.replace("&", "&amp;")
+    return escapeInvalidUnicodeChars(text.replace("&", "&amp;")
       .replace("<", "&lt;")
       .replace(">", "&gt;")
       .replace("'", "&apos;")
-      .replace("\"", "&quot;");
+      .replace("\"", "&quot;"));
   }
 
+
+  private static String escapeInvalidUnicodeChars(String text) {
+    StringBuilder result = new StringBuilder(text);
+    int index = 0;
+    for (int i = 0; i < text.length(); i++) {
+      int value = Character.codePointAt(text, i);
+      if (value < 32 && value != 10 && value != 13) {
+        String escaped = String.format("&#%04x;", value);
+        result.replace(index, index + 1, escaped);
+        index += escaped.length();
+      } else {
+        index++;
+      }
+    }
+    return result.toString();
+  }
 
   private static class Namespaces extends HashMap<String, String> {
 

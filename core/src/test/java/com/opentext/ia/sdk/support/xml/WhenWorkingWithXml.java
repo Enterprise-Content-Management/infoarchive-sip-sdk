@@ -99,4 +99,10 @@ public class WhenWorkingWithXml extends TestCase {
     XmlUtil.validate(toStream(document), toStream(document), randomString());
   }
 
+  @Test
+  public void shouldEscapeOrRemoveInvalidCharacters() {
+    assertEquals("Escaped text", "a&apos;b&amp;c&quot;d&lt;e&gt;f&#0001;g&#000c;h",
+        XmlUtil.escape("a'b&c\"d<e>f\u0001g\u000Ch"));
+  }
+
 }
