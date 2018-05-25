@@ -21,11 +21,16 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
   private static final String TENANT = "tenant";
   private static final String APPLICATION = "application";
   private static final String SPACE = "space";
+  private static final String DATABASE = "database";
   private static final String STORE = "store";
   private static final String CI_STORE = "ciStore";
+  private static final String LOG_STORE = "logStore";
   private static final String MANAGED_ITEM_STORE = "managedItemStore";
+  private static final String RENDITION_STORE = "renditionStore";
+  private static final String SIP_STORE = "sipStore";
+  private static final String STAGING_STORE = "stagingStore";
   private static final String XDB_STORE = "xdbStore";
-  private static final String DATABASE = "database";
+  private static final String XML_STORE = "xmlStore";
   private static final String SEARCH = "search";
   private static final String SEARCH_COMPOSITION = "searchComposition";
   private static final String EXPORT_PIPELINE = "exportPipeline";
@@ -52,8 +57,8 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("/deliveryChannels/\\d+", Arrays.asList(APPLICATION, STORE));
     result.put("/exportConfigurations/\\d+", Arrays.asList("pipeline", "transformation"));
     result.put("/holds/\\d+", Arrays.asList(TENANT));
-    result.put("/holdings/\\d+", Arrays.asList(APPLICATION, CI_STORE, "ingest", "logStore", MANAGED_ITEM_STORE,
-        "renditionStore", "sipStore", "stagingStore", "xdbLibraryPolicy", XDB_STORE, "xmlStore"));
+    result.put("/holdings/\\d+", Arrays.asList(APPLICATION, CI_STORE, "ingest", LOG_STORE, MANAGED_ITEM_STORE,
+        RENDITION_STORE, SIP_STORE, STAGING_STORE, "xdbLibraryPolicy", XDB_STORE, XML_STORE));
     result.put("/holdings/\\d+/ingestConfigs/\\d+", Arrays.asList("ingest"));
     result.put("/holdings/\\d+/pdiConfigs/\\d+", Arrays.asList("pdi"));
     result.put("/holdingCryptoes/\\d+", Arrays.asList(APPLICATION, "holding"));
@@ -100,8 +105,13 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("pipeline", EXPORT_PIPELINE);
     result.put("transformation", "exportTransformation");
     result.put(CI_STORE, STORE);
+    result.put(LOG_STORE, STORE);
     result.put(MANAGED_ITEM_STORE, STORE);
+    result.put(RENDITION_STORE, STORE);
+    result.put(SIP_STORE, STORE);
+    result.put(STAGING_STORE, STORE);
     result.put(XDB_STORE, STORE);
+    result.put(XML_STORE, STORE);
     return result;
   }
 
