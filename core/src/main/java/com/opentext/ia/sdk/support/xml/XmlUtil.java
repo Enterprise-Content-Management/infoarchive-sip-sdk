@@ -521,7 +521,7 @@ public final class XmlUtil {
     int index = 0;
     for (int i = 0; i < text.length(); i++) {
       int value = Character.codePointAt(text, i);
-      if (value < 32) {
+      if (value < 32 && value != 10 && value != 13) {
         String escaped = String.format("&#%04x;", value);
         result.replace(index, index + 1, escaped);
         index += escaped.length();
