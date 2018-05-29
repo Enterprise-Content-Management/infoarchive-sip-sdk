@@ -217,11 +217,14 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     yaml.put(HOLDINGS, Arrays.asList(new YamlMap().put(NAME, someName())));
     yaml.put(INGESTS, Arrays.asList(new YamlMap().put(NAME, someName())));
     yaml.put("receiverNodes", Arrays.asList(new YamlMap().put(NAME, someName())));
+    String storeName = someName();
+    yaml.put(STORES, Arrays.asList(new YamlMap().put(NAME, storeName)));
 
     normalizeYaml();
 
     assertTrue("exportPipeline.includesContent", yaml.get("exportPipelines", 0, "includesContent").toBoolean());
     assertValue("holding.xdbMode", "PRIVATE", yaml.get(HOLDINGS, 0, "xdbMode"));
+    assertValue("holding.xmlStore", storeName, yaml.get(HOLDINGS, 0, "xmlStore"));
     assertValue("ingest.processors.format", XML, yaml.get(INGESTS, 0, "content", FORMAT));
     assertTrue("ingest.processors.xml", yaml.get(INGESTS, 0, "content", TEXT).toString().contains("sip.download"));
   }
