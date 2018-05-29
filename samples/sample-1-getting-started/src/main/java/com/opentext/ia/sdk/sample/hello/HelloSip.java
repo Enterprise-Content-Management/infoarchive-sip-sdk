@@ -54,13 +54,17 @@ public class HelloSip {
       }
     };
 
+    final File sipFile = new File("build/hello-sip.zip").getCanonicalFile();
+    sipFile.getParentFile().mkdirs();
+
     // Assemble the SIP
     SipAssembler<Greeting> sipAssembler = SipAssembler.forPdi(prototype, pdiAssembler);
-    FileGenerator<Greeting> generator = new FileGenerator<>(sipAssembler, () -> new File("hello-sip.zip"));
+    FileGenerator<Greeting> generator = new FileGenerator<>(sipAssembler, () -> sipFile);
     Greeting greeting = new Greeting("Hello, SIP");
     SipMetrics metrics = (SipMetrics)generator.generate(greeting).getMetrics();
     System.out.printf("  Added %d %s to SIP of %d bytes in %d ms%n", metrics.numAius(),
         English.plural("AIU", (int)metrics.numAius()), metrics.sipFileSize(), metrics.assemblyTime());
+    System.out.printf("  SIP file generated to '%s'%n", sipFile.getPath());
   }
 
 }
