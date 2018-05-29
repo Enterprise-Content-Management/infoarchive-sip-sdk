@@ -1,0 +1,26 @@
+The `infoarchive-core` project helps to assemble _Submission Information Packages_ (SIPs) and ingest them
+into InfoArchive. It also wraps the InfoArchive REST API to make it easier to navigate than using a plain HTTP library.
+
+
+== Assembling SIPs
+
+The code for assembling SIPs lives in the `com.opentext.ia.sdk.sip` package.
+
+The main abstraction is an `https://javadoc.io/page/com.opentext.ia/infoarchive-sdk-core/latest/com/opentext/ia/sdk/sip/Assembler.html[Assembler]` that assembles objects into a product inside a
+`https://javadoc.io/page/com.opentext.ia/infoarchive-sdk-core/latest/com/opentext/ia/sdk/support/io/DataBuffer.html[DataBuffer]`. This buffer can be either in-memory or on the file system. Assemblers take great care to only copy bytes once and to incrementally build up their products, so that they can support large data volumes.
+
+Assemblers are used to assemble a variety of things, like ZIP files, SIPs, _Preservation Description Information_ (PDI), and hashes. For an overview of how to assemble SIPs, see the presentation in the https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk-lab/releases/latest[lab project] on GitHub. This overview will give you a sense of the classes that are important to understand.
+
+Assembling SIPs can be done completely offline; you don't need a running InfoArchive system. This makes it perfect for
+ETL tools and integrations. 
+
+
+== Wrapping the InfoArchive REST API
+
+There is a high-level `https://javadoc.io/page/com.opentext.ia/infoarchive-sdk-core/latest/com/opentext/ia/sdk/client/api/ArchiveClient.html[ArchiveClient]` interface that hides most of the REST API behind simple Java calls. You usually get an instance using one of the factory methods in `https://javadoc.io/page/com.opentext.ia/infoarchive-sdk-core/latest/com/opentext/ia/sdk/client/factory/ArchiveClients.html[ArchiveClients]`. The high-level client API lives in the `com.opentext.ia.sdk.client` package and its sub-packages.
+
+If you need more fine-grained control, you can use `https://javadoc.io/page/com.opentext.ia/infoarchive-sdk-core/latest/com/opentext/ia/sdk/support/http/rest/RestClient.html[RestClient]`, which implements authentication and navigation of the API via link relations. When navigating the REST API, you can use the many _Data Transfer Objects_ (DTOs) in the package `com.opentext.ia.sdk.dto` and its sub-packages to get type-safe access to request and response payloads. `RestClient` lives in the `com.opentext.ia.sdk.support.http.rest` package.
+
+`RestClient` is itself implemented on top of `https://javadoc.io/page/com.opentext.ia/infoarchive-sdk-core/latest/com/opentext/ia/sdk/support/http/HttpClient.html[HttpClient]`. The SDK comes with one implementation of this interface: `https://javadoc.io/page/com.opentext.ia/infoarchive-sdk-core/latest/com/opentext/ia/sdk/support/http/apache/ApacheHttpClient.html[ApacheHttpClient]`. The `HttpClient` abstraction is independent of InfoArchive, so it can be used to communicate with other HTTP-based services as well.
+
+There are more support classes in the various sub-packages of `com.opentext.ia.sdk.support` for working with I/O, dates & times, and XML.
