@@ -6,6 +6,14 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 11.2.0 - TBD
+
+=== Added
+
+- Add `com.opentext.ia.sdk.support.xml.XmlBuilder.element(String, Optional<String>)` 
+
+
+
 == 11.1.1 - 2018-05-28
 
 === Fixed
