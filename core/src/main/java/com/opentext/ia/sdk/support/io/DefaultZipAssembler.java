@@ -29,6 +29,9 @@ public class DefaultZipAssembler implements ZipAssembler {
   @Override
   public Collection<EncodedHash> addEntry(String name, InputStream stream, HashAssembler hashAssembler)
       throws IOException {
+    if (zip == null) {
+      throw new IllegalStateException("Missing zip; did you call begin()?");
+    }
     hashAssembler.initialize();
     zip.putNextEntry(new ZipEntry(name));
     try {
@@ -46,7 +49,9 @@ public class DefaultZipAssembler implements ZipAssembler {
    */
   @Override
   public void close() throws IOException {
-    zip.close();
+    if (zip != null) {
+      zip.close();
+    }
   }
 
 }

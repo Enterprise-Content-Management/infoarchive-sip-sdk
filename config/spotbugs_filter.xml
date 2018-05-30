@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FindBugs exclusion filter common to all IAIS projects -->
+<FindBugsFilter>
+  
+  <Match>
+    <Or>
+      <!--Too many false positives -->
+      <Bug pattern="BC_UNCONFIRMED_CAST" />
+      <!-- Too many false positives -->
+      <Bug pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" />
+      <!-- Converting all anonymous classes to static inner classes degrades readability -->
+      <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
+      <!-- Too many false positives, depends on external naming conventions -->
+      <Bug pattern="NM_CONFUSING" />
+      <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+    </Or>
+  </Match>
+  
+  <!-- Test class specific -->
+  <Match>
+    <Or>
+      <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME" />
+      <Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS" />
+      <Bug pattern="RV_RETURN_VALUE_IGNORED_INFERRED" />
+      <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" />
+      <Bug pattern="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" />
+      <Bug pattern="NP_NONNULL_PARAM_VIOLATION" />
+      <BUg pattern="NP_NULL_PARAM_DEREF" />
+      <Bug pattern="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS" />
+      <Bug pattern="NP_NULL_PARAM_DEREF_NONVIRTUAL" />
+      <!-- Could be done in @Before -->
+      <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
+      <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" />
+      <!-- Not relevant due to the use of unittest @Before -->
+      <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
+    </Or>
+    <Or>
+      <Class name="~.+\.When.+$" />
+      <Class name="~.+\.+TestCase$" />
+    </Or>
+  </Match>
+    
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
+    <Class name="~com\.opentext\.ia\.sdk\.sip\.(DataSubmissionSession|PackagingInformation)(\$.*)?" />
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP2" />
+    <Class name="~com\.opentext\.ia\.sdk\.sample\..*" />
+  </Match>
+  <Match>
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" />
+    <Class name="com.opentext.ia.yaml.core.YamlDiff" />
+    <Method name="addMissing" />
+  </Match>
+  
+  <Match>
+    <!-- Intentional, to create a cleaner API -->
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS" />
+    <Class name="com.opentext.ia.configuration.ContentBuilder" />
+    <Or>
+      <Method name="as" />
+      <Method name="fromResource" />
+    </Or>
+  </Match>
+
+  <Match>
+    <!-- No practical impact -->
+    <Bug pattern="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" />
+    <Class name="com.opentext.ia.configuration.ContentBuilder" />
+  </Match>
+  
+  <Match>
+    <!-- Generic list may contain various types, for this use case it cannot -->
+    <Bug pattern="PDP_POORLY_DEFINED_PARAMETER" />
+    <Class name="com.opentext.ia.configuration.json.JsonConfiguration" />
+    <Method name="jsonToContent" />
+  </Match>
+  
+  <Match>
+    <!-- API methods, expected to be used by unknown client code -->
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD" />
+    <Or>
+      <Class name="com.opentext.ia.configuration.BaseBuilder" />
+      <Class name="com.opentext.ia.configuration.ConfigurationBuilder" />
+      <Class name="com.opentext.ia.configuration.ContentBuilder" />
+      <Class name="com.opentext.ia.configuration.NamedObjectBuilder" />
+      <Class name="com.opentext.ia.yaml.core.Value" />
+      <Class name="com.opentext.ia.yaml.core.YamlMap" />
+    </Or>
+  </Match>
+  
+  <Match>
+    <!-- No futher information available -->
+    <Bug pattern="WEM_WEAK_EXCEPTION_MESSAGING" />
+    <Or>
+      <And>
+        <Class name="com.opentext.ia.configuration.Configuration" />
+        <Method name="first" />
+      </And>
+      <And>
+        <Class name="com.opentext.ia.configuration.ContentBuilder" />
+        <Method name="as" />
+      </And>
+    </Or>
+  </Match>
+
+  <Match>
+    <!-- Default passwords for test data only, suppress for now -->
+    <Bug pattern="HARD_CODE_PASSWORD" />
+    <Or>
+      <Class name="com.opentext.ia.configuration.XdbClusterBuilder" />
+      <Class name="com.opentext.ia.configuration.XdbDatabaseBuilder" />
+      <Class name="com.opentext.ia.configuration.XdbFederationBuilder" />
+    </Or>
+  </Match>
+
+  <Match>
+    <!-- No asserts, but checks for expected exception -->
+    <Bug pattern="UTAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT" />
+    <Class name="com.opentext.ia.configuration.WhenBuildingConfigurations" />
+    <Method name="shouldThrowExceptionWhenAskedForMissingItem" />
+  </Match>
+
+</FindBugsFilter>

@@ -87,17 +87,20 @@ public class ConfigurationObject {
 
   private String toString(String indent) {
     StringBuilder result = new StringBuilder();
-    result.append(indent).append("properties:").append(System.lineSeparator()).append(indent).append("  ")
-        .append(properties.toString(4 + indent.length())).append(System.lineSeparator());
+    String lineSeparator = System.lineSeparator();
+    result.append(indent).append("properties:").append(lineSeparator).append(indent).append("  ")
+        .append(properties.toString(4 + indent.length())).append(lineSeparator);
+
     childObjects.forEach((collection, objects) -> {
-      result.append(indent).append(collection).append(':').append(System.lineSeparator());
+      result.append(indent).append(collection).append(':').append(lineSeparator);
       if (objects.isEmpty()) {
-        result.append(indent).append("  []").append(System.lineSeparator());
+        result.append(indent).append("  []").append(lineSeparator);
       } else {
         objects.forEach(object ->
-            result.append(indent).append(object.toString(indent + "  ")).append(System.lineSeparator()));
+            result.append(indent).append(object.toString(indent + "  ")).append(lineSeparator));
       }
     });
+
     return result.toString();
   }
 

@@ -26,15 +26,19 @@ publishProjects.each { prj ->
   prj.task('installLocally') {
     dependsOn prj.jar
     doLast {
-      "mvn install:install-file -Dfile=$prj.jar.archivePath -DgroupId=$prj.group -DartifactId=$prj.name -Dversion=$version -Dpackaging=jar".execute()
+      """mvn install:install-file \
+-Dfile=$prj.jar.archivePath \
+-DgroupId=$prj.group \
+-DartifactId=$prj.name \
+-Dversion=$version \
+-Dpackaging=jar""".execute()
     }
-  }
-  
+  }  
 }
 
 // OSSRH also requires everything to be signed
 signing {
-  required { gradle.taskGraph.hasTask("uploadArchives") }
+  required { gradle.taskGraph.hasTask('uploadArchives') }
   sign configurations.archives
 }
 

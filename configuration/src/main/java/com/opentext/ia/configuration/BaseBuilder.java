@@ -66,9 +66,12 @@ public abstract class BaseBuilder<P extends BaseBuilder<?, C>, C extends Configu
   }
 
   protected void addChildObject(String collection, ConfigurationObject childObject) {
-    if (parentProperty() != null) {
-      childObject.setProperty(parentProperty(), object.getProperties().optString("name"));
+    String parentProp = parentProperty();
+
+    if (parentProp != null) {
+      childObject.setProperty(parentProp, object.getProperties().optString("name"));
     }
+
     object.addChildObject(collection, childObject);
   }
 

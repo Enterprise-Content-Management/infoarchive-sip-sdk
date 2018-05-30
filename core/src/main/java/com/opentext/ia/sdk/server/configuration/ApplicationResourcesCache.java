@@ -284,6 +284,9 @@ public class ApplicationResourcesCache {
   }
 
   public String getContentUri() {
+    if (application == null) {
+      throw new IllegalStateException("Missing application");
+    }
     return application.getUri(InfoArchiveLinkRelations.LINK_CI);
   }
 

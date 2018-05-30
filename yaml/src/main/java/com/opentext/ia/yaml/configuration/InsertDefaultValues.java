@@ -29,89 +29,89 @@ class InsertDefaultValues extends PathVisitor {
   @SuppressWarnings("PMD.ExcessiveMethodLength")
   private static Map<String, Collection<Default>> defaultValuesByPathRegex() {
     Map<String, Collection<Default>> result = new HashMap<>();
-    result.put("/.+/path.value.index", Default.of("build.without.logging", false,
-        "compressed", false,
-        "concurrent", false,
-        "unique.keys", true));
-    result.put("/.+/full.text.index", Default.of("convert.terms.to.lowercase", true,
-        "filter.english.stop.words", false,
-        "include.attributes", false,
-        "index.all.text", true,
-        "optimize.leading.wildcard.search", true,
-        "support.phrases", false,
-        "support.scoring", false,
-        "support.start.end.token.flags", false));
+    result.put("/.+/path.value.index", Default.of("build.without.logging", Boolean.FALSE,
+        "compressed", Boolean.FALSE,
+        "concurrent", Boolean.FALSE,
+        "unique.keys", Boolean.TRUE));
+    result.put("/.+/full.text.index", Default.of("convert.terms.to.lowercase", Boolean.TRUE,
+        "filter.english.stop.words", Boolean.FALSE,
+        "include.attributes", Boolean.FALSE,
+        "index.all.text", Boolean.TRUE,
+        "optimize.leading.wildcard.search", Boolean.TRUE,
+        "support.phrases", Boolean.FALSE,
+        "support.scoring", Boolean.FALSE,
+        "support.start.end.token.flags", Boolean.FALSE));
 
-    result.put("/aics/\\d+/criteria/\\d+", Default.of("indexed", false,
+    result.put("/aics/\\d+/criteria/\\d+", Default.of("indexed", Boolean.FALSE,
         TYPE, STRING));
     result.put("/applications/\\d+", Default.of("cryptoEncoding", BASE64,
         "metadataCacheSize", 0,
-        "retentionEnabled", false,
-        "searchCreated", true,
+        "retentionEnabled", Boolean.FALSE,
+        "searchCreated", Boolean.TRUE,
         "state", "IN_TEST",
         "structuredDataStorageAllocationStrategy", "DEFAULT"));
-    result.put("/auditEvents/\\d+", Default.of("enabled", true));
+    result.put("/auditEvents/\\d+", Default.of("enabled", Boolean.TRUE));
     result.put("/cryptoObjects/\\d+", Default.of("encryptionAlgorithm", "AES",
         "encryptionMode", "CBC",
         "keySize", 256));
-    result.put("/deliveryChannels/\\d+", Default.of("compress", false,
-        "overwrite", false));
-    result.put("/exportPipelines/\\d+", Default.of("collectionBasedExport", false,
-        "composite", true,
+    result.put("/deliveryChannels/\\d+", Default.of("compress", Boolean.FALSE,
+        "overwrite", Boolean.FALSE));
+    result.put("/exportPipelines/\\d+", Default.of("collectionBasedExport", Boolean.FALSE,
+        "composite", Boolean.TRUE,
         "envelopeFormat", "zip",
-        "includesContent", true,
+        "includesContent", Boolean.TRUE,
         "inputFormat", "ROW_COLUMN",
         TYPE, "XPROC"));
     result.put("/exportConfigurations/\\d+", Default.of("cryptoEncoding", BASE64,
         "exportType", "ASYNCHRONOUS"
     ));
     result.put("/fileSystemRoots/\\d+", Default.of(TYPE, "FILESYSTEM"));
-    result.put("/holdingCryptoes/\\d+/(ci|pdi|sip)", Default.of("cryptoEnabled", false));
-    result.put("/holdings/\\d+", Default.of("ciHashValidationEnabled", true,
-        "keepCiOnRejInvEnabled", false,
-        "keepPdiXmlAfterIngestEnabled", true,
-        "keepSipOnRejInvEnabled", false,
-        "keepXmlOnRejInvEnabled", false,
-        "keepSipAfterCommitEnabled", false,
-        "logStoreEnabled", true,
+    result.put("/holdingCryptoes/\\d+/(ci|pdi|sip)", Default.of("cryptoEnabled", Boolean.FALSE));
+    result.put("/holdings/\\d+", Default.of("ciHashValidationEnabled", Boolean.TRUE,
+        "keepCiOnRejInvEnabled", Boolean.FALSE,
+        "keepPdiXmlAfterIngestEnabled", Boolean.TRUE,
+        "keepSipOnRejInvEnabled", Boolean.FALSE,
+        "keepXmlOnRejInvEnabled", Boolean.FALSE,
+        "keepSipAfterCommitEnabled", Boolean.FALSE,
+        "logStoreEnabled", Boolean.TRUE,
         "managedItemPartitionScheme", "DAILY",
-        "pdiXmlHashEnforced", false,
-        "pdiXmlHashValidationEnabled", true,
-        "pushRetentionOnRejInvEnabled", false,
-        "syncCommitEnabled", true,
+        "pdiXmlHashEnforced", Boolean.FALSE,
+        "pdiXmlHashValidationEnabled", Boolean.TRUE,
+        "pushRetentionOnRejInvEnabled", Boolean.FALSE,
+        "syncCommitEnabled", Boolean.TRUE,
         "xdbMode", "PRIVATE"));
     result.put("/ingests/\\d+", Default.of("content", new YamlMap()
         .put(FORMAT, "xml")
         .put("text", ResourceResolver.fromClasspath().apply("defaultIngest.xml"))));
     result.put("/ingestNodes/\\d+", Default.of("enumerationMaxResultCount", 10,
-       "enumerationMinusRunning", false));
+       "enumerationMinusRunning", Boolean.FALSE));
     result.put("/queries/\\d+", Default.of("resultRootElement", "result",
-        "resultRootNsEnabled", true));
+        "resultRootNsEnabled", Boolean.TRUE));
     result.put("/queries/\\d+/xdbPdiConfigs/\\d+", Default.of("template", "return $aiu"));
     result.put("/queries/\\d+/xdbPdiConfigs/\\d+/operands/\\d+", Default.of(TYPE, STRING,
-        "index", false));
+        "index", Boolean.FALSE));
     result.put("/queryQuotas/\\d+", Default.of("aipQuota", 0,
         "aiuQuota", 0,
         "dipQuota", 0));
     result.put("/receiverNodes/\\d+", Default.of("logLevel", "INFO"));
-    result.put("/resultConfigurationHelpers/\\d+", Default.of("propagateChanges", false));
-    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+", Default.of("createCollectionEnabled", false,
-        "exportEnabled", false));
+    result.put("/resultConfigurationHelpers/\\d+", Default.of("propagateChanges", Boolean.FALSE));
+    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+", Default.of("createCollectionEnabled", Boolean.FALSE,
+        "exportEnabled", Boolean.FALSE));
     result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+", Default.of(
         "dataType", STRING,
         "defaultSort", NONE,
-        "downloadable", true,
-        "encrypt", false,
-        "exportable", true,
-        "filterEnabled", false,
-        "hidden", false,
-        "masked", false,
+        "downloadable", Boolean.TRUE,
+        "encrypt", Boolean.FALSE,
+        "exportable", Boolean.TRUE,
+        "filterEnabled", Boolean.FALSE,
+        "hidden", Boolean.FALSE,
+        "masked", Boolean.FALSE,
         "order", 0,
-        "previewRequired", true,
-        "printable", true,
-        "rowIdentifier", false,
-        "showIcon", false,
-        "sortable", false));
+        "previewRequired", Boolean.TRUE,
+        "printable", Boolean.TRUE,
+        "rowIdentifier", Boolean.FALSE,
+        "showIcon", Boolean.FALSE,
+        "sortable", Boolean.FALSE));
     result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+/columns/\\d+/urlConfiguration", Default.of(
         "hostType", STATIC,
         "pathType", NONE,
@@ -121,14 +121,14 @@ class InsertDefaultValues extends PathVisitor {
         "protocolType", STATIC,
         "queryType", NONE,
         "target", "TAB"));
-    result.put("/retentionPolicies/\\d+", Default.of("dispositionBlocked", false));
-    result.put("/searches/\\d+", Default.of("nestedSearch", false,
+    result.put("/retentionPolicies/\\d+", Default.of("dispositionBlocked", Boolean.FALSE));
+    result.put("/searches/\\d+", Default.of("nestedSearch", Boolean.FALSE,
         "state", "DRAFT"));
     result.put("/stores/\\d+", Default.of("status", "ONLINE",
         "contentLifetimeAfterRestoration", 0,
         "storeType", "REGULAR",
         TYPE, "FILESYSTEM"));
-    result.put("/transformations/\\d+", Default.of("compressed", true,
+    result.put("/transformations/\\d+", Default.of("compressed", Boolean.TRUE,
         ENCODING, "UTF-8",
         TYPE, "XQUERY"));
     result.put("/xdbDatabases/\\d+", Default.of(ENCODING, BASE64));
@@ -136,14 +136,14 @@ class InsertDefaultValues extends PathVisitor {
     result.put("/xdbLibraries/\\d+", Default.of("aipCount", 0,
         "aiuCount", 0,
         "cacheInCount", 0,
-        "cacheSupport", false,
-        "closeRequested", false,
-        "closed", false,
-        "concurrent", false,
-        "detachable", false,
-        "detached", false,
+        "cacheSupport", Boolean.FALSE,
+        "closeRequested", Boolean.FALSE,
+        "closed", Boolean.FALSE,
+        "concurrent", Boolean.FALSE,
+        "detachable", Boolean.FALSE,
+        "detached", Boolean.FALSE,
         "indexSize", 0,
-        "readOnly", false,
+        "readOnly", Boolean.FALSE,
         "size", 0,
         TYPE, "DATA",
         "xdbMode", "PRIVATE"
