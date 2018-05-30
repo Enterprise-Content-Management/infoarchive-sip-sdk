@@ -4,7 +4,6 @@
 package com.opentext.ia.sdk.support.http.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;

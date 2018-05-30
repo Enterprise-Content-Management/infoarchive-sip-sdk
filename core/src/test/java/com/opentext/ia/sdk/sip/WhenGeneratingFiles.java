@@ -5,7 +5,7 @@ package com.opentext.ia.sdk.sip;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -53,7 +53,8 @@ public class WhenGeneratingFiles extends TestCase {
     Assembler<String> wrapped = mock(Assembler.class);
     doAnswer(invocation -> {
       try {
-        try (OutputStream stream = invocation.getArgumentAt(0, DataBuffer.class).openForWriting()) {
+        DataBuffer arg0 = invocation.getArgument(0);
+        try (OutputStream stream = arg0.openForWriting()) {
           stream.write(content);
         }
       } catch (IOException e) {

@@ -5,9 +5,9 @@ package com.opentext.ia.sdk.sip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.notNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -94,7 +94,7 @@ public class WhenAssemblingSipsInTimeWindows extends TestCase {
 
     alarm.run();
 
-    verify(callback).accept(notNull(FileGenerationMetrics.class));
+    verify(callback).accept(notNull());
   }
 
   @Test

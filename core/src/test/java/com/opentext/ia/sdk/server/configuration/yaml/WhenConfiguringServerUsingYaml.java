@@ -4,9 +4,9 @@
 package com.opentext.ia.sdk.server.configuration.yaml;
 
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -57,7 +57,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
     String configurationUri = randomUri();
     Services services = new Services();
     services.getLinks().put(LINK_CONFIGURATION, new Link(configurationUri));
-    when(httpClient.get(anyString(), any(), eq(Services.class))).thenReturn(services);
+    when(httpClient.get(any(), any(), eq(Services.class))).thenReturn(services);
 
     configurer.configure(connection);
 
@@ -68,7 +68,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   @Test
   public void shouldConfigureFromClientWhenServerDoesntSupportsYamlConfiguration() throws IOException {
     Services services = new Services();
-    when(httpClient.get(anyString(), any(), eq(Services.class))).thenReturn(services);
+    when(httpClient.get(any(), any(), eq(Services.class))).thenReturn(services);
 
     configurer.configure(connection);
 

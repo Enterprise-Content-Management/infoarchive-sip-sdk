@@ -6,7 +6,7 @@ package com.opentext.ia.sdk.sip.active;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,11 +44,10 @@ public class WhenPerformingActiveArchiving extends SipAssemblingTestCase {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
   public void shouldIngestSipsAsTheyAreAssembled() throws IOException {
     when(archiveClient.ingestDirect(any())).thenAnswer(invocation -> {
       numSips++;
-      String packageInformation = getPackageInformation(invocation.getArgumentAt(0, InputStream.class));
+      String packageInformation = getPackageInformation(invocation.getArgument(0));
       assertNotNull("Missing package information in SIP", packageInformation);
       assertEquals("SeqNo", 1, getSeqNo(packageInformation));
       assertTrue("IsLast", isLast(packageInformation));

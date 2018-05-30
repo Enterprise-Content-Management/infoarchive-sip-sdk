@@ -20,7 +20,6 @@ import org.junit.rules.TemporaryFolder;
 
 import com.opentext.ia.test.TestCase;
 
-
 public class WhenUnzippingFile extends TestCase {
 
   @Rule
@@ -31,15 +30,13 @@ public class WhenUnzippingFile extends TestCase {
     String entry = randomString();
     byte[] expected = randomBytes();
     File zip = temporaryFolder.newFile();
-    try (OutputStream out = Files.newOutputStream(zip.toPath(), StandardOpenOption.CREATE)) {
-      ZipAssembler zipper = new DefaultZipAssembler();
+    try (OutputStream out = Files.newOutputStream(zip.toPath(), StandardOpenOption.CREATE);
+        ZipAssembler zipper = new DefaultZipAssembler()) {
       zipper.begin(out);
       zipper.addEntry(entry, new ByteArrayInputStream(expected), new NoHashAssembler());
-      zipper.close();
     }
 
-    byte[] actual = Unzip.file(zip)
-      .andProcessEntry(entry, stream -> readContents(stream));
+    byte[] actual = Unzip.file(zip).andProcessEntry(entry, stream -> readContents(stream));
 
     assertArrayEquals("Contents", expected, actual);
   }

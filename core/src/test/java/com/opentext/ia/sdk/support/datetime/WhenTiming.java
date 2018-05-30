@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.support.datetime;
 
-import static org.mockito.Matchers.eq;
+
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;

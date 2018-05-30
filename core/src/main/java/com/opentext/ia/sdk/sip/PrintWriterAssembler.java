@@ -95,7 +95,7 @@ public abstract class PrintWriterAssembler<D> implements Assembler<D> {
         validator.validate(output);
       } catch (ValidationException e) {
         try (InputStream actual = buffer.openForReading()) {
-          throw new IOException(String.format("Invalid content: %s%n%s",e.getMessage(),
+          throw new IOException(String.format("Invalid content: %s%n%s", e.getMessage(),
               IOUtils.toString(actual, StandardCharsets.UTF_8)), e);
         }
       }
