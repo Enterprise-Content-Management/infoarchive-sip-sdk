@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -168,8 +169,31 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
     result.append(OPEN_ELEMENT).append(root).append("/>").append(NL);
 
     getBuilder().element(root)
-        .element(aName(), null)
+        .element(aName(), (String)null)
     .end();
+
+    assertXml();
+  }
+
+  @Test
+  public void shouldIgnoreMissingOptionalText() {
+    String root = aName();
+    result.append(OPEN_ELEMENT).append(root).append("/>").append(NL);
+
+    getBuilder().element(root)
+        .element(aName(), Optional.empty())
+    .end();
+
+    assertXml();
+  }
+
+  @Test
+  public void shouldPrintOptionalText() {
+    String root = aName();
+    String text = aName();
+    result.append(OPEN_ELEMENT).append(root).append('>').append(text).append("</").append(root).append('>').append(NL);
+
+    getBuilder().element(root, Optional.of(text));
 
     assertXml();
   }

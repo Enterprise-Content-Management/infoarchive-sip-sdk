@@ -11,6 +11,7 @@ import java.io.StringReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import org.w3c.dom.Document;
@@ -143,7 +144,19 @@ public interface XmlBuilder<T> {
    * @return This builder
    */
   default XmlBuilder<T> element(String name, String text) {
-    return text == null ? this : element(name).text(text).end();
+    return element(name, Optional.ofNullable(text));
+  }
+
+  /**
+   * Optionally add an element containing the given text to the current location in the XML document. The element is
+   * automatically closed.
+   * @param name The name/tag of the element to add
+   * @param maybeText The text to add to the element
+   * @return This builder
+   */
+  default XmlBuilder<T> element(String name, Optional<String> maybeText) {
+    maybeText.ifPresent(text -> element(name).text(text).end());
+    return this;
   }
 
   /**
