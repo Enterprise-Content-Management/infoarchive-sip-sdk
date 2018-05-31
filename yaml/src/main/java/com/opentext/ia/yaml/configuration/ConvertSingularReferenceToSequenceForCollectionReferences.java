@@ -3,8 +3,8 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,23 +14,22 @@ import com.opentext.ia.yaml.core.PathVisitor;
 import com.opentext.ia.yaml.core.Visit;
 import com.opentext.ia.yaml.core.YamlMap;
 
-
 class ConvertSingularReferenceToSequenceForCollectionReferences extends PathVisitor {
 
-  private static final Map<String, Collection<String>> COLLECTION_REFERENCES_BY_PATH_REGEX
-      = collectionReferencesByPathRegex();
+  private static final Map<String, Collection<String>> COLLECTION_REFERENCES_BY_PATH_REGEX =
+      collectionReferencesByPathRegex();
 
   private static Map<String, Collection<String>> collectionReferencesByPathRegex() {
     Map<String, Collection<String>> result = new HashMap<>();
-    result.put("/.*", Arrays.asList("namespace"));
-    result.put("/confirmations/\\d+", Arrays.asList("holding"));
-    result.put("/holdings/\\d+", Arrays.asList("ingestNode"));
-    result.put("/holdingCryptoes/\\d+", Arrays.asList("pdiCrypto"));
-    result.put("/queries/\\d+", Arrays.asList("aic"));
-    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+", Arrays.asList("exportConfiguration"));
+    result.put("/.*", Collections.singletonList("namespace"));
+    result.put("/confirmations/\\d+", Collections.singletonList("holding"));
+    result.put("/holdings/\\d+", Collections.singletonList("ingestNode"));
+    result.put("/holdingCryptoes/\\d+", Collections.singletonList("pdiCrypto"));
+    result.put("/queries/\\d+", Collections.singletonList("aic"));
+    result.put("/resultMasters/\\d+/panels/\\d+/tabs/\\d+",
+        Collections.singletonList("exportConfiguration"));
     return result;
   }
-
 
   ConvertSingularReferenceToSequenceForCollectionReferences() {
     super(COLLECTION_REFERENCES_BY_PATH_REGEX.keySet());
@@ -45,9 +44,8 @@ class ConvertSingularReferenceToSequenceForCollectionReferences extends PathVisi
         .forEach(property -> replaceSingleReferenceWithSequence(map, property));
   }
 
-
   private void replaceSingleReferenceWithSequence(YamlMap map, String type) {
-    map.replace(type, English.plural(type), Arrays.asList(map.get(type)));
+    map.replace(type, English.plural(type), Collections.singletonList(map.get(type)));
   }
 
 }

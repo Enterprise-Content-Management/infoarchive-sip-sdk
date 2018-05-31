@@ -173,7 +173,13 @@
     <Bug pattern="XXE_DOCUMENT" />
     <Class name="com.opentext.ia.sdk.support.xml.XmlUtil" />
     <Method name="parse" />
-  </Match>  
-  
+  </Match>
+
+  <Match>
+    <!-- False positive -->
+    <Bug pattern="UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH" />
+    <Class name="com.opentext.ia.yaml.configuration.zip.ZipBuilder" />
+    <Method name="build" />
+  </Match>
   
 </FindBugsFilter>

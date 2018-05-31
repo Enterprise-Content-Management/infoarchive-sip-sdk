@@ -3,7 +3,6 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import com.opentext.ia.yaml.core.Visit;
@@ -13,7 +12,7 @@ import com.opentext.ia.yaml.core.YamlMap;
 class InsertDefaultParentForXdbDatabase extends BaseInsertDefaultReferences {
 
   InsertDefaultParentForXdbDatabase() {
-    super(Collections.singletonMap("/xdbDatabases/\\d+", Arrays.asList("xdbFederation")));
+    super(Collections.singletonMap("/xdbDatabases/\\d+", Collections.singletonList("xdbFederation")));
   }
 
   @Override

@@ -44,7 +44,7 @@ public class FilesSelector implements Function<String, List<File>> {
   private List<File> resolve(File dir, Predicate<File> filter) {
     List<File> files = Optional.ofNullable(dir.listFiles())
         .map(Arrays::asList)
-        .orElse(Collections.emptyList());
+        .orElseGet(Collections::emptyList);
     List<File> result = files.stream()
         .filter(File::isFile)
         .filter(filter)
