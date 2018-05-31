@@ -6,11 +6,15 @@
     <Or>
       <!-- Too many false positives -->
       <Bug pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" />
+
       <!-- Converting all anonymous classes to static inner classes degrades readability -->
       <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
 
       <!-- Java 8+ is not vulnerable to null bytes in file paths -->
       <Bug pattern="WEAK_FILENAMEUTILS" />
+
+       <!-- Too many false positives, file system access is expected -->
+      <Bug pattern="PATH_TRAVERSAL_IN" />
     </Or>
   </Match>
   
@@ -29,6 +33,9 @@
       <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" />
       <!-- Not relevant due to the use of unittest @Before -->
       <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
+      <!-- Security issue not relevant for tests -->
+      <Bug pattern="FORMAT_STRING_MANIPULATION" />
+      <Bug pattern="HARD_CODE_PASSWORD" />
     </Or>
     <Or>
       <Class name="~.+\.When.+$" />
@@ -104,12 +111,15 @@
   </Match>
 
   <Match>
-    <!-- Default passwords for test data only, suppress for now -->
     <Bug pattern="HARD_CODE_PASSWORD" />
     <Or>
+      <!-- Default passwords for test data only, suppress for now -->
       <Class name="com.opentext.ia.configuration.XdbClusterBuilder" />
       <Class name="com.opentext.ia.configuration.XdbDatabaseBuilder" />
       <Class name="com.opentext.ia.configuration.XdbFederationBuilder" />
+
+      <!-- Sample password only -->
+      <Class name="com.opentext.ia.sdk.sample.authenticate.Authenticate$1" />
     </Or>
   </Match>
 
@@ -127,35 +137,43 @@
   </Match>
 
   <Match>
-    <Bug pattern="PATH_TRAVERSAL_IN" />
-    <Or>
-      <!-- False positives, private methods -->
-      <And>
-        <Class name="com.opentext.ia.yaml.configuration.zip.ZipConfiguration" />
-        <Method name="addParentPropertiesFiles" />
-      </And>
-      <And>
-        <Class name="com.opentext.ia.yaml.resource.FileResolver" />
-        <Method name="addParentPropertiesFiles" />
-      </And>
-      <!-- Should be allowed at these points -->
-      <And>
-        <Class name="com.opentext.ia.yaml.resource.FilesSelector" />
-        <Method name="apply" />
-      </And>
-      <And>
-        <Class name="com.opentext.ia.yaml.configuration.zip.ZipConfiguration" />
-        <Method name="resolveFile" />
-      </And>
-    </Or>
-  </Match>
-  
-  <Match>
     <Bug pattern="BC_UNCONFIRMED_CAST" />
     <Or>
       <!-- False positives -->
       <Class name="com.opentext.ia.sdk.support.io.RuntimeIoException" />
     </Or>
   </Match>
+  
+  <Match>
+    <!-- Format strings all constant -->
+    <Bug pattern="FORMAT_STRING_MANIPULATION" />
+    <Or>
+      <And>
+        <Class name="com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer" />
+        <Method name="resolveTemplatedKey" />
+      </And>
+      <And>
+        <Class name="com.opentext.ia.sdk.server.configuration.yaml.YamlPropertiesMap" />
+        <Or>
+          <Method name="appendTemplated" />
+          <Method name="putTemplated" />
+        </Or>
+      </And>
+    </Or>
+  </Match>
+
+  <Match>
+    <Bug pattern="HTTP_PARAMETER_POLLUTION" />
+    <Class name="com.opentext.ia.sdk.support.http.apache.ApacheHttpClient" />
+    <Method name="newGet" />
+  </Match>
+
+  <Match>
+    <!-- False positive, uses secure processing -->
+    <Bug pattern="XXE_DOCUMENT" />
+    <Class name="com.opentext.ia.sdk.support.xml.XmlUtil" />
+    <Method name="parse" />
+  </Match>  
+  
   
 </FindBugsFilter>
