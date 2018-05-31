@@ -53,7 +53,7 @@ public class FileArchiver {
 
   private void run(String rootPath, String sip) throws IOException {
     File sipFile = new File(sip).getCanonicalFile();
-    if (!sipFile.getParentFile().mkdirs()) {
+    if (!sipFile.getParentFile().mkdirs() && !sipFile.getParentFile().isDirectory()) {
       throw new IllegalStateException("Could not create all required directories in path "
           + sipFile.getParentFile().getAbsolutePath());
     }
