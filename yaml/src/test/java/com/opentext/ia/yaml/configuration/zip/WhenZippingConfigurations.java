@@ -35,7 +35,6 @@ import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.core.YamlSyntaxErrorException;
 
-
 public class WhenZippingConfigurations extends TestCase {
 
   private static final String INCLUDED_RESOURCE_NAME = "included.txt";
@@ -86,9 +85,12 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   private void setContent(File file, String content) throws IOException {
-    file.getParentFile().mkdirs();
-    try (OutputStream output = Files.newOutputStream(file.toPath(),
-        StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+    if (!file.getParentFile().mkdirs() && !file.getParentFile().isDirectory()) {
+      throw new IllegalStateException(
+          "Could not create all directories in path " + file.getParentFile().getAbsolutePath());
+    }
+    try (OutputStream output =
+        Files.newOutputStream(file.toPath(), StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
       try (Reader input = new StringReader(content)) {
         IOUtils.copy(input, output, StandardCharsets.UTF_8);
       }
@@ -99,7 +101,8 @@ public class WhenZippingConfigurations extends TestCase {
     return new RandomAccessZipFile(ZipConfiguration.of(yaml));
   }
 
-  private void assertZipEntry(String message, Predicate<String> expected, Map<String, InputStream> actual) {
+  private void assertZipEntry(String message, Predicate<String> expected,
+      Map<String, InputStream> actual) {
     Set<String> keys = actual.keySet();
     assertTrue(message + ":\n" + keys, keys.stream().anyMatch(expected));
   }
@@ -115,10 +118,8 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   private File yamlFileReferencingResource(File resource) throws IOException {
-    return yamlFileContaining(new YamlMap()
-        .put(someName(), new YamlMap()
-            .put(CONTENT, new YamlMap()
-                .put(RESOURCE, resource.getAbsolutePath()))));
+    return yamlFileContaining(new YamlMap().put(someName(),
+        new YamlMap().put(CONTENT, new YamlMap().put(RESOURCE, resource.getAbsolutePath()))));
   }
 
   @Test
@@ -140,8 +141,8 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   private File yamlFileIncluding(File includedYaml) throws IOException {
-    return yamlFileContaining(new YamlMap()
-        .put(INCLUDES, Arrays.asList(includedYaml.getAbsolutePath())));
+    return yamlFileContaining(
+        new YamlMap().put(INCLUDES, Arrays.asList(includedYaml.getAbsolutePath())));
   }
 
   @Test
@@ -170,7 +171,8 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldAvoidNameConflictsWhenIncludingFilesOutsideTheDirectoryTree() throws IOException {
+  public void shouldAvoidNameConflictsWhenIncludingFilesOutsideTheDirectoryTree()
+      throws IOException {
     File otherFolder = tempFolder.newFolder();
     File includedFile1 = newFile(otherFolder, INCLUDED_RESOURCE_NAME, "foo");
     File includedFile2 = newFile(new File(otherFolder, "subfolder"), INCLUDED_RESOURCE_NAME, "bar");
@@ -191,13 +193,8 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   private String someYamlReferencing(Collection<String> resources) {
-    return new YamlMap()
-        .put("pdiSchema", new YamlMap()
-            .put(NAME, someName())
-            .put(CONTENT, new YamlMap()
-                .put("format", "txt")
-                .put(RESOURCE, resources))
-            ).toString();
+    return new YamlMap().put("pdiSchema", new YamlMap().put(NAME, someName()).put(CONTENT,
+        new YamlMap().put("format", "txt").put(RESOURCE, resources))).toString();
   }
 
   @Test
@@ -207,10 +204,8 @@ public class WhenZippingConfigurations extends TestCase {
     File resource2 = newFile("resource2" + extension, "lorem");
     String pattern = "*" + extension;
     String key = someName();
-    yaml = yamlFileContaining(new YamlMap()
-        .put(key, new YamlMap()
-            .put(CONTENT, new YamlMap()
-                .put(RESOURCE, pattern))));
+    yaml = yamlFileContaining(
+        new YamlMap().put(key, new YamlMap().put(CONTENT, new YamlMap().put(RESOURCE, pattern))));
 
     Map<String, InputStream> zipEntries = zipYaml();
 
@@ -227,21 +222,18 @@ public class WhenZippingConfigurations extends TestCase {
     String extension = '.' + randomString(3);
     File resource1 = newFile(subFolder, "resource1" + extension, randomString(13));
     File resource2 = newFile(subFolder, "resource2" + extension, randomString(13));
-    File resource3 = newFile(subFolder, "resource3.html", "<html><body><h1>Hello</h1></body></html>");
+    File resource3 =
+        newFile(subFolder, "resource3.html", "<html><body><h1>Hello</h1></body></html>");
     String pattern = "*" + extension;
     YamlMap includedYaml = new YamlMap()
-        .put(someName(), new YamlMap()
-            .put(CONTENT, new YamlMap()
-                .put(RESOURCE, pattern)))
-        .put("customPresentationConfiguration", new YamlMap()
-            .put(NAME, "Baseball-SearchByPlayerNameView")
-            .put("htmlTemplate", new YamlMap()
-                .put(RESOURCE, resource3.getName())));
+        .put(someName(), new YamlMap().put(CONTENT, new YamlMap().put(RESOURCE, pattern)))
+        .put("customPresentationConfiguration",
+            new YamlMap().put(NAME, "Baseball-SearchByPlayerNameView").put("htmlTemplate",
+                new YamlMap().put(RESOURCE, resource3.getName())));
 
     File included = newFile(subFolder, CONFIGURATION_FILE_NAME, includedYaml.toString());
-    YamlMap configuration = new YamlMap()
-        .put(INCLUDES, Arrays.asList(
-            String.format("%s/%s", subFolder.getName(), included.getName())));
+    YamlMap configuration = new YamlMap().put(INCLUDES,
+        Arrays.asList(String.format("%s/%s", subFolder.getName(), included.getName())));
     yaml = tempFolder.newFile(CONFIGURATION_FILE_NAME);
     setContent(yaml, configuration.toString());
 
@@ -258,17 +250,14 @@ public class WhenZippingConfigurations extends TestCase {
     String text = randomString();
     File resourceFile = newFile(someName() + ".txt", text);
     newFile(CONFIGURATION_PROPERTIES, "name=" + resourceFile.getName());
-    yaml = newFile(CONFIGURATION_FILE_NAME, new YamlMap()
-        .put("pdiSchema", new YamlMap()
-            .put("name", someName())
-            .put("content", new YamlMap()
-                .put("format", "txt")
-                .put("resource", "${name}")))
-        .toString());
+    yaml = newFile(CONFIGURATION_FILE_NAME,
+        new YamlMap().put("pdiSchema", new YamlMap().put("name", someName()).put("content",
+            new YamlMap().put("format", "txt").put("resource", "${name}"))).toString());
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntry("Resource not included: " + resourceFile.getName(), resourceFile.getName()::equals, zipEntries);
+    assertZipEntry("Resource not included: " + resourceFile.getName(),
+        resourceFile.getName()::equals, zipEntries);
   }
 
   @Test
@@ -300,19 +289,14 @@ public class WhenZippingConfigurations extends TestCase {
     final AtomicBoolean initialized = new AtomicBoolean();
 
     Map<String, InputStream> zip = new RandomAccessZipFile(
-        ZipConfiguration.of(dir, ZipCustomization.builder()
-            .init((names, contentSupplier) -> {
-              assertTrue("Missing " + CONFIGURATION_FILE_NAME, names.contains(CONFIGURATION_FILE_NAME));
-              assertTrue("Missing " + CONFIGURATION_PROPERTIES, names.contains(CONFIGURATION_PROPERTIES));
-              initialized.set(true);
-            })
-            .properties((name, properties) ->
-                properties.put(key, value))
-            .yaml((name, map) ->
-                map.put("version", version))
-            .extra(() ->
-                ExtraZipEntry.of(entryName, entryContent))
-            .build()));
+        ZipConfiguration.of(dir, ZipCustomization.builder().init((names, contentSupplier) -> {
+          assertTrue("Missing " + CONFIGURATION_FILE_NAME, names.contains(CONFIGURATION_FILE_NAME));
+          assertTrue("Missing " + CONFIGURATION_PROPERTIES,
+              names.contains(CONFIGURATION_PROPERTIES));
+          initialized.set(true);
+        }).properties((name, properties) -> properties.put(key, value))
+            .yaml((name, map) -> map.put("version", version))
+            .extra(() -> ExtraZipEntry.of(entryName, entryContent)).build()));
 
     assertTrue("Not initialized", initialized.get());
 

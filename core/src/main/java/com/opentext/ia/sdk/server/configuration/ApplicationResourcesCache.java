@@ -49,7 +49,7 @@ public class ApplicationResourcesCache {
   private String resultConfigHelperUri;
   private Search search;
   private SearchComposition searchComposition;
-  private XForm xForm;
+  private XForm xform;
   private String holdingUri;
   private CryptoObject cryptoObject;
   private String pdiCryptoUri;
@@ -235,12 +235,12 @@ public class ApplicationResourcesCache {
     this.search = search;
   }
 
-  public XForm getxForm() {
-    return xForm;
+  public XForm getXform() {
+    return xform;
   }
 
-  public void setxForm(XForm xForm) {
-    this.xForm = xForm;
+  public void setXform(XForm xform) {
+    this.xform = xform;
   }
 
   public List<String> getQueryUris() {

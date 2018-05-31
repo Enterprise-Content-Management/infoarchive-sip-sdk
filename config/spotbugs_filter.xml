@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- FindBugs exclusion filter common to all IAIS projects -->
+<!-- SpotBugs exclusion filter for the InfoArchive SDK -->
 <FindBugsFilter>
   
   <Match>
     <Or>
-      <!--Too many false positives -->
-      <Bug pattern="BC_UNCONFIRMED_CAST" />
       <!-- Too many false positives -->
       <Bug pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" />
       <!-- Converting all anonymous classes to static inner classes degrades readability -->
       <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
-      <!-- Too many false positives, depends on external naming conventions -->
-      <Bug pattern="NM_CONFUSING" />
-      <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+
+      <!-- Java 8+ is not vulnerable to null bytes in file paths -->
+      <Bug pattern="WEAK_FILENAMEUTILS" />
     </Or>
   </Match>
   
@@ -28,8 +26,6 @@
       <BUg pattern="NP_NULL_PARAM_DEREF" />
       <Bug pattern="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS" />
       <Bug pattern="NP_NULL_PARAM_DEREF_NONVIRTUAL" />
-      <!-- Could be done in @Before -->
-      <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
       <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" />
       <!-- Not relevant due to the use of unittest @Before -->
       <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
@@ -44,10 +40,12 @@
     <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
     <Class name="~com\.opentext\.ia\.sdk\.sip\.(DataSubmissionSession|PackagingInformation)(\$.*)?" />
   </Match>
+
   <Match>
     <Bug pattern="EI_EXPOSE_REP2" />
     <Class name="~com\.opentext\.ia\.sdk\.sample\..*" />
   </Match>
+
   <Match>
     <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" />
     <Class name="com.opentext.ia.yaml.core.YamlDiff" />
@@ -121,5 +119,43 @@
     <Class name="com.opentext.ia.configuration.WhenBuildingConfigurations" />
     <Method name="shouldThrowExceptionWhenAskedForMissingItem" />
   </Match>
+  
+  <Match>
+    <!-- False positive -->
+    <Bug pattern="REDOS" />
+    <Class name="com.opentext.ia.yaml.configuration.ConfigurationProperties" />
+  </Match>
 
+  <Match>
+    <Bug pattern="PATH_TRAVERSAL_IN" />
+    <Or>
+      <!-- False positives, private methods -->
+      <And>
+        <Class name="com.opentext.ia.yaml.configuration.zip.ZipConfiguration" />
+        <Method name="addParentPropertiesFiles" />
+      </And>
+      <And>
+        <Class name="com.opentext.ia.yaml.resource.FileResolver" />
+        <Method name="addParentPropertiesFiles" />
+      </And>
+      <!-- Should be allowed at these points -->
+      <And>
+        <Class name="com.opentext.ia.yaml.resource.FilesSelector" />
+        <Method name="apply" />
+      </And>
+      <And>
+        <Class name="com.opentext.ia.yaml.configuration.zip.ZipConfiguration" />
+        <Method name="resolveFile" />
+      </And>
+    </Or>
+  </Match>
+  
+  <Match>
+    <Bug pattern="BC_UNCONFIRMED_CAST" />
+    <Or>
+      <!-- False positives -->
+      <Class name="com.opentext.ia.sdk.support.io.RuntimeIoException" />
+    </Or>
+  </Match>
+  
 </FindBugsFilter>

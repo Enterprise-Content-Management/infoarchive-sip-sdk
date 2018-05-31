@@ -150,7 +150,9 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
     Consumer<FileGenerationMetrics> deletingCallback = fgm -> {
       File file = fgm.getFile();
       sip.set(file);
-      file.delete();
+      if (!file.delete()) {
+        throw new IllegalStateException("Could not delete file " + file.getAbsolutePath());
+      }
     };
     BatchSipAssemblerWithCallback<String> batcher = new BatchSipAssemblerWithCallback<>(sipAssembler,
         segmentationStrategy, () -> newFile(), deletingCallback);
