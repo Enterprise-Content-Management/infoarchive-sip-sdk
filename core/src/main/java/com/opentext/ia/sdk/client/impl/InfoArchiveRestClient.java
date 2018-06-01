@@ -105,16 +105,13 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   @Override
   public SearchResults search(SearchQuery searchQuery, SearchComposition searchComposition) throws IOException {
-    String searchResultBaseUri = searchComposition.getSelfUri();
+    String uri = searchComposition.getSelfUri();
     String xmlSearchQuery = getXmlStringFromSearchQuery(searchQuery);
-    SearchResults result = restClient.post(searchResultBaseUri, SearchResults.class, xmlSearchQuery, MediaTypes.XML);
-    while (searchResultBaseUri != null) {
-      SearchResults onePageSearchResults = restClient.post(searchResultBaseUri, SearchResults.class, "",
-          MediaTypes.XML);
-      for (SearchResult searchResult: onePageSearchResults.getResults()) {
-        result.addResult(searchResult);
-      }
-      searchResultBaseUri = onePageSearchResults.getUri("next");
+    SearchResults result = restClient.post(uri, SearchResults.class, xmlSearchQuery, MediaTypes.XML);
+    while (uri != null) {
+      SearchResults onePageOfSearchResults = restClient.post(uri, SearchResults.class, xmlSearchQuery, MediaTypes.XML);
+      onePageOfSearchResults.getResults().forEach(result::addResult);
+      uri = onePageOfSearchResults.getUri("next");
     }
     return result;
   }

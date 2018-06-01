@@ -13,6 +13,11 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 - `XmlBuilder.element(String, Optional<String>)`
 
 
+== Fixed
+
+- `InfoArchiveRestClient.search()` now handles pages properly
+
+
 
 == 11.1.1 - 2018-05-28
 
