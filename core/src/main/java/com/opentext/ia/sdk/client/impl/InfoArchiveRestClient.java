@@ -73,14 +73,15 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   public String ingestDirect(InputStream sip) throws IOException {
     String ingestDirectUri = resourceCache.getAipIngestDirectResourceUri();
     if (ingestDirectUri == null) {
+      // Fall back to previous approach
       return ingest(sip);
-    } else {
-      return restClient.post(ingestDirectUri, IngestionResponse.class, new TextPart("format", "sip_zip"),
-          new BinaryPart("sip", sip, "IASIP.zip")).getAipId();
     }
+    return restClient.post(ingestDirectUri, IngestionResponse.class, new TextPart("format", "sip_zip"),
+        new BinaryPart("sip", sip, "IASIP.zip")).getAipId();
   }
 
   @Override
+  @Deprecated
   public ContentResult fetchContent(String contentId) throws IOException {
     try {
       String contentResource = resourceCache.getCiResourceUri();
@@ -94,6 +95,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   @Override
+  @Deprecated
   public ContentResult fetchOrderContent(OrderItem orderItem) throws IOException {
     String downloadUri = Objects.requireNonNull(
         Objects.requireNonNull(orderItem, "Missing order item").getUri(LINK_DOWNLOAD), "Missing download URI");
@@ -194,6 +196,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   @Override
+  @Deprecated
   public LinkContainer uploadTransformation(ExportTransformation exportTransformation, InputStream zip)
       throws IOException {
     String uri = exportTransformation.getUri(LINK_EXPORT_TRANSFORMATION_ZIP);

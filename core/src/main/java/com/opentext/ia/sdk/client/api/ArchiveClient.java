@@ -46,7 +46,9 @@ public interface ArchiveClient {
    * @param contentId The id of the content to fetch.
    * @return A ContentResult
    * @throws IOException When an I/O error occurs
+   * @deprecated Will be removed without replacement in a future version
    */
+  @Deprecated
   ContentResult fetchContent(String contentId) throws IOException;
 
   /**
@@ -54,7 +56,9 @@ public interface ArchiveClient {
    * @param orderItem The order item.
    * @return A ContentResult
    * @throws IOException When an I/O error occurs
+   * @deprecated Will be removed without replacement in a future version
    */
+  @Deprecated
   ContentResult fetchOrderContent(OrderItem orderItem) throws IOException;
 
   /**
@@ -91,12 +95,14 @@ public interface ArchiveClient {
       String outputName, TimeUnit timeUnit, long timeOut) throws IOException;
 
   /**
-   * Upload the transformation zip with the stylesheet into the Archive.
+   * Upload the transformation zip with the stylesheet into Archive.
    * @param exportTransformation The export transformation.
    * @param zip The input stream of zip with stylesheet.
    * @throws IOException When an I/O error occurs
    * @return The uploaded transformation
+   * @deprecated Use declarative configuration to define transformations
    */
+  @Deprecated
   LinkContainer uploadTransformation(ExportTransformation exportTransformation, InputStream zip) throws IOException;
 
 }

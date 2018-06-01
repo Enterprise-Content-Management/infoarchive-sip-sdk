@@ -13,6 +13,12 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 - `XmlBuilder.element(String, Optional<String>)`
 
 
+=== Deprecated
+
+- The following methods in `ArchiveClient` are now deprecated: `fetchContent()`, `fetchOrderContent()`, and `uploadTransformation()`
+
+
+
 == Fixed
 
 - `InfoArchiveRestClient.search()` now handles pages properly
