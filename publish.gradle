@@ -4,10 +4,6 @@ apply plugin: 'io.codearte.nexus-staging'
 
 ext.publishProjects = subprojects.findAll { it.name.startsWith('infoarchive-') }
 
-nexusStaging {
-  packageGroup = 'com.opentext'
-}
-
 // OSSRH requires both javadoc and sources jars
 publishProjects.each { prj ->
   prj.task('javadocJar', type: Jar) {
