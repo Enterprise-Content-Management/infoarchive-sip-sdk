@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.yaml.resource;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -28,7 +28,7 @@ public interface ResourcesResolver {
    * @return a resolver that doesn't supports patterns
    */
   static ResourcesResolver basedOn(ResourceResolver resourceResolver) {
-    return pattern -> Arrays.asList(resourceResolver.apply(pattern));
+    return pattern -> Collections.singletonList(resourceResolver.apply(pattern));
   }
 
 }

@@ -17,8 +17,8 @@ jacocoTestReport {
   doLast {
     def report = file("${jacoco.reportsDir}/test/jacocoTestReport.xml")
     def parser = new XmlParser()
-    parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-    parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
+    parser.setFeature('http://apache.org/xml/features/nonvalidating/load-external-dtd', false);
+    parser.setFeature('http://apache.org/xml/features/disallow-doctype-decl', false)
     def results = parser.parse(report)
     def percentage = {
       def covered = it.'@covered' as Double
@@ -28,8 +28,8 @@ jacocoTestReport {
     def counters = results.counter
     def metrics = [:]
     metrics << [
-      'line' : percentage(counters.find { it.'@type'.equals('LINE') }),
-      'complexity' : percentage(counters.find { it.'@type'.equals('COMPLEXITY') }),
+      'line' : percentage(counters.find { it.'@type' == 'LINE' }),
+      'complexity' : percentage(counters.find { it.'@type' == 'COMPLEXITY' }),
     ]
     def failures = []
     metrics.each {
@@ -40,14 +40,14 @@ jacocoTestReport {
       }
     }
     if (failures) {
-      logger.error("------------------ Code Coverage Failed -----------------------")
+      logger.error('------------------ Code Coverage Failed -----------------------')
       failures.each {
         logger.error(it)
       }
-      logger.error("---------------------------------------------------------------")
-      throw new GradleException("Code coverage failed")
-    } else{
-      logger.debug("Passed Code Coverage Checks")
+      logger.error('---------------------------------------------------------------')
+      throw new GradleException('Code coverage failed')
+    } else {
+      logger.debug('Passed Code Coverage Checks')
     }
   }
 }

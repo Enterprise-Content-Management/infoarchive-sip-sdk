@@ -18,6 +18,7 @@ import org.json.JSONObject;
  */
 public class ConfigurationObject {
 
+  private static final String NL = System.lineSeparator();
   private final JSONObject properties = new JSONObject();
   private final Map<String, List<ConfigurationObject>> childObjects = new HashMap<>();
   private final String type;
@@ -87,17 +88,19 @@ public class ConfigurationObject {
 
   private String toString(String indent) {
     StringBuilder result = new StringBuilder();
-    result.append(indent).append("properties:").append(System.lineSeparator()).append(indent).append("  ")
-        .append(properties.toString(4 + indent.length())).append(System.lineSeparator());
+    result.append(indent).append("properties:").append(NL).append(indent).append("  ")
+        .append(properties.toString(4 + indent.length())).append(NL);
+
     childObjects.forEach((collection, objects) -> {
-      result.append(indent).append(collection).append(':').append(System.lineSeparator());
+      result.append(indent).append(collection).append(':').append(NL);
       if (objects.isEmpty()) {
-        result.append(indent).append("  []").append(System.lineSeparator());
+        result.append(indent).append("  []").append(NL);
       } else {
         objects.forEach(object ->
-            result.append(indent).append(object.toString(indent + "  ")).append(System.lineSeparator()));
+            result.append(indent).append(object.toString(indent + "  ")).append(NL));
       }
     });
+
     return result.toString();
   }
 

@@ -5,6 +5,7 @@ package com.opentext.ia.yaml.configuration;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ class InlineExternalContent extends PathVisitor {
   static final String TEXT = "text";
   private static final String FORMAT = "format";
   private static final String RESOURCE = "resource";
-  private static final Collection<String> SEGMENTS_WITH_FORMAT = Arrays.asList("content");
+  private static final Collection<String> SEGMENTS_WITH_FORMAT = Collections.singletonList("content");
   private static final Collection<String> BINARY_EXTENSIONS = Arrays.asList("custom", "pdf", "zip");
 
   private final ResourcesResolver resolver;

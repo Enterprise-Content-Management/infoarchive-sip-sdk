@@ -75,4 +75,8 @@ public class ContentBuilder<P extends ContentObjectBuilder<?, P, ?>> {
     return (P)parent;
   }
 
+  @Override
+  public String toString() {
+    return "[format: " + format + ", text:" + text + "]";
+  }
 }

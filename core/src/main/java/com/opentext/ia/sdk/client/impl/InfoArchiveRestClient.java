@@ -73,14 +73,15 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   public String ingestDirect(InputStream sip) throws IOException {
     String ingestDirectUri = resourceCache.getAipIngestDirectResourceUri();
     if (ingestDirectUri == null) {
+      // Fall back to previous approach
       return ingest(sip);
-    } else {
-      return restClient.post(ingestDirectUri, IngestionResponse.class, new TextPart("format", "sip_zip"),
-          new BinaryPart("sip", sip, "IASIP.zip")).getAipId();
     }
+    return restClient.post(ingestDirectUri, IngestionResponse.class, new TextPart("format", "sip_zip"),
+        new BinaryPart("sip", sip, "IASIP.zip")).getAipId();
   }
 
   @Override
+  @Deprecated
   public ContentResult fetchContent(String contentId) throws IOException {
     try {
       String contentResource = resourceCache.getCiResourceUri();
@@ -94,6 +95,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   @Override
+  @Deprecated
   public ContentResult fetchOrderContent(OrderItem orderItem) throws IOException {
     String downloadUri = Objects.requireNonNull(
         Objects.requireNonNull(orderItem, "Missing order item").getUri(LINK_DOWNLOAD), "Missing download URI");
@@ -105,21 +107,19 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   @Override
   public SearchResults search(SearchQuery searchQuery, SearchComposition searchComposition) throws IOException {
-    String searchResultBaseUri = searchComposition.getSelfUri();
-    String xmlSearchQuery = getXmlStringFromSearchQuery(searchQuery);
-    SearchResults result = restClient.post(searchResultBaseUri, SearchResults.class, xmlSearchQuery, MediaTypes.XML);
-    while (searchResultBaseUri != null) {
-      SearchResults onePageSearchResults = restClient.post(searchResultBaseUri, SearchResults.class, "",
-          MediaTypes.XML);
-      for (SearchResult searchResult: onePageSearchResults.getResults()) {
-        result.addResult(searchResult);
-      }
-      searchResultBaseUri = onePageSearchResults.getUri("next");
+    String uri = searchComposition.getSelfUri();
+    String searchCriteria = toSearchCriteria(searchQuery);
+    SearchResults result = restClient.post(uri, SearchResults.class, searchCriteria, MediaTypes.XML);
+    uri = result.getUri("next");
+    while (uri != null) {
+      SearchResults onePageOfSearchResults = restClient.post(uri, SearchResults.class, searchCriteria, MediaTypes.XML);
+      onePageOfSearchResults.getResults().forEach(result::addResult);
+      uri = onePageOfSearchResults.getUri("next");
     }
     return result;
   }
 
-  private String getXmlStringFromSearchQuery(SearchQuery searchQuery) {
+  private String toSearchCriteria(SearchQuery searchQuery) {
     SearchDataBuilder searchDataBuilder = SearchDataBuilder.builder();
     searchQuery.getItems().stream()
         .filter(item -> item instanceof Comparison)
@@ -196,6 +196,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
   }
 
   @Override
+  @Deprecated
   public LinkContainer uploadTransformation(ExportTransformation exportTransformation, InputStream zip)
       throws IOException {
     String uri = exportTransformation.getUri(LINK_EXPORT_TRANSFORMATION_ZIP);

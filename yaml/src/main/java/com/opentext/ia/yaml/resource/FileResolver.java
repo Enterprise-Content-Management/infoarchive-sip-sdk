@@ -12,6 +12,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 
@@ -25,7 +26,7 @@ class FileResolver implements ResourceResolver, ResourcesResolver {
 
   @Override
   public String apply(String name) {
-    return resolve(new File(dir, name));
+    return resolve(new File(dir, FilenameUtils.getName(name)));
   }
 
   private String resolve(File file) {

@@ -4,9 +4,9 @@
 package com.opentext.ia.sdk.dto;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.stubbing.OngoingStubbing;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
@@ -63,7 +63,6 @@ import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 import com.opentext.ia.sdk.support.http.rest.RestClient;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 import com.opentext.ia.test.TestCase;
-
 
 @SuppressWarnings({ "PMD", "deprecation" }) // TODO: Clean this up
 public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations {
@@ -145,9 +144,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     tenant.setLinks(links);
     application.setLinks(links);
 
-    contents.getLinks()
-      .put(LINK_DOWNLOAD, new Link());
-    when(restClient.follow(any(LinkContainer.class), eq(LINK_CONTENTS), eq(Contents.class))).thenReturn(contents);
+    contents.getLinks().put(LINK_DOWNLOAD, new Link());
+    when(restClient.follow(any(LinkContainer.class), eq(LINK_CONTENTS), eq(Contents.class)))
+        .thenReturn(contents);
 
     when(restClient.get(BILLBOARD_URI, Services.class)).thenReturn(resource);
     when(restClient.follow(resource, LINK_TENANT, Tenant.class)).thenReturn(tenant);
@@ -157,7 +156,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     productInfo.setBuildProperties(buildProperties);
     when(restClient.follow(resource, LINK_PRODUCT_INFO, ProductInfo.class)).thenReturn(productInfo);
     when(link.getHref()).thenReturn(BILLBOARD_URI);
-    when(restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class)).thenReturn(aips);
+    when(restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class))
+        .thenReturn(aips);
     aips.setLinks(links);
 
     mockCollection(Applications.class, applications);
@@ -193,7 +193,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockCollection(StorageEndPoints.class, storageEndPoints);
     mockCollection(CustomStorages.class, customStorages);
     mockCollection(ContentAddressedStorages.class, contentAddressedStorages);
-    when(restClient.createCollectionItem(any(LinkContainer.class), any(XForm.class), eq(LINK_SELF))).thenReturn(xForm);
+    when(restClient.createCollectionItem(any(LinkContainer.class), any(XForm.class), eq(LINK_SELF)))
+        .thenReturn(xForm);
 
     mockByName(federations, new XdbFederation());
     mockByName(databases, new XdbDatabase());
@@ -229,7 +230,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     mockByName(customStorages, new CustomStorage());
     mockByName(contentAddressedStorages, new ContentAddressedStorage());
 
-    when(restClient.put(anyString(), eq(SearchComposition.class), any(AllSearchComponents.class)))
+    when(restClient.put(any(), eq(SearchComposition.class), any(AllSearchComponents.class)))
         .thenReturn(new SearchComposition());
 
     when(aics.getItems()).thenReturn(Stream.of(aic));
@@ -261,14 +262,17 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
         com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.RETENTION_POLICY_NAME,
         APPLICATION_NAME);
     configuration.put(
-        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PDI_XML, "");
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PDI_XML,
+        "");
     configuration.put(
         com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PDI_SCHEMA_NAME,
         APPLICATION_NAME);
     configuration.put(
-        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PDI_SCHEMA, "");
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PDI_SCHEMA,
+        "");
     configuration.put(
-        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.INGEST_XML, "");
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.INGEST_XML,
+        "");
     configuration.put(
         com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_DESCRIPTION,
         "Default emails search");
@@ -279,7 +283,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
         com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_NAME,
         "emailsSearch");
     configuration.put(
-        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_STATE, "DRAFT");
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_STATE,
+        "DRAFT");
     configuration.put(
         com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.SEARCH_COMPOSITION_NAME,
         "DefaultSearchComposition");
@@ -294,9 +299,11 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
         "");
 
     configuration.put(
-        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PROXY_HOST, "localhost");
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PROXY_HOST,
+        "localhost");
     configuration.put(
-        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PROXY_PORT, "8080");
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.PROXY_PORT,
+        "8080");
 
     configuration.put("ia.aic.name", "MyAic");
     configuration.put("ia.aic.criteria.name", "name");
@@ -333,10 +340,12 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.search.emailsSearch.composition.xform", "<form></form>");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.name", "sender");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.label", "Sender");
-    configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.path", "n:sender/n:email");
+    configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.path",
+        "n:sender/n:email");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.type", "STRING");
     configuration.put("ia.search.emailsSearch.composition.Set 1.result.main.sort", "NONE");
-    configuration.put("ia.search.emailsSearch.composition.exportconfigs", "exportConfig1,exportconfig2");
+    configuration.put("ia.search.emailsSearch.composition.exportconfigs",
+        "exportConfig1,exportconfig2");
 
     prepareExport();
     prepareCrypto();
@@ -347,7 +356,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.exportpipeline.names", "ExportPipeline");
     configuration.put("ia.exportpipeline.ExportPipeline.composite", "NONE");
     configuration.put("ia.exportpipeline.ExportPipeline.content", "<pipeline></pipeline>");
-    configuration.put("ia.exportpipeline.ExportPipeline.description", "gzip envelope for xsl csv export");
+    configuration.put("ia.exportpipeline.ExportPipeline.description",
+        "gzip envelope for xsl csv export");
     configuration.put("ia.exportpipeline.ExportPipeline.envelopeformat", "gzip");
     configuration.put("ia.exportpipeline.ExportPipeline.includescontent", Boolean.TRUE.toString());
     configuration.put("ia.exportpipeline.ExportPipeline.outputformat", "csv");
@@ -359,20 +369,27 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put("ia.exportconfig.ExportConfiguration.type", "ASYNCHRONOUS");
     configuration.put("ia.exportconfig.ExportConfiguration.pipeline", "ExportPipeline");
     configuration.put("ia.exportconfig.ExportConfiguration.transformations.names", "CsvXsl");
-    configuration.put("ia.exportconfig.ExportConfiguration.transformations.CsvXsl.portname", "stylesheet");
-    configuration.put("ia.exportconfig.ExportConfiguration.transformations.CsvXsl.transformation", "ExportTransformation");
+    configuration.put("ia.exportconfig.ExportConfiguration.transformations.CsvXsl.portname",
+        "stylesheet");
+    configuration.put("ia.exportconfig.ExportConfiguration.transformations.CsvXsl.transformation",
+        "ExportTransformation");
     configuration.put("ia.exportconfig.ExportConfiguration.options.xslresultformat.value", "csv");
     configuration.put("ia.exportconfig.ExportConfiguration.options.names", "FtpHost,FtpPort");
     configuration.put("ia.exportconfig.ExportConfiguration.options.FtpHost.value", "localhost");
     configuration.put("ia.exportconfig.ExportConfiguration.options.FtpPort.value", "21");
-    configuration.put("ia.exportconfig.ExportConfiguration.encryptedoptions.names", "FtpLogin,FtpPass");
-    configuration.put("ia.exportconfig.ExportConfiguration.encryptedoptions.FtpLogin.value", "login");
-    configuration.put("ia.exportconfig.ExportConfiguration.encryptedoptions.FtpPass.value", "password");
+    configuration.put("ia.exportconfig.ExportConfiguration.encryptedoptions.names",
+        "FtpLogin,FtpPass");
+    configuration.put("ia.exportconfig.ExportConfiguration.encryptedoptions.FtpLogin.value",
+        "login");
+    configuration.put("ia.exportconfig.ExportConfiguration.encryptedoptions.FtpPass.value",
+        "password");
 
     configuration.put("ia.exporttransformation.names", "ExportTransformation");
-    configuration.put("ia.exporttransformation.ExportTransformation.description", "csv xsl transformation");
+    configuration.put("ia.exporttransformation.ExportTransformation.description",
+        "csv xsl transformation");
     configuration.put("ia.exporttransformation.ExportTransformation.type", "XSLT");
-    configuration.put("ia.exporttransformation.ExportTransformation.mainpath", "search-results-csv.xsl");
+    configuration.put("ia.exporttransformation.ExportTransformation.mainpath",
+        "search-results-csv.xsl");
   }
 
   private void prepareCrypto() {
@@ -400,23 +417,27 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
     configuration.put("ia.custom.storage.name", "MyCustomStorage");
     configuration.put("ia.custom.storage.description", "MyCustomStorageDescription");
-    configuration.put("ia.custom.storage.factory.service.name", "MyCustomStorageFactoryServiceName");
+    configuration.put("ia.custom.storage.factory.service.name",
+        "MyCustomStorageFactoryServiceName");
     configuration.put("ia.custom.storage.property.name", "MyCustomStoragePropertyName");
     configuration.put("ia.custom.storage.property.value", "MyCustomStoragePropertyValue");
 
     configuration.put("ia.content.addressed.storage.name", "MyContentAddressedStorage");
     configuration.put("ia.content.addressed.storage.connexion.string", "http://connection");
     configuration.put("ia.content.addressed.storage.pea.name", "MyContentAddressedStoragePaeName");
-    configuration.put("ia.content.addressed.storage.pea.value", "MyContentAddressedStoragePaeValue");
+    configuration.put("ia.content.addressed.storage.pea.value",
+        "MyContentAddressedStoragePaeValue");
   }
 
   private <T> OngoingStubbing<T> mockCollection(Class<T> type, T object) throws IOException {
-    return when(restClient.follow(any(LinkContainer.class), anyString(), eq(type))).thenReturn(object);
+    return when(restClient.follow(any(LinkContainer.class), anyString(), eq(type)))
+        .thenReturn(object);
   }
 
-  protected <T extends NamedLinkContainer> void mockByName(ItemContainer<T> collection, T item) throws IOException {
+  protected <T extends NamedLinkContainer> void mockByName(ItemContainer<T> collection, T item)
+      throws IOException {
     final AtomicBoolean first = new AtomicBoolean(true);
-    when(collection.byName(anyString())).thenAnswer(invocation -> {
+    when(collection.byName(any())).thenAnswer(invocation -> {
       if (first.get()) {
         first.set(false);
         return null;
@@ -442,7 +463,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   private ArchiveClient configureServer(Map<String, String> config) throws IOException {
     return archiveClient = ArchiveClients.configuringApplicationUsing(
-        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(config),
+        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(
+            config),
         connection);
   }
 
@@ -455,8 +477,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     ReceptionResponse receptionResponse = new ReceptionResponse();
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
     receptionResponse.setLinks(links);
-    when(restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
-      .thenReturn(receptionResponse);
+    when(
+        restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
+            .thenReturn(receptionResponse);
     when(restClient.post(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip001");
 
@@ -473,8 +496,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
-    when(restClient.post(anyString(), eq(IngestionResponse.class), any(Part.class), any(Part.class)))
-        .thenReturn(ingestionResponse);
+    when(
+        restClient.post(anyString(), eq(IngestionResponse.class), any(Part.class), any(Part.class)))
+            .thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip002");
 
     assertEquals(archiveClient.ingestDirect(sip), "sip002");
@@ -487,9 +511,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
-    when(restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
-      .thenReturn(new ReceptionResponse());
-    when(restClient.post(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
+    when(
+        restClient.post(any(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
+            .thenReturn(new ReceptionResponse());
+    when(restClient.post(any(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
     when(ingestionResponse.getAipId()).thenReturn("sip003");
 
     assertEquals(archiveClient.ingestDirect(sip), "sip003");
@@ -507,7 +532,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test(expected = NullPointerException.class)
-  public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull() throws IOException {
+  public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull()
+      throws IOException {
     configureServer(new HashMap<>());
   }
 
@@ -518,11 +544,11 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
       return app.get();
     });
     final AtomicBoolean created = new AtomicBoolean(false);
-    when(restClient.createCollectionItem(eq(applications), any(Application.class), Matchers.<String>anyVararg()))
-        .thenAnswer(invocation -> {
-      created.set(true);
-      return null;
-    });
+    when(restClient.createCollectionItem(eq(applications), any(Application.class),
+        ArgumentMatchers.<String>any())).thenAnswer(invocation -> {
+          created.set(true);
+          return null;
+        });
     when(restClient.refresh(applications)).thenAnswer(invocation -> {
       if (created.get()) {
         app.set(application);
@@ -547,17 +573,18 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     configuration.put(
         com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.FEDERATION_NAME,
         randomString());
-    when(restClient.createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD), eq(LINK_SELF)))
-        .then(invocation -> {
-      throw new HttpException(503, "");
-    });
+    when(restClient.createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD),
+        eq(LINK_SELF))).then(invocation -> {
+          throw new HttpException(503, "");
+        });
 
     ArchiveClients.configuringApplicationUsing(
-        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(configuration),
+        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(
+            configuration),
         connection);
 
-    verify(restClient, times(5)).createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD),
-        eq(LINK_SELF));
+    verify(restClient, times(5)).createCollectionItem(eq(federations), any(XdbFederation.class),
+        eq(LINK_ADD), eq(LINK_SELF));
   }
 
   @Test
@@ -598,7 +625,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     String uri = randomString();
     when(uriBuilder.build()).thenReturn(uri);
     when(uriBuilder.addParameter(anyString(), anyString())).thenReturn(uriBuilder);
-    when(restClient.uri(anyString())).thenReturn(uriBuilder);
+    when(restClient.uri(any())).thenReturn(uriBuilder);
     OrderItem orderItem = mock(OrderItem.class);
     when(restClient.post(eq(uri), eq(OrderItem.class), anyString())).thenReturn(orderItem);
 
@@ -635,7 +662,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.uri(anyString())).thenReturn(uriBuilder);
     ResponseFactory contentResultFactory = mock(ContentResultFactory.class);
     DefaultContentResult contentResult = mock(DefaultContentResult.class);
-    when(contentResultFactory.create(any(Response.class), any(Runnable.class))).thenReturn(contentResult);
+    when(contentResultFactory.create(any(Response.class), any(Runnable.class)))
+        .thenReturn(contentResult);
     when(restClient.get(eq(uri), any(ContentResultFactory.class))).thenReturn(contentResult);
     OrderItem orderItem = new OrderItem();
     Link downloadLink = new Link();
@@ -656,7 +684,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
     LinkContainer linkContainer = mock(LinkContainer.class);
     when(linkContainer.getUri(anyString())).thenReturn(randomString());
-    when(restClient.post(anyString(), eq(LinkContainer.class), any(Part.class))).thenReturn(linkContainer);
+    when(restClient.post(anyString(), eq(LinkContainer.class), any(Part.class)))
+        .thenReturn(linkContainer);
 
     configureServer();
     LinkContainer result = archiveClient.uploadTransformation(exportTransformation, zip);

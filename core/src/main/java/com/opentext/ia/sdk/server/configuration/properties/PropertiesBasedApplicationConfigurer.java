@@ -111,6 +111,7 @@ import com.opentext.ia.sdk.dto.result.Column;
 import com.opentext.ia.sdk.dto.result.Column.DataType;
 import com.opentext.ia.sdk.dto.result.Column.DefaultSort;
 import com.opentext.ia.sdk.dto.result.ResultMaster;
+import com.opentext.ia.sdk.dto.result.Tab;
 import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.server.configuration.ApplicationResourcesCache;
 import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedApplicationConfigurer;
@@ -804,11 +805,12 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     SubPriority priority = new SubPriority();
     priority.setPriority(0);
     priority.setDeadline(100);
-    result.getSubPriorities().add(priority);
+    List<SubPriority> subPriorities = result.getSubPriorities();
+    subPriorities.add(priority);
     priority = new SubPriority();
     priority.setPriority(1);
     priority.setDeadline(200);
-    result.getSubPriorities().add(priority);
+    subPriorities.add(priority);
     result.setXdbLibraryParent(cache.getLibraryUri());
     RetentionClass retentionClass = new RetentionClass();
     retentionClass.getPolicies().add(configured(RETENTION_POLICY_NAME));
@@ -900,8 +902,9 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     result.setNamespaces(createNamespaces(name));
     result.setXdbPdiConfigs(createXdbPdiConfigs(name));
 
-    result.setQuota(cache.getQuotaUri());
-    result.setQuotaAsync(cache.getQuotaUri());
+    String quotaUri = cache.getQuotaUri();
+    result.setQuota(quotaUri);
+    result.setQuotaAsync(quotaUri);
     result.getAics().add(cache.getAicUri());
 
     return result;
@@ -1073,11 +1076,12 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     result.setVersion(version);
 
     result.setNamespaces(createNamespaces(templatedString(SEARCH_QUERY, searchName)));
-    List<Column> columns = result.getDefaultTab().getColumns();
+    Tab defaultTab = result.getDefaultTab();
+    List<Column> columns = defaultTab.getColumns();
 
-    result.getDefaultTab().setExportEnabled(templatedBoolean(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE,
+    defaultTab.setExportEnabled(templatedBoolean(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE,
         searchName));
-    result.getDefaultTab().getExportConfigurations().addAll(uriFromNamesAndType(EXPORT_CONFIGURATION, getStrings(
+    defaultTab.getExportConfigurations().addAll(uriFromNamesAndType(EXPORT_CONFIGURATION, getStrings(
           SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName)));
 
     for (Map<String, String> config : getSearchColumnConfigs(searchName, compositionName)) {

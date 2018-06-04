@@ -2,15 +2,25 @@ buildscript {
   repositories {
     maven { url mavenRepo }
     if (!project.hasProperty('compileOnly')) {
-      maven { url "https://plugins.gradle.org/m2/" }
+      maven { url 'https://plugins.gradle.org/m2/' }
     }
   }
   if (!project.hasProperty('compileOnly')) {
     dependencies {
       classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0'
-      classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.4'
-      classpath 'gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.1'
+      classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2'
+      classpath 'gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.2'
     }
+  }
+}
+
+plugins {
+  id 'com.github.ben-manes.versions' version '0.17.0'
+}
+
+allprojects {
+  repositories {
+    maven { url mavenRepo }
   }
 }
 
@@ -23,10 +33,6 @@ apply plugin: 'idea'
 subprojects {
   apply plugin: 'java'
   apply plugin: 'distribution'
-
-  repositories {
-    maven { url mavenRepo }
-  }
 
   configurations {
     awaitility
@@ -75,7 +81,7 @@ subprojects {
   }
 
   tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:all" << "-Xlint:-processing" << "-Xlint:-serial" << "-Werror"
+    options.compilerArgs << '-Xlint:all' << '-Xlint:-processing' << '-Xlint:-serial' << '-Werror'
   }
   
   javadoc {
@@ -87,7 +93,7 @@ subprojects {
     doLast {
       logging.removeStandardOutputListener(listener)
       if (events.find { it.toString() =~ /warning/ }) {
-        throw new GradleException("Warnings in Javadoc, see output above");
+        throw new GradleException('Warnings in Javadoc, see output above')
       }
     }
   }
@@ -95,10 +101,10 @@ subprojects {
   // Need all test info on command-line for TravisCI
   test {
     testLogging {
-      events "failed"
+      events 'failed'
       showStandardStreams = true
       showStackTraces = true
-      exceptionFormat "full"
+      exceptionFormat 'full'
     }
     outputs.upToDateWhen { false } // Always run tests so that we have a test report on each build
   }
@@ -117,14 +123,15 @@ subprojects {
       checkstyleTask.doLast {
         reports.all { report ->
           def outputFile = report.destination
-          if (outputFile.exists() && outputFile.text.contains("<error ")) {
+          if (outputFile.exists() && outputFile.text.contains('<error ')) {
             throw new GradleException("Found checkstyle issues in $outputFile")
           }
         }
       }
     }
-  
+
     apply plugin: 'pmd'
+
     pmd {
       ruleSets = []
       ruleSetFiles = rootProject.files('config/pmd.xml')
@@ -133,17 +140,38 @@ subprojects {
     }
   
     apply plugin: 'com.github.spotbugs'
+
+    dependencies {
+// To be enabled once all found issues have been triaged and fixed or suppressed. 
+      spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.7.1'
+//        'com.mebigfatguy.fb-contrib:fb-contrib:7.4.1.sb'
+    }
+    
     spotbugs {
       reportLevel = 'low'
       toolVersion = '3.1.3'
       ignoreFailures = false
-      excludeFilter = rootProject.file('config/findbugs_filter.xml')
+      effort = 'max'
+      excludeFilter = rootProject.file('config/spotbugs_filter.xml')
+    }
+    
+    tasks.withType(com.github.spotbugs.SpotBugsTask) {
+      reports {
+        html {
+          enabled = true
+        }
+        xml {
+          withMessages = true
+          enabled = !html.enabled
+        }
+      }
     }
   
     apply from: rootProject.file('jdepend.gradle')
     apply from: rootProject.file('coverage.gradle')
   
     apply plugin: 'eclipse'
+
     eclipse.classpath {
       defaultOutputDir = file('classes')
       file.whenMerged { classpath ->
@@ -168,6 +196,34 @@ subprojects {
   }
 }
 
+if (!project.hasProperty('compileOnly')) {
+  apply plugin: 'codenarc'
+  
+  codenarc { toolVersion = '1.1' }
+  
+  task codenarc(type: CodeNarc) {
+    mustRunAfter 'clean'
+    configFile = file('config/codenarc.groovy')
+  
+    reports {
+      html {
+        destination = rootProject.file('build/reports/codenarc.html')
+        enabled = true
+      }
+      xml {
+        destination = rootProject.file('build/results/codenarc.xml')
+        enabled = true
+      }
+    }
+  
+    source = fileTree(rootDir) {
+      include '**/*.gradle'
+      include '**/*.groovy'
+      exclude '**/build/**/*.gradle'
+      exclude '**/build/**/*.groovy'
+    }
+  }
+}
 
 project(':infoarchive-configuration') {
   configurations {
@@ -250,4 +306,7 @@ if (!project.hasProperty('compileOnly')) {
     }
     check.dependsOn 'sonarqube'
   }
+  
+  check.dependsOn tasks.codenarc
 }
+

@@ -112,7 +112,7 @@ public class WhenBuildingConfigurations {
         TYPE, "ACTIVE_ARCHIVING",
         "archiveType", "SIP",
         STATE, "IN_TEST",
-        "retentionEnabled", true,
+        "retentionEnabled", Boolean.TRUE,
         "configure", "");
   }
 

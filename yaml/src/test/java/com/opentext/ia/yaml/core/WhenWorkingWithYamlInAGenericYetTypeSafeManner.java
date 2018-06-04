@@ -33,7 +33,6 @@ import org.yaml.snakeyaml.Yaml;
 import com.opentext.ia.test.TestCase;
 import com.opentext.ia.test.TestUtil;
 
-
 public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   private static final String TYPE = "type";
@@ -120,7 +119,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   @Test
   public void shouldRetrieveNestedValues() {
     String outerKey = someValue();
-    YamlMap map = new YamlMap(Collections.singletonMap(outerKey, Collections.singletonMap(key, value)));
+    YamlMap map =
+        new YamlMap(Collections.singletonMap(outerKey, Collections.singletonMap(key, value)));
 
     assertValue(value, map.get(outerKey, key));
   }
@@ -134,15 +134,10 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put(key1, value1);
     yaml.put(key2, value2);
 
-    assertEquals("Keys", key2 + ',' + key1, yaml.entries()
-        .sorted()
-        .map(Entry::getKey)
-        .collect(Collectors.joining(",")));
-    assertEquals("Values", value2 + ',' + value1, yaml.entries()
-        .sorted()
-        .map(Entry::getValue)
-        .map(Value::toString)
-        .collect(Collectors.joining(",")));
+    assertEquals("Keys", key2 + ',' + key1,
+        yaml.entries().sorted().map(Entry::getKey).collect(Collectors.joining(",")));
+    assertEquals("Values", value2 + ',' + value1, yaml.entries().sorted().map(Entry::getValue)
+        .map(Value::toString).collect(Collectors.joining(",")));
   }
 
   @Test
@@ -150,10 +145,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     String name = someValue();
     yaml.put(name, new YamlMap().put(key, value));
 
-    YamlMap nestedObject = yaml.entries()
-        .map(Entry::toMap)
-        .findFirst()
-        .get();
+    YamlMap nestedObject = yaml.entries().map(Entry::toMap).findFirst().get();
 
     assertEquals("Name", name, nestedObject.get(NAME).toString());
     assertEquals("Property", value, nestedObject.get(key).toString());
@@ -236,7 +228,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   public void shouldTestForScalarValue() {
     assertFalse(EMPTY, new Value(null).isScalar());
     assertFalse("List", new Value(Collections.singletonList(randomString())).isScalar());
-    assertFalse("Map", new Value(Collections.singletonMap(randomString(), randomString())).isScalar());
+    assertFalse("Map",
+        new Value(Collections.singletonMap(randomString(), randomString())).isScalar());
 
     assertTrue("Boolean", new Value(true).isScalar());
     assertTrue("String", new Value(randomString()).isScalar());
@@ -263,12 +256,14 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     prettyFlowBlockOptions.setDefaultFlowStyle(FlowStyle.BLOCK);
     prettyFlowBlockOptions.setPrettyFlow(true);
     prettyFlowBlockOptions.setLineBreak(LineBreak.getPlatformLineBreak());
-    assertAsString(message, map, new Yaml(prettyFlowBlockOptions).dump(map.getRawData()).replace("|-", "|"));
+    assertAsString(message, map,
+        new Yaml(prettyFlowBlockOptions).dump(map.getRawData()).replace("|-", "|"));
   }
 
   @Test
   public void shouldSerializeSameAsSnakeYaml() {
-    assertToString("Null", new YamlMap().put("gnu", new YamlMap().put("ape", "bear").put("cheetah", null)));
+    assertToString("Null",
+        new YamlMap().put("gnu", new YamlMap().put("ape", "bear").put("cheetah", null)));
     assertToString("Empty string", new YamlMap().put("foobar", ""));
     assertToString("Start with double quote", new YamlMap().put("foo", "\"bar"));
     assertToString("Containing quote", new YamlMap().put("fo'o", "ba\"r"));
@@ -276,27 +271,30 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertToString("Start with %", new YamlMap().put("gnugnat", "%qux"));
     assertToString("Start with @", new YamlMap().put("quux", "@q"));
     assertToString("Start with ,", new YamlMap().put("quuuux", ",q"));
-    assertToString("Map in map in list", new YamlMap().put("pdiSchemas", Arrays.asList(new YamlMap()
-        .put("content", new YamlMap()
-            .put("format", "xml")))));
-    assertToString("Containing #", new YamlMap().put("noComment", "This #text# doesn't contain a comment"));
+    assertToString("Map in map in list", new YamlMap().put("pdiSchemas",
+        Arrays.asList(new YamlMap().put("content", new YamlMap().put("format", "xml")))));
+    assertToString("Containing #",
+        new YamlMap().put("noComment", "This #text# doesn't contain a comment"));
   }
-
 
   @Test
   public void shouldSerializeBetterThanSnakeYaml() {
-    assertToString("Empty collection", new YamlMap().put("zuul", Collections.emptyList()), "zuul: [ ]%n");
+    assertToString("Empty collection", new YamlMap().put("zuul", Collections.emptyList()),
+        "zuul: [ ]%n");
     assertToString("Empty map", new YamlMap(), "{ }%n");
     assertToString("Starting with quote", new YamlMap().put("foo", "'bar"), "foo: \"'bar\"%n");
-    assertToString("Starting with quote, containing double quote", new YamlMap().put("qq", "'qwe\"rty"),
-        "qq: \"'qwe\\\"rty\"%n");
+    assertToString("Starting with quote, containing double quote",
+        new YamlMap().put("qq", "'qwe\"rty"), "qq: \"'qwe\\\"rty\"%n");
     assertToString("Containing tab", new YamlMap().put("tab", "b\tar"), "tab: b  ar%n");
-    assertToString("New lines", new YamlMap().put("gnat", new YamlMap().put("spam", "ham\neggs")
-        .put("spam2", Arrays.asList("ham2\reggs2", "yuck\n\rpuck"))),
+    assertToString("New lines",
+        new YamlMap().put("gnat",
+            new YamlMap().put("spam", "ham\neggs").put("spam2",
+                Arrays.asList("ham2\reggs2", "yuck\n\rpuck"))),
         "gnat:%n  spam: |%n    ham%n    eggs%n  spam2:%n  - |%n    ham2%n    eggs2%n  - |%n    yuck%n    puck%n");
-    assertToString("Nested maps and sequences with long text", new YamlMap().put("databases", Arrays.asList(
-        new YamlMap().put(NAME, "db").put("metadata", Arrays.asList(
-            new YamlMap().put("text", "<foo>\n  <bar/>\n</foo>\n"))))),
+    assertToString("Nested maps and sequences with long text",
+        new YamlMap().put("databases",
+            Arrays.asList(new YamlMap().put(NAME, "db").put("metadata",
+                Arrays.asList(new YamlMap().put("text", "<foo>\n  <bar/>\n</foo>\n"))))),
         "databases:%n- name: db%n  metadata:%n  - text: |%n      <foo>%n        <bar/>%n      </foo>%n");
     // Want to be as good as snakeyaml 1.18, but 1.17 is different
     assertToString("Long text", new YamlMap().put("qbf",
@@ -324,9 +322,13 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   @Test
   public void shouldReturnEmptyMapWhenLoadingFromNonExistingFile() throws IOException {
     File nonExistingFile = temporaryFolder.newFile();
-    nonExistingFile.delete();
 
-    assertTrue("YAML loaded from non-existing file is not empty", YamlMap.from(nonExistingFile).isEmpty());
+    if (!nonExistingFile.delete()) {
+      throw new IllegalStateException("Could not delete " + nonExistingFile.getAbsolutePath());
+    }
+
+    assertTrue("YAML loaded from non-existing file is not empty",
+        YamlMap.from(nonExistingFile).isEmpty());
   }
 
   @Test
@@ -342,7 +344,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
     values.remove(0);
 
-    assertTrue("Sequence should be empty after removing only item", yaml.get(key).toList().isEmpty());
+    assertTrue("Sequence should be empty after removing only item",
+        yaml.get(key).toList().isEmpty());
   }
 
   @Test
@@ -388,12 +391,11 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldSortRecursively() {
-    yaml.put("iguana", new YamlMap()
-        .put("leopard", Arrays.asList(new YamlMap()
-            .put("opossum", "parrot")
-            .put("mule", "nightingale")))
-        .put("jaguar", "koala")
-        .put("rhino", Arrays.asList("tiger", "snake")));
+    yaml.put("iguana",
+        new YamlMap()
+            .put("leopard",
+                Arrays.asList(new YamlMap().put("opossum", "parrot").put("mule", "nightingale")))
+            .put("jaguar", "koala").put("rhino", Arrays.asList("tiger", "snake")));
 
     assertSorted("iguana:%n  jaguar: koala%n  leopard:%n  - mule: nightingale"
         + "%n    opossum: parrot%n  rhino:%n  - snake%n  - tiger%n");
@@ -401,58 +403,34 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldSortSequencesByName() {
-    yaml.put("unicorn", Arrays.asList(
-        new YamlMap().put(NAME, "whale").put(TYPE, "a"),
-        new YamlMap().put(NAME, "velociraptor").put(TYPE, "e"),
-        new YamlMap().put(NAME, "velociraptor").put(TYPE, "b").put("s", "c"),
-        new YamlMap().put(NAME, "velociraptor").put(TYPE, "d")));
+    yaml.put("unicorn",
+        Arrays.asList(new YamlMap().put(NAME, "whale").put(TYPE, "a"),
+            new YamlMap().put(NAME, "velociraptor").put(TYPE, "e"),
+            new YamlMap().put(NAME, "velociraptor").put(TYPE, "b").put("s", "c"),
+            new YamlMap().put(NAME, "velociraptor").put(TYPE, "d")));
 
-    assertSorted("unicorn:%n"
-        + "- name: velociraptor%n  type: d%n"
-        + "- name: velociraptor%n  type: e%n"
-        + "- name: velociraptor%n  s: c%n  type: b%n"
-        + "- name: whale%n  type: a%n");
+    assertSorted(
+        "unicorn:%n" + "- name: velociraptor%n  type: d%n" + "- name: velociraptor%n  type: e%n"
+            + "- name: velociraptor%n  s: c%n  type: b%n" + "- name: whale%n  type: a%n");
   }
 
   @Test
   public void shouldSortAtSingleLevel() {
-    yaml.put("bear", new YamlMap()
-            .put("elephant", "fox")
-            .put("cheetah", "dingo"))
-        .put("ape", new YamlMap()
-            .put("giraffe", "hyena"));
+    yaml.put("bear", new YamlMap().put("elephant", "fox").put("cheetah", "dingo")).put("ape",
+        new YamlMap().put("giraffe", "hyena"));
 
-    assertYaml("ape:%n"
-        + "  giraffe: hyena%n%n"
-        + "bear:%n"
-        + "  elephant: fox%n"
-        + "  cheetah: dingo%n",
+    assertYaml(
+        "ape:%n" + "  giraffe: hyena%n%n" + "bear:%n" + "  elephant: fox%n" + "  cheetah: dingo%n",
         yaml.sort(false));
   }
 
   @Test
   public void shouldLeaveSomeEntriesUnsorted() {
-    yaml.put("B",
-        new YamlMap()
-            .put("b", "b")
-            .put("a", "a"))
-        .put("A",
-            Arrays.asList("z", "y"))
-        .put("C",
-        new YamlMap()
-            .put("d", "d")
-            .put("c", "c"));
+    yaml.put("B", new YamlMap().put("b", "b").put("a", "a")).put("A", Arrays.asList("z", "y"))
+        .put("C", new YamlMap().put("d", "d").put("c", "c"));
 
-    assertYaml("A:%n"
-        + "- z%n"
-        + "- y%n%n"
-        + "B:%n"
-        + "  a: a%n"
-        + "  b: b%n%n"
-        + "C:%n"
-        + "  d: d%n"
-        + "  c: c%n",
-        yaml.sort(property -> "B".equals(property)));
+    assertYaml("A:%n" + "- z%n" + "- y%n%n" + "B:%n" + "  a: a%n" + "  b: b%n%n" + "C:%n"
+        + "  d: d%n" + "  c: c%n", yaml.sort(property -> "B".equals(property)));
   }
 
   @Test
@@ -470,19 +448,15 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldVisitMap() {
-    yaml.put("aardvark", Arrays.asList(
-        new YamlMap()
-            .put("bee", "cobra")
-            .put("dog", new YamlMap()
-                .put("emu", new YamlMap()
-                    .put("falcon", false))),
-        new YamlMap()
-            .put("gazelle", "hamster"),
-        new YamlMap()
-            .put("ibis", "jackal")));
+    yaml.put("aardvark",
+        Arrays.asList(
+            new YamlMap().put("bee", "cobra").put("dog",
+                new YamlMap().put("emu", new YamlMap().put("falcon", false))),
+            new YamlMap().put("gazelle", "hamster"), new YamlMap().put("ibis", "jackal")));
 
     Collection<String> visitedPaths = new ArrayList<>();
     yaml.visit(new Visitor() {
+
       @Override
       public int maxNesting() {
         return 3;
@@ -504,8 +478,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
       }
     });
 
-    TestUtil.assertEquals("Visited paths", Arrays.asList("/", "/aardvark/0", "/aardvark/0/dog", "@/aardvark/0/dog",
-        "@/aardvark/0", "/aardvark/1", "@/aardvark/1", "@/"), visitedPaths);
+    TestUtil.assertEquals("Visited paths", Arrays.asList("/", "/aardvark/0", "/aardvark/0/dog",
+        "@/aardvark/0/dog", "@/aardvark/0", "/aardvark/1", "@/aardvark/1", "@/"), visitedPaths);
   }
 
   @Test
@@ -528,9 +502,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldMaintainOrderWhenReplacingEntries() {
-    yaml.put("rabbit", "scorpion")
-        .put("tapir", "uakari")
-        .replace("rabbit", "vulture", "warthog");
+    yaml.put("rabbit", "scorpion").put("tapir", "uakari").replace("rabbit", "vulture", "warthog");
 
     assertYaml("vulture: warthog%ntapir: uakari%n", yaml);
   }
@@ -538,8 +510,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   @Test
   public void shouldReplaceNestedMaps() {
     String oldKey = "xenops";
-    yaml.put(oldKey, new YamlMap()
-        .put("yak", "zebra"));
+    yaml.put(oldKey, new YamlMap().put("yak", "zebra"));
 
     yaml.replace(oldKey, "alligator", yaml.get(oldKey));
 
@@ -549,28 +520,17 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   @Test
   public void shouldSortSequence() {
     yaml.put("Q", Arrays.asList("N", "M"))
-        .put("O", Arrays.asList(
-            new YamlMap()
-                .put("I", "J")
-                .put(NAME, "R"),
-            new YamlMap()
-                .put("K", "L")
-                .put(NAME, "P")))
-        .put("S", Arrays.asList(
-            new YamlMap()
-                .put("X", "W")
-                .put("T", "V"),
-            new YamlMap()
-                .put("Y", "W")
-                .put("T", "U")));
+        .put("O",
+            Arrays.asList(new YamlMap().put("I", "J").put(NAME, "R"),
+                new YamlMap().put("K", "L").put(NAME, "P")))
+        .put("S", Arrays.asList(new YamlMap().put("X", "W").put("T", "V"),
+            new YamlMap().put("Y", "W").put("T", "U")));
 
-    yaml.entries()
-        .map(Entry::getValue)
-        .map(Value::toList)
-        .forEach(YamlSequence::sort);
+    yaml.entries().map(Entry::getValue).map(Value::toList).forEach(YamlSequence::sort);
 
     assertYaml(
-        "Q:%n- M%n- N%n%nO:%n- K: L%n  name: P%n- I: J%n  name: R%n%nS:%n- Y: W%n  T: U%n- X: W%n  T: V%n", yaml);
+        "Q:%n- M%n- N%n%nO:%n- K: L%n  name: P%n- I: J%n  name: R%n%nS:%n- Y: W%n  T: U%n- X: W%n  T: V%n",
+        yaml);
   }
 
   @Test

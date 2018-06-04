@@ -51,8 +51,15 @@ public class ContentAssemblerDefault<D> implements ContentAssembler<D> {
     return contentHashAssembler;
   }
 
+  private Counters ensureMetrics() {
+    if (metrics == null) {
+      throw new IllegalStateException("Missing metrics; did you call begin()?");
+    }
+    return metrics;
+  }
+
   public synchronized Counters getMetrics() {
-    return metrics.forReading();
+    return ensureMetrics().forReading();
   }
 
   @Override
@@ -69,10 +76,7 @@ public class ContentAssemblerDefault<D> implements ContentAssembler<D> {
   }
 
   protected synchronized void incMetric(String metric, long delta) {
-    if (metrics == null) {
-      throw new IllegalStateException("Missing metrics; did youc call begin()?");
-    }
-    metrics.inc(metric, delta);
+    ensureMetrics().inc(metric, delta);
   }
 
   protected synchronized ContentInfo addContent(String ri, DigitalObject digitalObject) throws IOException {
@@ -103,6 +107,9 @@ public class ContentAssemblerDefault<D> implements ContentAssembler<D> {
 
   protected synchronized void addZipEntry(String name, InputStream content, HashAssembler hashAssembler)
       throws IOException {
+    if (zip == null) {
+      throw new IllegalStateException("Missing zip; did you call begin()?");
+    }
     zip.addEntry(name, content, hashAssembler);
   }
 

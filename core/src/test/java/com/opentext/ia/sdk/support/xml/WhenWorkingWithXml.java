@@ -101,8 +101,8 @@ public class WhenWorkingWithXml extends TestCase {
 
   @Test
   public void shouldEscapeOrRemoveInvalidCharacters() {
-    assertEquals("Escaped text", "a&apos;b&amp;c&quot;d&lt;e&gt;fgh\ri\nj",
-        XmlUtil.escape("a'b&c\"d<e>f\u0001g\u000Ch\ri\nj"));
+    assertEquals("Escaped text", "a&apos;b&amp;c&quot;d&lt;e&gt;fgh\ni&#0009;j",
+        XmlUtil.escape("a'b&c\"d<e>f\u0001g\u000Ch\ni\tj"));
   }
 
 }

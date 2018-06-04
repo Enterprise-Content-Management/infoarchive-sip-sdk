@@ -12,7 +12,6 @@ import com.opentext.ia.yaml.core.Entry;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
 
-
 class MapOfMapsToSequence implements Predicate<Entry>, Consumer<Entry> {
 
   private final YamlMap yaml;
@@ -25,21 +24,18 @@ class MapOfMapsToSequence implements Predicate<Entry>, Consumer<Entry> {
   public boolean test(Entry entry) {
     Value value = entry.getValue();
     if (value.isList()) {
-      return value.toList().stream()
-          .map(this::isMapOfMaps)
-          .reduce(true, (a, b) -> a && b);
+      return value.toList().stream().map(this::isMapOfMaps).reduce(true, (a, b) -> a && b)
+          .booleanValue();
     }
     return isMapOfMaps(value);
   }
 
-  private boolean isMapOfMaps(Value value) {
+  private Boolean isMapOfMaps(Value value) {
     YamlMap map = value.toMap();
-    long numChildMapsWithoutName = map.values()
-        .filter(Value::isMap)
-        .map(Value::toMap)
-        .filter(nestedMap -> !nestedMap.containsKey("name"))
-        .count();
-    return numChildMapsWithoutName > 0 && numChildMapsWithoutName == map.values().count();
+    long numChildMapsWithoutName = map.values().filter(Value::isMap).map(Value::toMap)
+        .filter(nestedMap -> !nestedMap.containsKey("name")).count();
+    return Boolean
+        .valueOf(numChildMapsWithoutName > 0 && numChildMapsWithoutName == map.values().count());
   }
 
   @Override
@@ -50,15 +46,10 @@ class MapOfMapsToSequence implements Predicate<Entry>, Consumer<Entry> {
   private static List<?> toSequence(Entry entry) {
     Value value = entry.getValue();
     if (value.isList()) {
-      return value.toList().stream()
-          .map(Value::toMap)
-          .flatMap(YamlMap::entries)
-          .map(Entry::toMap)
+      return value.toList().stream().map(Value::toMap).flatMap(YamlMap::entries).map(Entry::toMap)
           .collect(Collectors.toList());
     }
-    return value.toMap().entries()
-        .map(Entry::toMap)
-        .collect(Collectors.toList());
+    return value.toMap().entries().map(Entry::toMap).collect(Collectors.toList());
   }
 
 }

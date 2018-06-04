@@ -4,8 +4,10 @@
 package com.opentext.ia.sdk.sip;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -29,7 +31,7 @@ public class WhenCreatingPackagingInformation extends TestCase {
       .id(randomString(8))
       .end()
       .build();
-    when(wrapped.newInstance(anyInt(), any(Optional.class))).thenReturn(packagingInformation);
+    when(wrapped.newInstance(anyLong(), any(Optional.class))).thenReturn(packagingInformation);
     PackagingInformationFactory factory = new OneSipPerDssPackagingInformationFactory(wrapped, supplier);
 
     PackagingInformation actual = factory.newInstance(randomInt(100), Optional.empty());

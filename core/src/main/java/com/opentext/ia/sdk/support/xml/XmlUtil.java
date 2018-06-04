@@ -512,7 +512,7 @@ public final class XmlUtil {
       .replace(">", "&gt;")
       .replace("'", "&apos;")
       .replace("\"", "&quot;")
-      .replaceAll("[\u0001-\u0008\u000b-\u000c\u000e-\u001f\ud8f0-\udfff\ufffe-\uffff]", ""));
+      .replaceAll("[\u0001-\u0008\u000b-\u000c\u000e-\u001f\ud800-\udfff\ufffe-\uffff]", ""));
   }
 
 
@@ -522,9 +522,9 @@ public final class XmlUtil {
     for (int i = 0; i < text.length(); i++) {
       int value = Character.codePointAt(text, i);
       if (value < 32 && value != 10 && value != 13) {
-        String escaped = String.format("&#%04x;", value);
-        result.replace(index, index + 1, escaped);
-        index += escaped.length();
+        String unicodeEntity = String.format("&#%04x;", value);
+        result.replace(index, index + 1, unicodeEntity);
+        index += unicodeEntity.length();
       } else {
         index++;
       }

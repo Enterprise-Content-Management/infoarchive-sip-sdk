@@ -4,8 +4,8 @@
 package com.opentext.ia.sdk.sip;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -35,7 +35,7 @@ public class WhenAssemblingFromTemplate extends TestCase {
         new FixedHeaderAndFooterTemplate<Map<String, ? extends Object>>(header, footer) {
           @Override
           public void writeRow(Map<String, ? extends Object> values, Map<String, ContentInfo> contentInfo,
-              PrintWriter writer) {
+              PrintWriter printWriter) {
             // Do nothing
           }
         };

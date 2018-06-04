@@ -51,7 +51,7 @@ public final class FileSupplier {
 
   private static File ensureDir(File dir) {
     if (!dir.isDirectory() && !dir.mkdirs()) {
-      throw new IllegalArgumentException("Can't create directory: " + dir);
+      throw new IllegalArgumentException("Cannot create directory: " + dir);
     }
     return dir;
   }

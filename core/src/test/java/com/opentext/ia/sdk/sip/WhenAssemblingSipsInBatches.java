@@ -7,10 +7,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.notNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -71,7 +71,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
     String object2 = randomString();
     String object3 = randomString();
     when(segmentationStrategy.shouldStartNewSip(anyString(), any(SipMetrics.class))).thenAnswer(invocation -> {
-      return object2.equals(invocation.getArgumentAt(0, String.class));
+      return object2.equals(invocation.getArgument(0));
     });
     BatchSipAssembler<String> batcher = new BatchSipAssembler<>(sipAssembler, segmentationStrategy, () -> newFile());
 
@@ -129,7 +129,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
 
     verify(callback, never()).accept(any(FileGenerationMetrics.class));
     batcher.end();
-    verify(callback).accept(notNull(FileGenerationMetrics.class));
+    verify(callback).accept(notNull());
   }
 
   @Test(expected = DomainObjectTooBigException.class)
@@ -150,7 +150,9 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
     Consumer<FileGenerationMetrics> deletingCallback = fgm -> {
       File file = fgm.getFile();
       sip.set(file);
-      file.delete();
+      if (!file.delete()) {
+        throw new IllegalStateException("Could not delete file " + file.getAbsolutePath());
+      }
     };
     BatchSipAssemblerWithCallback<String> batcher = new BatchSipAssemblerWithCallback<>(sipAssembler,
         segmentationStrategy, () -> newFile(), deletingCallback);

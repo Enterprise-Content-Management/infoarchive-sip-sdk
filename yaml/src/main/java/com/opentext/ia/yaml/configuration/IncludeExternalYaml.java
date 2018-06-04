@@ -4,7 +4,7 @@
 package com.opentext.ia.yaml.configuration;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.atteo.evo.inflector.English;
 
@@ -127,7 +127,7 @@ public class IncludeExternalYaml implements Visitor {
       return;
     }
     if (target.containsKey(type)) {
-      target.replace(type, collection, Arrays.asList(targetValue));
+      target.replace(type, collection, Collections.singletonList(targetValue));
     }
     YamlSequence values = target.get(collection).toList();
     if (value.isList()) {
