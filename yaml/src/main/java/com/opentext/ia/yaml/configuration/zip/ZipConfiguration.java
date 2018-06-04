@@ -6,6 +6,8 @@ package com.opentext.ia.yaml.configuration.zip;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,7 +41,6 @@ public class ZipConfiguration {
       TOP_LEVEL_PROPERTIES_FILE_NAME, MAIN_PROPERTIES_FILE_NAME);
   private static final String INCLUDES = "includes";
   private static final String RESOURCE = "resource";
-
   public static File of(File source) throws IOException {
     return of(source, ZipCustomization.none());
   }
@@ -174,7 +175,9 @@ public class ZipConfiguration {
 
   private File resolveFile(File base, String path) throws IOException {
     URI baseUri = base.getParentFile().toURI();
-    String result = baseUri.resolve(toUnix(path)).toString().substring(5); // After "file:"
+    String result = toUnix(path).replace(" ", "%20");
+    result = baseUri.resolve(result).toString().substring(5); // After "file:"
+    result = URLDecoder.decode(result, StandardCharsets.UTF_8.name());
     return new File(result).getCanonicalFile();
   }
 

@@ -35,6 +35,7 @@ import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.core.YamlSyntaxErrorException;
 
+
 public class WhenZippingConfigurations extends TestCase {
 
   private static final String INCLUDED_RESOURCE_NAME = "included.txt";
@@ -266,11 +267,11 @@ public class WhenZippingConfigurations extends TestCase {
     Map<String, InputStream> zip = new RandomAccessZipFile(ZipConfiguration.of(dir));
 
     YamlMap map = YamlMap.from(zip.get(CONFIGURATION_FILE_NAME));
-    String zipEntry = map.get("includes", 0).toString();
+    String zipEntry = map.get(INCLUDES, 0).toString();
     assertTrue("Missing root include: " + zipEntry, zip.containsKey(zipEntry));
 
     map = YamlMap.from(zip.get(zipEntry));
-    zipEntry = map.get("includes", 0).toString();
+    zipEntry = map.get(INCLUDES, 0).toString();
     assertTrue("Missing external include: " + zipEntry, zip.containsKey(zipEntry));
 
     map = YamlMap.from(zip.get(zipEntry));
@@ -310,6 +311,39 @@ public class WhenZippingConfigurations extends TestCase {
     assertTrue("Missing extra content", zip.containsKey(entryName));
     assertEquals("Extra content", entryContent,
         IOUtils.toString(zip.get(entryName), StandardCharsets.UTF_8));
+  }
+
+  @Test
+  public void shouldZipDictoryContainingSpaces() throws IOException {
+    // Should not throw an exception
+    ZipConfiguration.of(configurationWithIncludesInDirectoryWithSpaces());
+  }
+
+  private File configurationWithIncludesInDirectoryWithSpaces() throws IOException {
+    File result = new File("build/dir with space/configuration.yml").getCanonicalFile();
+    File includeFile = new File(result.getParentFile(), "sub/configuration.yml").getCanonicalFile();
+    assertTrue("Failed to create directory: " + includeFile.getParent(), includeFile.getParentFile().mkdirs());
+
+    save(someConfiguration(), includeFile);
+    save(configurationWithIncludes(includeFile), result);
+
+    return result;
+  }
+
+  private void save(YamlMap configuration, File destination) throws IOException {
+    try (OutputStream output = Files.newOutputStream(destination.toPath(), StandardOpenOption.CREATE)) {
+      try (InputStream input = configuration.toStream()) {
+        IOUtils.copy(input, output);
+      }
+    }
+  }
+
+  private YamlMap configurationWithIncludes(File includedFile) {
+    return someConfiguration().put(INCLUDES, Arrays.asList(includedFile.getPath()));
+  }
+
+  private YamlMap someConfiguration() {
+    return new YamlMap().put("version", "1.0.0");
   }
 
 }
