@@ -41,6 +41,7 @@ public class ZipConfiguration {
       TOP_LEVEL_PROPERTIES_FILE_NAME, MAIN_PROPERTIES_FILE_NAME);
   private static final String INCLUDES = "includes";
   private static final String RESOURCE = "resource";
+
   public static File of(File source) throws IOException {
     return of(source, ZipCustomization.none());
   }
