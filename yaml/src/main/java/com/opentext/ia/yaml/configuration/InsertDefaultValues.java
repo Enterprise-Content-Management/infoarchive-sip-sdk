@@ -84,7 +84,8 @@ class InsertDefaultValues extends PathVisitor {
         .put(FORMAT, "xml")
         .put("text", ResourceResolver.fromClasspath().apply("defaultIngest.xml"))));
     result.put("/ingestNodes/\\d+", Default.of("enumerationMaxResultCount", 10,
-       "enumerationMinusRunning", Boolean.FALSE));
+       "enumerationMinusRunning", Boolean.FALSE,
+       "logLevel", "INFO"));
     result.put("/queries/\\d+", Default.of("resultRootElement", "result",
         "resultRootNsEnabled", Boolean.TRUE));
     result.put("/queries/\\d+/xdbPdiConfigs/\\d+", Default.of("template", "return $aiu"));
