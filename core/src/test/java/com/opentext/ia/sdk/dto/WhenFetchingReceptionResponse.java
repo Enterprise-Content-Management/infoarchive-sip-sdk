@@ -20,7 +20,7 @@ public class WhenFetchingReceptionResponse {
 
   @Test
   public void fetchName() {
-    assertEquals("Resource Name", receptionResponse.getName(), "TestApplication");
+    assertEquals("Resource Name", "TestApplication", receptionResponse.getName());
   }
 
 }

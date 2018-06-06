@@ -80,6 +80,13 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
         new BinaryPart("sip", sip, "IASIP.zip")).getAipId();
   }
 
+  /**
+   * Fetch the content for the specified content id.
+   * @param contentId The id of the content to fetch.
+   * @return A ContentResult
+   * @throws IOException When an I/O error occurs
+   * @deprecated Will be removed without replacement in a future version
+   */
   @Override
   @Deprecated
   public ContentResult fetchContent(String contentId) throws IOException {
@@ -94,6 +101,13 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     }
   }
 
+  /**
+   * Fetch the content for the specified order item.
+   * @param orderItem The order item.
+   * @return A ContentResult
+   * @throws IOException When an I/O error occurs
+   * @deprecated Will be removed without replacement in a future version
+   */
   @Override
   @Deprecated
   public ContentResult fetchOrderContent(OrderItem orderItem) throws IOException {
@@ -195,6 +209,14 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return result;
   }
 
+  /**
+   * Upload the transformation zip with the stylesheet into Archive.
+   * @param exportTransformation The export transformation.
+   * @param zip The input stream of zip with stylesheet.
+   * @throws IOException When an I/O error occurs
+   * @return The uploaded transformation
+   * @deprecated Use declarative configuration to define transformations
+   */
   @Override
   @Deprecated
   public LinkContainer uploadTransformation(ExportTransformation exportTransformation, InputStream zip)

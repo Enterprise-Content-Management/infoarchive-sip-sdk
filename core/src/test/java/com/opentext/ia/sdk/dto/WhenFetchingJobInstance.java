@@ -3,7 +3,8 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
@@ -16,13 +17,13 @@ public class WhenFetchingJobInstance {
 
   @Test
   public void fetchDefaultStatus() {
-    assertEquals("Job Instance Default Format", instance.getStatus(), "SUCCESS");
+    assertEquals("Job Instance Default Format", "SUCCESS", instance.getStatus());
   }
 
   @Test
   public void fetchStatus() {
     instance.setStatus(STATUS);
-    assertEquals("Reception Format", instance.getStatus(), STATUS);
+    assertEquals("Reception Format", STATUS, instance.getStatus());
   }
 
   @Test
@@ -30,4 +31,5 @@ public class WhenFetchingJobInstance {
     JobInstances defs = new JobInstances();
     assertNotNull(defs);
   }
+
 }

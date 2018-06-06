@@ -16,13 +16,13 @@ public class WhenFetchingJobDefinition {
 
   @Test
   public void fetchDefaultHandlerName() {
-    assertEquals("Job Definition Default Handler Name", instance.getHandlerName(), "ConfirmationJob");
+    assertEquals("Job Definition Default Handler Name", "ConfirmationJob", instance.getHandlerName());
   }
 
   @Test
   public void fetchHandlerName() {
     instance.setHandlerName(HANDLERNAME);
-    assertEquals("Reception Format", instance.getHandlerName(), HANDLERNAME);
+    assertEquals("Reception Format", HANDLERNAME, instance.getHandlerName());
   }
 
 }

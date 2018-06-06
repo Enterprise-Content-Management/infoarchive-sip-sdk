@@ -3,7 +3,11 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -24,8 +28,7 @@ public class WhenWorkingWithSearch {
 
   @Test
   public void defaultStateShouldNotBeNull() {
-    assertTrue(search.getState()
-      .equals("DRAFT"));
+    assertEquals("DRAFT", search.getState());
   }
 
   @Test
@@ -40,16 +43,16 @@ public class WhenWorkingWithSearch {
 
   @Test
   public void setDecription() {
-    search.setDescription("Test Search");
-    assertTrue(search.getDescription()
-      .equals("Test Search"));
+    String description = "Test Search";
+    search.setDescription(description);
+    assertEquals(description, search.getDescription());
   }
 
   @Test
   public void setState() {
-    search.setState("TestState");
-    assertTrue(search.getState()
-      .equals("TestState"));
+    String state = "TestState";
+    search.setState(state);
+    assertEquals(state, search.getState());
   }
 
   @Test
@@ -66,14 +69,16 @@ public class WhenWorkingWithSearch {
 
   @Test
   public void setAic() {
-    search.setAic("http://emailAic");
-    assertEquals(search.getAic(), "http://emailAic");
+    String aic = "http://emailAic";
+    search.setAic(aic);
+    assertEquals(aic, search.getAic());
   }
 
   @Test
   public void setQuery() {
-    search.setQuery("http://emailQuery");
-    assertEquals(search.getQuery(), "http://emailQuery");
+    String query = "http://emailQuery";
+    search.setQuery(query);
+    assertEquals(query, search.getQuery());
   }
 
   @Test
@@ -88,8 +93,9 @@ public class WhenWorkingWithSearch {
 
   @Test
   public void setSearchCompositionName() {
-    composition.setName("Test");
-    assertEquals(composition.getName(), "Test");
+    String name = "Test";
+    composition.setName(name);
+    assertEquals(name, composition.getName());
   }
 
   @Test

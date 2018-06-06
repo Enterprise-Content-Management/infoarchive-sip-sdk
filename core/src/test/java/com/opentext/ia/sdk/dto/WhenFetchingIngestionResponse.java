@@ -22,12 +22,12 @@ public class WhenFetchingIngestionResponse {
 
   @Test
   public void fetchName() {
-    assertEquals("Resource Name", ingestionResponse.getName(), "TestApplication");
+    assertEquals("Resource Name", "TestApplication", ingestionResponse.getName());
   }
 
   @Test
   public void fetchAipID() {
-    assertEquals("AipId", ingestionResponse.getAipId(), "TestID");
+    assertEquals("AipId", "TestID", ingestionResponse.getAipId());
   }
 
 }

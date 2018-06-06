@@ -33,15 +33,12 @@ public class WhenExtractingLinksFromLinkContainer {
 
   @Test
   public void fetchLinkObjectFromContainer() {
-    assertEquals("Link bject information", container.getLinks()
-      .get(KEY), link);
+    assertEquals("Link object information", link, container.getLinks().get(KEY));
   }
 
   @Test
   public void fetchLinkStringFromContainer() {
-    assertEquals("Link string information", container.getLinks()
-      .get(KEY)
-      .getHref(), LINK_HREF);
+    assertEquals("Link string information", LINK_HREF, container.getLinks().get(KEY).getHref());
   }
 
 }

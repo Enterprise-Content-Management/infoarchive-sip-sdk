@@ -17,13 +17,13 @@ public class WhenFetchingReceptionRequest {
 
   @Test
   public void fetchDefaultFormat() {
-    assertEquals("Reception Default Format", reception.getFormat(), "sip_zip");
+    assertEquals("Reception Default Format", "sip_zip", reception.getFormat());
   }
 
   @Test
   public void fetchName() {
     reception.setFormat(FORMAT);
-    assertEquals("Reception Format", reception.getFormat(), FORMAT);
+    assertEquals("Reception Format", FORMAT, reception.getFormat());
   }
 
 }

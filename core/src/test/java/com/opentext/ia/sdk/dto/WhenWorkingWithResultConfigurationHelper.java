@@ -3,7 +3,8 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +24,11 @@ public class WhenWorkingWithResultConfigurationHelper {
   @Test
   public void setResultSchema() {
     List<String> schema = new ArrayList<>();
-    schema.add("testSchema");
+    String schemaName = "testSchema";
+    schema.add(schemaName);
     helper.setResultSchema(schema);
     assertNotNull(helper.getResultSchema());
-    assertEquals(helper.getResultSchema()
-      .get(0), "testSchema");
+    assertEquals("Schema", schemaName, helper.getResultSchema().get(0));
   }
 
   @Test

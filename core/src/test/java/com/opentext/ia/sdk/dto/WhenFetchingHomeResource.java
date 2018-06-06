@@ -25,8 +25,9 @@ public class WhenFetchingHomeResource {
 
   @Test
   public void fetchResourceName() {
-    assertEquals("Resource Name", homeResource.getName(), "TestApplication");
+    assertEquals("Resource Name", "TestApplication", homeResource.getName());
   }
+
 
   public static class TestHomeResource extends Services {
 

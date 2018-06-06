@@ -28,18 +28,19 @@ public class WhenExtractingApplicationFromApplicationsContainer {
 
   @Test
   public void fetchApplicationName() {
-    assertEquals("Application Name", app.getName(), "TestApplication");
+    assertEquals("Application Name", "TestApplication", app.getName());
   }
 
   @Test
   public void fetchType() {
-    assertEquals("Type is", app.getType(), "Test");
+    assertEquals("Type is", "Test", app.getType());
   }
 
   @Test
   public void fetchArchiveType() {
-    assertEquals("Archive Type", app.getArchiveType(), "TestArchive");
+    assertEquals("Archive Type", "TestArchive", app.getArchiveType());
   }
+
 
   public static class TestApplication extends Application {
 

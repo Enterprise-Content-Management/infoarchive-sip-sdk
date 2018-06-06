@@ -463,8 +463,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   private ArchiveClient configureServer(Map<String, String> config) throws IOException {
     return archiveClient = ArchiveClients.configuringApplicationUsing(
-        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(
-            config),
+        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(config),
         connection);
   }
 
@@ -477,13 +476,13 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     ReceptionResponse receptionResponse = new ReceptionResponse();
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
     receptionResponse.setLinks(links);
-    when(
-        restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
-            .thenReturn(receptionResponse);
+    when(restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
+        .thenReturn(receptionResponse);
     when(restClient.post(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
-    when(ingestionResponse.getAipId()).thenReturn("sip001");
+    String aipId = "sip001";
+    when(ingestionResponse.getAipId()).thenReturn(aipId);
 
-    assertEquals(archiveClient.ingest(sip), "sip001");
+    assertEquals("AIP ID", aipId, archiveClient.ingest(sip));
   }
 
   @Test
@@ -496,12 +495,12 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
-    when(
-        restClient.post(anyString(), eq(IngestionResponse.class), any(Part.class), any(Part.class)))
-            .thenReturn(ingestionResponse);
-    when(ingestionResponse.getAipId()).thenReturn("sip002");
+    when(restClient.post(anyString(), eq(IngestionResponse.class), any(Part.class), any(Part.class)))
+        .thenReturn(ingestionResponse);
+    String aipId = "sip002";
+    when(ingestionResponse.getAipId()).thenReturn(aipId);
 
-    assertEquals(archiveClient.ingestDirect(sip), "sip002");
+    assertEquals("AIP ID", aipId, archiveClient.ingestDirect(sip));
   }
 
   @Test
@@ -511,13 +510,13 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
-    when(
-        restClient.post(any(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
-            .thenReturn(new ReceptionResponse());
+    when(restClient.post(any(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
+        .thenReturn(new ReceptionResponse());
     when(restClient.post(any(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
-    when(ingestionResponse.getAipId()).thenReturn("sip003");
+    String aipId = "sip003";
+    when(ingestionResponse.getAipId()).thenReturn(aipId);
 
-    assertEquals(archiveClient.ingestDirect(sip), "sip003");
+    assertEquals("AIP ID", aipId, archiveClient.ingestDirect(sip));
   }
 
   @Test(expected = RuntimeException.class)
@@ -532,8 +531,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test(expected = NullPointerException.class)
-  public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull()
-      throws IOException {
+  public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull() throws IOException {
     configureServer(new HashMap<>());
   }
 
@@ -579,8 +577,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
         });
 
     ArchiveClients.configuringApplicationUsing(
-        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(
-            configuration),
+        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(configuration),
         connection);
 
     verify(restClient, times(5)).createCollectionItem(eq(federations), any(XdbFederation.class),

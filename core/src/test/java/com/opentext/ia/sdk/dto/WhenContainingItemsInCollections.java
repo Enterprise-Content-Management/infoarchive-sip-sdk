@@ -5,7 +5,11 @@ package com.opentext.ia.sdk.dto;
 
 import static org.junit.Assert.assertSame;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -13,7 +17,6 @@ import com.opentext.ia.test.TestCase;
 
 
 public class WhenContainingItemsInCollections extends TestCase {
-
 
   @Test
   public void shouldExtractItemsByKey() {
@@ -38,6 +41,7 @@ public class WhenContainingItemsInCollections extends TestCase {
     ItemContainer<NamedLinkContainer> collection = new TestItems();
     collection.setEmbedded(Collections.emptyMap());
   }
+
 
   public static class TestItems extends ItemContainer<NamedLinkContainer> {
   }
