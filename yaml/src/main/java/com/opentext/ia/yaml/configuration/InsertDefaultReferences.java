@@ -63,6 +63,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     put(result, "/holdings/\\d+/ingestConfigs/\\d+", "ingest");
     put(result, "/holdings/\\d+/pdiConfigs/\\d+", "pdi");
     put(result, "/holdingCryptoes/\\d+", APPLICATION, "holding");
+    put(result, "/holdingCryptoes/\\d+/pdis/\\d+", "pdiCrypto");
     put(result, "/ingests/\\d+", APPLICATION);
     put(result, "/ingestNodes/\\d+", APPLICATION);
     put(result, "/orders/\\d+", APPLICATION);
