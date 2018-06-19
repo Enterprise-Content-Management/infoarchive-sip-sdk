@@ -3,17 +3,6 @@
  */
 package com.opentext.ia.sdk.support.http.rest;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URIBuilder;
-
-import com.opentext.ia.sdk.support.http.BinaryPart;
-import com.opentext.ia.sdk.support.http.Header;
-import com.opentext.ia.sdk.support.http.HttpClient;
-import com.opentext.ia.sdk.support.http.JsonFormatter;
-import com.opentext.ia.sdk.support.http.MediaTypes;
-import com.opentext.ia.sdk.support.http.Part;
-import com.opentext.ia.sdk.support.http.ResponseFactory;
-import com.opentext.ia.sdk.support.http.UriBuilder;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +16,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
+
+import com.opentext.ia.sdk.support.http.BinaryPart;
+import com.opentext.ia.sdk.support.http.Header;
+import com.opentext.ia.sdk.support.http.HttpClient;
+import com.opentext.ia.sdk.support.http.JsonFormatter;
+import com.opentext.ia.sdk.support.http.MediaTypes;
+import com.opentext.ia.sdk.support.http.Part;
+import com.opentext.ia.sdk.support.http.ResponseFactory;
+import com.opentext.ia.sdk.support.http.UriBuilder;
 
 /**
  * An HTTP client that understands hyperlinks.

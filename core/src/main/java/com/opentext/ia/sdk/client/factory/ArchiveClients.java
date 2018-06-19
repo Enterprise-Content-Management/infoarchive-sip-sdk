@@ -3,6 +3,11 @@
  */
 package com.opentext.ia.sdk.client.factory;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
@@ -17,10 +22,6 @@ import com.opentext.ia.sdk.dto.Tenant;
 import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 import com.opentext.ia.sdk.support.http.rest.RestClient;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 
 /**
