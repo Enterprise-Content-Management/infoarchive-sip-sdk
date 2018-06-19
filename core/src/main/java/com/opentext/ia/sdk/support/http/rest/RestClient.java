@@ -3,17 +3,8 @@
  */
 package com.opentext.ia.sdk.support.http.rest;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
 
 import com.opentext.ia.sdk.support.http.BinaryPart;
 import com.opentext.ia.sdk.support.http.Header;
@@ -23,7 +14,19 @@ import com.opentext.ia.sdk.support.http.MediaTypes;
 import com.opentext.ia.sdk.support.http.Part;
 import com.opentext.ia.sdk.support.http.ResponseFactory;
 import com.opentext.ia.sdk.support.http.UriBuilder;
-
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * An HTTP client that understands hyperlinks.
@@ -59,8 +62,7 @@ public class RestClient implements Closeable, StandardLinkRelations {
 
   private Collection<Header> withAccept(String mediaType) {
     Collection<Header> result = headers.stream()
-        .filter(header -> !Header.ACCEPT.equals(header.getName()))
-        .collect(Collectors.toList());
+        .filter(header -> !Header.ACCEPT.equals(header.getName())).collect(Collectors.toList());
     result.add(new Header(Header.ACCEPT, mediaType));
     return result;
   }
@@ -77,7 +79,8 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return put(uri, type, payload, MediaTypes.HAL);
   }
 
-  public <T> T put(String uri, Class<T> type, String payload, String contentType) throws IOException {
+  public <T> T put(String uri, Class<T> type, String payload, String contentType)
+      throws IOException {
     return httpClient.put(uri, withAuthorization(withContentType(contentType)), type, payload);
   }
 
@@ -113,6 +116,31 @@ public class RestClient implements Closeable, StandardLinkRelations {
     httpClient.delete(uri, withAuthorization(Collections.emptyList()));
   }
 
+  public <T> T followNonPaged(LinkContainer state, String relation, Class<T> type)
+      throws IOException {
+    Objects.requireNonNull(state, "Missing state");
+    String href = linkIn(state, relation).getHref();
+    href = removePageQueryParameters(href);
+    return get(href, type);
+  }
+
+  private String removePageQueryParameters(String href) {
+    try {
+      URIBuilder uriBuilder = new URIBuilder(href);
+      List<NameValuePair> queryParameters = uriBuilder.getQueryParams().stream()
+          .filter(p -> !"page".equals(p.getName()) && !"size".equals(p.getName()))
+          .collect(Collectors.toList());
+      if (queryParameters.isEmpty()) {
+        uriBuilder.removeQuery();
+      } else {
+        uriBuilder.setParameters(queryParameters);
+      }
+      return uriBuilder.build().toString();
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException(e);
+    }
+  }
+
   public <T> T follow(LinkContainer state, String relation, Class<T> type) throws IOException {
     Objects.requireNonNull(state, "Missing state");
     return get(linkIn(state, relation).getHref(), type);
@@ -126,7 +154,8 @@ public class RestClient implements Closeable, StandardLinkRelations {
         break;
       }
     }
-    Objects.requireNonNull(result, String.format("Missing link %s in %s", relations[relations.length - 1], state));
+    Objects.requireNonNull(result,
+        String.format("Missing link %s in %s", relations[relations.length - 1], state));
     return result;
   }
 
@@ -136,10 +165,11 @@ public class RestClient implements Closeable, StandardLinkRelations {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T createCollectionItem(LinkContainer collection, T item, String... addLinkRelations) throws IOException {
+  public <T> T createCollectionItem(LinkContainer collection, T item, String... addLinkRelations)
+      throws IOException {
     String uri = linkIn(collection, addLinkRelations).getHref();
-    T result = (T)httpClient.post(uri, withAuthorization(withContentType(MediaTypes.HAL)), item.getClass(),
-        toJson(item));
+    T result = (T)httpClient.post(uri, withAuthorization(withContentType(MediaTypes.HAL)),
+        item.getClass(), toJson(item));
     Objects.requireNonNull(result, String.format("Could not create item in %s%n%s", uri, item));
     return result;
   }
@@ -162,19 +192,20 @@ public class RestClient implements Closeable, StandardLinkRelations {
     return formatter.format(object);
   }
 
-  public <T> T upload(LinkContainer state, String linkRelation, File file, Class<T> type) throws IOException {
+  public <T> T upload(LinkContainer state, String linkRelation, File file, Class<T> type)
+      throws IOException {
     return upload(state, linkRelation, file, type, "file");
   }
 
-  public <T> T upload(LinkContainer state, String linkRelation, File file, Class<T> type, String partName)
-      throws IOException {
+  public <T> T upload(LinkContainer state, String linkRelation, File file, Class<T> type,
+      String partName) throws IOException {
     try (InputStream data = Files.newInputStream(file.toPath(), StandardOpenOption.READ)) {
       return upload(state, linkRelation, data, type, partName);
     }
   }
 
-  public <T> T upload(LinkContainer state, String linkRelation, InputStream data, Class<T> type, String partName)
-      throws IOException {
+  public <T> T upload(LinkContainer state, String linkRelation, InputStream data, Class<T> type,
+      String partName) throws IOException {
     Link link = linkIn(state, linkRelation);
     return post(link.getHref(), type, new BinaryPart(partName, data, ""));
   }
