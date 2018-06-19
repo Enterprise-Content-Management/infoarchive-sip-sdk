@@ -10,9 +10,8 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 === Fixed
 
-- Undid previous fix in normalization of YAML configuration which was backwards incompatible and led to issues during
- import
-
+- Follow link without paging parameters when finding a specific application.
+- Undid previous fix in normalization of YAML configuration which was backwards incompatible and led to issues during import
 
 
 == 11.2.2 - 2018-06-08
