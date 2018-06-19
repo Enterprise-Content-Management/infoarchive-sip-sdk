@@ -430,6 +430,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   private <T> OngoingStubbing<T> mockCollection(Class<T> type, T object) throws IOException {
+    when(restClient.followNonPaged(any(LinkContainer.class), anyString(), eq(type)))
+        .thenReturn(object);
     return when(restClient.follow(any(LinkContainer.class), anyString(), eq(type)))
         .thenReturn(object);
   }
