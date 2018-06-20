@@ -9,13 +9,8 @@ import java.util.List;
 
 public class Aic extends NamedLinkContainer {
 
-  private List<Criterion> criterias;
-  private List<String> holdings;
-
-  public Aic() {
-    setCriterias(new ArrayList<>());
-    setHoldings(new ArrayList<>());
-  }
+  private List<Criterion> criterias = new ArrayList<>();
+  private List<String> holdings = new ArrayList<>();
 
   public List<Criterion> getCriterias() {
     return criterias;

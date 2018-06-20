@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.atteo.evo.inflector.English;
@@ -109,7 +110,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String otherType = someType();
     String value = someName();
     yaml.put(type, new YamlMap().put(NAME, name))
-        .put(otherType, Arrays.asList(value));
+        .put(otherType, Collections.singletonList(value));
 
     normalizeYaml();
 
@@ -129,8 +130,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   @Test
   public void shouldConvertEnumValue() {
-    yaml.put(APPLICATIONS, Arrays.asList(new YamlMap().put(TYPE, "active archiving")));
-    yaml.put(CONFIRMATIONS, Arrays.asList(new YamlMap().put("types", Arrays.asList("receipt", "invalid"))));
+    yaml.put(APPLICATIONS, Collections.singletonList(new YamlMap().put(TYPE, "active archiving")));
+    yaml.put(CONFIRMATIONS, Collections.singletonList(new YamlMap().put("types", Arrays.asList("receipt", "invalid"))));
 
     normalizeYaml();
 
@@ -150,21 +151,21 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String cryptoObject = someName();
     String xdbFederation = someName();
     String xdbDatabase = someName();
-    yaml.put("cryptoObjects", Arrays.asList(new YamlMap().put(NAME, cryptoObject)));
-    yaml.put(TENANTS, Arrays.asList(new YamlMap().put(NAME, tenant)));
+    yaml.put("cryptoObjects", Collections.singletonList(new YamlMap().put(NAME, cryptoObject)));
+    yaml.put(TENANTS, Collections.singletonList(new YamlMap().put(NAME, tenant)));
     yaml.put(APPLICATIONS, Arrays.asList(
         new YamlMap().put(NAME, someName()),
         new YamlMap().put(NAME, application)
-            .put(DEFAULT, true)));
-    yaml.put(SPACES, Arrays.asList(new YamlMap().put(NAME, space)));
-    yaml.put("spaceRootFolders", Arrays.asList(new YamlMap().put(NAME, spaceRootFolder)));
-    yaml.put("fileSystemRoots", Arrays.asList(new YamlMap().put(NAME, fileSystemRoot)));
-    yaml.put(FILE_SYSTEM_FOLDERS, Arrays.asList(new YamlMap().put(NAME, fileSystemFolder)));
-    yaml.put(STORES, Arrays.asList(new YamlMap().put(NAME, store)));
-    yaml.put(DATABASES, Arrays.asList(new YamlMap().put(NAME, someName())));
-    yaml.put("holdingCryptoes", Arrays.asList(new YamlMap().put(NAME, someName())));
-    yaml.put("xdbFederations", Arrays.asList(new YamlMap().put(NAME, xdbFederation)));
-    yaml.put("xdbDatabases", Arrays.asList(new YamlMap().put(NAME, xdbDatabase)));
+            .put(DEFAULT, Boolean.TRUE)));
+    yaml.put(SPACES, Collections.singletonList(new YamlMap().put(NAME, space)));
+    yaml.put("spaceRootFolders", Collections.singletonList(new YamlMap().put(NAME, spaceRootFolder)));
+    yaml.put("fileSystemRoots", Collections.singletonList(new YamlMap().put(NAME, fileSystemRoot)));
+    yaml.put(FILE_SYSTEM_FOLDERS, Collections.singletonList(new YamlMap().put(NAME, fileSystemFolder)));
+    yaml.put(STORES, Collections.singletonList(new YamlMap().put(NAME, store)));
+    yaml.put(DATABASES, Collections.singletonList(new YamlMap().put(NAME, someName())));
+    yaml.put("holdingCryptoes", Collections.singletonList(new YamlMap().put(NAME, someName())));
+    yaml.put("xdbFederations", Collections.singletonList(new YamlMap().put(NAME, xdbFederation)));
+    yaml.put("xdbDatabases", Collections.singletonList(new YamlMap().put(NAME, xdbDatabase)));
 
     normalizeYaml();
 
@@ -185,8 +186,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   @Test
   public void shouldNotInsertDefaultReferenceForExplicitNull() {
-    yaml.put(TENANTS, Arrays.asList(new YamlMap().put(NAME, someName())));
-    yaml.put(APPLICATIONS, Arrays.asList(new YamlMap()
+    yaml.put(TENANTS, Collections.singletonList(new YamlMap().put(NAME, someName())));
+    yaml.put(APPLICATIONS, Collections.singletonList(new YamlMap()
         .put(NAME, someName())
         .put(TENANT, null)));
 
@@ -199,10 +200,10 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   public void shouldNotInsertDefaultReferenceForExceptionalCases() {
     // The following are usually null. To prevent having to specify null (almost) everywhere, we simply don't insert
     // references by default for these exceptional cases.
-    yaml.put("searchGroups", Arrays.asList(new YamlMap().put(NAME, someName())));
-    yaml.put("customPresentationConfigurations", Arrays.asList(new YamlMap().put(NAME, someName())));
-    yaml.put("searches", Arrays.asList(new YamlMap().put(NAME, someName())));
-    yaml.put("searchCompositions", Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put("searchGroups", Collections.singletonList(new YamlMap().put(NAME, someName())));
+    yaml.put("customPresentationConfigurations", Collections.singletonList(new YamlMap().put(NAME, someName())));
+    yaml.put("searches", Collections.singletonList(new YamlMap().put(NAME, someName())));
+    yaml.put("searchCompositions", Collections.singletonList(new YamlMap().put(NAME, someName())));
 
     normalizeYaml();
 
@@ -213,10 +214,10 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   @Test
   public void shouldInsertDefaultValues() {
-    yaml.put("exportPipelines", Arrays.asList(new YamlMap().put(NAME, someName())));
-    yaml.put(HOLDINGS, Arrays.asList(new YamlMap().put(NAME, someName())));
-    yaml.put(INGESTS, Arrays.asList(new YamlMap().put(NAME, someName())));
-    yaml.put("receiverNodes", Arrays.asList(new YamlMap().put(NAME, someName())));
+    yaml.put("exportPipelines", Collections.singletonList(new YamlMap().put(NAME, someName())));
+    yaml.put(HOLDINGS, Collections.singletonList(new YamlMap().put(NAME, someName())));
+    yaml.put(INGESTS, Collections.singletonList(new YamlMap().put(NAME, someName())));
+    yaml.put("receiverNodes", Collections.singletonList(new YamlMap().put(NAME, someName())));
 
     normalizeYaml();
 
@@ -229,8 +230,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   @Test
   public void shouldReplaceSingularObjectReferenceWithSequenceForReferenceCollections() throws IOException {
     String name = someName();
-    yaml.put(HOLDINGS, Arrays.asList(new YamlMap().put(NAME, name)))
-        .put(CONFIRMATIONS, Arrays.asList(new YamlMap().put("holding", name)));
+    yaml.put(HOLDINGS, Collections.singletonList(new YamlMap().put(NAME, name)))
+        .put(CONFIRMATIONS, Collections.singletonList(new YamlMap().put("holding", name)));
 
     normalizeYaml();
 
@@ -243,7 +244,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String query = someName();
     String operand = someName();
     String path = someName();
-    yaml.put(QUERIES, Arrays.asList(new YamlMap()
+    yaml.put(QUERIES, Collections.singletonList(new YamlMap()
         .put(NAME, query)
         .put(XDB_PDI_CONFIGS, new YamlMap()
             .put(OPERANDS, new YamlMap()
@@ -262,10 +263,10 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String prefix = "n";
     String uri = randomUri();
     String text = "current-dateTime()";
-    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
             .put(PREFIX, prefix)
             .put(URI, uri)))
-        .put("xdbLibraryPolicies", Arrays.asList(new YamlMap()
+        .put("xdbLibraryPolicies", Collections.singletonList(new YamlMap()
             .put(NAME, someName())
             .put("closeHintDateQuery", new YamlMap()
                 .put(TEXT, text))));
@@ -281,10 +282,10 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String prefix = "n";
     String uri = randomUri();
     String text = "current-dateTime()";
-    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
             .put(PREFIX, prefix)
             .put(URI, uri)))
-        .put(XQUERIES, Arrays.asList(new YamlMap()
+        .put(XQUERIES, Collections.singletonList(new YamlMap()
             .put(NAME, someName())
             .put(QUERY, new YamlMap()
                 .put(TEXT, text))));
@@ -298,7 +299,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   @Test
   public void shouldReplaceXqueryQueryObjectWithText() {
     String text = "current-dateTime()";
-    yaml.put(XQUERIES, Arrays.asList(new YamlMap()
+    yaml.put(XQUERIES, Collections.singletonList(new YamlMap()
             .put(NAME, someName())
             .put(QUERY, new YamlMap()
                 .put(TEXT, text))));
@@ -312,10 +313,10 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   public void shouldReplacePdiSchemaNamespaceWithName() {
     String prefix = "n";
     String uri = randomUri();
-    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
             .put(PREFIX, prefix)
             .put(URI, uri)))
-        .put("pdiSchemas", Arrays.asList(new YamlMap()
+        .put("pdiSchemas", Collections.singletonList(new YamlMap()
             .put(CONTENT, new YamlMap()
                 .put(FORMAT, XML))));
 
@@ -337,7 +338,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
         new YamlMap()
             .put(PREFIX, prefix2)
             .put(URI, uri2)))
-        .put(PDIS, Arrays.asList(new YamlMap()
+        .put(PDIS, Collections.singletonList(new YamlMap()
             .put(NAME, someName())
             .put(CONTENT, new YamlMap()
                 .put(FORMAT, "yaml")
@@ -374,13 +375,13 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
         new YamlMap()
             .put(PREFIX, "n")
             .put(URI, "urn:eas-samples:en:xsd:phonecalls.1.0")
-            .put(DEFAULT, true),
+            .put(DEFAULT, Boolean.TRUE),
         new YamlMap()
             .put(PREFIX, "pdi")
             .put(URI, "urn:x-emc:ia:schema:pdi")))
         .put("resultConfigurationHelper", new YamlMap()
             .put(NAME, "PhoneCalls-result-configuration-helper")
-            .put("propagateChanges", false)
+            .put("propagateChanges", Boolean.FALSE)
             .put(CONTENT, new YamlMap()
                 .put(FORMAT, "yaml")
                 .put(NAMESPACES, Arrays.asList("n", "pdi"))
@@ -422,7 +423,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   @Test
   public void shouldTranslateIngestYamlToXml() {
-    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
             .put(PREFIX, "ri")
             .put(URI, "urn:x-emc:ia:schema:ri")))
         .put(INGEST, new YamlMap()
@@ -516,12 +517,12 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   public void shouldExpandNamespaceInResultMaster() {
     String prefix = "n";
     String uri = randomUri();
-    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
             .put(PREFIX, prefix)
             .put(URI, uri)))
-        .put("resultMasters", Arrays.asList(new YamlMap()
+        .put("resultMasters", Collections.singletonList(new YamlMap()
             .put(NAME, someName())
-            .put(NAMESPACES, Arrays.asList(prefix))));
+            .put(NAMESPACES, Collections.singletonList(prefix))));
 
     normalizeYaml();
 
@@ -534,12 +535,12 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   public void shouldExpandNamespaceInQuery() {
     String prefix = "n";
     String uri = randomUri();
-    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
+    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
             .put(PREFIX, prefix)
             .put(URI, uri)))
-        .put("queries", Arrays.asList(new YamlMap()
+        .put("queries", Collections.singletonList(new YamlMap()
             .put(NAME, someName())
-            .put(NAMESPACES, Arrays.asList(prefix))));
+            .put(NAMESPACES, Collections.singletonList(prefix))));
 
     normalizeYaml();
 
@@ -565,13 +566,13 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   private void addNamedObjectsFor(String... types) {
     for (String type : types) {
-      yaml.put(English.plural(type), Arrays.asList(new YamlMap().put(NAME, someName())));
+      yaml.put(English.plural(type), Collections.singletonList(new YamlMap().put(NAME, someName())));
     }
   }
 
   private void addPseudoContent(String... types) {
     for (String type : types) {
-      yaml.put(English.plural(type), Arrays.asList(new YamlMap().put(CONTENT, new YamlMap().put(TEXT, someName()))));
+      yaml.put(English.plural(type), Collections.singletonList(new YamlMap().put(CONTENT, new YamlMap().put(TEXT, someName()))));
     }
   }
 
@@ -592,7 +593,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
         .put(TYPE, someName()), new YamlMap()
         .put(NAME, someName())
         .put(TYPE, someName())
-        .put("enabled", false)));
+        .put("enabled", Boolean.FALSE)));
 
     normalizeYaml();
 
@@ -602,7 +603,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   @Test
   public void shouldNotInsertDefaultValueWhenNotConfiguring() {
-    yaml.put("fileSystemRoots", Arrays.asList(new YamlMap()
+    yaml.put("fileSystemRoots", Collections.singletonList(new YamlMap()
         .put(NAME, someName())
         .put(CONFIGURE, "use existing")));
 
@@ -620,7 +621,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String intProperty = someName();
     int intValue = randomInt(13, 42);
     resourceResolver = ResourceResolver.fromClasspath();
-    yaml.put(collection, Arrays.asList(new YamlMap().put(NAME, "${qux}").put(intProperty, intValue)));
+    yaml.put(collection, Collections.singletonList(new YamlMap().put(NAME, "${qux}").put(intProperty, intValue)));
 
     normalizeYaml();
 
@@ -631,7 +632,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   @Test
   public void shouldResolvePropertiesToDefaultsWhenNoValuesProvided() {
     resourceResolver = ResourceResolver.none();
-    yaml.put("gnus", Arrays.asList(new YamlMap().put("gnat", "${waldo:fred}")));
+    yaml.put("gnus", Collections.singletonList(new YamlMap().put("gnat", "${waldo:fred}")));
 
     normalizeYaml(yaml);
 

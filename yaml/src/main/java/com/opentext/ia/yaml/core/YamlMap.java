@@ -38,6 +38,8 @@ import org.yaml.snakeyaml.representer.Representer;
 @SuppressWarnings("unchecked")
 public class YamlMap {
 
+  private static final String LINE_SEPARATOR = System.lineSeparator();
+
   private static final int MAX_LINE_LENGTH = 80;
 
   private static YamlSyntaxErrorPrettifier yamlSyntaxErrorPrettifier = new YamlSyntaxErrorPrettifier();
@@ -186,7 +188,7 @@ public class YamlMap {
       if (end >= 0) {
         result.append(line.substring(0, end + 1));
       }
-      prefix = System.lineSeparator();
+      prefix = LINE_SEPARATOR;
     }
     return result.toString();
   }
@@ -414,13 +416,13 @@ public class YamlMap {
     boolean hasOutput = false;
     for (Map.Entry<String, Object> entry : map.entrySet()) {
       if (hasOutput && separateEntries) {
-        builder.append(System.lineSeparator());
+        builder.append(LINE_SEPARATOR);
       }
       appendEntry(indent, entry, builder, differenceFound);
       hasOutput = true;
     }
     if (!hasOutput) {
-      builder.append(indent).append("{ }").append(System.lineSeparator());
+      builder.append(indent).append("{ }").append(LINE_SEPARATOR);
     }
   }
 
@@ -432,7 +434,7 @@ public class YamlMap {
     builder.append(':');
     Object value = entry.getValue();
     if (value instanceof Map) {
-      builder.append(System.lineSeparator());
+      builder.append(LINE_SEPARATOR);
       appendMap(indent.inMap(), false, (Map<String, Object>)value, builder, differenceFound);
     } else if (value instanceof Collection) {
       appendCollection(indent, builder.length() - len, (Collection<?>)value, builder, differenceFound);
@@ -473,15 +475,16 @@ public class YamlMap {
   private void appendWrappedText(YamlIndent indent, int currentLineLength, String text, StringBuilder builder) {
     int start = 0;
     int used = currentLineLength;
-    while (start < text.length()) {
+    int length = text.length();
+    while (start < length) {
       int end = wordBreakAfter(text, start + MAX_LINE_LENGTH - used + 1);
       builder.append(text.substring(start, end));
       start = end + 1;
-      while (start < text.length() && Character.isWhitespace(text.charAt(start))) {
+      while (start < length && Character.isWhitespace(text.charAt(start))) {
         start++;
       }
-      if (start < text.length()) {
-        builder.append(System.lineSeparator()).append(indent);
+      if (start < length) {
+        builder.append(LINE_SEPARATOR).append(indent);
         used = indent.length();
       }
     }
@@ -499,9 +502,9 @@ public class YamlMap {
       StringBuilder builder, AtomicBoolean differenceFound) {
     int len = builder.length();
     if (collection.isEmpty()) {
-      builder.append(" [ ]").append(System.lineSeparator());
+      builder.append(" [ ]").append(LINE_SEPARATOR);
     } else {
-      builder.append(System.lineSeparator());
+      builder.append(LINE_SEPARATOR);
       for (Object item : collection) {
         if (item instanceof Map) {
           appendMap(indent.inSequence(), false, (Map<String, Object>)item, builder, differenceFound);
@@ -520,7 +523,7 @@ public class YamlMap {
       if (lines.length > 1) {
         builder.append('|');
         for (String line : lines) {
-          builder.append(System.lineSeparator()).append(indent).append("  ").append(line);
+          builder.append(LINE_SEPARATOR).append(indent).append("  ").append(line);
         }
       } else {
         appendText(indent, currentLineLength, text, builder);
@@ -528,7 +531,7 @@ public class YamlMap {
     } else {
       builder.append(value);
     }
-    builder.append(System.lineSeparator());
+    builder.append(LINE_SEPARATOR);
   }
 
 

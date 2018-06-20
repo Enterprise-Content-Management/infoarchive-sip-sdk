@@ -11,19 +11,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -90,12 +90,7 @@ public class WhenZippingConfigurations extends TestCase {
       throw new IllegalStateException(
           "Could not create all directories in path " + file.getParentFile().getAbsolutePath());
     }
-    try (OutputStream output =
-        Files.newOutputStream(file.toPath(), StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
-      try (Reader input = new StringReader(content)) {
-        IOUtils.copy(input, output, StandardCharsets.UTF_8);
-      }
-    }
+    FileUtils.writeStringToFile(file, content, StandardCharsets.UTF_8);
   }
 
   private Map<String, InputStream> zipYaml() throws IOException {
@@ -143,7 +138,7 @@ public class WhenZippingConfigurations extends TestCase {
 
   private File yamlFileIncluding(File includedYaml) throws IOException {
     return yamlFileContaining(
-        new YamlMap().put(INCLUDES, Arrays.asList(includedYaml.getAbsolutePath())));
+        new YamlMap().put(INCLUDES, Collections.singletonList(includedYaml.getAbsolutePath())));
   }
 
   @Test
@@ -234,7 +229,7 @@ public class WhenZippingConfigurations extends TestCase {
 
     File included = newFile(subFolder, CONFIGURATION_FILE_NAME, includedYaml.toString());
     YamlMap configuration = new YamlMap().put(INCLUDES,
-        Arrays.asList(String.format("%s/%s", subFolder.getName(), included.getName())));
+        Collections.singletonList(String.format("%s/%s", subFolder.getName(), included.getName())));
     yaml = tempFolder.newFile(CONFIGURATION_FILE_NAME);
     setContent(yaml, configuration.toString());
 
@@ -250,15 +245,16 @@ public class WhenZippingConfigurations extends TestCase {
   public void shouldSubstitutePropertiesToDeterminePathsToResources() throws IOException {
     String text = randomString();
     File resourceFile = newFile(someName() + ".txt", text);
-    newFile(CONFIGURATION_PROPERTIES, "name=" + resourceFile.getName());
+    String resourceFileName = resourceFile.getName();
+    newFile(CONFIGURATION_PROPERTIES, "name=" + resourceFileName);
     yaml = newFile(CONFIGURATION_FILE_NAME,
         new YamlMap().put("pdiSchema", new YamlMap().put("name", someName()).put("content",
             new YamlMap().put("format", "txt").put("resource", "${name}"))).toString());
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntry("Resource not included: " + resourceFile.getName(),
-        resourceFile.getName()::equals, zipEntries);
+    assertZipEntry("Resource not included: " + resourceFileName,
+        resourceFileName::equals, zipEntries);
   }
 
   @Test
@@ -295,7 +291,7 @@ public class WhenZippingConfigurations extends TestCase {
           assertTrue("Missing " + CONFIGURATION_PROPERTIES,
               names.contains(CONFIGURATION_PROPERTIES));
           initialized.set(true);
-        }).properties((name, properties) -> properties.put(key, value))
+        }).properties((name, properties) -> properties.setProperty(key, value))
             .yaml((name, map) -> map.put("version", version))
             .extra(() -> ExtraZipEntry.of(entryName, entryContent)).build()));
 
@@ -339,7 +335,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   private YamlMap configurationWithIncludes(File includedFile) {
-    return someConfiguration().put(INCLUDES, Arrays.asList(includedFile.getPath()));
+    return someConfiguration().put(INCLUDES, Collections.singletonList(includedFile.getPath()));
   }
 
   private YamlMap someConfiguration() {

@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import com.opentext.ia.yaml.core.PathVisitor;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.Visit;
@@ -138,6 +140,7 @@ class InlineExternalContent extends PathVisitor {
     }
   }
 
+  @Nullable
   private String guessFormat(String resourceName) {
     int index = resourceName.lastIndexOf('.');
     if (index < 0) {

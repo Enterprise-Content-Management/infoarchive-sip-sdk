@@ -118,7 +118,6 @@ public class YamlConfiguration {
   private Visitor newVisitor(Class<? extends Visitor> type) {
     try {
       Constructor<? extends Visitor> constructor = type.getDeclaredConstructor();
-      constructor.setAccessible(true);
       return constructor.newInstance();
     } catch (ReflectiveOperationException e) {
       throw new IllegalStateException("Failed to create instance of " + type, e);

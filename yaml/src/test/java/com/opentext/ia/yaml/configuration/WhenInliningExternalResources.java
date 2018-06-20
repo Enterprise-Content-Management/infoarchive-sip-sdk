@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.atteo.evo.inflector.English;
 import org.junit.Test;
@@ -49,10 +50,10 @@ public class WhenInliningExternalResources extends TestCase {
     resourceResolver = resolveResource(resource, expected);
     String singularType = someType();
     String pluralType = English.plural(someType());
-    yaml.put(singularType, Arrays.asList(externalContentTo(resource)));
+    yaml.put(singularType, Collections.singletonList(externalContentTo(resource)));
     yaml.put(pluralType, externalContentTo(resource));
     String multipleContent = English.plural(someName());
-    yaml.put(multipleContent, Arrays.asList(new YamlMap().put(CONTENT, Arrays.asList(externalResourceTo(resource)))));
+    yaml.put(multipleContent, Collections.singletonList(new YamlMap().put(CONTENT, Collections.singletonList(externalResourceTo(resource)))));
 
     normalizeYaml();
 
@@ -119,7 +120,7 @@ public class WhenInliningExternalResources extends TestCase {
     String expected = someName();
     String resource = someHtmlFileName();
     resourceResolver = resolveResource(resource, expected);
-    yaml.put("customPresentationConfigurations", Arrays.asList(new YamlMap()
+    yaml.put("customPresentationConfigurations", Collections.singletonList(new YamlMap()
         .put(NAME, someName())
         .put(HTML_TEMPLATE, new YamlMap()
             .put(RESOURCE, resource))));
@@ -173,9 +174,9 @@ public class WhenInliningExternalResources extends TestCase {
     String expected = someName();
     String resource = someXmlFile();
     resourceResolver = resolveResource(resource, expected);
-    yaml.put(DATABASES, Arrays.asList(new YamlMap()
+    yaml.put(DATABASES, Collections.singletonList(new YamlMap()
         .put(NAME, someName())
-        .put(METADATA, Arrays.asList(new YamlMap()
+        .put(METADATA, Collections.singletonList(new YamlMap()
             .put(RESOURCE, resource)))));
 
     normalizeYaml();
@@ -195,7 +196,7 @@ public class WhenInliningExternalResources extends TestCase {
     resourceResolver = resolveResource(resource, expected);
     yaml.put("database", new YamlMap()
         .put(NAME, someName())
-        .put(METADATA, Arrays.asList(new YamlMap()
+        .put(METADATA, Collections.singletonList(new YamlMap()
             .put(RESOURCE, resource))));
 
     normalizeYaml();
@@ -210,7 +211,7 @@ public class WhenInliningExternalResources extends TestCase {
     resourceResolver = resolveResource(resource, expected);
     yaml.put(DATABASES, new YamlMap()
         .put(someName(), new YamlMap()
-            .put(METADATA, Arrays.asList(new YamlMap()
+            .put(METADATA, Collections.singletonList(new YamlMap()
                 .put(RESOURCE, resource)))));
 
     normalizeYaml();
@@ -227,7 +228,7 @@ public class WhenInliningExternalResources extends TestCase {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);
-    yaml.put(TRANSFORMATIONS, Arrays.asList(new YamlMap()
+    yaml.put(TRANSFORMATIONS, Collections.singletonList(new YamlMap()
         .put(NAME, someName())
         .put(XQUERY, new YamlMap()
             .put(RESOURCE, resource))));
@@ -275,9 +276,9 @@ public class WhenInliningExternalResources extends TestCase {
   @Test
   public void shouldInlineFileResourcesByPattern() {
     resourceResolver = ResourceResolver.fromFile(new File("src/test/resources/nested-includes/root.yml"));
-    yaml.put(DATABASES, Arrays.asList(new YamlMap()
+    yaml.put(DATABASES, Collections.singletonList(new YamlMap()
         .put(NAME, someName())
-        .put(METADATA, Arrays.asList(new YamlMap()
+        .put(METADATA, Collections.singletonList(new YamlMap()
             .put(RESOURCE, "**/*.yml")))));
 
     normalizeYaml(yaml);
@@ -289,9 +290,9 @@ public class WhenInliningExternalResources extends TestCase {
   @Test
   public void shouldInlineFileResourcesByPatterns() {
     resourceResolver = ResourceResolver.fromFile(new File("src/test/resources/configuration.properties"));
-    yaml.put(DATABASES, Arrays.asList(new YamlMap()
+    yaml.put(DATABASES, Collections.singletonList(new YamlMap()
         .put(NAME, someName())
-        .put(METADATA, Arrays.asList(new YamlMap()
+        .put(METADATA, Collections.singletonList(new YamlMap()
             .put(RESOURCE, Arrays.asList("nested-includes/*.yml", "*.properties"))))));
 
     normalizeYaml(yaml);
@@ -322,7 +323,7 @@ public class WhenInliningExternalResources extends TestCase {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);
-    yaml.put(XQUERIES, Arrays.asList(new YamlMap()
+    yaml.put(XQUERIES, Collections.singletonList(new YamlMap()
         .put(NAME, someName())
         .put(QUERY, new YamlMap()
             .put(RESOURCE, resource))));

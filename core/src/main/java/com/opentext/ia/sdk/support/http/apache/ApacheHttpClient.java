@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -203,8 +205,8 @@ public class ApacheHttpClient implements HttpClient {
         String body = isBinary ? "<binary>" : toString(entity);
         if (!isOk(statusLine)) {
           int status = statusLine.getStatusCode();
-          throw new HttpException(status, String.format("%n%s %s%n%s==> %d %s%n%s%n%s", method, uri, toString(headers),
-              status, statusLine.getReasonPhrase(), toString(response.getAllHeaders()), body));
+          throw new HttpException(status, String.format("%n%s %s%n%s==> %d %s%n%s%n%s", method, uri, headersToString(headers),
+              status, statusLine.getReasonPhrase(), headersToString(response.getAllHeaders()), body));
         }
         return isBinary ? binaryResponse(entity, type) : textResponse(body, type);
       } finally {
@@ -215,7 +217,7 @@ public class ApacheHttpClient implements HttpClient {
     };
   }
 
-  private String toString(org.apache.http.Header[] headers) {
+  private String headersToString(org.apache.http.Header... headers) {
     if (headers == null) {
       return "";
     }
@@ -238,11 +240,9 @@ public class ApacheHttpClient implements HttpClient {
     }
   }
 
+  @Nullable
   private <T> T textResponse(String body, Class<T> type) {
-    if (type == null) {
-      return null;
-    }
-    if (body.isEmpty()) {
+    if (type == null || body.isEmpty()) {
       return null;
     }
     if (type.equals(String.class)) {

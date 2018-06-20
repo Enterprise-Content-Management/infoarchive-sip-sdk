@@ -13,7 +13,10 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.atteo.evo.inflector.English;
+import org.yaml.snakeyaml.error.Mark;
 import org.yaml.snakeyaml.error.MarkedYAMLException;
 
 
@@ -23,8 +26,9 @@ class YamlSyntaxErrorPrettifier  {
 
 
   public MarkedYAMLException apply(MarkedYAMLException e, String yaml) throws IOException {
-    Optional<YamlLine> prevLine = getLine(yaml, e.getProblemMark().getLine() - 1);
-    Optional<YamlLine> line = getLine(e.getProblemMark().get_snippet(0, 100), 0);
+    Mark problemMark = e.getProblemMark();
+    Optional<YamlLine> prevLine = getLine(yaml, problemMark.getLine() - 1);
+    Optional<YamlLine> line = getLine(problemMark.get_snippet(0, 100), 0);
     if (prevLine.isPresent() && line.isPresent()) {
       YamlLine prev = prevLine.get();
       YamlLine current = line.get();
@@ -64,8 +68,9 @@ class YamlSyntaxErrorPrettifier  {
         validIndentations.add(indent);
       }
     }
-    String message = String.format("Incorrect indentation of %d %s; expected %s", current.indentation(),
-        English.plural(SPACE, current.indentation()), oneOfSpaces(validIndentations));
+    int currentIndent = current.indentation();
+    String message = String.format("Incorrect indentation of %d %s; expected %s", currentIndent,
+        English.plural(SPACE, currentIndent), oneOfSpaces(validIndentations));
     return new YamlSyntaxErrorException(message, e);
   }
 
@@ -106,6 +111,7 @@ class YamlSyntaxErrorPrettifier  {
     private final String name;
     private final String value;
 
+    @Nullable
     static YamlLine parse(String line) {
       if (line == null) {
         return null;

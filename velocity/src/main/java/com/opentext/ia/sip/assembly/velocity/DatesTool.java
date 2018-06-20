@@ -6,6 +6,8 @@ package com.opentext.ia.sip.assembly.velocity;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.annotation.Nullable;
+
 import com.opentext.ia.sdk.support.datetime.Dates;
 
 
@@ -14,10 +16,12 @@ import com.opentext.ia.sdk.support.datetime.Dates;
  */
 public class DatesTool {
 
+  @Nullable
   public String format(Object date) {
     return Dates.toIso(toDate(date));
   }
 
+  @Nullable
   private Date toDate(Object obj) {
     if (obj == null) {
       return null;

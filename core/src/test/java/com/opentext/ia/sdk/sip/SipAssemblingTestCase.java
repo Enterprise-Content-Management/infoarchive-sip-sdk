@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.io.IOUtils;
 
 import com.opentext.ia.test.TestCase;
@@ -19,6 +21,7 @@ import com.opentext.ia.test.TestCase;
 
 public class SipAssemblingTestCase extends TestCase {
 
+  @Nullable
   protected String getPackageInformation(InputStream sip) throws IOException {
     try (ZipInputStream zip = new ZipInputStream(sip)) {
       ZipEntry entry = zip.getNextEntry();
@@ -37,6 +40,7 @@ public class SipAssemblingTestCase extends TestCase {
     return Integer.parseInt(getXmlElement(packageInformation, "seqno"));
   }
 
+  @Nullable
   private String getXmlElement(String xml, String tag) {
     String regex = String.format(".*<%1$s>(?<text>[^<]*)<\\/%1$s>.*", tag);
     Matcher matcher = Pattern.compile(regex, Pattern.DOTALL).matcher(xml);

@@ -3,14 +3,12 @@
  */
 package com.opentext.ia.sdk.dto.query;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.opentext.ia.sdk.support.JavaBean;
-
 
 @JsonPropertyOrder({ "name", "operator", "value" })
 public class Comparison extends JavaBean implements Item {
@@ -21,11 +19,11 @@ public class Comparison extends JavaBean implements Item {
 
   public Comparison() {
     operator = Operator.EQUAL;
-    value = new ArrayList<>();
+    value = Collections.emptyList();
   }
 
   public Comparison(String name, Operator operator, String value) {
-    this(name, operator, Arrays.asList(Objects.requireNonNull(value, "Missing comparison value")));
+    this(name, operator, Collections.singletonList(Objects.requireNonNull(value, "Missing comparison value")));
   }
 
   public Comparison(String name, Operator operator, List<String> value) {

@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import javax.annotation.Nullable;
+
 
 /**
  * Fluent API for building XML documents by writing them to a {@linkplain PrintWriter}.
@@ -183,9 +185,11 @@ public class PrintingXmlBuilder implements XmlBuilder<Void> {
       prefixesByNamespace.put(uri, prefix);
     }
 
+    @Nullable
     String prefixFor(String uri) {
-      if (prefixesByNamespace.containsKey(uri)) {
-        return prefixesByNamespace.get(uri);
+      String result = prefixesByNamespace.get(uri);
+      if (result != null) {
+        return result;
       }
       int index = elements.indexOf(this);
       if (index == 0) {

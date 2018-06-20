@@ -59,8 +59,9 @@ public class HelloSip {
     FileGenerator<Greeting> generator = new FileGenerator<>(sipAssembler, () -> new File("hello-sip.zip"));
     Greeting greeting = new Greeting("Hello, SIP");
     SipMetrics metrics = (SipMetrics)generator.generate(greeting).getMetrics();
-    System.out.printf("  Added %d %s to SIP of %d bytes in %d ms%n", metrics.numAius(),
-        English.plural("AIU", (int)metrics.numAius()), metrics.sipFileSize(), metrics.assemblyTime());
+    long numAius = metrics.numAius();
+    System.out.printf("  Added %d %s to SIP of %d bytes in %d ms%n", numAius,
+        English.plural("AIU", (int)numAius), metrics.sipFileSize(), metrics.assemblyTime());
   }
 
 }

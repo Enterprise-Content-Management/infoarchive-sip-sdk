@@ -6,6 +6,7 @@ package com.opentext.ia.yaml.core;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -25,8 +26,8 @@ public class WhenDiffingYaml {
   public void shouldReportNothingForEqualYamls() {
     YamlMap yaml = new YamlMap()
         .put(NAME1, VALUE1)
-        .put(NAME2, new YamlMap().put(NAME1, VALUE1).put(NAME2, Arrays.asList(VALUE3)))
-        .put(NAME3, Arrays.asList(VALUE1, new YamlMap().put(NAME2, VALUE2), Arrays.asList(VALUE3)));
+        .put(NAME2, new YamlMap().put(NAME1, VALUE1).put(NAME2, Collections.singletonList(VALUE3)))
+        .put(NAME3, Arrays.asList(VALUE1, new YamlMap().put(NAME2, VALUE2), Collections.singletonList(VALUE3)));
 
     assertDiff(EMPTY, EMPTY, yaml, yaml);
   }
@@ -85,7 +86,7 @@ public class WhenDiffingYaml {
   @Test
   public void shouldCompareListsOnlyWithLists() {
     YamlMap mapWithValue = new YamlMap().put(NAME1, VALUE1);
-    YamlMap mapWithList = new YamlMap().put(NAME1, Arrays.asList(VALUE2));
+    YamlMap mapWithList = new YamlMap().put(NAME1, Collections.singletonList(VALUE2));
     assertDiff(mapWithValue, mapWithList, mapWithValue, mapWithList);
     assertDiff(mapWithList, mapWithValue, mapWithList, mapWithValue);
   }

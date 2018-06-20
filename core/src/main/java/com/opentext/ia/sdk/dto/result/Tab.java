@@ -14,9 +14,9 @@ public class Tab extends JavaBean {
   private String name;
   private String title;
   private String description;
-  private List<Column> columns;
+  private List<Column> columns = new ArrayList<>();
   private boolean exportEnabled;
-  private List<String> exportConfigurations;
+  private List<String> exportConfigurations = new ArrayList<>();
 
   public Tab() {
     this(null);
@@ -24,8 +24,6 @@ public class Tab extends JavaBean {
 
   public Tab(String name) {
     this.name = name;
-    columns = new ArrayList<>();
-    setExportConfigurations(new ArrayList<>());
   }
 
   public String getName() {

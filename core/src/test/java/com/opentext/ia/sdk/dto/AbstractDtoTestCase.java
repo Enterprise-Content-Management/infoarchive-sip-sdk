@@ -15,6 +15,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 
 abstract class AbstractDtoTestCase {
 
@@ -49,6 +51,7 @@ abstract class AbstractDtoTestCase {
     });
   }
 
+  @Nullable
   private static Class<?> toClass(String path) {
     try {
       return Class.forName(path.substring(0, path.lastIndexOf('.')).replace(File.separatorChar, '.'));
@@ -73,7 +76,6 @@ abstract class AbstractDtoTestCase {
     if (constructor.getParameterCount() != 0) {
       return false;
     }
-    constructor.setAccessible(true);
     constructor.newInstance(); // Check for exceptions
     return true;
   }

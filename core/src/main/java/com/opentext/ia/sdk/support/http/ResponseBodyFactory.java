@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.annotation.Nullable;
+
 import com.opentext.ia.sdk.support.io.IOStreams;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
@@ -17,6 +19,7 @@ import com.opentext.ia.sdk.support.io.RuntimeIoException;
  */
 public abstract class ResponseBodyFactory<T> implements ResponseFactory<T> {
 
+  @Nullable
   @Override
   public T create(Response response, Runnable closeResponse) {
     Runnable closeResult = closeResponse;

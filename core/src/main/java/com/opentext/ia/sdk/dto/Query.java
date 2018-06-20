@@ -10,21 +10,13 @@ import java.util.List;
 public class Query extends NamedLinkContainer {
 
   private String resultSchema;
-  private String resultRootElement;
+  private String resultRootElement = "result";
   private boolean resultRootNsEnabled;
-  private List<Namespace> namespaces;
-  private List<XdbPdiConfig> xdbPdiConfigs;
+  private List<Namespace> namespaces = new ArrayList<>();
+  private List<XdbPdiConfig> xdbPdiConfigs = new ArrayList<>();
   private String quotaAsync;
   private String quota;
-  private List<String> aics;
-
-  public Query() {
-    setResultRootElement("result");
-    setResultRootNsEnabled(false);
-    setNamespaces(new ArrayList<>());
-    setXdbPdiConfigs(new ArrayList<>());
-    setAics(new ArrayList<>());
-  }
+  private List<String> aics = new ArrayList<>();
 
   public String getQuotaAsync() {
     return quotaAsync;

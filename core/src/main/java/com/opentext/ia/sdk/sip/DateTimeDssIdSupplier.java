@@ -5,6 +5,8 @@ package com.opentext.ia.sdk.sip;
 
 import java.util.Date;
 
+import javax.annotation.Nullable;
+
 import com.opentext.ia.sdk.support.datetime.Dates;
 
 
@@ -21,6 +23,7 @@ public class DateTimeDssIdSupplier extends PrefixDssIdSupplier {
     super(prefix);
   }
 
+  @Nullable
   @Override
   protected String postfix() {
     return Dates.toIso(new Date());

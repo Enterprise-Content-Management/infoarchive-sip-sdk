@@ -11,10 +11,11 @@ import java.util.Objects;
  */
 public class Header implements Comparable<Header> {
 
-  private final String name;
-  private final String value;
   public static final String CONTENT_TYPE = "Content-Type";
   public static final String ACCEPT = "Accept";
+
+  private final String name;
+  private final String value;
 
   public Header(String name, String value) {
     this.name = name;

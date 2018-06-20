@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.atteo.evo.inflector.English;
 import org.junit.Test;
@@ -44,11 +45,11 @@ public class WhenIncludingExternalConfigurations extends TestCase {
     String key2 = someName();
     String value = someName();
     String included = new YamlMap()
-        .put(key1, Arrays.asList(new YamlMap().put(key2, value)))
+        .put(key1, Collections.singletonList(new YamlMap().put(key2, value)))
         .toString();
     String include = someYamlFileName();
     resourceResolver = resolveResource(include, included);
-    yaml.put(INCLUDES, Arrays.asList(include));
+    yaml.put(INCLUDES, Collections.singletonList(include));
 
     normalizeYaml();
 
@@ -101,8 +102,8 @@ public class WhenIncludingExternalConfigurations extends TestCase {
         .toString();
     String include = someYamlFileName();
     resourceResolver = resolveResource(include, included);
-    yaml.put(collection, Arrays.asList(new YamlMap().put(NAME, name)))
-        .put(INCLUDES, Arrays.asList(include));
+    yaml.put(collection, Collections.singletonList(new YamlMap().put(NAME, name)))
+        .put(INCLUDES, Collections.singletonList(include));
 
     normalizeYaml();
 
@@ -116,14 +117,14 @@ public class WhenIncludingExternalConfigurations extends TestCase {
     String collection = English.plural(type);
     String name = someName();
     String included = new YamlMap()
-        .put(collection, Arrays.asList(new YamlMap()
+        .put(collection, Collections.singletonList(new YamlMap()
                 .put(NAME, name)
                 .put(CONFIGURE, ObjectConfiguration.USE_EXISTING.toString())))
         .toString();
     String include = someYamlFileName();
     resourceResolver = resolveResource(include, included);
-    yaml.put(collection, Arrays.asList(new YamlMap().put(NAME, name)))
-        .put(INCLUDES, Arrays.asList(include));
+    yaml.put(collection, Collections.singletonList(new YamlMap().put(NAME, name)))
+        .put(INCLUDES, Collections.singletonList(include));
 
     normalizeYaml();
 
@@ -144,7 +145,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
         .toString();
     String include1 = someYamlFileName();
     String included2 = new YamlMap()
-        .put(collection, Arrays.asList(new YamlMap().put(NAME, name).put(property, value)))
+        .put(collection, Collections.singletonList(new YamlMap().put(NAME, name).put(property, value)))
         .toString();
     String include2 = someYamlFileName();
     resourceResolver = resource -> {
@@ -174,7 +175,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
     String include = someYamlFileName();
     resourceResolver = resolveResource(include, included);
     yaml.put(VERSION, VERSION_1)
-        .put(INCLUDES, Arrays.asList(include));
+        .put(INCLUDES, Collections.singletonList(include));
 
     normalizeYaml();
 
@@ -187,13 +188,13 @@ public class WhenIncludingExternalConfigurations extends TestCase {
     YamlMap namespace2 = someNamespace();
     String included = new YamlMap()
         .put("namespace", namespace1)
-        .put("namespaces", Arrays.asList(namespace2))
+        .put("namespaces", Collections.singletonList(namespace2))
         .toString();
     String include = someYamlFileName();
     resourceResolver = resolveResource(include, included);
     yaml.put("namespace", someName())
-        .put("namespaces", Arrays.asList(namespace2))
-        .put(INCLUDES, Arrays.asList(include));
+        .put("namespaces", Collections.singletonList(namespace2))
+        .put(INCLUDES, Collections.singletonList(include));
 
     normalizeYaml();
 
@@ -231,7 +232,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
       }
       throw new UnknownResourceException(name, null);
     };
-    yaml.put(INCLUDES, Arrays.asList(include));
+    yaml.put(INCLUDES, Collections.singletonList(include));
 
     normalizeYaml();
 
@@ -246,8 +247,8 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   public void shouldSubstitutePropertiesInInlinedYaml() {
     String collection = English.plural(someName());
     resourceResolver = ResourceResolver.fromClasspath();
-    yaml.put(collection, Arrays.asList(new YamlMap().put(NAME, "${qux}")))
-        .put(INCLUDES, Arrays.asList("include/configuration.yml"));
+    yaml.put(collection, Collections.singletonList(new YamlMap().put(NAME, "${qux}")))
+        .put(INCLUDES, Collections.singletonList("include/configuration.yml"));
 
     normalizeYaml();
 
@@ -269,7 +270,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   @Test
   public void shouldInlineNestedIncludes() {
     resourceResolver = ResourceResolver.fromClasspath("/nested-includes");
-    yaml.put(INCLUDES, Arrays.asList("root.yml"));
+    yaml.put(INCLUDES, Collections.singletonList("root.yml"));
 
     normalizeYaml(yaml);
 
@@ -282,11 +283,11 @@ public class WhenIncludingExternalConfigurations extends TestCase {
     String key2 = someName();
     String value = someName();
     String included = new YamlMap()
-        .put(key1, Arrays.asList(new YamlMap().put(key2, value)))
+        .put(key1, Collections.singletonList(new YamlMap().put(key2, value)))
         .toString();
     String include = someYamlFileName();
     resourceResolver = resolveResource(include, included);
-    yaml.put(INCLUDES, Arrays.asList(new YamlMap()
+    yaml.put(INCLUDES, Collections.singletonList(new YamlMap()
         .put(RESOURCE, include)
         .put(CONFIGURE, ObjectConfiguration.IGNORE.toString())));
 
@@ -311,7 +312,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
               .toString();
         case BAZ:
           return new YamlMap()
-              .put(APPLICATIONS, Arrays.asList(new YamlMap()
+              .put(APPLICATIONS, Collections.singletonList(new YamlMap()
                   .put(NAME, BAZ)))
               .toString();
         default:

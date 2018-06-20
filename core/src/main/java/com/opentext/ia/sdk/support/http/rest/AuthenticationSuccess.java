@@ -11,20 +11,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class AuthenticationSuccess {
 
-  private String accessToken;
-  private String tokenType;
-  private String refreshToken;
+  private String accessToken = "";
+  private String tokenType = "";
+  private String refreshToken = "";
   private long expiresIn;
-  private String scope;
-  private String jti;
-
-  public AuthenticationSuccess() {
-    setAccessToken("");
-    setTokenType("");
-    setRefreshToken("");
-    setScope("");
-    setJti("");
-  }
+  private String scope = "";
+  private String jti = "";
 
   public String getAccessToken() {
     return accessToken;

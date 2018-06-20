@@ -24,7 +24,7 @@ class ConvertIngestProcessors extends YamlContentVisitor {
   }
 
   private static Map<String, List<String>> nameAndClassById() {
-    Map<String, List<String>> result = new HashMap<>();
+    Map<String, List<String>> result = new HashMap<>(32 * 4 / 3);
     result.put("sip.download", Arrays.asList("SIP downloader processor", "downloader.SipContentDownloader"));
     result.put("xdb.lib.create", Arrays.asList("XDB Library creator processor", "library.LibraryCreatorProcessor"));
     result.put("sip.decrypt", Arrays.asList("SIP Decrypter processor", "crypto.SipDecryptProcessor"));

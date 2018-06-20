@@ -135,7 +135,7 @@ public class FileArchiver {
     private final String[] args;
     private int index;
 
-    public Arguments(String[] args) {
+    public Arguments(String... args) {
       this.args = args;
     }
 

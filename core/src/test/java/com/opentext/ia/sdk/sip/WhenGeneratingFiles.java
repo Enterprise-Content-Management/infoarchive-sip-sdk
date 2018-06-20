@@ -94,7 +94,7 @@ public class WhenGeneratingFiles extends TestCase {
     counters.set(TestMetrics.FOO, count);
     when(wrapped.getMetrics()).thenAnswer(invocation -> new TestMetrics(counters));
 
-    FileGenerationMetrics actual = new FileGenerator<String>(wrapped).generate(Arrays.asList(randomString()));
+    FileGenerationMetrics actual = new FileGenerator<String>(wrapped).generate(Collections.singletonList(randomString()));
 
     assertEquals("Metric", count, ((TestMetrics)actual.getMetrics()).getFoo());
   }

@@ -30,8 +30,9 @@ public class RepeatingConfigReader {
   }
 
   public List<Map<String, String>> read(Map<String, String> configuration) {
-    List<List<String>> values = new ArrayList<>();
-    List<Integer> sizes = new ArrayList<>(values.size());
+    int fieldsSize = fields.size();
+    List<List<String>> values = new ArrayList<>(fieldsSize);
+    List<Integer> sizes = new ArrayList<>(fieldsSize);
     int nullCount = 0;
     for (String field : fields) {
       String rawFieldValue = configuration.get(field);
@@ -44,7 +45,7 @@ public class RepeatingConfigReader {
       sizes.add(fieldValues.size());
     }
 
-    if (nullCount == fields.size()) {
+    if (nullCount == fieldsSize) {
       return Collections.emptyList();
     }
 
@@ -56,11 +57,12 @@ public class RepeatingConfigReader {
 
   private List<Map<String, String>> convertToListOfMaps(List<List<String>> values) {
     int numValues = values.get(0).size();
-    List<Map<String, String>> result = new ArrayList<>();
+    List<Map<String, String>> result = new ArrayList<>(numValues);
 
     for (int valueIndex = 0; valueIndex < numValues; ++valueIndex) {
-      Map<String, String> map = new HashMap<>();
-      for (int i = 0; i < fields.size(); ++i) {
+      int size = fields.size();
+      Map<String, String> map = new HashMap<>(size * 4 / 3);
+      for (int i = 0; i < size; ++i) {
         List<String> fieldValue = values.get(i);
         map.put(fields.get(i), fieldValue.get(valueIndex));
       }
@@ -89,7 +91,7 @@ public class RepeatingConfigReader {
   }
 
   private static List<String> getComponents(String value) {
-    List<String> result = new ArrayList<>();
+    List<String> result = new ArrayList<>(32);
     int offset = 0;
     for (int index = value.indexOf(',', offset); index != -1; index = value.indexOf(',', offset)) {
       result.add(value.substring(offset, index));

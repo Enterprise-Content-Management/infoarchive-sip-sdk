@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.yaml.configuration;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,8 +13,6 @@ import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.Visit;
 import com.opentext.ia.yaml.core.Visitor;
 import com.opentext.ia.yaml.core.YamlMap;
-import com.opentext.ia.yaml.core.YamlSequence;
-
 
 /**
  * Inlining multiple resources using patterns may lead to undesirable structures, which this class corrects.
@@ -48,7 +47,7 @@ class CombineSequencesOfTexts implements Visitor {
     yaml.replace(key, key, combine(yaml.get(key).toList()));
   }
 
-  private List<Object> combine(YamlSequence textSequence) {
+  private List<Object> combine(Collection<Value> textSequence) {
     return textSequence.stream()
         .map(Value::toMap)
         .flatMap(this::toTextMaps)

@@ -33,7 +33,7 @@ abstract class YamlContentVisitor implements Visitor {
         .map(Value::toMap)
         .map(map -> map.get("content"))
         .map(Value::toMap)
-        .filter(map -> map.get("format").toString().equals("yaml"))
+        .filter(map -> "yaml".equals(map.get("format").toString()))
         .findAny()
         .ifPresent(content -> visitContent(visit, content));
   }

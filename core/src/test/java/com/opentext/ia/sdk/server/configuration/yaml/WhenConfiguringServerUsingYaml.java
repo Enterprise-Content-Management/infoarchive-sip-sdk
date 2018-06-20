@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -91,12 +92,13 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   }
 
   private Map<String, String> loadProperties() throws IOException {
-    Map<String, String> result = new HashMap<>();
     Properties properties = new Properties();
     try (InputStream input = WhenConfiguringServerUsingYaml.class.getResourceAsStream("/iaif/iaif.properties")) {
       properties.load(input);
     }
-    for (String name : properties.stringPropertyNames()) {
+    Set<String> stringPropertyNames = properties.stringPropertyNames();
+    Map<String, String> result = new HashMap<>(stringPropertyNames.size());
+    for (String name : stringPropertyNames) {
       result.put(name, properties.getProperty(name));
     }
     return result;

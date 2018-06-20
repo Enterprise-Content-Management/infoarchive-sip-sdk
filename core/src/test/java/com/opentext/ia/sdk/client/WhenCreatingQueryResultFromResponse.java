@@ -5,6 +5,7 @@ package com.opentext.ia.sdk.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -43,7 +44,6 @@ public class WhenCreatingQueryResultFromResponse {
 
   @Test
   public void shouldCreateResultAndNotCloseResponse() throws IOException {
-    boolean cacheOutAipIgnored = true;
     int aipQuota = data.integer();
     int resultSetCount = data.integer();
     int aiuQuota = data.integer();
@@ -52,14 +52,14 @@ public class WhenCreatingQueryResultFromResponse {
     InputStream body = mock(InputStream.class);
 
     when(response.getBody()).thenReturn(body);
-    when(response.getHeaderValue("cacheOutAipIgnored", false)).thenReturn(cacheOutAipIgnored);
+    when(response.getHeaderValue("cacheOutAipIgnored", false)).thenReturn(Boolean.TRUE);
     when(response.getHeaderValue("aipQuota", 0)).thenReturn(aipQuota);
     when(response.getHeaderValue("resultSetCount", 0)).thenReturn(resultSetCount);
     when(response.getHeaderValue("aiuQuota", 0)).thenReturn(aiuQuota);
     when(response.getHeaderValue("resultSetQuota", 0)).thenReturn(resultSetQuota);
 
     try (QueryResult result = factory.create(response, () -> { })) {
-      assertEquals("Is cache-out of AIPs ignored", cacheOutAipIgnored, result.isCacheOutAipIgnored());
+      assertTrue("Is cache-out of AIPs ignored", result.isCacheOutAipIgnored());
       assertEquals("AIP quota", aipQuota, result.getAipQuota());
       assertEquals("AIU quota", aiuQuota, result.getAiuQuota());
       assertEquals("# results", resultSetCount, result.getResultSetCount());

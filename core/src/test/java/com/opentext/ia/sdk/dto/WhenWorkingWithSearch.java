@@ -14,12 +14,12 @@ import org.junit.Test;
 
 public class WhenWorkingWithSearch {
 
+  private static final String TEST_SUBJECT = "subject";
+  private static final String TEST_VALUE = "Test";
+
   private final Search search = new Search();
   private final SearchComposition composition = new SearchComposition();
   private final SearchDataBuilder builder = SearchDataBuilder.builder();
-
-  private static final String TEST_SUBJECT = "subject";
-  private static final String TEST_VALUE = "Test";
 
   @Test
   public void defaultDecriptionShouldBeNull() {

@@ -37,7 +37,6 @@ import org.junit.rules.TemporaryFolder;
 import com.opentext.ia.sdk.support.io.DomainObjectTooBigException;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
-
 @SuppressWarnings("unchecked")
 public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
 
@@ -49,20 +48,14 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
 
   @Before
   public void init() {
-    sipAssembler = SipAssembler.forPdi(somePackagingInformation(),
-        (Assembler<HashedContents<String>>)mock(Assembler.class));
+    sipAssembler =
+        SipAssembler.forPdi(somePackagingInformation(), (Assembler<HashedContents<String>>)mock(Assembler.class));
     segmentationStrategy = mock(SipSegmentationStrategy.class);
   }
 
   private PackagingInformation somePackagingInformation() {
-    return PackagingInformation.builder()
-      .dss()
-      .holding(randomString(64))
-      .schema(randomString(64))
-      .entity(randomString(64))
-      .producer(randomString(64))
-      .end()
-      .build();
+    return PackagingInformation.builder().dss().holding(randomString(64)).schema(randomString(64))
+        .entity(randomString(64)).producer(randomString(64)).end().build();
   }
 
   @Test
@@ -79,8 +72,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
     batcher.add(object2);
     batcher.add(object3);
     batcher.end();
-    Iterator<FileGenerationMetrics> sips = batcher.getSipsMetrics()
-      .iterator();
+    Iterator<FileGenerationMetrics> sips = batcher.getSipsMetrics().iterator();
 
     verify(segmentationStrategy).shouldStartNewSip(eq(object1), any(SipMetrics.class));
     verify(segmentationStrategy).shouldStartNewSip(eq(object2), any(SipMetrics.class));
@@ -103,8 +95,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
     assertTrue("Missing SIP #" + n, sips.hasNext());
 
     FileGenerationMetrics sip = sips.next();
-    assertEquals("SIP dir #" + n, folder.getRoot(), sip.getFile()
-      .getParentFile());
+    assertEquals("SIP dir #" + n, folder.getRoot(), sip.getFile().getParentFile());
     assertEquals("# objects in SIP #" + n, n, ((SipMetrics)sip.getMetrics()).numAius());
   }
 
@@ -136,8 +127,8 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
   public void shouldRejectDomainObjectThatIsTooBig() throws IOException {
     File dir = folder.newFolder();
     int maxSize = 2;
-    SipSegmentationStrategy<String> strategy = SipSegmentationStrategy.byMaxProspectiveSipSize(maxSize,
-        new StringToDigitalObjects());
+    SipSegmentationStrategy<String> strategy =
+        SipSegmentationStrategy.byMaxProspectiveSipSize(maxSize, new StringToDigitalObjects());
     BatchSipAssembler<String> batcher = new BatchSipAssembler<>(sipAssembler, strategy, dir);
 
     batcher.add(randomString(maxSize + 1));
@@ -154,8 +145,8 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
         throw new IllegalStateException("Could not delete file " + file.getAbsolutePath());
       }
     };
-    BatchSipAssemblerWithCallback<String> batcher = new BatchSipAssemblerWithCallback<>(sipAssembler,
-        segmentationStrategy, () -> newFile(), deletingCallback);
+    BatchSipAssemblerWithCallback<String> batcher =
+        new BatchSipAssemblerWithCallback<>(sipAssembler, segmentationStrategy, () -> newFile(), deletingCallback);
 
     batcher.add(randomString());
 
@@ -188,13 +179,13 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
     assertEquals("# SIPs", 2, numSips.get());
   }
 
-
   private final class StringToDigitalObjects implements DigitalObjectsExtraction<String> {
 
     @Override
     public Iterator<? extends DigitalObject> apply(String testDomainObject) {
-      Collection<DigitalObject> result = new ArrayList<>();
-      for (int i = 0; i < testDomainObject.length(); i++) {
+      int length = testDomainObject.length();
+      Collection<DigitalObject> result = new ArrayList<>(length);
+      for (int i = 0; i < length; i++) {
         result.add(
             DigitalObject.fromString(randomString(), testDomainObject.substring(i, i + 1), StandardCharsets.UTF_8));
       }

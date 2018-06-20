@@ -70,7 +70,7 @@ public class WhenAssemblingSipsConcurrently extends TestCase {
     assembler.start(new MemoryBuffer());
     try {
       final AtomicBoolean canRun = new AtomicBoolean(true);
-      Collection<Thread> threads = new ArrayList<>();
+      Collection<Thread> threads = new ArrayList<>(NUM_THREADS);
       for (int i = 0; i < NUM_THREADS; i++) {
         Thread thread = new Thread(() -> {
           while (canRun.get()) {

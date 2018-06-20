@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
 import javax.validation.ValidationException;
 
 import org.apache.commons.io.IOUtils;
@@ -102,6 +103,7 @@ public abstract class PrintWriterAssembler<D> implements Assembler<D> {
     }
   }
 
+  @Nullable
   @Override
   @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract") // This *is* the real implementation
   public Metrics getMetrics() {

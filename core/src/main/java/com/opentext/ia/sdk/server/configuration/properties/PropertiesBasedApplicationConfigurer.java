@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
@@ -239,12 +241,14 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     cache.setFederation(federation);
   }
 
+  @Nullable
   private <T extends NamedLinkContainer> T ensureItem(LinkContainer collectionOwner,
       String collectionLinkRelation, Class<? extends ItemContainer<T>> collectionType, String objectName,
           Function<String, ? extends T> objectCreator) throws IOException {
     return ensureItem(collectionOwner, collectionLinkRelation, collectionType, objectName, objectCreator, false);
   }
 
+  @Nullable
   private <T extends NamedLinkContainer> T ensureItem(LinkContainer collectionOwner,
       String collectionLinkRelation, Class<? extends ItemContainer<T>> collectionType, String objectName,
           Function<String, ? extends T> objectCreator, boolean optional) throws IOException {
@@ -295,14 +299,17 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     return result;
   }
 
+  @Nullable
   private <T> T createItem(LinkContainer collection, String name, Function<String, T> newItem) throws IOException {
     return createItem(collection, newItem.apply(name), LINK_ADD, LINK_SELF);
   }
 
+  @Nullable
   public <T> T createItem(LinkContainer collection, T item, String... linkRelations) throws IOException {
     return perform(() -> restClient.createCollectionItem(collection, item, linkRelations));
   }
 
+  @Nullable
   private <T> T perform(Operation<T> operation) throws IOException {
     int retry = 0;
     while (retry < MAX_RETRIES) {
@@ -395,8 +402,9 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private void ensureSpaceRootFolder() throws IOException {
-    SpaceRootFolder spaceRootFolder = ensureNamedItem(cache.getSpace(), LINK_SPACE_ROOT_FOLDERS, SpaceRootFolders.class,
-        cache.getSpace().getName(), this::createSpaceRootFolder);
+    Space space = cache.getSpace();
+    SpaceRootFolder spaceRootFolder = ensureNamedItem(space, LINK_SPACE_ROOT_FOLDERS, SpaceRootFolders.class,
+        space.getName(), this::createSpaceRootFolder);
     cache.setSpaceRootFolder(spaceRootFolder);
   }
 
@@ -846,10 +854,11 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private List<Criterion> createCriteria() {
-    List<Criterion> result = new ArrayList<>();
     RepeatingConfigReader reader = new RepeatingConfigReader("criteria", Arrays.asList(CRITERIA_NAME, CRITERIA_LABEL,
         CRITERIA_TYPE, CRITERIA_PKEYMINATTR, CRITERIA_PKEYMAXATTR, CRITERIA_PKEYVALUESATTR, CRITERIA_INDEXED));
-    for (Map<String, String> cfg : reader.read(configuration)) {
+    List<Map<String, String>> inputConfiguration = reader.read(configuration);
+    List<Criterion> result = new ArrayList<>(inputConfiguration.size());
+    for (Map<String, String> cfg : inputConfiguration) {
       result.add(createCriterion(cfg));
     }
     return result;

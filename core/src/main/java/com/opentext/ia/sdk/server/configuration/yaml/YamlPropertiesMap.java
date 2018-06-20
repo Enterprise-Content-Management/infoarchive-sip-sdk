@@ -294,7 +294,7 @@ class YamlPropertiesMap extends HashMap<String, String>
   private Value lookup(String type, String lookupProperty, Value lookupValue, String returnProperty) {
     return lookup(type, lookupProperty, lookupValue.toString())
         .map(map -> map.get(returnProperty))
-        .orElse(new Value());
+        .orElseGet(() -> new Value());
   }
 
   private Optional<YamlMap> lookup(String type, String lookupProperty, String lookupValue) {

@@ -195,7 +195,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   public void shouldConvertValueToBoolean() {
     assertFalse(EMPTY, yaml.get(key).toBoolean());
 
-    yaml.put(key, true);
+    yaml.put(key, Boolean.TRUE);
     assertTrue("Boolean", yaml.get(key).toBoolean());
 
     yaml.put(key, Boolean.toString(true));
@@ -231,7 +231,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertFalse("Map",
         new Value(Collections.singletonMap(randomString(), randomString())).isScalar());
 
-    assertTrue("Boolean", new Value(true).isScalar());
+    assertTrue("Boolean", new Value(Boolean.TRUE).isScalar());
     assertTrue("String", new Value(randomString()).isScalar());
     assertTrue("Int", new Value(313).isScalar());
     assertTrue("Double", new Value(Math.PI).isScalar());
@@ -247,8 +247,9 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   private void assertAsString(String message, YamlMap actual, String expected) {
-    assertEquals(message, expected, actual.toString());
-    assertEquals(message + " - parsed", expected, YamlMap.from(actual.toString()).toString());
+    String actualStr = actual.toString();
+    assertEquals(message, expected, actualStr);
+    assertEquals(message + " - parsed", expected, YamlMap.from(actualStr).toString());
   }
 
   private void assertToString(String message, YamlMap map) {
@@ -272,7 +273,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertToString("Start with @", new YamlMap().put("quux", "@q"));
     assertToString("Start with ,", new YamlMap().put("quuuux", ",q"));
     assertToString("Map in map in list", new YamlMap().put("pdiSchemas",
-        Arrays.asList(new YamlMap().put("content", new YamlMap().put("format", "xml")))));
+        Collections.singletonList(new YamlMap().put("content", new YamlMap().put("format", "xml")))));
     assertToString("Containing #",
         new YamlMap().put("noComment", "This #text# doesn't contain a comment"));
   }
@@ -293,8 +294,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
         "gnat:%n  spam: |%n    ham%n    eggs%n  spam2:%n  - |%n    ham2%n    eggs2%n  - |%n    yuck%n    puck%n");
     assertToString("Nested maps and sequences with long text",
         new YamlMap().put("databases",
-            Arrays.asList(new YamlMap().put(NAME, "db").put("metadata",
-                Arrays.asList(new YamlMap().put("text", "<foo>\n  <bar/>\n</foo>\n"))))),
+            Collections.singletonList(new YamlMap().put(NAME, "db").put("metadata",
+                Collections.singletonList(new YamlMap().put("text", "<foo>\n  <bar/>\n</foo>\n"))))),
         "databases:%n- name: db%n  metadata:%n  - text: |%n      <foo>%n        <bar/>%n      </foo>%n");
     // Want to be as good as snakeyaml 1.18, but 1.17 is different
     assertToString("Long text", new YamlMap().put("qbf",
@@ -339,7 +340,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldDeleteListItem() {
-    yaml.put(key, Arrays.asList(value));
+    yaml.put(key, Collections.singletonList(value));
     List<Value> values = yaml.get(key).toList();
 
     values.remove(0);
@@ -394,7 +395,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put("iguana",
         new YamlMap()
             .put("leopard",
-                Arrays.asList(new YamlMap().put("opossum", "parrot").put("mule", "nightingale")))
+                Collections.singletonList(new YamlMap().put("opossum", "parrot").put("mule", "nightingale")))
             .put("jaguar", "koala").put("rhino", Arrays.asList("tiger", "snake")));
 
     assertSorted("iguana:%n  jaguar: koala%n  leopard:%n  - mule: nightingale"
@@ -451,7 +452,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put("aardvark",
         Arrays.asList(
             new YamlMap().put("bee", "cobra").put("dog",
-                new YamlMap().put("emu", new YamlMap().put("falcon", false))),
+                new YamlMap().put("emu", new YamlMap().put("falcon", Boolean.FALSE))),
             new YamlMap().put("gazelle", "hamster"), new YamlMap().put("ibis", "jackal")));
 
     Collection<String> visitedPaths = new ArrayList<>();

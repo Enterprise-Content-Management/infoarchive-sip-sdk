@@ -26,7 +26,7 @@ public class Panel extends JavaBean {
 
   public Panel(String name, Tab... tabs) {
     this.name = name;
-    this.tabs = new ArrayList<>();
+    this.tabs = new ArrayList<>(tabs.length);
     for (Tab tab : tabs) {
       this.tabs.add(tab);
     }

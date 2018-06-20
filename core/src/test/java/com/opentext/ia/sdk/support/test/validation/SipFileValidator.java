@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
@@ -29,7 +28,7 @@ public class SipFileValidator {
   private final Object owner;
   private final ZipFile zipFile;
 
-  public SipFileValidator(Object owner, File file) throws ZipException, IOException {
+  public SipFileValidator(Object owner, File file) throws IOException {
     this.owner = owner;
     this.zipFile = new ZipFile(file);
   }
@@ -69,7 +68,7 @@ public class SipFileValidator {
         .ignoreWhitespace()
         .ignoreComments()
         .build();
-      Assert.assertFalse("XML similar " + myDiff.toString(), myDiff.hasDifferences());
+      Assert.assertFalse("XML similar " + myDiff, myDiff.hasDifferences());
 
     }
     return this;
@@ -78,10 +77,10 @@ public class SipFileValidator {
 
   protected Document assertValidXml(InputStream stream, String humanFriendlyDocumentType, String schema)
       throws IOException {
-    RepeatableInputStream repetableStream = new RepeatableInputStream(stream);
-    XmlUtil.validate(repetableStream.get(), owner.getClass()
+    RepeatableInputStream repeatableStream = new RepeatableInputStream(stream);
+    XmlUtil.validate(repeatableStream.get(), owner.getClass()
       .getResourceAsStream("/" + schema), humanFriendlyDocumentType);
-    return XmlUtil.parse(repetableStream.get());
+    return XmlUtil.parse(repeatableStream.get());
   }
 
   public SipFileValidator assertContentFileIdenticalTo(String referenceInformation, String resource)

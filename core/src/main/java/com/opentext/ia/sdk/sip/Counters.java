@@ -23,7 +23,8 @@ public class Counters {
   }
 
   public long get(String name) {
-    return values.containsKey(name) ? values.get(name) : 0;
+    Long result = values.get(name);
+    return result == null ? 0 : result.longValue();
   }
 
   /**

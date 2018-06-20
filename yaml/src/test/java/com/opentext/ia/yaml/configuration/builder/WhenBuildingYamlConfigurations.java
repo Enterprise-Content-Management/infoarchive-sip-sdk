@@ -9,9 +9,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.opentext.ia.configuration.ConfigurationBuilder;
-import com.opentext.ia.configuration.ConfigurationProducer;
 import com.opentext.ia.yaml.core.YamlMap;
-
 
 public class WhenBuildingYamlConfigurations {
 
@@ -19,8 +17,8 @@ public class WhenBuildingYamlConfigurations {
   private static final String TENANT_NAME = "myTenant";
   private static final String APPLICATION_NAME = "myApplication";
 
-  private final ConfigurationProducer<YamlMapConfiguration> producer = new YamlMapConfigurationProducer();
-  private final ConfigurationBuilder<YamlMapConfiguration> builder = new ConfigurationBuilder<>(producer);
+  private final ConfigurationBuilder<YamlMapConfiguration> builder =
+      new ConfigurationBuilder<>(new YamlMapConfigurationProducer());
 
   @Test
   public void shouldBuildYampMap() {
@@ -38,12 +36,8 @@ public class WhenBuildingYamlConfigurations {
 
   @Test
   public void shouldExtractApplication() {
-    YamlMap application = builder.withTenant()
-        .named(TENANT_NAME)
-        .withApplication()
-            .named(APPLICATION_NAME)
-        .end()
-    .build().getApplication();
+    YamlMap application = builder.withTenant().named(TENANT_NAME).withApplication().named(APPLICATION_NAME).end()
+        .build().getApplication();
 
     assertEquals("Application name", APPLICATION_NAME, application.get(NAME).toString());
     assertEquals("Tenant name", TENANT_NAME, application.get("tenant").toString());
@@ -53,15 +47,8 @@ public class WhenBuildingYamlConfigurations {
 
   @Test
   public void shouldExtractPdiWithMultipleContentObjects() {
-    YamlMapConfiguration configuration = builder.withApplication()
-        .withPdi()
-            .withContent()
-                .as("foo")
-            .end()
-            .withContent()
-                .as("bar")
-            .end()
-    .build();
+    YamlMapConfiguration configuration =
+        builder.withApplication().withPdi().withContent().as("foo").end().withContent().as("bar").end().build();
 
     YamlMap application = configuration.getApplication();
     YamlMap pdi = configuration.getPdi(application);

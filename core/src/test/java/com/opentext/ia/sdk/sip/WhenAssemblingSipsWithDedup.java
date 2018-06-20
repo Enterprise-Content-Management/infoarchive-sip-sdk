@@ -97,7 +97,7 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
   }
 
   private List<TestObject> objects(String... ids) {
-    List<TestObject> objects = new ArrayList<TestObject>();
+    List<TestObject> objects = new ArrayList<TestObject>(ids.length);
     for (String id : ids) {
       objects.add(object(id, id));
     }

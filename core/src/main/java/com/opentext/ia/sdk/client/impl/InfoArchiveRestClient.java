@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.client.impl;
 
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -17,6 +18,7 @@ import org.apache.http.client.utils.URIBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeCreator;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.opentext.ia.sdk.client.api.ArchiveClient;
@@ -199,8 +201,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return root.toString();
   }
 
-  private ArrayNode getIncludedRows(List<SearchResult> searchResults, JsonNodeFactory jsonNodeFactory) {
-    ArrayNode result = jsonNodeFactory.arrayNode();
+  private ArrayNode getIncludedRows(List<SearchResult> searchResults, JsonNodeCreator jsonNodeCreator) {
+    ArrayNode result = jsonNodeCreator.arrayNode();
     searchResults.stream()
         .map(SearchResult::getRows)
         .flatMap(Collection::stream)

@@ -63,7 +63,7 @@ public class WhenAssemblingSips extends XmlTestCase {
     String id2 = randomString(8);
     List<? extends DigitalObject> digitalObjects1 =
         Arrays.asList(someContentDataObject(id1a), someContentDataObject(id1b));
-    List<? extends DigitalObject> digitalObjects2 = Arrays.asList(someContentDataObject(id2));
+    List<? extends DigitalObject> digitalObjects2 = Collections.singletonList(someContentDataObject(id2));
     when(contentsExtraction.apply(object1)).thenAnswer(invocation -> digitalObjects1.iterator());
     when(contentsExtraction.apply(object2)).thenAnswer(invocation -> digitalObjects2.iterator());
     HashAssembler contentHashAssembler = mock(HashAssembler.class);

@@ -28,7 +28,6 @@ import org.mockito.ArgumentCaptor;
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.test.TestCase;
 
-
 @SuppressWarnings("unchecked")
 public class WhenAssemblingSipsInTimeWindows extends TestCase {
 
@@ -71,7 +70,7 @@ public class WhenAssemblingSipsInTimeWindows extends TestCase {
   public void shouldCallBackWhenSipIsFullAfterAddingObject() throws IOException {
     String domainObject1 = randomString();
     String domainObject2 = randomString();
-    when(segmentationStrategy.shouldStartNewSip(eq(domainObject2), any(SipMetrics.class))).thenReturn(true);
+    when(segmentationStrategy.shouldStartNewSip(eq(domainObject2), any(SipMetrics.class))).thenReturn(Boolean.TRUE);
     SipMetrics sipMetrics = new SipMetrics(null);
     when(assembler.getMetrics()).thenReturn(sipMetrics);
 
@@ -83,8 +82,7 @@ public class WhenAssemblingSipsInTimeWindows extends TestCase {
     ArgumentCaptor<FileGenerationMetrics> metricsCaptor = ArgumentCaptor.forClass(FileGenerationMetrics.class);
     verify(callback).accept(metricsCaptor.capture());
     FileGenerationMetrics metrics = metricsCaptor.getValue();
-    assertEquals("SIP directory", sipDir, metrics.getFile()
-      .getParentFile());
+    assertEquals("SIP directory", sipDir, metrics.getFile().getParentFile());
     assertSame("SIP metrics", sipMetrics, metrics.getMetrics());
   }
 

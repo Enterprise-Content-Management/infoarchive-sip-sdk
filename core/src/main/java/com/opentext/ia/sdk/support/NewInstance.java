@@ -32,7 +32,6 @@ public class NewInstance {
     try {
       Class<?> implementationType = Class.forName(className);
       Constructor<?> constructor = implementationType.getDeclaredConstructor();
-      constructor.setAccessible(true);
       return type.cast(constructor.newInstance());
     } catch (ReflectiveOperationException e) {
       throw new IllegalArgumentException("Failed to instantiate " + className, e);

@@ -15,6 +15,31 @@
 
        <!-- Too many false positives, file system access is expected -->
       <Bug pattern="PATH_TRAVERSAL_IN" />
+      
+      <!-- Too many false positives, toString and equals are often of limited value -->
+      <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING" />
+      <Bug pattern="IMC_IMMATURE_CLASS_NO_EQUALS" />
+      
+      <!-- Intentional, to create a cleaner API -->
+      <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS" />
+      <Bug pattern="EXS_EXCEPTION_SOFTENING_HAS_CHECKED" />
+      <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CHECKED" />
+      
+      <!-- Where this occurs, no further information is available -->
+      <Bug pattern="WEM_WEAK_EXCEPTION_MESSAGING" />
+      
+      <!-- Public APIs needed -->
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD" />
+      
+      <!-- Not relevant -->
+      <Bug pattern="NFF_NON_FUNCTIONAL_FIELD" />
+      <Bug pattern="CE_CLASS_ENVY" />
+      <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING" />
+      <Bug pattern="STT_TOSTRING_STORED_IN_FIELD" />
+
+      <!-- Too many false positives -->
+      <Bug pattern="AFBR_ABNORMAL_FINALLY_BLOCK_RETURN" />
+      <Bug pattern="BED_BOGUS_EXCEPTION_DECLARATION" />
     </Or>
   </Match>
   
@@ -31,15 +56,26 @@
       <Bug pattern="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS" />
       <Bug pattern="NP_NULL_PARAM_DEREF_NONVIRTUAL" />
       <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" />
+      <Bug pattern="SEC_SIDE_EFFECT_CONSTRUCTOR" />
+      <Bug pattern="CBX_CUSTOM_BUILT_XML" />
+      <Bug pattern="UVA_USE_VAR_ARGS" />
+      <Bug pattern="URV_UNRELATED_RETURN_VALUES" />
+      <Bug pattern="MDM_THREAD_YIELD" />
+      <Bug pattern="MDM_WAIT_WITHOUT_TIMEOUT" />
+      <Bug pattern="CLI_CONSTANT_LIST_INDEX" />
+      <Bug pattern="UTAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT" />
       <!-- Not relevant due to the use of unittest @Before -->
       <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
       <!-- Security issue not relevant for tests -->
       <Bug pattern="FORMAT_STRING_MANIPULATION" />
       <Bug pattern="HARD_CODE_PASSWORD" />
+      <!-- Too many false positives -->
+      <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
     </Or>
     <Or>
+      <Class name="~com\.opentext\.ia\.sdk\.support\.test\..*$" />
       <Class name="~.+\.When.+$" />
-      <Class name="~.+\.+TestCase$" />
+      <Class name="~.+\..+TestCase$" />
     </Or>
   </Match>
     
@@ -57,22 +93,6 @@
     <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" />
     <Class name="com.opentext.ia.yaml.core.YamlDiff" />
     <Method name="addMissing" />
-  </Match>
-  
-  <Match>
-    <!-- Intentional, to create a cleaner API -->
-    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS" />
-    <Class name="com.opentext.ia.configuration.ContentBuilder" />
-    <Or>
-      <Method name="as" />
-      <Method name="fromResource" />
-    </Or>
-  </Match>
-
-  <Match>
-    <!-- No practical impact -->
-    <Bug pattern="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" />
-    <Class name="com.opentext.ia.configuration.ContentBuilder" />
   </Match>
   
   <Match>
@@ -181,5 +201,128 @@
     <Class name="com.opentext.ia.yaml.configuration.zip.ZipBuilder" />
     <Method name="build" />
   </Match>
-  
+
+  <Match>
+    <!-- Boolean conversion due to generics -->
+    <Bug pattern="NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION" />
+    <Or>
+      <And>
+        <Class name="com.opentext.ia.yaml.configuration.MapOfMapsToSequence" />
+        <Method name="test" />
+      </And>
+      <And>
+        <Class name="com.opentext.ia.yaml.core.YamlDiff" />
+        <Method name="isEmpty" />
+      </And>
+    </Or>
+  </Match>
+
+  <Match>
+    <!-- False positive -->
+    <Bug pattern="ITU_INAPPROPRIATE_TOSTRING_USE" />
+    <Class name="com.opentext.ia.yaml.configuration.zip.ZipConfiguration" />
+    <Method name="resolveFile" />
+  </Match>
+
+  <Match>
+    <!-- False positive -->
+    <Bug pattern="ITU_INAPPROPRIATE_TOSTRING_USE" />
+    <Class name="com.opentext.ia.sdk.support.http.apache.ApacheUriBuilder" />
+  </Match>  
+
+  <Match>
+    <!-- No practical impact -->
+    <Bug pattern="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" />
+    <Or>
+    
+      <Class name="com.opentext.ia.configuration.ContentBuilder" />
+      <Class name="com.opentext.ia.sdk.client.api.ArchiveConnection" />
+      <Class name="com.opentext.ia.yaml.core.Entry" />
+      <Class name="com.opentext.ia.yaml.core.Value" />
+      <Class name="com.opentext.ia.yaml.core.YamlMap" />
+    </Or>
+  </Match>
+
+  <Match>
+    <!-- False positive -->
+    <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
+    <Class name="com.opentext.ia.yaml.configuration.StringSubstitutor" />
+    <Method name="accept" />
+  </Match>
+
+  <Match>
+    <!-- By design -->
+    <Bug pattern="CFS_CONFUSING_FUNCTION_SEMANTICS" />
+    <Class name="com.opentext.ia.yaml.core.YamlMap" />
+    <Method name="sortMap" />
+  </Match>
+
+  <Match>
+    <!-- By design -->
+    <Bug pattern="URV_UNRELATED_RETURN_VALUES" />
+    <Class name="com.opentext.ia.yaml.core.YamlMap" />
+    <Method name="unpack" />
+  </Match>
+
+  <Match>
+    <!-- By design -->
+    <Bug pattern="STT_TOSTRING_STORED_IN_FIELD" />
+    <Class name="com.opentext.ia.yaml.configuration.ConvertIngestProcessors" />
+    <Method name="addNameAndClass" />
+  </Match>
+
+  <Match>
+    <!-- Backwards compatibility -->
+    <Bug pattern="MOM_MISLEADING_OVERLOAD_MODEL" />
+    <Class name="com.opentext.ia.sdk.sip.DigitalObject" />
+    <Method name="getSize" />
+  </Match>
+
+  <Match>
+    <!-- False positive -->
+    <Bug pattern="LII_LIST_INDEXED_ITERATING" />
+    <Class name="com.opentext.ia.sdk.support.RepeatingConfigReader" />
+    <Method name="convertToListOfMaps" />
+  </Match>
+
+  <Match>
+    <!-- False positive -->
+    <Bug pattern="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE" />
+    <Class name="com.opentext.ia.sdk.support.http.apache.ApacheHttpClient" />
+    <Method name="toString" />
+  </Match>
+
+  <Match>
+    <Bug pattern="PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS" />
+    <Class name="com.opentext.ia.sip.assembly.stringtemplate.StringTemplate" />
+  </Match>
+
+  <Match>
+    <!-- False positive -->
+    <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
+    <Class name="com.opentext.ia.yaml.configuration.MapOfMapsToSequence" />
+    <Method name="isMapOfMaps" />
+  </Match>
+
+  <Match>
+    <!-- False positive -->
+    <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
+    <Class name="com.opentext.ia.test.RandomData" />
+    <Method name="properties" />
+  </Match>
+
+  <Match>
+    <!-- False positive -->
+    <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
+    <Class name="com.opentext.ia.yaml.core.WhenWorkingWithYamlInAGenericYetTypeSafeManner" />
+    <Method name="shouldIterateOverEntriesAndValues" />
+  </Match>
+
+  <Match>
+    <!-- False positive -->
+    <Bug pattern="UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH" />
+    <Class name="com.opentext.ia.sdk.dto.AbstractDtoTestCase" />
+    <Method name="relativePathsIn" />
+  </Match>
+
 </FindBugsFilter>

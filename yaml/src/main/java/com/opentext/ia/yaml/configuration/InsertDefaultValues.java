@@ -28,7 +28,7 @@ class InsertDefaultValues extends PathVisitor {
 
   @SuppressWarnings("PMD.ExcessiveMethodLength")
   private static Map<String, Collection<Default>> defaultValuesByPathRegex() {
-    Map<String, Collection<Default>> result = new HashMap<>();
+    Map<String, Collection<Default>> result = new HashMap<>(32 * 4 / 3);
     result.put("/.+/path.value.index", Default.of("build.without.logging", Boolean.FALSE,
         "compressed", Boolean.FALSE,
         "concurrent", Boolean.FALSE,
@@ -180,7 +180,7 @@ class InsertDefaultValues extends PathVisitor {
     private final Object value;
 
     static Collection<Default> of(Object... propertiesAndValues) {
-      Collection<Default> result = new ArrayList<>();
+      Collection<Default> result = new ArrayList<>(propertiesAndValues.length / 2);
       int i = 0;
       while (i < propertiesAndValues.length) {
         String property = (String)propertiesAndValues[i++];

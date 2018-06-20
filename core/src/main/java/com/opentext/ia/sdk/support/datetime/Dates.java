@@ -6,6 +6,7 @@ package com.opentext.ia.sdk.support.datetime;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.annotation.Nullable;
 import javax.xml.bind.DatatypeConverter;
 
 /**
@@ -22,6 +23,7 @@ public final class Dates {
    * @param dateTime The datetime to convert
    * @return The dateTime in ISO format
    */
+  @Nullable
   public static String toIso(Date dateTime) {
     if (dateTime == null) {
       return null;
@@ -36,6 +38,7 @@ public final class Dates {
    * @param dateTime The ISO dateTime to convert
    * @return The converted dateTime
    */
+  @Nullable
   public static Date fromIso(String dateTime) {
     if (dateTime == null) {
       return null;

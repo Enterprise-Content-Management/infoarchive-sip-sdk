@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.stringtemplate.v4.*;
 
 import com.opentext.ia.sdk.sip.ContentInfo;
@@ -72,6 +74,7 @@ public class StringTemplate<D> extends FixedHeaderAndFooterTemplate<D> {
     this.templatePrototype = compileTemplate(row, delimeterStart, delimeterEnd);
   }
 
+  @Nullable
   private ST compileTemplate(String row, char delimeterStartChar, char delimeterEndChar) {
     STGroup group = new STGroup(delimeterStartChar, delimeterEndChar);
     prepareGroup(group);

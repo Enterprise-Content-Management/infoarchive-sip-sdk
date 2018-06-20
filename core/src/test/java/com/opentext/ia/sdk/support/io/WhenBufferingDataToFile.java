@@ -25,14 +25,12 @@ public class WhenBufferingDataToFile extends TestCase {
 
   @Rule
   public TemporaryFolder folder = new TemporaryFolder();
-  private File file;
-  private DataBuffer buffer;
 
   @Test
   public void shouldReadFileContents() throws IOException {
     byte[] expected = randomBytes();
-    file = file(folder, expected);
-    buffer = new FileBuffer(file);
+    File file = file(folder, expected);
+    FileBuffer buffer = new FileBuffer(file);
 
     byte[] actual = contentOf(buffer.openForReading());
 
@@ -50,8 +48,8 @@ public class WhenBufferingDataToFile extends TestCase {
   @Test
   public void shouldWriteFileContents() throws IOException {
     byte[] expected = randomBytes();
-    file = folder.newFile();
-    buffer = new FileBuffer(file);
+    File file = folder.newFile();
+    FileBuffer buffer = new FileBuffer(file);
 
     try (OutputStream stream = buffer.openForWriting()) {
       stream.write(expected);
@@ -64,11 +62,11 @@ public class WhenBufferingDataToFile extends TestCase {
 
   @Test
   public void shouldReportLength() throws IOException {
-    file = folder.newFile();
+    File file = folder.newFile();
     try (OutputStream stream = Files.newOutputStream(file.toPath(), StandardOpenOption.WRITE)) {
       stream.write(randomBytes());
     }
-    buffer = new FileBuffer(file);
+    FileBuffer buffer = new FileBuffer(file);
 
     long length = buffer.length();
 

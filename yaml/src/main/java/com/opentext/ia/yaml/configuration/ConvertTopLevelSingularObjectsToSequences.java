@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +13,6 @@ import com.opentext.ia.yaml.core.Entry;
 import com.opentext.ia.yaml.core.Visit;
 import com.opentext.ia.yaml.core.Visitor;
 import com.opentext.ia.yaml.core.YamlMap;
-
 
 class ConvertTopLevelSingularObjectsToSequences implements Visitor {
 
@@ -42,7 +41,7 @@ class ConvertTopLevelSingularObjectsToSequences implements Visitor {
 
   private void convertToSequence(String type, YamlMap yaml) {
     YamlMap value = yaml.get(type).toMap();
-    yaml.replace(type, English.plural(type), Arrays.asList(value));
+    yaml.replace(type, English.plural(type), Collections.singletonList(value));
   }
 
 }

@@ -3,7 +3,6 @@
  */
 package com.opentext.ia.yaml.core;
 
-
 class YamlIndent {
 
   private static final String MAP_INDENT = "  ";
@@ -23,15 +22,15 @@ class YamlIndent {
   }
 
   public String removeFrom(String text) {
-    return text.length() > indent.length() ? text.substring(indent.length()) : text;
+    return text.length() > this.indent.length() ? text.substring(this.indent.length()) : text;
   }
 
   public YamlIndent inMap() {
-    return new YamlIndent(indent + MAP_INDENT);
+    return new YamlIndent(this.indent + MAP_INDENT);
   }
 
   public YamlIndent inSequence() {
-    return new YamlIndent(indent + SEQUENCE_INDENT);
+    return new YamlIndent(this.indent + SEQUENCE_INDENT);
   }
 
   public YamlIndent inText() {
@@ -39,14 +38,13 @@ class YamlIndent {
   }
 
   public int length() {
-    return indent.length();
+    return this.indent.length();
   }
 
   @Override
   public String toString() {
-    String result = isFirst ? firstIndent : indent;
-    isFirst = false;
+    String result = this.isFirst ? this.firstIndent : this.indent;
+    this.isFirst = false;
     return result;
   }
-
 }

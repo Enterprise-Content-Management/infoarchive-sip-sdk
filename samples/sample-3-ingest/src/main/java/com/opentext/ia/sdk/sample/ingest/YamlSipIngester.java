@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collections;
@@ -83,8 +84,9 @@ public class YamlSipIngester implements InfoArchiveConnectionProperties {
       pdiAssembler = new XmlPdiAssembler<File>(entityUri, entityName, schema) {
         @Override
         protected void doAdd(File value, Map<String, ContentInfo> ignored) {
+          String name = value.getName();
           getBuilder()
-              .element("animal_name", value.getName().substring(0, value.getName().lastIndexOf('.')))
+              .element("animal_name", name.substring(0, name.lastIndexOf('.')))
               .element("file_path", relativePath(value, rootPath));
         }
       };
@@ -125,7 +127,7 @@ public class YamlSipIngester implements InfoArchiveConnectionProperties {
   }
 
   private ArchiveConnection newArchiveConnection(String rootPath) throws IOException {
-    try (InputStream connectionProperties = Files.newInputStream(new File(rootPath, "connection.properties").toPath(),
+    try (InputStream connectionProperties = Files.newInputStream(Paths.get(rootPath, "connection.properties"),
         StandardOpenOption.READ)) {
       Properties properties = new Properties();
       properties.load(connectionProperties);
@@ -145,7 +147,7 @@ public class YamlSipIngester implements InfoArchiveConnectionProperties {
   private void override(String key, String overrideProperty, Properties properties) {
     String override = get(overrideProperty);
     if (StringUtils.isNotBlank(override)) {
-      properties.put(key, override);
+      properties.setProperty(key, override);
     }
   }
 

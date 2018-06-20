@@ -141,15 +141,15 @@ public class WhenTransferringDataUsingObjects extends AbstractDtoTestCase {
     return newObjectOfType(clazz);
   }
 
-  private Object newPrimitiveOf(Class<?> clazz) {
+  private Comparable<?> newPrimitiveOf(Class<?> clazz) {
     if (is(clazz, boolean.class)) {
-      return false;
+      return Boolean.FALSE;
     }
     if (is(clazz, int.class, long.class, byte.class)) {
-      return 0;
+      return Integer.valueOf(0);
     }
     if (is(clazz, char.class)) {
-      return 'a';
+      return Character.valueOf('a');
     }
     throw new IllegalStateException("Could not instantiate primitive of type " + clazz);
   }

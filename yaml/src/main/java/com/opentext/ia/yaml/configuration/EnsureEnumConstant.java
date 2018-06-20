@@ -25,7 +25,7 @@ class EnsureEnumConstant extends PropertyVisitor {
       enumPropertiesByPathRegex();
 
   private static Map<String, Collection<String>> enumPropertiesByPathRegex() {
-    Map<String, Collection<String>> result = new HashMap<>();
+    Map<String, Collection<String>> result = new HashMap<>(21 * 4 / 3);
     result.put("/aics/\\d+/criteria/\\d+", JUST_TYPE);
     result.put("/exportConfigurations/\\d+", JUST_TYPE);
     result.put("/exportPipelines/\\d+", Arrays.asList("inputFormat", TYPE));

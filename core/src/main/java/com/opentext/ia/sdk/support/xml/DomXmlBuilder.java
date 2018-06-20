@@ -3,12 +3,9 @@
  */
 package com.opentext.ia.sdk.support.xml;
 
-import java.util.Objects;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
 
 /**
  * Fluent API for building XML documents in memory using a
@@ -24,16 +21,18 @@ public class DomXmlBuilder implements XmlBuilder<Document> {
    * Start building an existing XML document at the given node.
    * @param node The node at which to start building the XML document
    */
-  public DomXmlBuilder(Node node) {
-    if (node instanceof Document) {
-      this.document = (Document)node;
-      this.current = document;
-    } else if (node instanceof Element) {
-      this.document = node.getOwnerDocument();
-      this.current = node;
-    } else {
-      throw new IllegalArgumentException("Unhandled node type: " + Objects.requireNonNull(node).getNodeType());
-    }
+  public DomXmlBuilder(Element node) {
+    this.document = node.getOwnerDocument();
+    this.current = node;
+  }
+
+  /**
+   * Start building an existing XML document at the given node.
+   * @param node The node at which to start building the XML document
+   */
+  public DomXmlBuilder(Document node) {
+    this.document = node;
+    this.current = document;
   }
 
   @Override

@@ -6,7 +6,6 @@ package com.opentext.ia.sdk.support.io;
 import java.io.File;
 import java.util.*;
 
-
 /**
  * Default implementation of {@linkplain DirectoryListener}.
  */
@@ -36,16 +35,17 @@ public class DefaultDirectoryListener implements DirectoryListener {
       File[] files = dir.listFiles();
       if (files != null) {
         Arrays.stream(files)
-          // Give producer time to finish writing file
-          .filter(file -> new Date().getTime() - file.lastModified() > delta)
-          // Skip files that we've seen before, unless they were changed
-          .filter(file -> !reportedFiles.containsKey(file) || reportedFiles.get(file) < file.lastModified())
-          .forEach(file -> result.put(file, file.lastModified()));
+            // Give producer time to finish writing file
+            .filter(file -> new Date().getTime() - file.lastModified() > delta)
+            // Skip files that we've seen before, unless they were changed
+            .filter(file -> {
+              Long lastModified = reportedFiles.get(file);
+              return lastModified == null || lastModified < file.lastModified();
+            }).forEach(file -> result.put(file, file.lastModified()));
       }
     }
     reportedFiles.putAll(result);
-    return result.keySet()
-      .iterator();
+    return result.keySet().iterator();
   }
 
   @Override
