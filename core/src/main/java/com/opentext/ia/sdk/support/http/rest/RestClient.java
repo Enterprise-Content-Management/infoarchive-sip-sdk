@@ -121,21 +121,20 @@ public class RestClient implements Closeable, StandardLinkRelations {
       throws IOException {
     Objects.requireNonNull(state, "Missing state");
     String href = linkIn(state, relation).getHref();
-    href = removePageQueryParameters(href);
+    href = replacePageQueryParameters(href);
     return get(href, type);
   }
 
-  private String removePageQueryParameters(String href) {
+  private String replacePageQueryParameters(String href) {
     try {
       URIBuilder uriBuilder = new URIBuilder(href);
       List<NameValuePair> queryParameters = uriBuilder.getQueryParams().stream()
-          .filter(p -> !"page".equals(p.getName()) && !"size".equals(p.getName()))
+          .filter(p -> !"page".equals(p.getName()) && !"limit".equals(p.getName()) && !"size".equals(p.getName()))
           .collect(Collectors.toList());
-      if (queryParameters.isEmpty()) {
-        uriBuilder.removeQuery();
-      } else {
-        uriBuilder.setParameters(queryParameters);
-      }
+      uriBuilder.setParameters(queryParameters);
+      uriBuilder.addParameter("page", "0");
+      uriBuilder.addParameter("limit", "1000");
+      uriBuilder.addParameter("size", "1000");
       return uriBuilder.build().toString();
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException(e);
