@@ -28,6 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
+import com.opentext.ia.sdk.client.configuration.ApplicationConfigurer;
+import com.opentext.ia.sdk.client.configuration.ApplicationResourcesCache;
 import com.opentext.ia.sdk.dto.Aic;
 import com.opentext.ia.sdk.dto.Aics;
 import com.opentext.ia.sdk.dto.Application;
@@ -114,8 +116,6 @@ import com.opentext.ia.sdk.dto.result.Column.DataType;
 import com.opentext.ia.sdk.dto.result.Column.DefaultSort;
 import com.opentext.ia.sdk.dto.result.ResultMaster;
 import com.opentext.ia.sdk.dto.result.Tab;
-import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
-import com.opentext.ia.sdk.server.configuration.ApplicationResourcesCache;
 import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedApplicationConfigurer;
 import com.opentext.ia.sdk.support.RepeatingConfigReader;
 import com.opentext.ia.sdk.support.http.BinaryPart;

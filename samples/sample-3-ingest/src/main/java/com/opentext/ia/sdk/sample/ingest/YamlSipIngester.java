@@ -19,9 +19,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
+import com.opentext.ia.sdk.client.configuration.InfoArchiveConnectionProperties;
+import com.opentext.ia.sdk.client.configuration.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.client.factory.ArchiveClients;
-import com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties;
-import com.opentext.ia.sdk.server.configuration.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.server.configuration.yaml.YamlBasedApplicationConfigurer;
 import com.opentext.ia.sdk.sip.ContentInfo;
 import com.opentext.ia.sdk.sip.DigitalObject;
