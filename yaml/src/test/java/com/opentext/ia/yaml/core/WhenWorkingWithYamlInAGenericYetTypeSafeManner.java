@@ -39,7 +39,6 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   private static final String EMPTY = "Empty";
   private static final String NAME = "name";
   private static final String NAME_WITH_SEMICOLON = NAME + ": ";
-  private static final String LINE_BREAK = "\r\n";
   private static final String SAMPLE_YAML_STRING = String.format(
       "root:%n- property: value%n  sequence:%n  - one%n  - two%n  nested:%n    foo: bar%n  key: 'value: with: colons'%n");
 
@@ -558,7 +557,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   private void assertIntegerFieldValue(String expected, String actual) {
-    assertEquals(NAME_WITH_SEMICOLON + expected + LINE_BREAK, new YamlMap().put(NAME, actual).toString());
+    assertEquals(NAME_WITH_SEMICOLON + expected, new YamlMap().put(NAME, actual).toString().trim());
   }
 
 }
