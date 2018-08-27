@@ -38,6 +38,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   private static final String TYPE = "type";
   private static final String EMPTY = "Empty";
   private static final String NAME = "name";
+  private static final String NAME_WITH_SEMICOLON = NAME + ": ";
+  private static final String LINE_BREAK = "\r\n";
   private static final String SAMPLE_YAML_STRING = String.format(
       "root:%n- property: value%n  sequence:%n  - one%n  - two%n  nested:%n    foo: bar%n  key: 'value: with: colons'%n");
 
@@ -543,6 +545,20 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   private void assertStringField(String fieldName, String fieldValue) {
     assertEquals(fieldValue, String.class,
         YamlMap.from(fieldName + ": " + fieldValue).getRawData().get(fieldName).getClass());
+  }
+
+  @Test
+  public void shouldAddQuotesAroundIntegerFieldStartedWithZero() {
+    assertIntegerFieldValue("'0000'", "0000");
+    assertIntegerFieldValue("'01234'", "01234");
+    assertIntegerFieldValue("1234", "1234");
+    assertIntegerFieldValue("0123s", "0123s");
+    assertIntegerFieldValue("1234 1234 000", "1234 1234 000");
+    assertIntegerFieldValue("0 0 0 0", "0 0 0 0");
+  }
+
+  private void assertIntegerFieldValue(String expected, String actual) {
+    assertEquals(NAME_WITH_SEMICOLON + expected + LINE_BREAK, new YamlMap().put(NAME, actual).toString());
   }
 
 }
