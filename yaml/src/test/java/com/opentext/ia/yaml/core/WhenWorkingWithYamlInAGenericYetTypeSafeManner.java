@@ -38,7 +38,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   private static final String TYPE = "type";
   private static final String EMPTY = "Empty";
   private static final String NAME = "name";
-  private static final String NAME_WITH_SEMICOLON = NAME + ": ";
+  private static final String SEMICOLON = ": ";
   private static final String SAMPLE_YAML_STRING = String.format(
       "root:%n- property: value%n  sequence:%n  - one%n  - two%n  nested:%n    foo: bar%n  key: 'value: with: colons'%n");
 
@@ -543,21 +543,40 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   private void assertStringField(String fieldName, String fieldValue) {
     assertEquals(fieldValue, String.class,
-        YamlMap.from(fieldName + ": " + fieldValue).getRawData().get(fieldName).getClass());
+        YamlMap.from(fieldName + SEMICOLON + fieldValue).getRawData().get(fieldName).getClass());
   }
 
   @Test
-  public void shouldAddQuotesAroundIntegerFieldStartedWithZero() {
-    assertIntegerFieldValue("'0000'", "0000");
-    assertIntegerFieldValue("'01234'", "01234");
-    assertIntegerFieldValue("1234", "1234");
-    assertIntegerFieldValue("0123s", "0123s");
-    assertIntegerFieldValue("1234 1234 000", "1234 1234 000");
-    assertIntegerFieldValue("0 0 0 0", "0 0 0 0");
+  public void shouldGetProperFieldTypeAfterDeserialization() {
+    assertFieldTypeAfterDeserialization(String.class, "0000");
+    assertFieldTypeAfterDeserialization(String.class, "01234");
+    assertFieldTypeAfterDeserialization(String.class, "0123s");
+    assertFieldTypeAfterDeserialization(String.class, "1234 1234 000");
+    assertFieldTypeAfterDeserialization(String.class, "0 0 0 0");
+    assertFieldTypeAfterDeserialization(Integer.class, "1234");
   }
 
-  private void assertIntegerFieldValue(String expected, String actual) {
-    assertEquals(NAME_WITH_SEMICOLON + expected, new YamlMap().put(NAME, actual).toString().trim());
+  private void assertFieldTypeAfterDeserialization(Class fieldType, String fieldValue) {
+    String serializedYaml = new YamlMap().put(NAME, fieldValue).toString();
+    assertEquals(fieldValue, fieldType, YamlMap.from(serializedYaml).getRawData().get(NAME).getClass());
+  }
+
+  @Test
+  public void shouldAddQuotesToFieldStartingWithZeroAndConsistingOfDigits() {
+    assertEquals(expectedYamlNameValue("'0000'"), actualYamlNameValue("0000"));
+    assertEquals(expectedYamlNameValue("'01234'"), actualYamlNameValue("01234"));
+    assertEquals(expectedYamlNameValue("1234"), actualYamlNameValue("1234"));
+    assertEquals(expectedYamlNameValue("0123s"), actualYamlNameValue("0123s"));
+    assertEquals(expectedYamlNameValue("1234 1234 000"), actualYamlNameValue("1234 1234 000"));
+    assertEquals(expectedYamlNameValue("0 0 0 0"), actualYamlNameValue("0 0 0 0"));
+  }
+
+  private String expectedYamlNameValue(String fieldValue) {
+    return NAME + SEMICOLON + fieldValue;
+  }
+
+  private String actualYamlNameValue(String fieldValue) {
+    return new YamlMap().put(NAME, fieldValue).toString().trim();
   }
 
 }
