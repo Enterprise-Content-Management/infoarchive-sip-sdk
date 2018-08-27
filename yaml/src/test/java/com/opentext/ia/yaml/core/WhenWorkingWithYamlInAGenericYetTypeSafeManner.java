@@ -556,7 +556,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertFieldTypeAfterDeserialization(Integer.class, "1234");
   }
 
-  private void assertFieldTypeAfterDeserialization(Class fieldType, String fieldValue) {
+  private void assertFieldTypeAfterDeserialization(Class<?> fieldType, String fieldValue) {
     String serializedYaml = new YamlMap().put(NAME, fieldValue).toString();
     assertEquals(fieldValue, fieldType, YamlMap.from(serializedYaml).getRawData().get(NAME).getClass());
   }
