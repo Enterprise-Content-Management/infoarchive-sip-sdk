@@ -457,7 +457,7 @@ public class YamlMap {
   }
 
   private boolean needsToBeSingleQuoted(String text) {
-    return text.isEmpty() || text.matches("([\"%@*,].*)|(.*#.*)|(.*:\\s.*)");
+    return text.isEmpty() || text.matches("([\"%@*,].*)|(.*#.*)|(.*:\\s.*)|(^0\\d*$)");
   }
 
   private void appendSingleQuoted(String text, StringBuilder builder) {
