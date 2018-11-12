@@ -11,7 +11,6 @@ import java.util.Map;
 import com.opentext.ia.yaml.core.PathVisitor;
 import com.opentext.ia.yaml.core.Visit;
 import com.opentext.ia.yaml.core.YamlMap;
-import com.opentext.ia.yaml.resource.ResourceResolver;
 
 
 class InsertDefaultValues extends PathVisitor {
