@@ -216,15 +216,21 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   public void shouldInsertDefaultValues() {
     yaml.put("exportPipelines", Collections.singletonList(new YamlMap().put(NAME, someName())));
     yaml.put(HOLDINGS, Collections.singletonList(new YamlMap().put(NAME, someName())));
-    yaml.put(INGESTS, Collections.singletonList(new YamlMap().put(NAME, someName())));
     yaml.put("receiverNodes", Collections.singletonList(new YamlMap().put(NAME, someName())));
 
     normalizeYaml();
 
     assertTrue("exportPipeline.includesContent", yaml.get("exportPipelines", 0, "includesContent").toBoolean());
     assertValue("holding.xdbMode", "PRIVATE", yaml.get(HOLDINGS, 0, "xdbMode"));
-    assertValue("ingest.processors.format", XML, yaml.get(INGESTS, 0, "content", FORMAT));
-    assertTrue("ingest.processors.xml", yaml.get(INGESTS, 0, "content", TEXT).toString().contains("sip.download"));
+  }
+
+  @Test
+  public void shouldNotInsertDefaultConfigurationForIngest() {
+    yaml.put(INGESTS, Collections.singletonList(new YamlMap().put(NAME, someName())));
+
+    normalizeYaml();
+
+    assertValue("ingest.processors.format", "", yaml.get(INGESTS, 0, "content"));
   }
 
   @Test

@@ -18,7 +18,6 @@ class InsertDefaultValues extends PathVisitor {
 
   private static final String ENCODING = "encoding";
   private static final String CONFIGURE = "configure";
-  private static final String FORMAT = "format";
   private static final String TYPE = "type";
   private static final String STRING = "STRING";
   private static final String NONE = "NONE";
@@ -80,9 +79,6 @@ class InsertDefaultValues extends PathVisitor {
         "pushRetentionOnRejInvEnabled", Boolean.FALSE,
         "syncCommitEnabled", Boolean.TRUE,
         "xdbMode", "PRIVATE"));
-    result.put("/ingests/\\d+", Default.of("content", new YamlMap()
-        .put(FORMAT, "xml")
-        .put("text", ResourceResolver.fromClasspath().apply("defaultIngest.xml"))));
     result.put("/ingestNodes/\\d+", Default.of("enumerationMaxResultCount", 10,
        "enumerationMinusRunning", Boolean.FALSE,
        "logLevel", "INFO"));
