@@ -24,7 +24,9 @@ public final class Authenticate {
   private static final String SETTING_CLIENT_SECRET = "client.secret";
   // Make sure you have a running InfoArchive cluster with the following characteristics,
   // or set system properties or environment variables with the correct values
-  private static final Map<String, String> DEFAULT_SETTINGS = new HashMap<String, String>() {{
+  private static final Map<String, String> DEFAULT_SETTINGS = new HashMap<String, String>() {
+
+    {
     put(SETTING_USERNAME, "sue@iacustomer.com");
     put(SETTING_PASSWORD, "password");
     put(SETTING_GATEWAY_URL, "http://localhost:8080");

@@ -312,10 +312,19 @@
   </Match>
 
   <Match>
-    <!-- False positive -->
+    <!-- False positives -->
     <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
-    <Class name="com.opentext.ia.yaml.core.WhenWorkingWithYamlInAGenericYetTypeSafeManner" />
-    <Method name="shouldIterateOverEntriesAndValues" />
+    
+    <Or>
+      <And>
+        <Class name="com.opentext.ia.yaml.core.WhenWorkingWithYamlInAGenericYetTypeSafeManner" />
+        <Method name="shouldIterateOverEntriesAndValues" />
+      </And>
+      <And>
+        <Class name="com.opentext.ia.yaml.core.YamlMap" />
+        <Method name="appendEntry" />
+      </And>
+    </Or>
   </Match>
 
   <Match>
@@ -323,6 +332,14 @@
     <Bug pattern="UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH" />
     <Class name="com.opentext.ia.sdk.dto.AbstractDtoTestCase" />
     <Method name="relativePathsIn" />
+  </Match>
+
+  <Match>
+    <Bug pattern="INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE" />
+    <Or>
+      <!-- Sample only -->
+      <Class name="com.opentext.ia.sdk.sample.authenticate.Authenticate" />
+    </Or>
   </Match>
 
 </FindBugsFilter>
