@@ -196,9 +196,7 @@ public final class XmlUtil {
   private static StringBuilder openElement(String indentation, StringBuilder builder, Namespaces namespaces,
       Element element) {
     String tag = element.getTagName();
-    builder.append(indentation)
-      .append('<');
-    builder.append(tag);
+    builder.append(indentation).append('<').append(tag);
     if (hasDifferentNamespaceThanParent(element, namespaces)) {
       int index = tag.indexOf(':');
       if (index < 0) {

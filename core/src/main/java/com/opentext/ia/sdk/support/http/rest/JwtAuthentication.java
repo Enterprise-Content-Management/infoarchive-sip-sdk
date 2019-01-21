@@ -26,8 +26,8 @@ import com.opentext.ia.sdk.support.io.RuntimeIoException;
  */
 public final class JwtAuthentication implements AuthenticationStrategy {
 
-  private static final long RESERVE_TIME = 10000;
-  private static final long REFRESHING_TIME_BORDER = 20000;
+  private static final long RESERVE_TIME = 10_000;
+  private static final long REFRESHING_TIME_BORDER = 20_000;
 
   private final GatewayInfo gatewayInfo;
   private final String userName;

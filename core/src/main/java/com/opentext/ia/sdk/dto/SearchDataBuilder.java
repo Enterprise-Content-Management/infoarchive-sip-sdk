@@ -47,11 +47,11 @@ public final class SearchDataBuilder {
     return this;
   }
 
-  public SearchDataBuilder isEqual(String field, String value) {
+  public SearchDataBuilder isEqual(String field, String value) { // NOPMD False positive
     return criterion(field, "EQUAL", value);
   }
 
-  public SearchDataBuilder isNotEqual(String field, String value) {
+  public SearchDataBuilder isNotEqual(String field, String value) { // NOPMD False positive
     return criterion(field, "NOT_EQUAL", value);
   }
 

@@ -27,7 +27,7 @@ public class WhenAssemblingSipsConcurrently extends TestCase {
   private static final int NUM_THREADS = 32;
   private static final long ASSEMBLE_SECONDS = 5;
   private static final int MIN_LENGTH = 1000;
-  private static final int MAX_LENGTH = 100000;
+  private static final int MAX_LENGTH = 100_000;
   private static final long MAX_WAIT_THREAD_TERMINATION_MS = 1000;
 
   @Test

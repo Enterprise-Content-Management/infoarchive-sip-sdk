@@ -71,7 +71,8 @@ public interface ContentAssembler<D> {
    * @return The newly created content assembler
    */
   static <D> ContentAssembler<D> withDedupOnRi(DigitalObjectsExtraction<D> contentsExtraction) {
-    return new ContentAssemblerWithDedupOnRi<>(contentsExtraction, new NoHashAssembler(), false, false, 64000);
+    return new ContentAssemblerWithDedupOnRi<>(contentsExtraction, new NoHashAssembler(), false,
+        false, 64_000);
   }
 
   /**
@@ -83,7 +84,8 @@ public interface ContentAssembler<D> {
    */
   static <D> ContentAssembler<D> withDedupOnRi(DigitalObjectsExtraction<D> contentsExtraction,
       HashAssembler contentHashAssembler) {
-    return new ContentAssemblerWithDedupOnRi<>(contentsExtraction, contentHashAssembler, false, false, 64000);
+    return new ContentAssemblerWithDedupOnRi<>(contentsExtraction, contentHashAssembler, false,
+        false, 64_000);
   }
 
   /**
@@ -124,7 +126,7 @@ public interface ContentAssembler<D> {
       HashAssembler contentHashAssembler, boolean errorWhenEqualRiAndNotEqualHash,
       boolean errorWhenEqualHashAndNotEqualRI) {
     return new ContentAssemblerWithDedupOnRi<>(contentsExtraction, contentHashAssembler,
-        errorWhenEqualRiAndNotEqualHash, errorWhenEqualHashAndNotEqualRI, 64000);
+        errorWhenEqualRiAndNotEqualHash, errorWhenEqualHashAndNotEqualRI, 64_000);
   }
 
   /**
@@ -165,7 +167,7 @@ public interface ContentAssembler<D> {
    */
   static <D> ContentAssembler<D> withDedupOnHash(DigitalObjectsExtraction<D> contentsExtraction,
       HashAssembler contentHashAssembler) {
-    return new ContentAssemblerWithDedupOnHash<>(contentsExtraction, contentHashAssembler, 64000);
+    return new ContentAssemblerWithDedupOnHash<>(contentsExtraction, contentHashAssembler, 64_000);
   }
 
   /**

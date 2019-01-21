@@ -40,7 +40,7 @@ public final class CopyFile {
    * Copy the source to a given directory.
    * @param destinationDir The directory to copy the source into
    */
-  public void to(File destinationDir) {
+  public void to(File destinationDir) { // NOPMD By design
     copyToFile(new File(destinationDir, source.getName()));
   }
 
