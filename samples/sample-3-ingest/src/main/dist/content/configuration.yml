@@ -31,10 +31,6 @@ xdbDatabases:
   default: true
   adminPassword: catwalksacrosskeyboard
   xdbFederation: mainFederation
-- name: Search_Results-xdb
-  configure: create
-  adminPassword: dogwagstailinrain
-  xdbFederation: searchResultsFederation
 
 ingestNode:
   name: ingest_node_01
