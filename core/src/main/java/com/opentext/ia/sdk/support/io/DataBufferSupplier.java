@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.support.io;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Supplier;
 
 
@@ -24,8 +25,8 @@ public class DataBufferSupplier<T extends DataBuffer> implements Supplier<T> {
   @Override
   public T get() {
     try {
-      return dataBufferType.newInstance();
-    } catch (InstantiationException | IllegalAccessException e) {
+      return dataBufferType.getDeclaredConstructor().newInstance();
+    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
       throw new IllegalStateException("Failed to instantiate " + dataBufferType.getName(), e);
     }
   }

@@ -78,8 +78,11 @@ subprojects {
     validation "javax.validation:validation-api:$validationVersion"
     xmlunit "org.xmlunit:xmlunit-core:$xmlunitVersion"
     yaml "org.yaml:snakeyaml:$snakeYamlVersion"
-    
-    compile 'com.google.code.findbugs:jsr305:3.0.2'
+
+    compile 'com.google.code.findbugs:jsr305:3.0.2',
+            'com.sun.xml.bind:jaxb-core:2.3.0',
+            'javax.xml.bind:jaxb-api:2.3.0',
+            'com.sun.xml.bind:jaxb-impl:2.3.0'
   }
 
   tasks.withType(JavaCompile) {
