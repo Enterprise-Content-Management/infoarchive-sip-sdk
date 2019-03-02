@@ -19,11 +19,17 @@
       <!-- Too many false positives, toString and equals are often of limited value -->
       <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING" />
       <Bug pattern="IMC_IMMATURE_CLASS_NO_EQUALS" />
+
+      <!-- Too many false positives, when reading data as stream -->
+      <Bug pattern="LO_APPENDED_STRING_IN_FORMAT_STRING" />
+      <Bug pattern="WOC_WRITE_ONLY_COLLECTION_FIELD" />
       
       <!-- Intentional, to create a cleaner API -->
       <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS" />
       <Bug pattern="EXS_EXCEPTION_SOFTENING_HAS_CHECKED" />
       <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CHECKED" />
+      <Bug pattern="FCBL_FIELD_COULD_BE_LOCAL" />
+      <Bug pattern="PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS" />
       
       <!-- Where this occurs, no further information is available -->
       <Bug pattern="WEM_WEAK_EXCEPTION_MESSAGING" />
@@ -64,6 +70,7 @@
       <Bug pattern="MDM_WAIT_WITHOUT_TIMEOUT" />
       <Bug pattern="CLI_CONSTANT_LIST_INDEX" />
       <Bug pattern="UTAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT" />
+      <Bug pattern="UI_INHERITANCE_UNSAFE_GETRESOURCE" />
       <!-- Not relevant due to the use of unittest @Before -->
       <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
       <!-- Security issue not relevant for tests -->
@@ -339,6 +346,21 @@
     <Or>
       <!-- Sample only -->
       <Class name="com.opentext.ia.sdk.sample.authenticate.Authenticate" />
+    </Or>
+  </Match>
+
+  <!-- false positives, method is called -->
+  <Match>
+    <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
+    <!-- Sample only -->
+    <Class name="~com\.opentext\.ia\.sdk\.sample\.assemble\.(FileArchiver)(\$.*)?" />
+  </Match>
+
+  <Match>
+    <Or>
+      <!-- try-with-resource in JDK 11 is false positive-->
+      <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" />
+      <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" />
     </Or>
   </Match>
 
