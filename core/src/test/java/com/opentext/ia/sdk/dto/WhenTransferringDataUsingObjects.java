@@ -10,6 +10,7 @@ import static org.junit.Assert.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -117,7 +118,7 @@ public class WhenTransferringDataUsingObjects extends AbstractDtoTestCase {
     assertNotNull("Missing method: " + methodName, result);
     assertEquals("Return type of " + methodName, returnType, result.getReturnType());
     assertEquals("Modifiers of " + methodName, Modifier.PUBLIC, result.getModifiers() & ~Modifier.FINAL);
-    Object instance = bean.newInstance();
+    Object instance = bean.getDeclaredConstructor().newInstance();
     Object[] parameters = Arrays.stream(parameterTypes)
         .map(this::newInstanceOf)
         .toArray();
@@ -182,8 +183,8 @@ public class WhenTransferringDataUsingObjects extends AbstractDtoTestCase {
       return new HashMap<>();
     }
     try {
-      return clazz.newInstance();
-    } catch (InstantiationException | IllegalAccessException e) {
+      return clazz.getDeclaredConstructor().newInstance();
+    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
       throw new IllegalStateException("Could not instantiate " + clazz, e);
     }
   }
