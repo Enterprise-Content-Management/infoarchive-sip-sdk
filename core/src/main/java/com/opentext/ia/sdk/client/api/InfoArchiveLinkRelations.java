@@ -21,7 +21,6 @@ public interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_CI = LINK_PREFIX + "ci";
   String LINK_CONTENTS = LINK_PREFIX + "contents";
   String LINK_DATABASES = LINK_PREFIX + "xdb-databases";
-  String LINK_DIP = LINK_PREFIX + "dip";
   String LINK_DOWNLOAD = LINK_PREFIX + "content-download";
   String LINK_EXPORT = LINK_PREFIX + "export";
   String LINK_EXPORT_CONFIG = LINK_PREFIX + "export-configurations";

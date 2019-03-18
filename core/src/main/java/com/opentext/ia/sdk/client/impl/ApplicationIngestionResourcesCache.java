@@ -3,8 +3,6 @@
  */
 package com.opentext.ia.sdk.client.impl;
 
-import java.util.Map;
-
 import com.github.zafarkhaja.semver.Version;
 
 
@@ -17,7 +15,6 @@ public class ApplicationIngestionResourcesCache {
   private String ciResourceUri;
   private String aipResourceUri;
   private String aipIngestDirectResourceUri;
-  private Map<String, String> dipResourceUriByAicName;
   private String serverVersion;
 
   public ApplicationIngestionResourcesCache(String applicationName) {
@@ -50,14 +47,6 @@ public class ApplicationIngestionResourcesCache {
 
   public void setAipIngestDirectResourceUri(String aipIngestDirectResourceUri) {
     this.aipIngestDirectResourceUri = aipIngestDirectResourceUri;
-  }
-
-  public Map<String, String> getDipResourceUriByAicName() {
-    return dipResourceUriByAicName;
-  }
-
-  public void setDipResourceUriByAicName(Map<String, String> dipResourceUriByAicName) {
-    this.dipResourceUriByAicName = dipResourceUriByAicName;
   }
 
   public String getServerVersion() {

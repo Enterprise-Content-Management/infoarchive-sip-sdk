@@ -4,8 +4,6 @@
 package com.opentext.ia.sdk.client.factory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
@@ -13,7 +11,6 @@ import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.client.impl.ApplicationIngestionResourcesCache;
 import com.opentext.ia.sdk.client.impl.InfoArchiveRestClient;
-import com.opentext.ia.sdk.dto.Aics;
 import com.opentext.ia.sdk.dto.Application;
 import com.opentext.ia.sdk.dto.Applications;
 import com.opentext.ia.sdk.dto.ProductInfo;
@@ -91,12 +88,6 @@ public final class ArchiveClients {
   private static void cacheResourceUris(RestClient restClient, ProductInfo productInfo, Application application,
       ApplicationIngestionResourcesCache resourceCache) throws IOException {
     resourceCache.setServerVersion(productInfo.getBuildProperties().getServerVersion());
-
-    Map<String, String> dipResourceUrisByAicName = new HashMap<>();
-    Aics aics = restClient.follow(application, InfoArchiveLinkRelations.LINK_AICS, Aics.class);
-    aics.getItems().forEach(aic ->
-      dipResourceUrisByAicName.put(aic.getName(), aic.getUri(InfoArchiveLinkRelations.LINK_DIP)));
-    resourceCache.setDipResourceUriByAicName(dipResourceUrisByAicName);
 
     resourceCache.setCiResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_CI));
     resourceCache.setAipResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_AIPS));
