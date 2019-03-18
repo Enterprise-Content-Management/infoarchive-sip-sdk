@@ -1,6 +1,5 @@
 language: java
 jdk:
-- oraclejdk8
 - openjdk11
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -11,10 +10,6 @@ cache:
   - "$HOME/.gradle/wrapper/"
 after_success:
 - bash <(curl -s https://codecov.io/bash)
-addons:
-  apt:
-    packages:
-    - oracle-java8-installer
 env:
   global:
     # ORG_GRADLE_PROJECT_sonarToken

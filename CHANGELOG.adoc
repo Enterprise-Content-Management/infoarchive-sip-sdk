@@ -5,23 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 11.2.9 - 2019-03-18
+
+=== Fixed
+
+- Build with JDK 11
+- No longer DIP link relation available in cache
+
+
+
 == 11.2.8 - 2019-02-15
 
 === Fixed
 
 - Prepare to JDK11
 
+
+
 == 11.2.7 - 2019-01-21
 
 === Fixed
 
-- Third party dependency upgrades to the latest available versions 
+- Third party dependency upgrades to the latest available versions
+
+
 
 == 11.2.6 - 2018-11-12
 
 === Fixed
 
 - Do not add default ingest configuration by default. IA Server takes care of default ingest configuration instead of the client.
+
+
+
 
 == 11.2.5 - 2018-08-27
 
