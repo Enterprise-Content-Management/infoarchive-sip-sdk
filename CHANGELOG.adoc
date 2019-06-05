@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 11.2.10 - 2019-06-05
+
+=== Fixed
+
+- Added API for recursively removing yaml elements by key name
+
+
 == 11.2.9 - 2019-03-18
 
 === Fixed

@@ -51,6 +51,7 @@
     <exclude name="LoosePackageCoupling" />
     <exclude name="NcssCount" />
     <exclude name="TooManyMethods" />
+    <exclude name="ExcessivePublicCount"/>
   </rule>
   
   <rule ref="category/java/design.xml/CyclomaticComplexity">

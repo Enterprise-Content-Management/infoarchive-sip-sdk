@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -41,6 +42,11 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   private static final String SEMICOLON = ": ";
   private static final String SAMPLE_YAML_STRING = String.format(
       "root:%n- property: value%n  sequence:%n  - one%n  - two%n  nested:%n    foo: bar%n  key: 'value: with: colons'%n");
+  private static final String LAST_MODIFIED_DATE_NAME = "lastModifiedDate";
+  private static final String NESTED_ITEM_NAME = "nestedItem";
+
+  private static final String STILL_CONTAINS_REMOVED_VALUE = "Still contains removed value";
+  private static final String DOESN_T_CONTAIN_ADDED_VALUE = "Doesn't contain added value";
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -111,10 +117,32 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertFalse("Contains non-added value", yaml.containsKey(key));
 
     yaml.put(key, value);
-    assertTrue("Doesn't contain added value", yaml.containsKey(key));
+    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(key));
 
     yaml.remove(key);
-    assertFalse("Still contains removed value", yaml.containsKey(key));
+    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.containsKey(key));
+  }
+
+  @Test
+  public void shouldRemoveValueRecursively() {
+    assertFalse("Contains non-added value", yaml.containsKey(LAST_MODIFIED_DATE_NAME));
+
+    Map<String, Object> child = new HashMap<>();
+    child.put(LAST_MODIFIED_DATE_NAME, "time");
+
+    yaml.put(NESTED_ITEM_NAME, child);
+    yaml.put(LAST_MODIFIED_DATE_NAME, "time");
+
+    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(NESTED_ITEM_NAME));
+    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(LAST_MODIFIED_DATE_NAME));
+    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.get(NESTED_ITEM_NAME).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
+
+    yaml.removeRecursively(LAST_MODIFIED_DATE_NAME);
+    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.containsKey(LAST_MODIFIED_DATE_NAME));
+    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.get(NESTED_ITEM_NAME).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
+
+    yaml.removeRecursively("nestedItem");
+    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.containsKey(NESTED_ITEM_NAME));
   }
 
   @Test

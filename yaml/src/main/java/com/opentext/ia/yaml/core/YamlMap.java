@@ -210,6 +210,29 @@ public class YamlMap {
     return this;
   }
 
+  public void removeRecursively(String keyToRemove) {
+    removeRecursively(data, keyToRemove);
+  }
+
+  private void removeRecursively(Map<String, Object> map, String keyToRemove) {
+    map.remove(keyToRemove);
+    map.keySet().stream()
+        .forEach(key -> {
+          Object value = map.get(key);
+          if (value instanceof Map) {
+            removeRecursively((Map)value, keyToRemove);
+          } else if (value instanceof List) {
+            ((List)value).forEach(item -> removeRecursivelyListItem(item, keyToRemove));
+          }
+        });
+  }
+
+  private void removeRecursivelyListItem(Object item, String keyToRemove) {
+    if (item instanceof Map) {
+      removeRecursively((Map)item, keyToRemove);
+    }
+  }
+
   public Value get(Object... keys) {
     YamlMap map = this;
     int i = 0;
