@@ -47,6 +47,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   private static final String STILL_CONTAINS_REMOVED_VALUE = "Still contains removed value";
   private static final String DOESN_T_CONTAIN_ADDED_VALUE = "Doesn't contain added value";
+  public static final String VALUE_TIME = "time";
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -128,10 +129,10 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     assertFalse("Contains non-added value", yaml.containsKey(LAST_MODIFIED_DATE_NAME));
 
     Map<String, Object> child = new HashMap<>();
-    child.put(LAST_MODIFIED_DATE_NAME, "time");
+    child.put(LAST_MODIFIED_DATE_NAME, VALUE_TIME);
 
     yaml.put(NESTED_ITEM_NAME, child);
-    yaml.put(LAST_MODIFIED_DATE_NAME, "time");
+    yaml.put(LAST_MODIFIED_DATE_NAME, VALUE_TIME);
 
     assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(NESTED_ITEM_NAME));
     assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(LAST_MODIFIED_DATE_NAME));
@@ -139,10 +140,43 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
     yaml.removeRecursively(LAST_MODIFIED_DATE_NAME);
     assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.containsKey(LAST_MODIFIED_DATE_NAME));
-    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.get(NESTED_ITEM_NAME).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
+    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.get(NESTED_ITEM_NAME).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
 
     yaml.removeRecursively("nestedItem");
     assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.containsKey(NESTED_ITEM_NAME));
+  }
+
+  @Test
+  public void shouldRemoveValueRecursivelyOnlyFromParents() {
+    assertFalse("Contains non-added value", yaml.containsKey(LAST_MODIFIED_DATE_NAME));
+
+    final String nestedItem1 = NESTED_ITEM_NAME + "_1";
+    final String nestedItem2 = NESTED_ITEM_NAME + "_2";
+
+    Map<String, Object> child1 = new HashMap<>();
+    child1.put(LAST_MODIFIED_DATE_NAME, VALUE_TIME);
+    yaml.put(nestedItem1, child1);
+
+    Map<String, Object> child2 = new HashMap<>();
+    child2.put(LAST_MODIFIED_DATE_NAME, VALUE_TIME);
+    yaml.put(nestedItem2, child2);
+
+    yaml.put(LAST_MODIFIED_DATE_NAME, VALUE_TIME);
+
+    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(nestedItem1));
+    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(nestedItem2));
+    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(LAST_MODIFIED_DATE_NAME));
+    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.get(nestedItem1).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
+    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.get(nestedItem2).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
+
+    yaml.removeRecursively(LAST_MODIFIED_DATE_NAME, Collections.singletonList(nestedItem2));
+
+    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.containsKey(LAST_MODIFIED_DATE_NAME));
+    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.get(nestedItem2).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
+    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.get(nestedItem1).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
+
+    yaml.removeRecursively(nestedItem2);
+    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.containsKey(nestedItem2));
   }
 
   @Test

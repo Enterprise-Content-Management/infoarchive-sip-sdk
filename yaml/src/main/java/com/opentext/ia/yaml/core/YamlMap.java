@@ -211,25 +211,31 @@ public class YamlMap {
   }
 
   public void removeRecursively(String keyToRemove) {
-    removeRecursively(data, keyToRemove);
+    removeRecursively(keyToRemove, null);
   }
 
-  private void removeRecursively(Map<String, Object> map, String keyToRemove) {
-    map.remove(keyToRemove);
+  public void removeRecursively(String keyToRemove, List<String> parentAttributesToRemoveFrom) {
+    removeRecursively(data, keyToRemove, null, parentAttributesToRemoveFrom);
+  }
+
+  private void removeRecursively(Map<String, Object> map, String keyToRemove, String parentKeyName, List<String> parentAttributesToRemoveFrom) {
+    if (parentKeyName == null || parentAttributesToRemoveFrom != null && parentAttributesToRemoveFrom.contains(parentKeyName)) {
+      map.remove(keyToRemove);
+    }
     map.keySet().stream()
-        .forEach(key -> {
-          Object value = map.get(key);
+        .forEach(currentKey -> {
+          Object value = map.get(currentKey);
           if (value instanceof Map) {
-            removeRecursively((Map)value, keyToRemove);
+            removeRecursively((Map)value, keyToRemove, currentKey, parentAttributesToRemoveFrom);
           } else if (value instanceof List) {
-            ((List)value).forEach(item -> removeRecursivelyListItem(item, keyToRemove));
+            ((List)value).forEach(item -> removeRecursivelyListItem(item, keyToRemove, currentKey, parentAttributesToRemoveFrom));
           }
         });
   }
 
-  private void removeRecursivelyListItem(Object item, String keyToRemove) {
+  private void removeRecursivelyListItem(Object item, String keyToRemove, String parentKeyName, List<String> parentAttributesToRemoveFrom) {
     if (item instanceof Map) {
-      removeRecursively((Map)item, keyToRemove);
+      removeRecursively((Map)item, keyToRemove, parentKeyName, parentAttributesToRemoveFrom);
     }
   }
 
