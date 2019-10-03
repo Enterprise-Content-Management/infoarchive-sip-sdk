@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 11.2.12 - 2019-10-02
+
+=== Fixed
+
+- Preventing NPE when testing for xQuery
+
+
 == 11.2.11 - 2019-09-05
 
 === Fixed

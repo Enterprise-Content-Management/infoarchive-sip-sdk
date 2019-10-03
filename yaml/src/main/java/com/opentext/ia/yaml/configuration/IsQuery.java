@@ -13,8 +13,8 @@ class IsQuery implements Predicate<Entry> {
 
   @Override
   public boolean test(Entry entry) {
-    return entry.getKey().toLowerCase(Locale.ENGLISH).endsWith("query")
-        && entry.getValue().toMap().containsKey("text");
+    return entry.getKey() != null && entry.getKey().toLowerCase(Locale.ENGLISH).endsWith("query")
+        && entry.getValue() != null && entry.getValue().toMap().containsKey("text");
   }
 
 }
