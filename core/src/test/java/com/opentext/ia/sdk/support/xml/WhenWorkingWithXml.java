@@ -55,6 +55,34 @@ public class WhenWorkingWithXml extends TestCase {
   }
 
   @Test
+  public void shouldAllowCdataWorkaroundUsage() {
+    final String cdataValue = "<grandChild>"
+        + "<![CDATA[<characters !&<>*\\n[[]] with markup>]]>"
+        + "</grandChild>";
+
+    Document document = XmlBuilder.newDocument()
+        .namespace(randomString())
+        .element("parent")
+            .attribute("name", "value")
+            .element("child")
+                .xml(toStream(cdataValue))
+            .end()
+        .end()
+        .build();
+
+    final String actual = XmlUtil.toString(document.getDocumentElement(), false);
+    final String expected = "<parent name=\"value\">" + NL
+        + "  <child>" + NL
+        + "    <grandChild>" + NL
+        + "      <![CDATA[<characters !&<>*\\n[[]] with markup>]]>" + NL
+        + "    </grandChild>" + NL
+        + "  </child>" + NL
+        + "</parent>" + NL;
+
+    assertEquals("Formatted XML", expected, actual);
+  }
+
+  @Test
   public void shouldSuppressPrintingRootNamespace() {
     String elementName = randomString(5);
     Document document = XmlBuilder.newDocument().namespace(randomString()).element(elementName).end().build();
