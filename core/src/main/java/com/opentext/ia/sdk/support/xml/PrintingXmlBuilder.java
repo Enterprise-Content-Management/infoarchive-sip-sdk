@@ -143,6 +143,17 @@ public class PrintingXmlBuilder implements XmlBuilder<Void> {
     return this;
   }
 
+  @Override public XmlBuilder<Void> cdata(String cdata) {
+    Element element = elements.peek();
+    close(element, ElementContent.ELEMENT);
+    writer.print(indentation());
+    writer.print("<![CDATA[");
+    writer.print(cdata);
+    writer.print("]]>");
+    writer.println();
+    return this;
+  }
+
   @Override
   public Void build() {
     while (!elements.isEmpty()) {

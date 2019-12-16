@@ -63,7 +63,7 @@ public interface XmlBuilder<T> {
    * @return A builder for an empty document
    */
   static XmlBuilder<Void> newDocument(PrintWriter writer, String indent) {
-  return new PrintingXmlBuilder(writer, indent);
+    return new PrintingXmlBuilder(writer, indent);
   }
 
   /**
@@ -230,5 +230,12 @@ public interface XmlBuilder<T> {
   default XmlBuilder<T> xml(String xml) {
     return xml(new StringReader(xml));
   }
+
+  /**
+   * Add an CDATA to element.
+   * @param cdata The CDATA to add
+   * @return This builder
+   */
+  XmlBuilder<T> cdata(String cdata);
 
 }

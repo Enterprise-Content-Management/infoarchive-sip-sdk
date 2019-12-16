@@ -83,6 +83,12 @@ public class DomXmlBuilder implements XmlBuilder<Document> {
   }
 
   @Override
+  public XmlBuilder<Document> cdata(String cdata) {
+    current.appendChild(document.createCDATASection(cdata));
+    return this;
+  }
+
+  @Override
   public String toString() {
     return XmlUtil.toString(build());
   }

@@ -24,6 +24,15 @@ import com.opentext.ia.test.TestCase;
 public class WhenWorkingWithXml extends TestCase {
 
   private static final String NL = System.getProperty("line.separator");
+  private static final String XML_WITH_CDATA =
+      "<parent name=\"value\">" + NL
+          + "  <child>" + NL
+          + "    <grandChild>" + NL
+          + "      <![CDATA[characters !&<>*\\n[[]] with markup]]>" + NL
+          + "    </grandChild>" + NL
+          + "  </child>" + NL
+          + "</parent>" + NL;
+  private static final String CDATA_VALUE = "characters !&<>*\\n[[]] with markup";
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -55,31 +64,22 @@ public class WhenWorkingWithXml extends TestCase {
   }
 
   @Test
-  public void shouldAllowCdataWorkaroundUsage() {
-    final String cdataValue = "<grandChild>"
-        + "<![CDATA[<characters !&<>*\\n[[]] with markup>]]>"
-        + "</grandChild>";
-
+  public void shouldNotEscapeCdata() {
     Document document = XmlBuilder.newDocument()
         .namespace(randomString())
         .element("parent")
             .attribute("name", "value")
             .element("child")
-                .xml(toStream(cdataValue))
+                .element("grandChild")
+                    .cdata(CDATA_VALUE)
+                .end()
             .end()
         .end()
         .build();
 
-    final String actual = XmlUtil.toString(document.getDocumentElement(), false);
-    final String expected = "<parent name=\"value\">" + NL
-        + "  <child>" + NL
-        + "    <grandChild>" + NL
-        + "      <![CDATA[<characters !&<>*\\n[[]] with markup>]]>" + NL
-        + "    </grandChild>" + NL
-        + "  </child>" + NL
-        + "</parent>" + NL;
+    String actual = XmlUtil.toString(document.getDocumentElement(), false);
 
-    assertEquals("Formatted XML", expected, actual);
+    assertEquals("Formatted XML", XML_WITH_CDATA, actual);
   }
 
   @Test
