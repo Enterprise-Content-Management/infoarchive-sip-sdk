@@ -95,7 +95,7 @@ public class ZipConfiguration {
       }
       currentDir = currentDir.getParentFile();
     }
-    propertiesFiles.forEach(file -> builder.add(file, false));
+    propertiesFiles.forEach(file -> builder.add(file, null, false));
   }
 
   private boolean hasReachedTopDirectoryOrMaximumNumberOfFiles(List<File> propertiesFiles) {
@@ -148,11 +148,12 @@ public class ZipConfiguration {
     String pathInYaml = value.toString();
     String pathAfterPropertySubstitution = substituteProperties(pathInYaml);
     File file = resolveFile(base, pathAfterPropertySubstitution);
-    return mapFile(pathInYaml, pathAfterPropertySubstitution, file);
+    return mapFile(pathInYaml, pathAfterPropertySubstitution, file, base);
   }
 
-  private MappedFile mapFile(String pathInYaml, String pathAfterPropertySubstitution, File file) {
-    String pathInZip = builder.add(file);
+  private MappedFile mapFile(String pathInYaml, String pathAfterPropertySubstitution,
+      File file, File yamlFileWithInclude) {
+    String pathInZip = builder.add(file, yamlFileWithInclude);
     String path;
     if (pathInYaml.equals(pathAfterPropertySubstitution)) {
       // No property substitution has taken place
@@ -161,11 +162,11 @@ public class ZipConfiguration {
         path = pathAfterPropertySubstitution;
       } else {
         // Included file is in different location => use the modified path in the ZIP
-        path = pathInZip;
+        path = FilenameUtils.getName(pathInZip);
       }
     } else {
       // Properties were substituted => use the modified path in the ZIP
-      path = pathInZip;
+      path = FilenameUtils.getName(pathInZip);
     }
     return new MappedFile(file, path);
   }
@@ -210,7 +211,7 @@ public class ZipConfiguration {
     String pathAfterPropertySubstitution = substituteProperties(pathInYaml);
     List<File> files = new FilesSelector(base.getParentFile()).apply(pathAfterPropertySubstitution);
     if (files.size() == 1) {
-      String newPathInYaml = mapFile(pathInYaml, pathAfterPropertySubstitution, files.get(0)).path;
+      String newPathInYaml = mapFile(pathInYaml, pathAfterPropertySubstitution, files.get(0), base).path;
       updateYaml.accept(newPathInYaml);
     } else {
       files.forEach(builder::add);

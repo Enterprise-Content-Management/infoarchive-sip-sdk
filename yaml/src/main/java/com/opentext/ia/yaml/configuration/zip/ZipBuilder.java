@@ -52,25 +52,36 @@ public class ZipBuilder {
 
   /**
    * Add a file to the ZIP.
-   * @param file The file to add
+   * @param fileToInclude The file to add
    * @return The name of the ZIP entry
    */
-  public String add(File file) {
-    return add(file, true);
+  public String add(File fileToInclude) {
+    return add(fileToInclude, null, true);
   }
 
   /**
    * Add a file to the ZIP.
-   * @param file The file to add
+   * @param fileToInclude The file to add
+   * @param yamlFileWithInclude The container yml file, that contains 'includes' statement
+   * @return The name of the ZIP entry
+   */
+  public String add(File fileToInclude, File yamlFileWithInclude) {
+    return add(fileToInclude, yamlFileWithInclude, true);
+  }
+
+  /**
+   * Add a file to the ZIP.
+   * @param fileToInclude The file to add
+   * @param yamlFileWithInclude The container yml file, that contains 'includes' statement
    * @param preserveExternalFileName Whether external file names are to be preserved as much as possible, or whether
    * they should be replaced with unique numbers
    * @return The name of the ZIP entry
    */
-  public String add(File file, boolean preserveExternalFileName) {
-    File existingFile = checkFileExists(file);
-    String result = zipPathFor(existingFile, preserveExternalFileName);
-    entries.put(existingFile, result);
-    return result;
+  public String add(File fileToInclude, File yamlFileWithInclude, boolean preserveExternalFileName) {
+    File existingFile = checkFileExists(fileToInclude);
+    String pathInZip = zipPathFor(existingFile, yamlFileWithInclude, preserveExternalFileName);
+    entries.put(existingFile, pathInZip);
+    return pathInZip;
   }
 
   private static File checkFileExists(File file) {
@@ -81,20 +92,31 @@ public class ZipBuilder {
     return result;
   }
 
-  private String zipPathFor(File file, boolean preserveExternalFileName) {
+  private String zipPathFor(File file, File fileWithInclude,
+      boolean preserveExternalFileName) {
     String result = file.getAbsolutePath();
     if (result.startsWith(basePath)) {
       // Inside base directory => use relative path (which will be unique)
       result = FilenameUtils.separatorsToUnix(result.substring(basePath.length()));
     } else {
       // Outside base directory => ensure unique name
+      String fileName = "";
       String ext = FilenameUtils.getExtension(result);
       int index = numExternalFilesByExtension.getOrDefault(ext, 0);
       numExternalFilesByExtension.put(ext, 1 + index);
       if (preserveExternalFileName) {
-        result = String.format("%d-%s", index, file.getName());
+        fileName = String.format("%d-%s", index, file.getName());
       } else {
-        result = String.format("%d.%s", index, ext);
+        fileName = String.format("%d.%s", index, ext);
+      }
+      result = fileName;
+
+      if (fileWithInclude != null) {
+        String rootPath = FilenameUtils.getPath(basePath);
+        String fileWithIncludePath = FilenameUtils.getPath(fileWithInclude.getAbsolutePath());
+        String directoryForFile = fileWithIncludePath.startsWith(rootPath)
+            ? fileWithIncludePath.substring(rootPath.length()) : "";
+        result = FilenameUtils.separatorsToUnix(directoryForFile + fileName);
       }
     }
     return result;
@@ -117,7 +139,8 @@ public class ZipBuilder {
    * @param text The new content to include in the ZIP
    */
   public void replace(File file, boolean preserveExternalFileName, String text) {
-    String path = entries.containsKey(file) ? entries.remove(file) : zipPathFor(file, preserveExternalFileName);
+    String path = entries.containsKey(file) ? entries.remove(file)
+        : zipPathFor(file, null, preserveExternalFileName);
     entries.put(text, path);
   }
 

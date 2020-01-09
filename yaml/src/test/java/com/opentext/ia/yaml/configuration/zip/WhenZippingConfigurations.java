@@ -188,6 +188,41 @@ public class WhenZippingConfigurations extends TestCase {
     assertEquals("Included file", expectedYamlName, zipped.get(INCLUDES, 0).toString());
   }
 
+  @Test
+  public void shouldPutExternalIncludedYamlNearTheParentWhenSeveralLevelsOfNesting()
+      throws IOException {
+    File externalFolder = tempFolder.newFolder();
+    File externalFile1 = newFile(externalFolder, INCLUDED_RESOURCE_NAME, "foo");
+    File externalFile2 = newFile(new File(externalFolder, "subfolder"), INCLUDED_RESOURCE_NAME, "bar");
+    File includedExternalYaml = newFile(externalFolder, "included.yml",
+        someYamlReferencing(Arrays.asList(INCLUDED_RESOURCE_NAME, "subfolder/included.txt")));
+
+    String expectedYamlName = "0-" + includedExternalYaml.getName();
+    String expectedFileName1 = "0-" + externalFile1.getName();
+    String expectedFileName2 = "1-" + externalFile2.getName();
+
+    String subfolderName = "sub-folder/";
+    String includeNestedPath = subfolderName + CONFIGURATION_FILE_NAME;
+    newFile(folder, includeNestedPath,
+        new YamlMap().put(INCLUDES,
+            Collections.singletonList(includedExternalYaml.getAbsolutePath())).toString());
+    String mainYmlFileName = "main.yml";
+    yaml = newFile(folder, mainYmlFileName,
+        new YamlMap().put(INCLUDES, Collections.singletonList(includeNestedPath)).toString());
+
+    Map<String, InputStream> zipEntries = zipYaml();
+
+    assertZipEntry("Missing main YAML file", mainYmlFileName::equals, zipEntries);
+    assertZipEntry("Missing included text file #1", expectedFileName1::equals, zipEntries);
+    assertZipEntry("Missing included text file #2", expectedFileName2::equals, zipEntries);
+    assertZipEntry("Missing included YAML file", includeNestedPath::equals, zipEntries);
+    assertZipEntry("Missing included external YAML file",
+        (subfolderName + expectedYamlName)::equals, zipEntries);
+    YamlMap zipped = YamlMap.from(zipEntries.get(mainYmlFileName));
+    assertEquals("Included file", includeNestedPath, zipped.get(INCLUDES, 0).toString());
+  }
+
+
   private String someYamlReferencing(Collection<String> resources) {
     return new YamlMap().put("pdiSchema", new YamlMap().put(NAME, someName()).put(CONTENT,
         new YamlMap().put("format", "txt").put(RESOURCE, resources))).toString();
@@ -310,7 +345,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldZipDictoryContainingSpaces() throws IOException {
+  public void shouldZipDirectoryContainingSpaces() throws IOException {
     // Should not throw an exception
     ZipConfiguration.of(configurationWithIncludesInDirectoryWithSpaces());
   }
