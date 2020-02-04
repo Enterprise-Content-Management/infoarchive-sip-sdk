@@ -23,6 +23,8 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
   private static final String APPLICATION = "application";
   private static final String SPACE = "space";
   private static final String DATABASE = "database";
+  private static final String AIC = "aic";
+  private static final String QUERY = "query";
   private static final String STORE = "store";
   private static final String CI_STORE = "ciStore";
   private static final String LOG_STORE = "logStore";
@@ -81,7 +83,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     put(result, "/retentionPolicies/\\d+", TENANT);
     put(result, "/rules/\\d+", APPLICATION);
     put(result, "/schemas/\\d+", DATABASE, XDB_STORE);
-    put(result, "/searches/\\d+", "aic", APPLICATION, DATABASE, "query");
+    put(result, "/searches/\\d+", AIC, APPLICATION, DATABASE, QUERY);
     put(result, "/searchDebugs/\\d+", SEARCH);
     put(result, "/searchGroups/\\d+", APPLICATION);
     put(result, "/searchCompositions/\\d+", SEARCH);
@@ -154,7 +156,23 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
       }
       return !yaml.containsKey(English.plural(NAMESPACE));
     }
+    if (isSearchesPath(visit)) {
+      return shouldAddSipSearchRelatedProperties(property, yaml)
+          || shouldAddTableSearchRelatedProperty(property, yaml);
+    }
     return true;
+  }
+
+  private boolean isSearchesPath(Visit visit) {
+    return visit.getPath().startsWith("/searches/");
+  }
+
+  private boolean shouldAddSipSearchRelatedProperties(String property, YamlMap yaml) {
+    return (AIC.equals(property) || QUERY.equals(property)) && !yaml.containsKey(DATABASE);
+  }
+
+  private boolean shouldAddTableSearchRelatedProperty(String property, YamlMap yaml) {
+    return DATABASE.equals(property) && !(yaml.containsKey(AIC) || yaml.containsKey(QUERY));
   }
 
   @Override
