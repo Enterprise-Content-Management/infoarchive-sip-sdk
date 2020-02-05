@@ -342,6 +342,14 @@
   </Match>
 
   <Match>
+    <!-- Prefer to have easy reading for complex logic against code best practice -->
+    <Bug pattern="BL_BURYING_LOGIC" />
+    <Class name="com.opentext.ia.yaml.configuration.InsertDefaultReferences" />
+    <Method name="missesProperty" />
+  </Match>
+
+
+  <Match>
     <Bug pattern="INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE" />
     <Or>
       <!-- Sample only -->

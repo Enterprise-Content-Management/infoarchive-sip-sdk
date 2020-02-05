@@ -145,6 +145,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
   }
 
   @Override
+  @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.CollapsibleIfStatements"})
   protected boolean missesProperty(Visit visit, String property) {
     YamlMap yaml = visit.getMap();
     if (yaml.containsKey(property)) {
@@ -157,22 +158,16 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
       return !yaml.containsKey(English.plural(NAMESPACE));
     }
     if (isSearchesPath(visit)) {
-      return shouldAddSipSearchRelatedProperties(property, yaml)
-          || shouldAddTableSearchRelatedProperty(property, yaml);
+        if ((AIC.equals(property) || QUERY.equals(property)) && yaml.containsKey(DATABASE)
+            || DATABASE.equals(property) && (yaml.containsKey(AIC) || yaml.containsKey(QUERY))) {
+          return false;
+      }
     }
     return true;
   }
 
   private boolean isSearchesPath(Visit visit) {
     return visit.getPath().startsWith("/searches/");
-  }
-
-  private boolean shouldAddSipSearchRelatedProperties(String property, YamlMap yaml) {
-    return (AIC.equals(property) || QUERY.equals(property)) && !yaml.containsKey(DATABASE);
-  }
-
-  private boolean shouldAddTableSearchRelatedProperty(String property, YamlMap yaml) {
-    return DATABASE.equals(property) && !(yaml.containsKey(AIC) || yaml.containsKey(QUERY));
   }
 
   @Override
