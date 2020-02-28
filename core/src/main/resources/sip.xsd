@@ -112,6 +112,10 @@
                 <xs:enumeration value="SHA-256" />
                 <xs:enumeration value="SHA-384" />
                 <xs:enumeration value="SHA-512" />
+                <xs:enumeration value="SHA3-224"/>
+                <xs:enumeration value="SHA3-256"/>
+                <xs:enumeration value="SHA3-384"/>
+                <xs:enumeration value="SHA3-512"/>
               </xs:restriction>
             </xs:simpleType>
           </xs:attribute>
