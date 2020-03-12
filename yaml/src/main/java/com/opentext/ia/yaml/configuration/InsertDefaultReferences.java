@@ -158,8 +158,15 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
       return !yaml.containsKey(English.plural(NAMESPACE));
     }
     if (isSearchesPath(visit)) {
-        if ((AIC.equals(property) || QUERY.equals(property)) && yaml.containsKey(DATABASE)
-            || DATABASE.equals(property) && (yaml.containsKey(AIC) || yaml.containsKey(QUERY))) {
+      boolean isDatabasePropertyExistsAndNotNull =
+          yaml.containsKey(DATABASE) && !yaml.get(DATABASE).isEmpty();
+      boolean skipSipPropertiesIfDatabaseSpecified = (AIC.equals(property) || QUERY.equals(property))
+          && isDatabasePropertyExistsAndNotNull;
+      boolean isAicPropertySpecified = yaml.containsKey(AIC) && !yaml.get(AIC).isEmpty();
+      boolean isQueryPropertySpecified = yaml.containsKey(QUERY) && !yaml.get(QUERY).isEmpty();
+      boolean skipTablePropertiesIfAicOrQuerySpecified = DATABASE.equals(property)
+          && (isAicPropertySpecified || isQueryPropertySpecified);
+      if (skipSipPropertiesIfDatabaseSpecified || skipTablePropertiesIfAicOrQuerySpecified) {
           return false;
       }
     }

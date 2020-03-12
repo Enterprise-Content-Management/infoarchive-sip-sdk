@@ -65,6 +65,10 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   private static final String DATABASES = "databases";
   private static final String EXPORT_TRANSFORMATION = "exportTransformation";
   private static final String EXPORT_PIPELINE = "exportPipeline";
+  private static final String SEARCHES = "searches";
+  private static final String AICS = "aics";
+  private static final String AIC = "aic";
+  private static final String DATABASE = "database";
 
   private final YamlMap yaml = new YamlMap();
   private ResourceResolver resourceResolver = ResourceResolver.none();
@@ -180,6 +184,131 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
         yaml.get("holdingCryptoes", 0, "ci").toMap().containsKey("cryptoObject"));
   }
 
+  @Test
+  public void shouldInsertDefaultAicReferenceForSearchWhenDatabaseIsMissing() {
+    String search = someName();
+    String database = someName();
+    String aic = someName();
+    String query = someName();
+
+    yaml.put(SEARCHES, Collections.singletonList(
+        new YamlMap()
+            .put(NAME, search)
+            .put(QUERY, query)));
+    yaml.put(AICS, Collections.singletonList(new YamlMap().put(NAME, aic)));
+    yaml.put(QUERIES, Collections.singletonList(new YamlMap().put(NAME, query)));
+    yaml.put(DATABASES, Collections.singletonList(new YamlMap().put(NAME, database)));
+
+    normalizeYaml();
+
+    assertValue(AIC, aic, yaml.get(SEARCHES, 0, AIC));
+    assertValue(QUERY, query, yaml.get(SEARCHES, 0, QUERY));
+    assertFalse("Should NOT insert database",
+        yaml.get(SEARCHES, 0).toMap().containsKey(DATABASE));
+  }
+
+  @Test
+  public void shouldInsertDefaultAicReferenceForSearchWhenDatabaseIsNull() {
+    String search = someName();
+    String database = someName();
+    String aic = someName();
+    String query = someName();
+
+    yaml.put(SEARCHES, Collections.singletonList(
+        new YamlMap()
+            .put(NAME, search)
+            .put(QUERY, query)
+            .put(DATABASE, null)));
+    yaml.put(AICS, Collections.singletonList(new YamlMap().put(NAME, aic)));
+    yaml.put(QUERIES, Collections.singletonList(new YamlMap().put(NAME, query)));
+    yaml.put(DATABASES, Collections.singletonList(new YamlMap().put(NAME, database)));
+
+    normalizeYaml();
+
+    assertValue(AIC, aic, yaml.get(SEARCHES, 0, AIC));
+    assertValue(QUERY, query, yaml.get(SEARCHES, 0, QUERY));
+    assertTrue("Should NOT insert database",
+        yaml.get(SEARCHES, 0, DATABASE).isEmpty());
+  }
+
+  @Test
+  public void shouldNotInsertDefaultAicReferenceForSearchWhenDatabaseIsSet() {
+    String search = someName();
+    String database = someName();
+    String aic = someName();
+    String query = someName();
+
+    yaml.put(SEARCHES, Collections.singletonList(
+        new YamlMap().put(NAME, search)
+            .put(DATABASE, database)));
+    yaml.put(AICS, Collections.singletonList(new YamlMap().put(NAME, aic)));
+    yaml.put(QUERIES, Collections.singletonList(new YamlMap().put(NAME, query)));
+    yaml.put(DATABASES, Collections.singletonList(new YamlMap().put(NAME, database)));
+
+    normalizeYaml();
+
+    assertFalse("Should NOT insert AIC",
+        yaml.get(SEARCHES, 0).toMap().containsKey(AIC));
+    assertFalse("Should NOT insert Query",
+        yaml.get(SEARCHES, 0).toMap().containsKey(QUERY));
+    assertValue(DATABASE, database, yaml.get(SEARCHES, 0, DATABASE));
+  }
+
+  @Test
+  public void shouldInsertDefaultDatabaseReferenceForSearchWhenAicAndQueryAreMissing() {
+    String search = someName();
+    String database = someName();
+
+    yaml.put(SEARCHES, Collections.singletonList(
+        new YamlMap().put(NAME, search)));
+    yaml.put(DATABASES, Collections.singletonList(new YamlMap().put(NAME, database)));
+
+    normalizeYaml();
+
+    assertValue("Database", database, yaml.get(SEARCHES, 0, DATABASE));
+    assertFalse("Should NOT insert aic",
+        yaml.get(SEARCHES, 0).toMap().containsKey(AIC));
+  }
+
+  @Test
+  public void shouldInsertDefaultDatabaseReferenceForSearchWhenAicAndQueryAreNull() {
+    String search = someName();
+    String database = someName();
+
+    yaml.put(SEARCHES, Collections.singletonList(
+        new YamlMap().put(NAME, search)
+            .put(AIC, null)
+            .put(QUERY, null)));
+    yaml.put(DATABASES, Collections.singletonList(new YamlMap().put(NAME, database)));
+
+    normalizeYaml();
+
+    assertValue("Database", database, yaml.get(SEARCHES, 0, DATABASE));
+    assertTrue("Should NOT insert aic",
+        yaml.get(SEARCHES, 0, AIC).isEmpty());
+  }
+
+  @Test
+  public void shouldNotInsertDefaultDatabaseReferenceForSearchWhenAicAndQueryAreSet() {
+    String search = someName();
+    String database = someName();
+    String aic = someName();
+    String query = someName();
+
+    yaml.put(SEARCHES, Collections.singletonList(
+        new YamlMap().put(NAME, search)
+            .put(AIC, aic)
+            .put(QUERY, query)));
+    yaml.put("databases", Collections.singletonList(new YamlMap().put(NAME, database)));
+
+    normalizeYaml();
+
+    assertFalse("Should NOT insert database",
+        yaml.get(SEARCHES, 0).toMap().containsKey(DATABASE));
+    assertValue(AIC, aic, yaml.get(SEARCHES, 0, AIC));
+    assertValue(QUERY, query, yaml.get(SEARCHES, 0, QUERY));
+  }
+
   private void assertDatabaseStore(String storeType, String expected) {
     assertValue(storeType + "Store", expected, yaml.get(DATABASES, 0, storeType + "Store"));
   }
@@ -202,12 +331,12 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     // references by default for these exceptional cases.
     yaml.put("searchGroups", Collections.singletonList(new YamlMap().put(NAME, someName())));
     yaml.put("customPresentationConfigurations", Collections.singletonList(new YamlMap().put(NAME, someName())));
-    yaml.put("searches", Collections.singletonList(new YamlMap().put(NAME, someName())));
+    yaml.put(SEARCHES, Collections.singletonList(new YamlMap().put(NAME, someName())));
     yaml.put("searchCompositions", Collections.singletonList(new YamlMap().put(NAME, someName())));
 
     normalizeYaml();
 
-    assertTrue("Search group should not be inserted", yaml.get("searches", 0, "searchGroup").isEmpty());
+    assertTrue("Search group should not be inserted", yaml.get(SEARCHES, 0, "searchGroup").isEmpty());
     assertTrue("Custom presentation configuration should not be inserted",
         yaml.get("searchCompositions", 0, "customPresentationConfiguration").isEmpty());
   }
