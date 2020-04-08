@@ -1,8 +1,21 @@
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'io.codearte.nexus-staging'
 
 ext.publishProjects = subprojects.findAll { it.name.startsWith('infoarchive-') }
+
+publishing {
+  publications {
+    subprojects.findAll { it.name.startsWith('infoarchive-') }.each { prj ->
+      "$prj.name"(MavenPublication) {
+        groupId = prj.group
+        artifactId = prj.name
+        from prj.components.java
+      }
+    }
+  }
+}
 
 nexusStaging {
   packageGroup = 'com.opentext'
