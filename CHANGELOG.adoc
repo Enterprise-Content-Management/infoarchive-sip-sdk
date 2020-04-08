@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 12.0.1 - 2020-03-12
+
+=== Fixed
+
+- ignore the 'null' values for aic/query/database when inserting default references
+
+== 12.0.0 - 2020-03-11
+
+=== Fixed
+
+- added SHA3-224, SHA3-256, SHA3-384 and SHA-512 hashes support
+
+
 == 11.3.3 - 2020-02-05
 
 === Fixed
