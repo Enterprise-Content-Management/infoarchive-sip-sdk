@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.FilenameUtils;
@@ -42,11 +43,17 @@ public class ZipConfiguration {
   private static final String INCLUDES = "includes";
   private static final String RESOURCE = "resource";
 
+  @Deprecated
   public static File of(File source) throws IOException {
     return of(source, ZipCustomization.none());
   }
 
+  @Deprecated
   public static File of(File source, ZipCustomization customization) throws IOException {
+    return new ZipConfiguration(check(source), customization).addParentPropertiesFiles(source).build();
+  }
+
+  private static File check(File source) throws IOException {
     File yaml = source;
     if (yaml == null) {
       throw new EmptyZipException();
@@ -58,52 +65,47 @@ public class ZipConfiguration {
     if (!yaml.isFile()) {
       throw new EmptyZipException();
     }
-    return new ZipConfiguration(yaml, customization).build();
+    return yaml;
+  }
+
+  public static File of(File source, File defaultProperties) throws IOException {
+    return of(source, ZipCustomization.none(), defaultProperties);
+  }
+
+  public static File of(File source, ZipCustomization customization, File defaultProperties) throws IOException {
+    return new ZipConfiguration(check(source), customization).addDefaultPropertiesFiles(defaultProperties).build();
   }
 
   private final ZipBuilder builder;
   private final File root;
 
+  @Deprecated
   public ZipConfiguration(File yaml) {
     this(yaml, ZipCustomization.none());
   }
 
+  @Deprecated
   public ZipConfiguration(File yaml, ZipCustomization customization) {
     this.root = yaml.getAbsoluteFile();
     builder = new ZipBuilder(yaml.getParentFile(), customization);
+    addParentPropertiesFiles(yaml);
   }
 
   private File build() throws IOException {
-    addParentPropertiesFiles(root.getParentFile());
+    addLocalPropertiesFile(root);
     builder.add(root);
     addFromYaml(root);
     return builder.build();
   }
 
-  private void addParentPropertiesFiles(File directory) {
-    List<File> propertiesFiles = new ArrayList<>();
-    File currentDir = new File(directory.getAbsolutePath()).getParentFile();
-    while (currentDir != null) {
-      final File[] files = currentDir.listFiles();
-      if (files != null) {
-        Arrays.stream(files)
-            .filter(file -> PROPERTY_FILE_NAMES.contains(file.getName()))
-            .forEach(propertiesFiles::add);
-      }
-      if (hasReachedTopDirectoryOrMaximumNumberOfFiles(propertiesFiles)) {
-        break;
-      }
-      currentDir = currentDir.getParentFile();
+  public ZipConfiguration addDefaultPropertiesFiles(File file) {
+    if (file != null && TOP_LEVEL_PROPERTIES_FILE_NAME.equals(file.getName()) && file.exists()) {
+      builder.add(file, null, false);
     }
-    propertiesFiles.forEach(file -> builder.add(file, null, false));
+    return this;
   }
 
-  private boolean hasReachedTopDirectoryOrMaximumNumberOfFiles(List<File> propertiesFiles) {
-    return propertiesFiles.size() >= MAX_PARENT_PROPERTIES_FILES_PER_ZIP
-        || propertiesFiles.stream().map(File::getName).anyMatch(TOP_LEVEL_PROPERTIES_FILE_NAME::equals);
-  }
-
- private void addFromYaml(File file) throws IOException {
+  private void addFromYaml(File file) throws IOException {
     addLocalPropertiesFile(file);
     YamlMap yaml = parseYaml(file);
     addIncludedYamlFiles(file, yaml);
@@ -117,6 +119,30 @@ public class ZipConfiguration {
     } catch (IOException | YAMLException e) {
       throw new InvalidZipEntryException(file, e);
     }
+  }
+
+  private ZipConfiguration addParentPropertiesFiles(File directory) {
+    List<File> propertiesFiles = new ArrayList<>();
+    File currentDir = new File(directory.getAbsolutePath()).getParentFile();
+    while (currentDir != null) {
+      final File[] files = currentDir.listFiles();
+      if (files != null) {
+        Arrays.stream(files)
+                .filter(file -> PROPERTY_FILE_NAMES.contains(file.getName()))
+                .forEach(propertiesFiles::add);
+      }
+      if (hasReachedTopDirectoryOrMaximumNumberOfFiles(propertiesFiles)) {
+        return this;
+      }
+      currentDir = currentDir.getParentFile();
+    }
+    propertiesFiles.forEach(file -> builder.add(file, null, false));
+    return this;
+  }
+
+  private boolean hasReachedTopDirectoryOrMaximumNumberOfFiles(List<File> propertiesFiles) {
+    return propertiesFiles.size() >= MAX_PARENT_PROPERTIES_FILES_PER_ZIP
+            || propertiesFiles.stream().map(File::getName).anyMatch(TOP_LEVEL_PROPERTIES_FILE_NAME::equals);
   }
 
   private void addLocalPropertiesFile(File file) {
