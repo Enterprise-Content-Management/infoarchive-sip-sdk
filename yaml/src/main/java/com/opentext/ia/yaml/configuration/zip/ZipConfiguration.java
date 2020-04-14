@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.FilenameUtils;
