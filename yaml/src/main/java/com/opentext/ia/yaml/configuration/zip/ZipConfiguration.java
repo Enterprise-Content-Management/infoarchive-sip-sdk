@@ -41,7 +41,7 @@ public class ZipConfiguration {
       TOP_LEVEL_PROPERTIES_FILE_NAME, MAIN_PROPERTIES_FILE_NAME);
   private static final String INCLUDES = "includes";
   private static final String RESOURCE = "resource";
-  private boolean directoryScanned = false;
+  private boolean directoryScanned;
 
   @Deprecated
   public static File of(File source) throws IOException {
