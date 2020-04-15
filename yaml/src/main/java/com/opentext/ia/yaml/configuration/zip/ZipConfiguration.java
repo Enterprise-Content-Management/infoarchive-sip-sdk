@@ -41,6 +41,7 @@ public class ZipConfiguration {
       TOP_LEVEL_PROPERTIES_FILE_NAME, MAIN_PROPERTIES_FILE_NAME);
   private static final String INCLUDES = "includes";
   private static final String RESOURCE = "resource";
+  private boolean directoryScanned;
 
   @Deprecated
   public static File of(File source) throws IOException {
@@ -100,6 +101,7 @@ public class ZipConfiguration {
   public ZipConfiguration addDefaultPropertiesFiles(File file) {
     if (file != null && TOP_LEVEL_PROPERTIES_FILE_NAME.equals(file.getName()) && file.exists()) {
       builder.add(file, null, false);
+      directoryScanned = true;
     }
     return this;
   }
@@ -121,21 +123,24 @@ public class ZipConfiguration {
   }
 
   private ZipConfiguration addParentPropertiesFiles(File directory) {
-    List<File> propertiesFiles = new ArrayList<>();
-    File currentDir = new File(directory.getAbsolutePath()).getParentFile();
-    while (currentDir != null) {
-      final File[] files = currentDir.listFiles();
-      if (files != null) {
-        Arrays.stream(files)
-                .filter(file -> PROPERTY_FILE_NAMES.contains(file.getName()))
-                .forEach(propertiesFiles::add);
+    if (!directoryScanned) {
+      List<File> propertiesFiles = new ArrayList<>();
+      File currentDir = new File(directory.getAbsolutePath()).getParentFile();
+      while (currentDir != null) {
+        final File[] files = currentDir.listFiles();
+        if (files != null) {
+          Arrays.stream(files)
+                  .filter(file -> PROPERTY_FILE_NAMES.contains(file.getName()))
+                  .forEach(propertiesFiles::add);
+        }
+        if (hasReachedTopDirectoryOrMaximumNumberOfFiles(propertiesFiles)) {
+          break;
+        }
+        currentDir = currentDir.getParentFile();
       }
-      if (hasReachedTopDirectoryOrMaximumNumberOfFiles(propertiesFiles)) {
-        return this;
-      }
-      currentDir = currentDir.getParentFile();
+      propertiesFiles.forEach(file -> builder.add(file, null, false));
     }
-    propertiesFiles.forEach(file -> builder.add(file, null, false));
+    directoryScanned = true;
     return this;
   }
 
