@@ -18,11 +18,13 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -309,6 +311,11 @@ public class WhenZippingConfigurations extends TestCase {
     map = YamlMap.from(zip.get(zipEntry));
     zipEntry = map.get("pdiSchema", "content", "resource").toString();
     assertTrue("Missing external resource: " + zipEntry, zip.containsKey(zipEntry));
+
+    assertEquals(zip.entrySet().stream().map(it -> it.getKey()).collect(Collectors.toSet()),
+            new HashSet<String>(Arrays.asList("0-configuration.yml",
+              "0-pdischema.xsd", "0.properties", "1-configuration.yml",
+              "configuration.yml", "configuration.properties")));
   }
 
   @Test
