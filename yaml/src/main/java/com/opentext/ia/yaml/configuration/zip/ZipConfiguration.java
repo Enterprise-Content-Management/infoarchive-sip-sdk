@@ -88,10 +88,12 @@ public class ZipConfiguration {
   public ZipConfiguration(File yaml, ZipCustomization customization) {
     this.root = yaml.getAbsoluteFile();
     builder = new ZipBuilder(yaml.getParentFile(), customization);
-    addParentPropertiesFiles(yaml);
   }
 
   private File build() throws IOException {
+    if (!directoryScanned) {
+      addParentPropertiesFiles(root.getParentFile());
+    }
     addLocalPropertiesFile(root);
     builder.add(root);
     addFromYaml(root);
