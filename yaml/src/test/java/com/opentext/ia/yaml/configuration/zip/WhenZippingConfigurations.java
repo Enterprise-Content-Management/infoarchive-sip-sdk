@@ -336,7 +336,7 @@ public class WhenZippingConfigurations extends TestCase {
           initialized.set(true);
         }).properties((name, properties) -> properties.setProperty(key, value))
             .yaml((name, map) -> map.put("version", version))
-            .extra(() -> ExtraZipEntry.of(entryName, entryContent)).build(), null));
+            .extra(() -> ExtraZipEntry.of(entryName, entryContent)).build(), new File[0]));
 
     assertTrue("Not initialized", initialized.get());
 

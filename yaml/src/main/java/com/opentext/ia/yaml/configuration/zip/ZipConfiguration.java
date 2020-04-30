@@ -68,12 +68,12 @@ public class ZipConfiguration {
     return yaml;
   }
 
-  public static File of(File source, File defaultProperties) throws IOException {
-    return of(source, ZipCustomization.none(), defaultProperties);
+  public static File of(File source, File... configurationProperties) throws IOException {
+    return of(source, ZipCustomization.none(), configurationProperties);
   }
 
-  public static File of(File source, ZipCustomization customization, File defaultProperties) throws IOException {
-    return new ZipConfiguration(check(source), customization).addDefaultPropertiesFiles(defaultProperties).build();
+  public static File of(File source, ZipCustomization customization, File... configurationProperties) throws IOException {
+    return new ZipConfiguration(check(source), customization).addDefaultPropertiesFiles(configurationProperties).build();
   }
 
   private final ZipBuilder builder;
@@ -100,10 +100,12 @@ public class ZipConfiguration {
     return builder.build();
   }
 
-  public ZipConfiguration addDefaultPropertiesFiles(File file) {
-    if (file != null && TOP_LEVEL_PROPERTIES_FILE_NAME.equals(file.getName()) && file.exists()) {
-      builder.add(file, null, false);
-      directoryScanned = true;
+  public ZipConfiguration addDefaultPropertiesFiles(File... properties) {
+    for (File file: properties) {
+      if (file != null && Arrays.asList(TOP_LEVEL_PROPERTIES_FILE_NAME, MAIN_PROPERTIES_FILE_NAME).contains(file.getName()) && file.exists()) {
+        builder.add(file, null, false);
+        directoryScanned = true;
+      }
     }
     return this;
   }
