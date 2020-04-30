@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.yaml.configuration.zip;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -17,11 +18,13 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -94,7 +97,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   private Map<String, InputStream> zipYaml() throws IOException {
-    return new RandomAccessZipFile(ZipConfiguration.of(yaml));
+    return new RandomAccessZipFile(ZipConfiguration.of(yaml, new File(EMPTY)));
   }
 
   private void assertZipEntry(String message, Predicate<String> expected,
@@ -295,7 +298,7 @@ public class WhenZippingConfigurations extends TestCase {
   @Test
   public void shouldResolvePathsUpAndDownTheFolderHierarchy() throws IOException {
     File dir = new File("src/test/resources/external-includes/root");
-    Map<String, InputStream> zip = new RandomAccessZipFile(ZipConfiguration.of(dir));
+    Map<String, InputStream> zip = new RandomAccessZipFile(ZipConfiguration.of(dir, new File(EMPTY)));
 
     YamlMap map = YamlMap.from(zip.get(CONFIGURATION_FILE_NAME));
     String zipEntry = map.get(INCLUDES, 0).toString();
@@ -308,6 +311,11 @@ public class WhenZippingConfigurations extends TestCase {
     map = YamlMap.from(zip.get(zipEntry));
     zipEntry = map.get("pdiSchema", "content", "resource").toString();
     assertTrue("Missing external resource: " + zipEntry, zip.containsKey(zipEntry));
+
+    assertEquals(zip.entrySet().stream().map(it -> it.getKey()).collect(Collectors.toSet()),
+            new HashSet<String>(Arrays.asList("0-configuration.yml",
+              "0-pdischema.xsd", "0.properties", "1-configuration.yml",
+              "configuration.yml", "configuration.properties")));
   }
 
   @Test
@@ -328,7 +336,7 @@ public class WhenZippingConfigurations extends TestCase {
           initialized.set(true);
         }).properties((name, properties) -> properties.setProperty(key, value))
             .yaml((name, map) -> map.put("version", version))
-            .extra(() -> ExtraZipEntry.of(entryName, entryContent)).build()));
+            .extra(() -> ExtraZipEntry.of(entryName, entryContent)).build(), null));
 
     assertTrue("Not initialized", initialized.get());
 
@@ -347,14 +355,15 @@ public class WhenZippingConfigurations extends TestCase {
   @Test
   public void shouldZipDirectoryContainingSpaces() throws IOException {
     // Should not throw an exception
-    ZipConfiguration.of(configurationWithIncludesInDirectoryWithSpaces());
+    ZipConfiguration.of(configurationWithIncludesInDirectoryWithSpaces(), new File(EMPTY));
   }
 
   private File configurationWithIncludesInDirectoryWithSpaces() throws IOException {
     File result = new File("build/dir with space/configuration.yml").getCanonicalFile();
     File includeFile = new File(result.getParentFile(), "sub/configuration.yml").getCanonicalFile();
-    assertTrue("Failed to create directory: " + includeFile.getParent(), includeFile.getParentFile().mkdirs());
-
+    if (!includeFile.getParentFile().exists()) {
+      assertTrue("Failed to create directory: " + includeFile.getParent(), includeFile.getParentFile().mkdirs());
+    }
     save(someConfiguration(), includeFile);
     save(configurationWithIncludes(includeFile), result);
 
