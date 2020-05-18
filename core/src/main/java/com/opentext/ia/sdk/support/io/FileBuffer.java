@@ -26,7 +26,9 @@ public class FileBuffer implements DataBuffer {
 
   private static File tempFile() {
     try {
-      return Files.createTempFile(null, null).toFile();
+      File tempFile = Files.createTempFile(null, null).toFile();
+      tempFile.deleteOnExit();
+      return tempFile;
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
