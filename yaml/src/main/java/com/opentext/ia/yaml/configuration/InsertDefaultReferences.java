@@ -17,6 +17,7 @@ import com.opentext.ia.yaml.core.YamlMap;
 
 class InsertDefaultReferences extends BaseInsertDefaultReferences {
 
+  private static final String CONFIGURE = "configure";
   private static final String NAME = "name";
   private static final String NAMESPACE = "namespace";
   private static final String TENANT = "tenant";
@@ -158,6 +159,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
       return !yaml.containsKey(English.plural(NAMESPACE));
     }
     if (isSearchesPath(visit)) {
+      boolean isReference = "use existing".equals(yaml.get(CONFIGURE).toString());
       boolean isDatabasePropertyExistsAndNotNull =
           yaml.containsKey(DATABASE) && !yaml.get(DATABASE).isEmpty();
       boolean skipSipPropertiesIfDatabaseSpecified = (AIC.equals(property) || QUERY.equals(property))
@@ -166,7 +168,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
       boolean isQueryPropertySpecified = yaml.containsKey(QUERY) && !yaml.get(QUERY).isEmpty();
       boolean skipTablePropertiesIfAicOrQuerySpecified = DATABASE.equals(property)
           && (isAicPropertySpecified || isQueryPropertySpecified);
-      if (skipSipPropertiesIfDatabaseSpecified || skipTablePropertiesIfAicOrQuerySpecified) {
+      if (isReference || skipSipPropertiesIfDatabaseSpecified || skipTablePropertiesIfAicOrQuerySpecified) {
           return false;
       }
     }
