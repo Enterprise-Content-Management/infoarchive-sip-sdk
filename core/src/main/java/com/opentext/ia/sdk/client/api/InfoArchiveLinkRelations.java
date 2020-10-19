@@ -44,6 +44,7 @@ public interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_QUERIES = LINK_PREFIX + "queries";
   String LINK_QUERY_QUOTAS = LINK_PREFIX + "query-quotas";
   String LINK_RECEIVER_NODES = LINK_PREFIX + "receiver-nodes";
+  String LINK_RECEIVE = LINK_PREFIX + "receive";
   String LINK_RESULT_CONFIGURATION_HELPERS = LINK_PREFIX + "result-configuration-helpers";
   String LINK_RETENTION_POLICIES = LINK_PREFIX + "retention-policies";
   String LINK_SEARCH_COMPOSITIONS = LINK_PREFIX + "search-compositions";
