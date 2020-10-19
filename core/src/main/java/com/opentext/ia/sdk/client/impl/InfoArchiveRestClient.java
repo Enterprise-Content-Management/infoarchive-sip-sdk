@@ -25,6 +25,10 @@ import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ContentResult;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
 import com.opentext.ia.sdk.dto.IngestionResponse;
+import com.opentext.ia.sdk.dto.JobDefinition;
+import com.opentext.ia.sdk.dto.JobDefinitions;
+import com.opentext.ia.sdk.dto.JobInstance;
+import com.opentext.ia.sdk.dto.JobInstanceFilter;
 import com.opentext.ia.sdk.dto.OrderItem;
 import com.opentext.ia.sdk.dto.ReceptionResponse;
 import com.opentext.ia.sdk.dto.Row;
@@ -32,6 +36,7 @@ import com.opentext.ia.sdk.dto.SearchComposition;
 import com.opentext.ia.sdk.dto.SearchDataBuilder;
 import com.opentext.ia.sdk.dto.SearchResult;
 import com.opentext.ia.sdk.dto.SearchResults;
+import com.opentext.ia.sdk.dto.Services;
 import com.opentext.ia.sdk.dto.export.ExportConfiguration;
 import com.opentext.ia.sdk.dto.export.ExportTransformation;
 import com.opentext.ia.sdk.dto.query.Comparison;
@@ -112,8 +117,7 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
    */
   @Override
   @Deprecated
-  public ContentResult fetchOrderContent(OrderItem orderItem) throws IOException {
-    String downloadUri = Objects.requireNonNull(
+  public ContentResult fetchOrderContent(OrderItem orderItem) throws IOException {    String downloadUri = Objects.requireNonNull(
         Objects.requireNonNull(orderItem, "Missing order item").getUri(LINK_DOWNLOAD), "Missing download URI");
     String fetchUri = restClient.uri(downloadUri)
         .addParameter("downloadToken", "")
@@ -225,6 +229,26 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
       throws IOException {
     String uri = exportTransformation.getUri(LINK_EXPORT_TRANSFORMATION_ZIP);
     return restClient.post(uri, LinkContainer.class, new BinaryPart("file", zip, "stylesheet.zip"));
+  }
+
+  @Override public JobInstance search(String jobName, String applicationName, String tenantName)
+      throws IOException {
+    Services services = restClient.get(resourceCache.getServicesUri(), Services.class);
+
+    JobDefinitions jobDefinitions = restClient.followNonPaged(services, InfoArchiveLinkRelations.LINK_JOB_DEFINITIONS, JobDefinitions.class);
+    JobDefinition jobDefinition = jobDefinitions.byName(jobName);
+    String runLink =  jobDefinition.getUri(InfoArchiveLinkRelations.LINK_JOB_INSTANCES);
+
+    JobInstanceFilter jobSettings = new JobInstanceFilter();
+    jobSettings.setNow(true);
+    if (applicationName != null) {
+      jobSettings.setApplication(applicationName);
+    }
+    if (tenantName != null) {
+      jobSettings.setTenant(applicationName);
+    }
+
+    return restClient.post(runLink, JobInstance.class, jobSettings);
   }
 
 }

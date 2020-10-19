@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
+import com.opentext.ia.sdk.dto.JobInstance;
 import com.opentext.ia.sdk.dto.OrderItem;
 import com.opentext.ia.sdk.dto.SearchComposition;
 import com.opentext.ia.sdk.dto.SearchResults;
@@ -104,5 +105,14 @@ public interface ArchiveClient {
    */
   @Deprecated
   LinkContainer uploadTransformation(ExportTransformation exportTransformation, InputStream zip) throws IOException;
+
+  /**
+   * Creates Job Instance for the specified tenant and application .
+   * @param applicationName The application name that the job in run over
+   * @param tenantName The tenant name that the application is located at
+   * @return A JobInstance
+   * @throws IOException When an I/O error occurs
+   */
+  JobInstance search(String jobName, String applicationName,  String tenantName) throws IOException;
 
 }

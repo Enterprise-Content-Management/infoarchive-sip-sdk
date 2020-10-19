@@ -63,7 +63,7 @@ public final class ArchiveClients {
     ProductInfo productInfo = getProductInfo(restClient, services);
     Tenant tenant = getTenant(restClient, services);
     Application application = getApplication(restClient, tenant, applicationName);
-    cacheResourceUris(restClient, productInfo, application, resourceCache);
+    cacheResourceUris(restClient, services, productInfo, application, resourceCache);
     return resourceCache;
   }
 
@@ -85,14 +85,15 @@ public final class ArchiveClients {
         "Application " + applicationName + " not found.");
   }
 
-  private static void cacheResourceUris(RestClient restClient, ProductInfo productInfo, Application application,
-      ApplicationIngestionResourcesCache resourceCache) throws IOException {
+  private static void cacheResourceUris(RestClient restClient, Services services, ProductInfo productInfo,
+      Application application, ApplicationIngestionResourcesCache resourceCache) throws IOException {
     resourceCache.setServerVersion(productInfo.getBuildProperties().getServerVersion());
 
     resourceCache.setCiResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_CI));
     resourceCache.setAipResourceUri(application.getUri(InfoArchiveLinkRelations.LINK_AIPS));
     LinkContainer aips = restClient.follow(application, InfoArchiveLinkRelations.LINK_AIPS, LinkContainer.class);
     resourceCache.setAipIngestDirectResourceUri(aips.getUri(InfoArchiveLinkRelations.LINK_INGEST_DIRECT));
+    resourceCache.setServicesUri(services.getSelfUri());
   }
 
 }

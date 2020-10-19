@@ -15,6 +15,7 @@ public class ApplicationIngestionResourcesCache {
   private String ciResourceUri;
   private String aipResourceUri;
   private String aipIngestDirectResourceUri;
+  private String servicesUri;
   private String serverVersion;
 
   public ApplicationIngestionResourcesCache(String applicationName) {
@@ -73,4 +74,11 @@ public class ApplicationIngestionResourcesCache {
     return toVersion(getServerVersion()).compareTo(toVersion(version)) <= 0;
   }
 
+  public String getServicesUri() {
+    return servicesUri;
+  }
+
+  public void setServicesUri(String servicesUri) {
+    this.servicesUri = servicesUri;
+  }
 }
