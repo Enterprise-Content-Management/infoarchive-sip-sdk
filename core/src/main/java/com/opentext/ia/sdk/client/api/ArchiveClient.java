@@ -108,6 +108,7 @@ public interface ArchiveClient {
 
   /**
    * Creates Job Instance for the specified tenant and application .
+   * @param jobName The anme of the Job to run
    * @param applicationName The application name that the job in run over
    * @param tenantName The tenant name that the application is located at
    * @return A JobInstance

@@ -117,7 +117,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
    */
   @Override
   @Deprecated
-  public ContentResult fetchOrderContent(OrderItem orderItem) throws IOException {    String downloadUri = Objects.requireNonNull(
+  public ContentResult fetchOrderContent(OrderItem orderItem) throws IOException {
+    String downloadUri = Objects.requireNonNull(
         Objects.requireNonNull(orderItem, "Missing order item").getUri(LINK_DOWNLOAD), "Missing download URI");
     String fetchUri = restClient.uri(downloadUri)
         .addParameter("downloadToken", "")
