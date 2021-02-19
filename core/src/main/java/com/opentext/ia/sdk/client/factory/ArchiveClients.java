@@ -9,6 +9,7 @@ import java.util.Objects;
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
+import com.opentext.ia.sdk.client.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.client.impl.ApplicationIngestionResourcesCache;
 import com.opentext.ia.sdk.client.impl.InfoArchiveRestClient;
 import com.opentext.ia.sdk.dto.Application;
@@ -16,7 +17,6 @@ import com.opentext.ia.sdk.dto.Applications;
 import com.opentext.ia.sdk.dto.ProductInfo;
 import com.opentext.ia.sdk.dto.Services;
 import com.opentext.ia.sdk.dto.Tenant;
-import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 import com.opentext.ia.sdk.support.http.rest.RestClient;
 

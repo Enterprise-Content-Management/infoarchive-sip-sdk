@@ -3,16 +3,16 @@
  */
 package com.opentext.ia.sdk.server.configuration.yaml;
 
-import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.HTTP_CLIENT_CLASSNAME;
-import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.PROXY_HOST;
-import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.PROXY_PORT;
-import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_AUTHENTICATION_GATEWAY;
-import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_AUTHENTICATION_PASSWORD;
-import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_AUTHENTICATION_TOKEN;
-import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_AUTHENTICATION_USER;
-import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_CLIENT_ID;
-import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_CLIENT_SECRET;
-import static com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties.SERVER_URI;
+import static com.opentext.ia.sdk.client.configuration.InfoArchiveConnectionProperties.HTTP_CLIENT_CLASSNAME;
+import static com.opentext.ia.sdk.client.configuration.InfoArchiveConnectionProperties.PROXY_HOST;
+import static com.opentext.ia.sdk.client.configuration.InfoArchiveConnectionProperties.PROXY_PORT;
+import static com.opentext.ia.sdk.client.configuration.InfoArchiveConnectionProperties.SERVER_AUTHENTICATION_GATEWAY;
+import static com.opentext.ia.sdk.client.configuration.InfoArchiveConnectionProperties.SERVER_AUTHENTICATION_PASSWORD;
+import static com.opentext.ia.sdk.client.configuration.InfoArchiveConnectionProperties.SERVER_AUTHENTICATION_TOKEN;
+import static com.opentext.ia.sdk.client.configuration.InfoArchiveConnectionProperties.SERVER_AUTHENTICATION_USER;
+import static com.opentext.ia.sdk.client.configuration.InfoArchiveConnectionProperties.SERVER_CLIENT_ID;
+import static com.opentext.ia.sdk.client.configuration.InfoArchiveConnectionProperties.SERVER_CLIENT_SECRET;
+import static com.opentext.ia.sdk.client.configuration.InfoArchiveConnectionProperties.SERVER_URI;
 
 import java.io.IOException;
 import java.util.Map;
@@ -20,7 +20,7 @@ import java.util.function.BiFunction;
 
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
-import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
+import com.opentext.ia.sdk.client.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.support.http.MediaTypes;
 import com.opentext.ia.yaml.configuration.YamlConfiguration;
 

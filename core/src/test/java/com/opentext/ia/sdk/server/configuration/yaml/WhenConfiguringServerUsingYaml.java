@@ -28,8 +28,8 @@ import org.junit.Test;
 
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
+import com.opentext.ia.sdk.client.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.dto.Services;
-import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.http.rest.Link;
 import com.opentext.ia.sdk.support.http.rest.RestClient;

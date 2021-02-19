@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.server.configuration.properties;
 
-import com.opentext.ia.sdk.server.configuration.InfoArchiveConnectionProperties;
+import com.opentext.ia.sdk.client.configuration.InfoArchiveConnectionProperties;
 
 
 /**
