@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
+ * Copyright (c) OpenText Corporation. All Rights Reserved.
  */
 package com.opentext.ia.sdk.support.http.apache;
 
@@ -17,7 +17,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.StatusLine;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -127,26 +126,18 @@ public class ApacheHttpClient implements HttpClient {
         .forEach(request::addHeader);
   }
 
-  @SuppressWarnings("PMD.AvoidRethrowingException")
   protected <T> T execute(HttpRequestBase request, Class<T> type) throws IOException {
     Objects.requireNonNull(request, "Missing request");
     try {
       return client.execute(request, getResponseHandler(request.getMethod(), request.getURI().toString(),
           request.getAllHeaders(), type));
-    } catch (HttpResponseException e) {
-      throw new HttpException(e.getStatusCode(), e);
-    } catch (HttpException e) {
-      throw e;
-    } catch (IOException e) {
-      throw new HttpException(500, e);
     } finally {
       request.releaseConnection();
     }
   }
 
-  @SuppressWarnings("PMD.AvoidRethrowingException")
   protected <T> T execute(HttpRequestBase request, ResponseFactory<T> factory) throws IOException {
-    CloseableHttpResponse httpResponse = execute(request);
+    CloseableHttpResponse httpResponse = client.execute(request);
     Runnable closeResponse = () -> {
       IOStreams.close(httpResponse);
       request.releaseConnection();
@@ -160,8 +151,6 @@ public class ApacheHttpClient implements HttpClient {
       T result = factory.create(new ApacheResponse(httpResponse), closeResponse);
       shouldCloseResponse = false;
       return result;
-    } catch (IOException e) {
-      throw new RuntimeIoException(e);
     } finally {
       if (shouldCloseResponse) {
         closeResponse.run();
@@ -179,16 +168,6 @@ public class ApacheHttpClient implements HttpClient {
     String reasonPhrase = statusLine.getReasonPhrase();
     return new HttpException(statusCode, String.format("%n%s %s%n==> %d %s%n%s", method, uri, statusCode,
         reasonPhrase, body));
-  }
-
-  private CloseableHttpResponse execute(HttpRequestBase request) throws HttpException {
-    try {
-      return client.execute(request);
-    } catch (HttpResponseException e) {
-      throw new HttpException(e.getStatusCode(), e);
-    } catch (IOException e) {
-      throw new HttpException(500, e);
-    }
   }
 
   private String toString(HttpEntity entity) throws IOException {

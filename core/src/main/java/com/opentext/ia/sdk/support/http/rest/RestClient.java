@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
+ * Copyright (c) OpenText Corporation. All Rights Reserved.
  */
 package com.opentext.ia.sdk.support.http.rest;
 
@@ -39,6 +39,12 @@ public class RestClient implements Closeable, StandardLinkRelations {
   private final Collection<Header> headersNoFormat = new ArrayList<>();
   private final HttpClient httpClient;
   private AuthenticationStrategy authentication;
+
+  public static final int DEFAULT_MAX_SIZE = 1000;
+  public static final int DEFAULT_PAGE_SIZE = 10;
+
+  private int maxSize = DEFAULT_MAX_SIZE;
+  private int pageSize = DEFAULT_PAGE_SIZE;
 
   public RestClient(HttpClient client) {
     this.httpClient = Objects.requireNonNull(client, "Missing HTTP client");
@@ -121,20 +127,19 @@ public class RestClient implements Closeable, StandardLinkRelations {
       throws IOException {
     Objects.requireNonNull(state, "Missing state");
     String href = linkIn(state, relation).getHref();
-    href = replacePageQueryParameters(href);
+    href = replacePageQueryParameters(href, 0, maxSize);
     return get(href, type);
   }
 
-  private String replacePageQueryParameters(String href) {
+  private String replacePageQueryParameters(String href, int page, int size) {
     try {
       URIBuilder uriBuilder = new URIBuilder(href);
       List<NameValuePair> queryParameters = uriBuilder.getQueryParams().stream()
-          .filter(p -> !"page".equals(p.getName()) && !"limit".equals(p.getName()) && !"size".equals(p.getName()))
+          .filter(p -> !"page".equals(p.getName()) && !"size".equals(p.getName()))
           .collect(Collectors.toList());
       uriBuilder.setParameters(queryParameters);
-      uriBuilder.addParameter("page", "0");
-      uriBuilder.addParameter("limit", "1000");
-      uriBuilder.addParameter("size", "1000");
+      uriBuilder.addParameter("page", String.valueOf(page));
+      uriBuilder.addParameter("size", String.valueOf(size));
       return uriBuilder.build().toString();
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException(e);
@@ -144,6 +149,18 @@ public class RestClient implements Closeable, StandardLinkRelations {
   public <T> T follow(LinkContainer state, String relation, Class<T> type) throws IOException {
     Objects.requireNonNull(state, "Missing state");
     return get(linkIn(state, relation).getHref(), type);
+  }
+
+  public <T> T follow(LinkContainer state, String relation, int page, Class<T> type)
+      throws IOException {
+    if (page < 0) {
+      throw new IllegalArgumentException("page cannot be less than 0");
+    }
+
+    Objects.requireNonNull(state, "Missing state");
+    String href = linkIn(state, relation).getHref();
+    href = replacePageQueryParameters(href, page, pageSize);
+    return get(href, type);
   }
 
   private Link linkIn(LinkContainer state, String... relations) {
@@ -213,6 +230,29 @@ public class RestClient implements Closeable, StandardLinkRelations {
   @Override
   public void close() {
     httpClient.close();
+  }
+
+  public int getMaxSize() {
+    return maxSize;
+  }
+
+  public void setMaxSize(int maxSize) {
+    if (maxSize <= 0) {
+      throw new IllegalStateException("Max size must be greater than zero");
+    }
+    this.maxSize = maxSize;
+  }
+
+  public int getPageSize() {
+    return pageSize;
+  }
+
+  public void setPageSize(int pageSize) {
+    if (pageSize < 0) {
+      throw new IllegalArgumentException("Page size cannot be less than 0");
+    }
+
+    this.pageSize = pageSize;
   }
 
 }

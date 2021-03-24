@@ -1,9 +1,13 @@
 /*
- * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
+ * Copyright (c) OpenText Corporation. All Rights Reserved.
  */
 package com.opentext.ia.sdk.dto;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,6 +18,7 @@ public class ItemContainer<T extends NamedLinkContainer> extends LinkContainer {
 
   private final String key;
   private final Collection<T> items = new ArrayList<>();
+  private PageMetadata metadata;
 
   protected ItemContainer() {
     this.key = initLower(getClass().getSimpleName());
@@ -58,9 +63,65 @@ public class ItemContainer<T extends NamedLinkContainer> extends LinkContainer {
     return getItems().findFirst().orElseThrow(() -> new IllegalStateException("No " + key + " defined"));
   }
 
+  @JsonProperty("page")
+  public PageMetadata getMetadata() {
+    return metadata;
+  }
+
+  public void setMetadata(PageMetadata metadata) {
+    this.metadata = metadata;
+  }
+
   @Override
   public String toString() {
     return String.format("items=%s; %s", items, super.toString());
   }
 
+  public static class PageMetadata {
+
+    @JsonProperty
+    private long size;
+    @JsonProperty
+    private long totalElements;
+    @JsonProperty
+    private long totalPages;
+    @JsonProperty
+    private long number;
+
+    protected PageMetadata() {
+
+    }
+
+    public long getSize() {
+      return size;
+    }
+
+    public void setSize(long size) {
+      this.size = size;
+    }
+
+    public long getTotalElements() {
+      return totalElements;
+    }
+
+    public void setTotalElements(long totalElements) {
+      this.totalElements = totalElements;
+    }
+
+    public long getTotalPages() {
+      return totalPages;
+    }
+
+    public void setTotalPages(long totalPages) {
+      this.totalPages = totalPages;
+    }
+
+    public long getNumber() {
+      return number;
+    }
+
+    public void setNumber(long number) {
+      this.number = number;
+    }
+  }
 }
