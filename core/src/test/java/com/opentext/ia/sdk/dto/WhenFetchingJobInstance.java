@@ -6,14 +6,21 @@ package com.opentext.ia.sdk.dto;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Test;
+import java.io.IOException;
 
+import org.junit.Before;
+import org.junit.Test;
 
 public class WhenFetchingJobInstance {
 
   private static final String STATUS = "SCHEDULED";
 
   private final JobInstance instance = new JobInstance();
+
+  @Before
+  public void init() throws IOException {
+    instance.setStatus("SUCCESS");
+  }
 
   @Test
   public void fetchDefaultStatus() {

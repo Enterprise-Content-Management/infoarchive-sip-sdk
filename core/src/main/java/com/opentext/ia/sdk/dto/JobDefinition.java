@@ -8,9 +8,10 @@ public class JobDefinition extends NamedLinkContainer {
 
   private String handlerName;
 
-  public JobDefinition() {
-    setHandlerName("ConfirmationJob");
-  }
+// not a good practice
+//  public JobDefinition() {
+//    setHandlerName("ConfirmationJob");
+//  }
 
   public String getHandlerName() {
     return handlerName;

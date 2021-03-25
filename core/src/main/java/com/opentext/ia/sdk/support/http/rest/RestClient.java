@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OpenText Corporation. All Rights Reserved.
+ * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
 package com.opentext.ia.sdk.support.http.rest;
 
@@ -34,17 +34,17 @@ import com.opentext.ia.sdk.support.http.UriBuilder;
  */
 public class RestClient implements Closeable, StandardLinkRelations {
 
-  private final JsonFormatter formatter = new JsonFormatter();
-  private final Collection<Header> headers = new ArrayList<>();
-  private final Collection<Header> headersNoFormat = new ArrayList<>();
-  private final HttpClient httpClient;
-  private AuthenticationStrategy authentication;
-
   public static final int DEFAULT_MAX_SIZE = 1000;
   public static final int DEFAULT_PAGE_SIZE = 10;
 
   private int maxSize = DEFAULT_MAX_SIZE;
   private int pageSize = DEFAULT_PAGE_SIZE;
+
+  private final JsonFormatter formatter = new JsonFormatter();
+  private final Collection<Header> headers = new ArrayList<>();
+  private final Collection<Header> headersNoFormat = new ArrayList<>();
+  private final HttpClient httpClient;
+  private AuthenticationStrategy authentication;
 
   public RestClient(HttpClient client) {
     this.httpClient = Objects.requireNonNull(client, "Missing HTTP client");

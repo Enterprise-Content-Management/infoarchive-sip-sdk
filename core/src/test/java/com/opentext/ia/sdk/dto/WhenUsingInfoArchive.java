@@ -3,6 +3,9 @@
  */
 package com.opentext.ia.sdk.dto;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -51,6 +54,7 @@ import com.opentext.ia.sdk.dto.query.Item;
 import com.opentext.ia.sdk.dto.query.Operator;
 import com.opentext.ia.sdk.dto.query.SearchQuery;
 import com.opentext.ia.sdk.dto.result.AllSearchComponents;
+import com.opentext.ia.sdk.jobs.util.JobsUtil;
 import com.opentext.ia.sdk.server.configuration.PropertiesBasedArchiveConnection;
 import com.opentext.ia.sdk.support.http.HttpException;
 import com.opentext.ia.sdk.support.http.MediaTypes;
@@ -465,7 +469,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
 
   private ArchiveClient configureServer(Map<String, String> config) throws IOException {
     return archiveClient = ArchiveClients.configuringApplicationUsing(
-        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(config),
+        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(
+            config),
         connection);
   }
 
@@ -478,8 +483,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     ReceptionResponse receptionResponse = new ReceptionResponse();
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
     receptionResponse.setLinks(links);
-    when(restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
-        .thenReturn(receptionResponse);
+    when(
+        restClient.post(anyString(), eq(ReceptionResponse.class), any(Part.class), any(Part.class)))
+            .thenReturn(receptionResponse);
     when(restClient.post(anyString(), eq(IngestionResponse.class))).thenReturn(ingestionResponse);
     String aipId = "sip001";
     when(ingestionResponse.getAipId()).thenReturn(aipId);
@@ -497,8 +503,9 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
 
     IngestionResponse ingestionResponse = mock(IngestionResponse.class);
-    when(restClient.post(anyString(), eq(IngestionResponse.class), any(Part.class), any(Part.class)))
-        .thenReturn(ingestionResponse);
+    when(
+        restClient.post(anyString(), eq(IngestionResponse.class), any(Part.class), any(Part.class)))
+            .thenReturn(ingestionResponse);
     String aipId = "sip002";
     when(ingestionResponse.getAipId()).thenReturn(aipId);
 
@@ -533,7 +540,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test(expected = NullPointerException.class)
-  public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull() throws IOException {
+  public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull()
+      throws IOException {
     configureServer(new HashMap<>());
   }
 
@@ -579,7 +587,8 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
         });
 
     ArchiveClients.configuringApplicationUsing(
-        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(configuration),
+        new com.opentext.ia.sdk.server.configuration.properties.PropertiesBasedApplicationConfigurer(
+            configuration),
         connection);
 
     verify(restClient, times(5)).createCollectionItem(eq(federations), any(XdbFederation.class),
@@ -665,6 +674,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
         .thenReturn(contentResult);
     when(restClient.get(eq(uri), any(ContentResultFactory.class))).thenReturn(contentResult);
     OrderItem orderItem = new OrderItem();
+    orderItem.setType("EXPORT");
     Link downloadLink = new Link();
     downloadLink.setHref(randomString());
     orderItem.getLinks().put(LINK_DOWNLOAD, downloadLink);
@@ -673,6 +683,54 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     ContentResult result = archiveClient.fetchOrderContent(orderItem);
 
     assertEquals(contentResult, result);
+  }
+
+  @Test
+  public void getJobInstanceLog() throws IOException {
+    JobInstance jobInstance = new JobInstance();
+    Map<String, Link> link = new HashMap<>();
+    link.put(InfoArchiveLinkRelations.LINK_LOG, new Link("uri-for-jobinstance-log"));
+    jobInstance.setLinks(link);
+
+    when(restClient.get("uri-for-jobinstance-log", String.class))
+        .thenReturn("id: abc, \"logMessages\" : [ { sample data } ]");
+
+    String logJson = JobsUtil.getLog(jobInstance, connection.getRestClient());
+
+    assertThat(logJson, notNullValue());
+    assertThat(logJson, containsString("\"logMessages\" : [ {"));
+  }
+
+  @Test
+  public void getOrderItemLog() throws IOException {
+    OrderItem firstOrderItem = new OrderItem();
+    Map<String, Link> link = new HashMap<>();
+    link.put(InfoArchiveLinkRelations.LINK_LOG, new Link("uri-for-orderitem-log"));
+    firstOrderItem.setLinks(link);
+
+    when(restClient.get("uri-for-orderitem-log", String.class))
+        .thenReturn("id: abc, \"logMessages\" : [ { sample data } ]");
+
+    String logJson = JobsUtil.getLog(firstOrderItem, connection.getRestClient());
+
+    assertThat(logJson, notNullValue());
+    assertThat(logJson, containsString("\"logMessages\" : [ {"));
+  }
+
+  @Test
+  public void getBatchItemLog() throws IOException {
+    BatchItem firstBatchItem = new BatchItem();
+    Map<String, Link> link = new HashMap<>();
+    link.put(InfoArchiveLinkRelations.LINK_LOG, new Link("uri-for-batchitem-log"));
+    firstBatchItem.setLinks(link);
+
+    when(restClient.get("uri-for-batchitem-log", String.class))
+        .thenReturn("id: abc, \"logMessages\" : [ { sample data } ]");
+
+    String logJson = JobsUtil.getLog(firstBatchItem, connection.getRestClient());
+
+    assertThat(logJson, notNullValue());
+    assertThat(logJson, containsString("\"logMessages\" : [ {"));
   }
 
   @Test

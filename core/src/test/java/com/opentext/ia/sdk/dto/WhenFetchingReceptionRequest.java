@@ -6,14 +6,19 @@ package com.opentext.ia.sdk.dto;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Test;
-
 
 public class WhenFetchingReceptionRequest {
 
   private static final String FORMAT = "TestFormat";
 
   private final ReceptionRequest reception = new ReceptionRequest();
+
+  @Before
+  public void init() {
+    reception.setFormat("sip_zip");
+  }
 
   @Test
   public void fetchDefaultFormat() {

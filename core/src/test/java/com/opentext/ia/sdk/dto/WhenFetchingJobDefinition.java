@@ -5,8 +5,10 @@ package com.opentext.ia.sdk.dto;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import java.io.IOException;
 
+import org.junit.Before;
+import org.junit.Test;
 
 public class WhenFetchingJobDefinition {
 
@@ -14,9 +16,15 @@ public class WhenFetchingJobDefinition {
 
   private final JobDefinition instance = new JobDefinition();
 
+  @Before
+  public void init() throws IOException {
+    instance.setHandlerName("ConfirmationJob");
+  }
+
   @Test
   public void fetchDefaultHandlerName() {
-    assertEquals("Job Definition Default Handler Name", "ConfirmationJob", instance.getHandlerName());
+    assertEquals("Job Definition Default Handler Name", "ConfirmationJob",
+        instance.getHandlerName());
   }
 
   @Test

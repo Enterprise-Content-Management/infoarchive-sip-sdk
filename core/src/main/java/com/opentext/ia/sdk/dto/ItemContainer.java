@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OpenText Corporation. All Rights Reserved.
+ * Copyright (c) 2016-2017 by OpenText Corporation. All Rights Reserved.
  */
 package com.opentext.ia.sdk.dto;
 
@@ -87,10 +87,6 @@ public class ItemContainer<T extends NamedLinkContainer> extends LinkContainer {
     private long totalPages;
     @JsonProperty
     private long number;
-
-    protected PageMetadata() {
-
-    }
 
     public long getSize() {
       return size;

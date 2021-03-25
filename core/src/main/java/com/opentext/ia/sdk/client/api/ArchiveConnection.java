@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.opentext.ia.sdk.dto.ProductInfo;
 import com.opentext.ia.sdk.dto.Services;
 import com.opentext.ia.sdk.support.NewInstance;
 import com.opentext.ia.sdk.support.datetime.Clock;
@@ -34,6 +35,9 @@ public class ArchiveConnection {
   private String clientId;
   private String clientSecret;
   private RestClient restClient;
+
+  private String serverVersion;
+  // private String jobInstancesLog;
 
   public String getBillboardUri() {
     return billboardUri;
@@ -133,8 +137,8 @@ public class ArchiveConnection {
         httpClient = new ApacheHttpClient(proxyHost, Integer.parseInt(proxyPort));
       }
       restClient = new RestClient(httpClient);
-      AuthenticationStrategy authentication = new AuthenticationStrategyFactory(this).getAuthenticationStrategy(
-          () -> httpClient, () -> clock);
+      AuthenticationStrategy authentication = new AuthenticationStrategyFactory(this)
+          .getAuthenticationStrategy(() -> httpClient, () -> clock);
       restClient.init(authentication);
     }
     return restClient;
@@ -146,6 +150,22 @@ public class ArchiveConnection {
 
   public Services getServices() throws IOException {
     return getRestClient().get(getBillboardUri(), Services.class);
+  }
+
+  public String getServerVersion() throws IOException {
+    if (serverVersion != null) {
+      return serverVersion;
+    }
+
+    Services services = getServices();
+    ProductInfo productInfo = getRestClient().follow(services,
+        InfoArchiveLinkRelations.LINK_PRODUCT_INFO, ProductInfo.class);
+    if (productInfo == null) {
+      throw new IllegalStateException("Cannot determine server version");
+    }
+    serverVersion = productInfo.getBuildProperties().getServerVersion();
+
+    return serverVersion;
   }
 
 }

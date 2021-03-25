@@ -10,9 +10,10 @@ public class ReceptionRequest extends JavaBean {
 
   private String format;
 
-  public ReceptionRequest() {
-    setFormat("sip_zip");
-  }
+// not a good practice
+//  public ReceptionRequest() {
+//    setFormat("sip_zip");
+//  }
 
   public String getFormat() {
     return format;

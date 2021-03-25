@@ -63,5 +63,7 @@ public interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_CONTENT_ADDRESSED_STORAGES = LINK_PREFIX + "content-addressed-storages";
   String LINK_CONFIGURATION = LINK_PREFIX + "configuration";
   String LINK_PRODUCT_INFO = LINK_PREFIX + "product-info";
-
+  String LINK_ORDER_ITEMS = LINK_PREFIX + "order-items";
+  String LINK_BATCH_ITEMS = LINK_PREFIX + "batch-items";
+  String LINK_LOG = LINK_PREFIX + "log";
 }

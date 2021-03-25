@@ -4,14 +4,9 @@
 package com.opentext.ia.sdk.dto;
 
 
-public class OrderItem extends NamedLinkContainer {
+public class BatchItem extends NamedLinkContainer {
 
   private String type;
-
-  // not a good practice
-//  public OrderItem() {
-//    setType("EXPORT");
-//  }
 
   public String getType() {
     return type;

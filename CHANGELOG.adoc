@@ -5,15 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 12.4.0 - 2021-03-25
+
+=== Added in infoarchive-sdk-core
+
+- Add a new API to get the server version on ArchiveConnection
+- Provide more flexibility on the follow method on RestClient to specify the max number of records and specify a page
+- Add a utility method to determine if a job instance is still running
+- Provide a job utility method to access logs for job instance, order item and batch item
+
+=== Fixed in infoarchive-sdk-core
+
+- Improved error handling on rest calls
+- Fix default constructor of JobDefinition, JobInstance, OrderItem, ReceptionRequest
+
 == 12.3.2 - 2021-02-18
- - Third party dependency upgrades for the following: 
+
+- Third party dependency upgrades for the following libraries: 
  
-   Apache commonsCodecVersion 1.13 
-   Apache httpclientVersion	  4.5.13
-   JacksonVersion     		  2.12.1
+  Apache commonsCodec version:		1.13 
+  Apache httpclient version: 		4.5.13
+  Jackson version:					2.12.1
  
 == 12.3.1 - 2020-12-18
- - Minor version update
+- Minor version update
 
 == 12.3.0 - 2020-10-19
 

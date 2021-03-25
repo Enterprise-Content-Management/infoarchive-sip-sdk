@@ -3,14 +3,14 @@
  */
 package com.opentext.ia.sdk.dto;
 
-
 public class JobInstance extends NamedLinkContainer {
 
   private String status;
 
-  public JobInstance() {
-    setStatus("SUCCESS");
-  }
+// not a good practice
+//  public JobInstance() {
+//    setStatus("SUCCESS");
+//  }
 
   public String getStatus() {
     return status;
