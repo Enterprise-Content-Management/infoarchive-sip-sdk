@@ -101,6 +101,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     put(result, "/xdbLibraryPolicies/\\d+", APPLICATION);
     put(result, "/xforms/\\d+", SEARCH, SEARCH_COMPOSITION);
     put(result, "/xqueries/\\d+", SEARCH, SEARCH_COMPOSITION);
+    put(result, "/sqlQueries/\\d+", SEARCH, SEARCH_COMPOSITION);
     return result;
   }
 
