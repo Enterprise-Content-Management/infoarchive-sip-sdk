@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 12.4.1 - 2021-08-03
+
+== Fixed in infoarchive-yaml
+
+- Fix import table search missing sql query
+
 == 12.4.0 - 2021-03-25
 
 === Added in infoarchive-sdk-core
