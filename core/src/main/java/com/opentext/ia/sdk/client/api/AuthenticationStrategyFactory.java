@@ -44,6 +44,7 @@ public final class AuthenticationStrategyFactory {
         () -> JwtAuthentication.optional(
             connection.getAuthenticationUser(),
             connection.getAuthenticationPassword(),
+            connection.getScopes(),
             GatewayInfo.optional(
                 connection.getAuthenticationGateway(),
                 connection.getClientId(),

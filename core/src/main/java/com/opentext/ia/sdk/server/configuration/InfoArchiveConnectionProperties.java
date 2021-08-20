@@ -20,6 +20,7 @@ public interface InfoArchiveConnectionProperties {
   String SERVER_AUTHENTICATION_GATEWAY = SERVER_PREFIX + "authentication.gateway";
   String SERVER_CLIENT_ID = SERVER_PREFIX + "client_id";
   String SERVER_CLIENT_SECRET = SERVER_PREFIX + "client_secret";
+  String SERVER_SCOPES = SERVER_PREFIX + "scopes";
   String SERVER_URI = SERVER_PREFIX + "uri";
 
 
