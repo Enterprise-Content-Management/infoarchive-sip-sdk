@@ -32,33 +32,50 @@ public final class JwtAuthentication implements AuthenticationStrategy {
   private final GatewayInfo gatewayInfo;
   private final String userName;
   private final String password;
+  private final String scopes;
   private final HttpClient httpClient;
   private final Clock clock;
   private AuthenticationSuccess authenticationResult;
   private Timer timer;
 
-  public static Optional<AuthenticationStrategy> optional(String username, String password, GatewayInfo gatewayInfo,
+  public static Optional<AuthenticationStrategy> optional(String username, String password, String scopes, GatewayInfo gatewayInfo,
       HttpClient httpClient, Clock clock) {
     if (username == null || password == null || gatewayInfo == null || httpClient == null) {
       return Optional.empty();
     } else {
-      return Optional.of(new JwtAuthentication(username, password, gatewayInfo, httpClient, clock));
+      return Optional.of(new JwtAuthentication(username, password, scopes, gatewayInfo, httpClient, clock));
     }
   }
 
-  public JwtAuthentication(String userName, String password, GatewayInfo gatewayInfo, HttpClient httpClient,
+  public static Optional<AuthenticationStrategy> optional(String username, String password, GatewayInfo gatewayInfo,
+      HttpClient httpClient, Clock clock) {
+        return optional(username, password, null, gatewayInfo, httpClient, clock);
+  }
+
+  public JwtAuthentication(String userName, String password, String scopes, GatewayInfo gatewayInfo, HttpClient httpClient,
       Clock clock) {
     this.userName = requireNonEmpty(userName, "Missing user name");
     this.password = requireNonEmpty(password, "Missing password");
     this.gatewayInfo = Objects.requireNonNull(gatewayInfo, "Missing gateway information");
     this.httpClient = Objects.requireNonNull(httpClient, "Missing HttpClient");
     this.clock = Objects.requireNonNull(clock, "Missing clock");
+    this.scopes = scopes;
     this.authenticationResult = null;
   }
 
-  public JwtAuthentication(String userName, String password, GatewayInfo gatewayInfo, HttpClient httpClient) {
-    this(userName, password, gatewayInfo, httpClient, new DefaultClock());
+  public JwtAuthentication(String userName, String password, GatewayInfo gatewayInfo, HttpClient httpClient,
+      Clock clock) {
+    this(userName, password, null, gatewayInfo, httpClient, clock);
   }
+
+  public JwtAuthentication(String userName, String password, String scopes, GatewayInfo gatewayInfo, HttpClient httpClient) {
+    this(userName, password, scopes, gatewayInfo, httpClient, new DefaultClock());
+  }
+
+  public JwtAuthentication(String userName, String password, GatewayInfo gatewayInfo, HttpClient httpClient) {
+    this(userName, password, null, gatewayInfo, httpClient, new DefaultClock());
+  }
+
 
   private String requireNonEmpty(String value, String message) {
     if (StringUtils.isBlank(value)) {
@@ -84,7 +101,7 @@ public final class JwtAuthentication implements AuthenticationStrategy {
   }
 
   private AuthenticationSuccess fetchAuthentication() {
-    return postToGateway("grant_type=password&username=" + userName + "&password=" + password);
+    return postToGateway("grant_type=password&username=" + userName + "&password=" + password + getScopesParam());
   }
 
   private void startRefreshingTimer(long expiresInMilliseconds) {
@@ -95,7 +112,15 @@ public final class JwtAuthentication implements AuthenticationStrategy {
 
   private void refreshAuthentication() {
     authenticationResult = postToGateway("grant_type=refresh_token&refresh_token="
-        + authenticationResult.getRefreshToken());
+        + authenticationResult.getRefreshToken() + getScopesParam());
+  }
+
+  private String getScopesParam() {
+    if (this.scopes == null || this.scopes.isEmpty()) {
+      return "";
+    } else {
+      return "&scope=" + this.scopes;
+    }
   }
 
   private AuthenticationSuccess postToGateway(String payload) {

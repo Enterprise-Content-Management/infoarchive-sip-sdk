@@ -41,6 +41,7 @@ public class PropertiesBasedArchiveConnection extends ArchiveConnection implemen
     setBillboardUri(configuration.get(SERVER_URI));
     setClientId(configuration.get(SERVER_CLIENT_ID));
     setClientSecret(configuration.get(SERVER_CLIENT_SECRET));
+    setScopes(configuration.get(SERVER_SCOPES));
     setHttpClientClassName(configuration.get(HTTP_CLIENT_CLASSNAME));
     setProxyHost(configuration.get(PROXY_HOST));
     setProxyPort(configuration.get(PROXY_PORT));

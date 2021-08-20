@@ -34,6 +34,7 @@ public class ArchiveConnection {
   private String authenticationGateway;
   private String clientId;
   private String clientSecret;
+  private String scopes;
   private RestClient restClient;
 
   private String serverVersion;
@@ -109,6 +110,14 @@ public class ArchiveConnection {
 
   public void setClientId(String clientId) {
     this.clientId = clientId;
+  }
+
+  public String getScopes() {
+    return scopes;
+  }
+
+  public void setScopes(String scopes) {
+    this.scopes = scopes;
   }
 
   public String getClientSecret() {
