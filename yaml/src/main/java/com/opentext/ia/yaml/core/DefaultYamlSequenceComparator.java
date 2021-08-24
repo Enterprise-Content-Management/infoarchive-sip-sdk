@@ -15,7 +15,7 @@ public class DefaultYamlSequenceComparator implements Comparator<Object>, Serial
   private static final long serialVersionUID = 448436871382368502L;
 
   @Override
-  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @SuppressWarnings({ "unchecked" })
   public int compare(Object o1, Object o2) {
     if (o1 instanceof Map && o2 instanceof Map) {
       return compareMaps((Map<String, Object>)o1, (Map<String, Object>)o2);

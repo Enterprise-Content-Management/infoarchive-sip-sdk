@@ -1,7 +1,7 @@
 apply plugin: 'jacoco'
 
 jacoco {
-  toolVersion = '0.8.2'
+  toolVersion = '0.8.7'
 }
 
 ext.limits = [
@@ -12,7 +12,7 @@ ext.limits = [
 jacocoTestReport {
   dependsOn 'test'
   reports {
-    xml.enabled true
+    xml.required = true
   }
   doLast {
     def report = file("${jacoco.reportsDir}/test/jacocoTestReport.xml")

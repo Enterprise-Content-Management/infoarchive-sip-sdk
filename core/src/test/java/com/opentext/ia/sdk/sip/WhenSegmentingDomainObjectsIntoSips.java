@@ -5,6 +5,7 @@ package com.opentext.ia.sdk.sip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -16,9 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import com.opentext.ia.sdk.support.io.DomainObjectTooBigException;
 import com.opentext.ia.test.TestCase;
@@ -30,9 +29,6 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
       "poiuytrewqpoiuytrewq" };
   private SipSegmentationStrategy<String> strategy;
   private int expected;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void init() {
@@ -119,10 +115,11 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
     int maxSize = randomInt(50, 150);
     String[] contentObjects = randomStrings(randomInt(4, 8));
     if (sizeOf(contentObjects) > maxSize) {
-      expectedException.expect(DomainObjectTooBigException.class);
+      assertThrows(DomainObjectTooBigException.class,
+          () -> assertSegmentByProspectiveSipSize(maxSize, contentObjects));
+    } else {
+      assertSegmentByProspectiveSipSize(maxSize, contentObjects);
     }
-
-    assertSegmentByProspectiveSipSize(maxSize, contentObjects);
   }
 
   private String[] randomStrings(int numStrings) {

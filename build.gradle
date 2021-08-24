@@ -7,16 +7,18 @@ buildscript {
   }
   if (!project.hasProperty('compileOnly')) {
     dependencies {
-      classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.20.0'
-      classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7.0.1622'
-      classpath 'gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.9'
+      classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0'
+      classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3'
     }
   }
 }
 
 plugins {
-  id 'com.github.ben-manes.versions' version '0.20.0'
+  id 'com.github.ben-manes.versions' version '0.39.0'
+  id 'com.github.spotbugs' version '4.7.3' apply false
 }
+
+ext.SpotBugsTask = com.github.spotbugs.snom.SpotBugsTask
 
 allprojects {
   repositories {
@@ -31,7 +33,7 @@ apply plugin: 'idea'
 
 
 subprojects {
-  apply plugin: 'java'
+  apply plugin: 'java-library'
   apply plugin: 'distribution'
 
   configurations {
@@ -55,7 +57,7 @@ subprojects {
     xmlunit
     yaml
 
-    testCompile.extendsFrom awaitility, junit, mockito, xmlunit
+    testImplementation.extendsFrom awaitility, junit, mockito, xmlunit
   }
 
   dependencies {
@@ -79,10 +81,10 @@ subprojects {
     xmlunit "org.xmlunit:xmlunit-core:$xmlunitVersion"
     yaml "org.yaml:snakeyaml:$snakeYamlVersion"
 
-    compile 'com.google.code.findbugs:jsr305:3.0.2',
+    api 'com.google.code.findbugs:jsr305:3.0.2',
             'com.sun.xml.bind:jaxb-core:2.3.0',
-            'javax.xml.bind:jaxb-api:2.3.0',
-            'com.sun.xml.bind:jaxb-impl:2.3.0'
+            'javax.xml.bind:jaxb-api:2.3.1',
+            'com.sun.xml.bind:jaxb-impl:2.3.2'
   }
 
   tasks.withType(JavaCompile) {
@@ -118,7 +120,7 @@ subprojects {
     apply plugin: 'checkstyle'
     checkstyle {
       configFile = rootProject.file('config/checkstyle.xml')
-      toolVersion = '8.10'
+      toolVersion = '8.45.1'
       ignoreFailures = false
     }
   
@@ -140,33 +142,32 @@ subprojects {
     pmd {
       ruleSets = []
       ruleSetFiles = rootProject.files('config/pmd.xml')
-      toolVersion = '6.10.0'
+      toolVersion = '6.37.0'
       ignoreFailures = false
     }
   
     apply plugin: 'com.github.spotbugs'
 
     dependencies {
-      spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.8.0',
-        'com.mebigfatguy.fb-contrib:fb-contrib:7.4.3'
+      spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.11.0',
+        'com.mebigfatguy.fb-contrib:fb-contrib:7.4.7'
     }
     
     spotbugs {
       reportLevel = 'low'
-      toolVersion = '3.1.10'
+      toolVersion = '4.2.1'
       ignoreFailures = false
       effort = 'max'
       excludeFilter = rootProject.file('config/spotbugs_filter.xml')
     }
     
-    tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    tasks.withType(SpotBugsTask) {
       reports {
         html {
           enabled = true
         }
         xml {
-          withMessages = true
-          enabled = !html.enabled
+          enabled = true
         }
       }
     }
@@ -180,6 +181,12 @@ subprojects {
       defaultOutputDir = file('classes')
       file.whenMerged { classpath ->
         classpath.entries.removeAll { it.kind == 'lib' && it.path.contains("/$buildDir.name/") }
+
+        classpath.entries.findAll {
+          it instanceof org.gradle.plugins.ide.eclipse.model.ProjectDependency
+        }.each { entry ->
+          entry.entryAttributes.without_test_code = project.name.endsWith('-yaml')
+        }
       }
     }
   
@@ -192,7 +199,7 @@ subprojects {
         from(jar) {          
           into 'libs'
         }
-        from(configurations.runtime) {
+        from(configurations.runtimeClasspath) {
           into 'libs'
         }
       }
@@ -203,7 +210,7 @@ subprojects {
 if (!project.hasProperty('compileOnly')) {
   apply plugin: 'codenarc'
   
-  codenarc { toolVersion = '1.1' }
+  codenarc { toolVersion = '1.6.1' }
   
   task codenarc(type: CodeNarc) {
     mustRunAfter 'clean'
@@ -212,11 +219,11 @@ if (!project.hasProperty('compileOnly')) {
     reports {
       html {
         destination = rootProject.file('build/reports/codenarc.html')
-        enabled = true
+        required = true
       }
       xml {
         destination = rootProject.file('build/results/codenarc.xml')
-        enabled = true
+        required = true
       }
     }
   
@@ -231,30 +238,30 @@ if (!project.hasProperty('compileOnly')) {
 
 project(':infoarchive-configuration') {
   configurations {
-    compile.extendsFrom commonsIo, evoInflector, json
+    api.extendsFrom commonsIo, evoInflector, json
   }
 }
 
 
 project(':infoarchive-yaml') {
   configurations {
-    compile.extendsFrom commonsIo, commonsLang, evoInflector, yaml
+    api.extendsFrom commonsIo, commonsLang, evoInflector, yaml
   }
   dependencies {
-    compile project(':infoarchive-configuration')
+    api project(':infoarchive-configuration')
   }
 }
 
 
 project(':infoarchive-sdk-core') {
   configurations {
-    compile.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, commonsLang, evoInflector, 
+    api.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, commonsLang, evoInflector, 
         httpclient, httpmime, jacksonCore, jacksonDatabind, semVer, validation, yaml
   }
   
   dependencies {
-    compile project(':infoarchive-yaml')
-    testCompile project(':infoarchive-yaml').sourceSets.test.output
+    api project(':infoarchive-yaml')
+    testImplementation project(':infoarchive-yaml').sourceSets.test.output
   }
 
   javadoc {
@@ -269,13 +276,13 @@ project(':infoarchive-sdk-core') {
 project(':infoarchive-sdk-stringtemplate') {
   configurations {
     stringtemplate
-    compile.extendsFrom stringtemplate
+    api.extendsFrom stringtemplate
   }
 
   dependencies {
     stringtemplate "org.antlr:ST4:$stringTemplateVersion"
-    compile project(':infoarchive-sdk-core')
-    testCompile project(':infoarchive-yaml').sourceSets.test.output
+    api project(':infoarchive-sdk-core')
+    testImplementation project(':infoarchive-yaml').sourceSets.test.output
   }
 }
 
@@ -283,18 +290,22 @@ project(':infoarchive-sdk-stringtemplate') {
 project(':infoarchive-sdk-velocity') {
   configurations {
     velocity
-    compile.extendsFrom commonsCollections, velocity
+    api.extendsFrom commonsCollections, velocity
   }
 
   dependencies {
     velocity "org.apache.velocity:velocity-engine-core:$velocityVersion"
-    compile project(':infoarchive-sdk-core')
-    testCompile project(':infoarchive-yaml').sourceSets.test.output
+    api project(':infoarchive-sdk-core')
+    testImplementation project(':infoarchive-yaml').sourceSets.test.output
   }
 }
 
 
 defaultTasks 'build'
+
+task check {
+  dependsOn subprojects*.tasks*.check
+}
 
 if (!project.hasProperty('compileOnly')) {
   apply from: rootProject.file('publish.gradle')

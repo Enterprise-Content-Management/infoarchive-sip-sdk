@@ -48,7 +48,6 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
       new YamlConfiguration("version: 1.0.0"), (yaml, conn) -> clientSideConfigurer);
 
   @Before
-  @SuppressWarnings("unchecked")
   public void init() throws IOException {
     connection.setRestClient(new RestClient(httpClient));
   }

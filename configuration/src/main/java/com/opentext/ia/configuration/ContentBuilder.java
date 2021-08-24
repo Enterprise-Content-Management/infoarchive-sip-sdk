@@ -37,7 +37,6 @@ public class ContentBuilder<P extends ContentObjectBuilder<?, P, ?>> {
    * @param content the content to add
    * @return this builder
    */
-  @SuppressWarnings("unchecked")
   public ContentBuilder<P> as(String content) {
     this.text = content;
     return this;

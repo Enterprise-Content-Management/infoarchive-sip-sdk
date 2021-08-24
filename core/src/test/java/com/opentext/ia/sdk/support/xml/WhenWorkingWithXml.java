@@ -4,6 +4,7 @@
 package com.opentext.ia.sdk.support.xml;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,9 +14,7 @@ import java.nio.charset.StandardCharsets;
 import javax.validation.ValidationException;
 import javax.xml.XMLConstants;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.w3c.dom.Document;
 
 import com.opentext.ia.test.TestCase;
@@ -33,9 +32,6 @@ public class WhenWorkingWithXml extends TestCase {
           + "  </child>" + NL
           + "</parent>" + NL;
   private static final String CDATA_VALUE = "characters !&<>*\\n[[]] with markup";
-
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
 
   @Test
   public void shouldPrettyPrintDocument() {
@@ -115,16 +111,16 @@ public class WhenWorkingWithXml extends TestCase {
     Document document = XmlBuilder.newDocument().element(randomString(8)).build();
     Document schema = someSchema(randomString(8));
 
-    thrown.expect(ValidationException.class);
-    XmlUtil.validate(toStream(document), toStream(schema), randomString());
+    assertThrows(ValidationException.class,
+        () -> XmlUtil.validate(toStream(document), toStream(schema), randomString()));
   }
 
   @Test
   public void shouldThrowExceptionOnInvalidSchemaWhenValidating() throws IOException {
     Document document = XmlBuilder.newDocument().element(randomString(8)).build();
 
-    thrown.expect(ValidationException.class);
-    XmlUtil.validate(toStream(document), toStream(document), randomString());
+    assertThrows(ValidationException.class,
+        () -> XmlUtil.validate(toStream(document), toStream(document), randomString()));
   }
 
   @Test

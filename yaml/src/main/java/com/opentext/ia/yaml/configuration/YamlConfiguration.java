@@ -29,7 +29,7 @@ import com.opentext.ia.yaml.resource.ResourcesResolver;
  * InfoArchive server configuration in YAML format.
  * @since 6.0.0
  */
-@SuppressWarnings({ "unchecked", "PMD.CouplingBetweenObjects" })
+@SuppressWarnings({ "PMD.CouplingBetweenObjects" })
 public class YamlConfiguration {
 
   private static final Collection<Class<? extends Visitor>> YAML_NORMALIZATION_CLASSES = Arrays.asList(

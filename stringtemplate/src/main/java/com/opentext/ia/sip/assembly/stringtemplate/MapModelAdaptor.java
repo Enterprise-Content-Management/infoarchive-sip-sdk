@@ -10,12 +10,13 @@ import org.stringtemplate.v4.ModelAdaptor;
 import org.stringtemplate.v4.ST;
 
 
-class MapModelAdaptor implements ModelAdaptor {
+@SuppressWarnings("rawtypes")
+class MapModelAdaptor implements ModelAdaptor<Map> {
 
   @Override
-  @SuppressWarnings("rawtypes")
-  public Object getProperty(Interpreter interpreter, ST template, Object model, Object property, String propertyName) {
-    return ((Map)model).get(propertyName);
+  public Object getProperty(Interpreter interpreter, ST template, Map model, Object property,
+      String propertyName) {
+    return model.get(propertyName);
   }
 
 }

@@ -2,9 +2,9 @@ apply plugin: 'application'
 mainClassName = 'com.opentext.ia.sdk.sample.multiaiu.MultipleDomainObjectsSingleSerialization'
 
 configurations {
-  compile.extendsFrom jacksonDatabindXml
+  implementation.extendsFrom jacksonDatabindXml
 }
 
 dependencies {
-  compile project(':infoarchive-sdk-core')
+  implementation project(':infoarchive-sdk-core')
 }

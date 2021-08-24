@@ -13,12 +13,12 @@ import org.stringtemplate.v4.AttributeRenderer;
 import com.opentext.ia.sdk.support.datetime.Dates;
 
 
-class XmlDateRenderer implements AttributeRenderer {
+class XmlDateRenderer implements AttributeRenderer<Date> {
 
   @Nullable
   @Override
-  public String toString(Object o, String formatString, Locale locale) {
-    return Dates.toIso((Date)o);
+  public String toString(Date o, String formatString, Locale locale) {
+    return Dates.toIso(o);
   }
 
 }

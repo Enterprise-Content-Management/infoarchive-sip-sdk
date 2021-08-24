@@ -1,148 +1,125 @@
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
-apply plugin: 'io.codearte.nexus-staging'
-
 ext.publishProjects = subprojects.findAll { it.name.startsWith('infoarchive-') }
 
-publishing {
-  publications {
-    subprojects.findAll { it.name.startsWith('infoarchive-') }.each { prj ->
-      "$prj.name"(MavenPublication) {
-        groupId = prj.group
-        artifactId = prj.name
-        from prj.components.java
-      }
-    }
-  }
-}
+configure(publishProjects) {
+  apply plugin: 'maven-publish'
+  apply plugin: 'signing'
 
-nexusStaging {
-  packageGroup = 'com.opentext'
-}
-
-// OSSRH requires both javadoc and sources jars
-publishProjects.each { prj ->
-  prj.task('javadocJar', type: Jar) {
-    from prj.javadoc
+  // OSSRH requires both javadoc and sources jars
+  task javadocJar(type: Jar) {
+    from javadoc
     classifier 'javadoc'
   }
-  
-  prj.task('sourcesJar', type: Jar) {
-    from prj.sourceSets.main.allSource
+    
+  task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
     classifier 'sources'
   }
-  
-  prj.assemble.dependsOn prj.sourcesJar, prj.javadocJar
-  
+    
+  assemble.dependsOn sourcesJar, javadocJar
+    
   artifacts {
-    archives prj.jar, prj.javadocJar, prj.sourcesJar
+    archives jar, javadocJar, sourcesJar
+  }
+    
+  task installLocally {
+    dependsOn jar
+
+    doLast {
+        """mvn install:install-file \
+  -Dfile=$jar.archivePath \
+  -DgroupId=$group \
+  -DartifactId=$name \
+  -Dversion=$version \
+  -Dpackaging=jar""".execute()
+    }
   }
   
+  // Set nexusUsername/Password in ~/.gradle/gradle.properties or specify on command line using -P
+  ext {
+    ossrhUsername = project.hasProperty('nexusUsername') ? nexusUsername : ''
+    ossrhPassword = project.hasProperty('nexusPassword') ? nexusPassword : ''
+  }
   
-  prj.task('installLocally') {
-    dependsOn prj.jar
-    doLast {
-      """mvn install:install-file \
--Dfile=$prj.jar.archivePath \
--DgroupId=$prj.group \
--DartifactId=$prj.name \
--Dversion=$version \
--Dpackaging=jar""".execute()
-    }
-  }  
-}
-
-// OSSRH also requires everything to be signed
-signing {
-  required { gradle.taskGraph.hasTask('uploadArchives') }
-  sign configurations.archives
-}
-
-// Set nexusUsername/Password in ~/.gradle/gradle.properties or specify on command line using -P
-ext {
-  ossrhUsername = project.hasProperty('nexusUsername') ? nexusUsername : ''
-  ossrhPassword = project.hasProperty('nexusPassword') ? nexusPassword : ''
-}
-
-uploadArchives {
-  finalizedBy closeAndReleaseRepository
-  repositories {
-    mavenDeployer {
-      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-      repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
-      }
-
-      snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
-      }
-      
-      publishProjects.each { prj ->
-        // Separate out artifacts
-        addFilter(prj.name) { artifact, file ->
-          artifact.name == prj.name
+  publishing {
+    repositories {
+      maven {
+        def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+        def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+        url = project.version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+  
+        credentials {
+          username = ossrhUsername
+          password = ossrhPassword
         }
-        
-        pom(prj.name) {
+      }
+    }
+  
+    publications {
+      mavenJava(MavenPublication) {
+        groupId = project.group
+        artifactId = project.name
+
+        pom {
           // OSSRH also requires certain info in the POM
-          project {
-            name prj.name
-            description prj.description
-            packaging 'jar'
-            url 'https://github.com/Enterprise-Content-Management/infoarchive-sdk'
-    
-            scm {
-              connection 'https://github.com/Enterprise-Content-Management/infoarchive-sdk.git'
-              developerConnection 'https://github.com/Enterprise-Content-Management/infoarchive-sdk.git'
-              url 'https://github.com/Enterprise-Content-Management/infoarchive-sdk.git'
-            }
-    
-            licenses {
-              license {
-                name 'Mozilla Public License Version 2.0'
-                url 'https://www.mozilla.org/en-US/MPL/2.0/'
-              }
-            }
-    
-            developers {
-              developer {
-                id = 'ray'
-                name = 'Remon Sinnema'
-                organization = 'OpenText'
-                email = 'rsinnema@opentext.com'
-                timezone = 'Europe/Amsterdam'
-              }
-            }
-            
-            contributors {
-              contributor {
-                name = 'Chandramouli Addaguduru'
-                organization = 'OpenText'
-              }
-              contributor {
-                name = 'Roman Kochkar'
-                organization = 'Saint Petersburg State University'
-              }
-              contributor {
-                name = 'Artem Kovalev'
-                organization = 'OpenText'
-              }
-              contributor {
-                name = 'Erik Silkensen'
-                organization = 'Flatirons Solutions'
-              }
-              contributor {
-                name = 'Domanic Smith-Jones'
-                organization = 'OpenText'
-              }
-              contributor {
-                name = 'Tord Svensson'
-                organization = 'Dell Technologies'
-              }
+          name = project.name
+          description = project.description
+          packaging = 'jar'
+          url = 'https://github.com/Enterprise-Content-Management/infoarchive-sdk'
+
+          scm {
+            connection = 'https://github.com/Enterprise-Content-Management/infoarchive-sdk.git'
+            developerConnection = 'https://github.com/Enterprise-Content-Management/infoarchive-sdk.git'
+            url = 'https://github.com/Enterprise-Content-Management/infoarchive-sdk.git'
+          }
+  
+          licenses {
+            license {
+              name = 'Mozilla Public License Version 2.0'
+              url = 'https://www.mozilla.org/en-US/MPL/2.0/'
             }
           }
+
+          developers {
+            developer {
+  //                id = 'ray'
+  //                name = 'Remon Sinnema'
+  //                email = 'rsinnema@opentext.com'
+  //                timezone = 'Europe/Amsterdam'
+              organization = 'OpenText'
+            }
+          }
+          
+          contributors {
+            contributor {
+              name = 'Remon Sinnema'
+              organization = 'OpenText'
+            }
+            contributor {
+              name = 'Chandramouli Addaguduru'
+              organization = 'OpenText'
+            }
+            contributor {
+              name = 'Roman Kochkar'
+              organization = 'Saint Petersburg State University'
+            }
+            contributor {
+              name = 'Artem Kovalev'
+              organization = 'OpenText'
+            }
+            contributor {
+              name = 'Erik Silkensen'
+              organization = 'Flatirons Solutions'
+            }
+            contributor {
+              name = 'Domanic Smith-Jones'
+              organization = 'OpenText'
+            }
+            contributor {
+              name = 'Tord Svensson'
+              organization = 'Dell Technologies'
+            }
+          }
+
           // For some reason the dependencies don't come across, so do it manually
           withXml { 
             def dependenciesNode = asNode().appendNode('dependencies')
@@ -157,4 +134,22 @@ uploadArchives {
       }
     }
   }
+  
+  // OSSRH also requires everything to be signed
+  signing {
+    required { gradle.taskGraph.hasTask('publish') }
+    sign configurations.archives
+    sign publishing.publications.mavenJava
+  }
+}
+
+apply plugin: 'io.codearte.nexus-staging'
+
+nexusStaging {
+  packageGroup = 'com.opentext'
+}
+
+task publish {
+  dependsOn publishProjects*.tasks*.publish
+  finalizedBy closeAndReleaseRepository
 }

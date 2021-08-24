@@ -2,5 +2,5 @@ apply plugin: 'application'
 mainClassName = 'com.opentext.ia.sdk.sample.authenticate.Authenticate'
 
 dependencies {
-  compile project(':infoarchive-sdk-core')
+  implementation project(':infoarchive-sdk-core')
 }

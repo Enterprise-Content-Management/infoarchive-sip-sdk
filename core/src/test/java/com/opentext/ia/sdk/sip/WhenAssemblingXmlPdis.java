@@ -3,6 +3,8 @@
  */
 package com.opentext.ia.sdk.sip;
 
+import static org.junit.Assert.assertThrows;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,9 +14,7 @@ import java.util.Map;
 
 import javax.xml.XMLConstants;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import com.opentext.ia.sdk.support.io.MemoryBuffer;
 import com.opentext.ia.sdk.support.xml.XmlBuilder;
@@ -24,13 +24,9 @@ import com.opentext.ia.test.TestCase;
 
 public class WhenAssemblingXmlPdis extends TestCase {
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
-
   @Test
   public void shouldValidateWhenSchemaIsProvided() throws IOException {
-    thrown.expect(IOException.class);
-    assemblePdi(testSchema());
+    assertThrows(IOException.class, () -> assemblePdi(testSchema()));
   }
 
   private void assemblePdi(InputStream schema) throws IOException {

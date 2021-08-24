@@ -5,6 +5,7 @@ package com.opentext.ia.configuration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -21,9 +22,7 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import com.opentext.ia.configuration.json.JsonConfiguration;
 import com.opentext.ia.configuration.json.JsonConfigurationProducer;
@@ -75,8 +74,6 @@ public class WhenBuildingConfigurations {
   private static final String CONTENT1 = "foo";
   private static final String CONTENT2 = "bar";
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
   private final ConfigurationProducer<JsonConfiguration> producer = new JsonConfigurationProducer();
   private final ConfigurationBuilder<JsonConfiguration> builder = new ConfigurationBuilder<>(producer);
 
@@ -174,9 +171,8 @@ public class WhenBuildingConfigurations {
 
   @Test
   public void shouldThrowExceptionWhenAskedForMissingItem() {
-    thrown.expect(IllegalArgumentException.class);
-
-    builder.withTenant().build().getApplication();
+    assertThrows(IllegalArgumentException.class,
+        () -> builder.withTenant().build().getApplication());
   }
 
   @Test

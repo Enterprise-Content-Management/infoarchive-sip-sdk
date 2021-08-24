@@ -104,7 +104,7 @@ public class StringTemplate<D> extends FixedHeaderAndFooterTemplate<D> {
    * @param type The domain object class
    * @param adaptor The adaptor that will be used to extract properties of objects of type S
    */
-  protected <S> void registerAdaptor(STGroup group, Class<S> type, ModelAdaptor adaptor) {
+  protected <S> void registerAdaptor(STGroup group, Class<S> type, ModelAdaptor<S> adaptor) {
     group.registerModelAdaptor(type, adaptor);
   }
 
@@ -115,7 +115,7 @@ public class StringTemplate<D> extends FixedHeaderAndFooterTemplate<D> {
    * @param type The domain object class
    * @param attributeRenderer The renderer that will be used to render objects of type S into a String
    */
-  protected <S> void registerRenderer(STGroup group, Class<S> type, AttributeRenderer attributeRenderer) {
+  protected <S> void registerRenderer(STGroup group, Class<S> type, AttributeRenderer<S> attributeRenderer) {
     group.registerRenderer(type, attributeRenderer);
   }
 

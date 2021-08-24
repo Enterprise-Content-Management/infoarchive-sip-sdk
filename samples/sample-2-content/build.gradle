@@ -2,7 +2,7 @@ apply plugin: 'application'
 mainClassName = 'com.opentext.ia.sdk.sample.assemble.FileArchiver'
 
 dependencies {
-  compile project(':infoarchive-sdk-core')
+  implementation project(':infoarchive-sdk-core')
 }
 
 ext {
@@ -19,7 +19,7 @@ task assembleSampleSip(type: JavaExec) {
   dependsOn prepareSampleDirectory
   
   classpath = sourceSets.main.runtimeClasspath
-  main = 'com.opentext.ia.sdk.sample.assemble.FileArchiver'
+  mainClass = mainClassName
   args sampleDir.path, sipFile.path
 }
 

@@ -4,23 +4,19 @@
 package com.opentext.ia.sdk.support;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import com.opentext.ia.test.RandomData;
-
 
 @SuppressWarnings("PMD.LooseCoupling")
 public class WhenCreatingNewTypesFromConfiguration {
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
   private final RandomData random = new RandomData();
 
   @Test
@@ -29,8 +25,7 @@ public class WhenCreatingNewTypesFromConfiguration {
     Class<?> type = HashMap.class;
     Map<String, String> configuration = Collections.singletonMap(option, type.getName());
 
-    Map<?, ?> instance = NewInstance.fromConfiguration(configuration, option, null)
-      .as(Map.class);
+    Map<?, ?> instance = NewInstance.fromConfiguration(configuration, option, null).as(Map.class);
 
     assertEquals("Type", type, instance.getClass());
   }
@@ -39,8 +34,8 @@ public class WhenCreatingNewTypesFromConfiguration {
   public void shouldReturnInstanceOfDefaultClassWhenConfigurationIsMissing() {
     Class<?> type = HashMap.class;
 
-    Map<?, ?> instance = NewInstance.fromConfiguration(Collections.emptyMap(), "", type.getName())
-      .as(Map.class);
+    Map<?, ?> instance =
+        NewInstance.fromConfiguration(Collections.emptyMap(), "", type.getName()).as(Map.class);
 
     assertEquals("Type", type, instance.getClass());
   }
@@ -50,9 +45,8 @@ public class WhenCreatingNewTypesFromConfiguration {
     String option = random.string(16);
     Class<Integer> type = Integer.class;
 
-    thrown.expect(RuntimeException.class);
-    NewInstance.fromConfiguration(Collections.singletonMap(option, type.getName()), option, null)
-      .as(type);
+    assertThrows(RuntimeException.class,
+        () ->  NewInstance.fromConfiguration(Collections.singletonMap(option, type.getName()), option, null)
+        .as(type));
   }
-
 }

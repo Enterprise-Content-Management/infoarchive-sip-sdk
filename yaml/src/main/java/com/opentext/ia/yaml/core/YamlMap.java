@@ -218,6 +218,7 @@ public class YamlMap {
     removeRecursively(data, keyToRemove, null, parentAttributesToRemoveFrom);
   }
 
+  @SuppressWarnings("rawtypes")
   private void removeRecursively(Map<String, Object> map, String keyToRemove, String parentKeyName, List<String> parentAttributesToRemoveFrom) {
     if (parentKeyName == null || parentAttributesToRemoveFrom != null && parentAttributesToRemoveFrom.contains(parentKeyName)) {
       map.remove(keyToRemove);
@@ -233,6 +234,7 @@ public class YamlMap {
         });
   }
 
+  @SuppressWarnings("rawtypes")
   private void removeRecursivelyListItem(Object item, String keyToRemove, String parentKeyName, List<String> parentAttributesToRemoveFrom) {
     if (item instanceof Map) {
       removeRecursively((Map)item, keyToRemove, parentKeyName, parentAttributesToRemoveFrom);

@@ -100,7 +100,7 @@ public class ContentAssemblerDefault<D> implements ContentAssembler<D> {
     final HashAssembler hashAssembler = getContentHashAssembler();
     synchronized (hashAssembler) {
       hashAssembler.initialize();
-      IOStreams.copy(stream, new NullOutputStream(), BUFFER_SIZE, hashAssembler);
+      IOStreams.copy(stream, NullOutputStream.NULL_OUTPUT_STREAM, BUFFER_SIZE, hashAssembler);
       return hashAssembler.get();
     }
   }

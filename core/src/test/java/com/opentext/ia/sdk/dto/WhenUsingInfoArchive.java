@@ -29,9 +29,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatchers;
 import org.mockito.stubbing.OngoingStubbing;
 
@@ -78,8 +76,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private static final String NAMESPACE = "urn:SoMeNaMeSpAcE";
   private static final String SOURCE = "This is the source of my input stream";
 
-  @Rule
-  public final ExpectedException thrown = ExpectedException.none();
   private final Map<String, Link> links = new HashMap<>();
   private final Map<String, String> configuration = new HashMap<>();
   private final RestClient restClient = mock(RestClient.class);
@@ -456,7 +452,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.refresh(collection)).thenReturn(collection);
   }
 
-  @SuppressWarnings("unchecked")
   @Test(expected = RuntimeIoException.class)
   public void shouldWrapExceptionDuringConfiguration() throws IOException {
     when(restClient.get(BILLBOARD_URI, Services.class)).thenThrow(IOException.class);
@@ -572,8 +567,6 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   @Test
   public void configure() throws IOException {
     configureServer();
-
-    // Verify no exceptions are thrown
   }
 
   @Test

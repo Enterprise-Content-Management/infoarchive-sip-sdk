@@ -60,7 +60,6 @@ public class ConfigurationObject {
     properties.put(name, toJsonValue(value));
   }
 
-  @SuppressWarnings("rawtypes")
   private Object toJsonValue(Object value) {
     if (value == null) {
       return JSONObject.NULL;
