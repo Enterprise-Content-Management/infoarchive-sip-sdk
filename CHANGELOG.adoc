@@ -10,6 +10,7 @@ http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 - Third party dependency upgrades for all libraries
 - Gradle 7.2
 - Code changes to match the new Gradle and third party libraries
+- Fix issues reported by latest static code analysis
 
 == 12.4.2 - 2021-08-20
 
