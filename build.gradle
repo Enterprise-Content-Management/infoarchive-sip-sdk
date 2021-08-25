@@ -85,6 +85,7 @@ subprojects {
             'com.sun.xml.bind:jaxb-core:2.3.0',
             'javax.xml.bind:jaxb-api:2.3.1',
             'com.sun.xml.bind:jaxb-impl:2.3.2'
+    compileOnlyApi 'com.github.spotbugs:spotbugs-annotations:4.4.0'
   }
 
   tasks.withType(JavaCompile) {
@@ -129,7 +130,7 @@ subprojects {
     tasks.withType(Checkstyle).each { checkstyleTask ->
       checkstyleTask.doLast {
         reports.all { report ->
-          def outputFile = report.destination
+          def outputFile = report.outputLocation.asFile.get()
           if (outputFile.exists() && outputFile.text.contains('<error ')) {
             throw new GradleException("Found checkstyle issues in $outputFile")
           }
@@ -213,16 +214,16 @@ if (!project.hasProperty('compileOnly')) {
   codenarc { toolVersion = '1.6.1' }
   
   task codenarc(type: CodeNarc) {
-    mustRunAfter 'clean'
+    mustRunAfter allprojects*.tasks*.findByPath('clean') - null
     configFile = file('config/codenarc.groovy')
   
     reports {
       html {
-        destination = rootProject.file('build/reports/codenarc.html')
+        outputLocation = rootProject.file('build/reports/codenarc.html')
         required = true
       }
       xml {
-        destination = rootProject.file('build/results/codenarc.xml')
+        outputLocation = rootProject.file('build/results/codenarc.xml')
         required = true
       }
     }

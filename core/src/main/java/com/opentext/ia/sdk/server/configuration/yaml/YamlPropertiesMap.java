@@ -16,8 +16,12 @@ import org.atteo.evo.inflector.English;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 
 @SuppressWarnings({ "PMD.TooManyMethods", "PMD.UseObjectForClearerAPI", "deprecation" })
+@SuppressFBWarnings(value = "IMC_IMMATURE_CLASS_BAD_SERIALVERSIONUID",
+    justification = "backward compatiblity")
 class YamlPropertiesMap extends HashMap<String, String>
     implements com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties {
 

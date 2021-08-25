@@ -383,7 +383,7 @@ public class YamlMap {
   }
 
   private void sortList(Map<String, Object> map, Comparator<String> comparator, Predicate<String> entriesFilter,
-      String key, List<?> list) {
+      String key, Collection<?> list) {
     List<Object> sortedList = new ArrayList<>(list);
     ListContent content = new ListContent();
     for (int i = 0; i < sortedList.size(); i++) {

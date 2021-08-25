@@ -47,7 +47,7 @@ class YamlSyntaxErrorPrettifier  {
     try (BufferedReader reader = new BufferedReader(new StringReader(text))) {
       do {
         result = reader.readLine();
-      } while (linesToGo-- > 0);
+      } while (linesToGo-- > 0); // NOPMD
     }
     return Optional.ofNullable(result).map(YamlLine::parse);
   }

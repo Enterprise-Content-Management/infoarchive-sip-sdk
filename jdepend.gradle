@@ -10,7 +10,7 @@ buildscript {
 import jdepend.framework.JDepend
 
 task jdepend {
-  enabled = !sourceSets.main.allJava.isEmpty()
+  enabled = !sourceSets.main.allJava.empty
   inputs.files sourceSets.main.output
   doLast {
     JDepend jdepend = new JDepend()

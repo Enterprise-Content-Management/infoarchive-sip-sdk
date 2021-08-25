@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 
-import com.opentext.ia.sdk.support.io.IOStreams;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
 /**
@@ -32,12 +31,10 @@ public abstract class FixedHeaderAndFooterTemplate<D> implements Template<D> {
   }
 
   protected static String toString(InputStream stream) {
-    try {
-      return IOUtils.toString(stream, StandardCharsets.UTF_8);
+    try (InputStream streamToClose = stream) {
+      return IOUtils.toString(streamToClose, StandardCharsets.UTF_8);
     } catch (IOException e) {
       throw new RuntimeIoException(e);
-    } finally {
-      IOStreams.close(stream);
     }
   }
 

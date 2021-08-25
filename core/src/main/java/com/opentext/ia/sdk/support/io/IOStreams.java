@@ -44,7 +44,7 @@ public final class IOStreams {
   }
 
   public static void close(Closeable... closeables) {
-    for (Closeable closeable : closeables) {
+    for (Closeable closeable : closeables) { // NOPMD false positive
       if (closeable == null) {
         continue;
       }

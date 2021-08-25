@@ -52,7 +52,7 @@ public class YamlMapConfigurationProducer implements ConfigurationProducer<YamlM
 
   private Object jsonToYaml(Object value) {
     Object result;
-    if (value == JSONObject.NULL) {
+    if (JSONObject.NULL.equals(value)) {
       result = null;
     } else if (value instanceof JSONObject) {
       YamlMap subObject = new YamlMap();

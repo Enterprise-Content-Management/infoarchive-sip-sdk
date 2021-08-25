@@ -3,8 +3,8 @@
  */
 package com.opentext.ia.yaml.configuration;
 
+import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,7 +46,7 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
         .put(TEXT, xml);
   }
 
-  private String translateToXml(YamlMap root, Iterable<Value> items, List<Value> namespaces) {
+  private String translateToXml(YamlMap root, Iterable<Value> items, Collection<Value> namespaces) {
     StringBuilder result = new StringBuilder();
     startTagWithNamespaces(root, rootTag, namespaces, result);
     items.forEach(item -> {
@@ -60,7 +60,8 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
     return result.toString();
   }
 
-  private void startTagWithNamespaces(YamlMap root, String tag, List<Value> namespaces, StringBuilder xml) {
+  private void startTagWithNamespaces(YamlMap root, String tag, Collection<Value> namespaces,
+      StringBuilder xml) {
     if (namespaces.isEmpty()) {
       startTag(tag, "", EnumSet.allOf(StartTagOptions.class), xml);
     } else {
@@ -124,7 +125,8 @@ abstract class ReplaceYamlWithXmlContentVisitor extends YamlContentVisitor {
     return text.trim().replaceAll("<", "&lt;");
   }
 
-  private void appendList(String property, List<Value> items, String indent, StringBuilder xml) {
+  private void appendList(String property, Collection<Value> items, String indent,
+      StringBuilder xml) {
     startTag(property, indent, EnumSet.allOf(StartTagOptions.class), xml);
     items.stream()
         .map(Value::toMap)

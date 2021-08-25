@@ -38,10 +38,8 @@ public class WhenBufferingDataToFile extends TestCase {
   }
 
   private byte[] contentOf(InputStream stream) throws IOException {
-    try {
-      return IOUtils.toByteArray(stream);
-    } finally {
-      stream.close();
+    try (InputStream streamToClose = stream) {
+      return IOUtils.toByteArray(streamToClose);
     }
   }
 

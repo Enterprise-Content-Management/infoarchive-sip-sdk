@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ResultConfigurationHelper extends NamedLinkContainer {
 
-  private List<String> resultSchema = new ArrayList<String>();
+  private List<String> resultSchema = new ArrayList<>();
 
   public List<String> getResultSchema() {
     return resultSchema;

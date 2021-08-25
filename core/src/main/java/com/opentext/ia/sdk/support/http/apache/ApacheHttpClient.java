@@ -78,7 +78,8 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   public ApacheHttpClient(int maxHttpConnections, int maxConnectionsPerRoute) {
-    PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
+    // Closing is handled by the client
+    PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(); // NOPMD
     manager.setMaxTotal(maxHttpConnections);
     manager.setDefaultMaxPerRoute(maxConnectionsPerRoute);
     client = HttpClients.custom()
@@ -89,7 +90,8 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   public ApacheHttpClient(int maxHttpConnections, int maxConnectionsPerRoute, String proxyHost, int proxyPort) {
-    PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
+    // Closing is handled by the client
+    PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(); // NOPMD
     manager.setMaxTotal(maxHttpConnections);
     manager.setDefaultMaxPerRoute(maxConnectionsPerRoute);
     RequestConfig defaultRequestConfig = RequestConfig.custom()
@@ -137,7 +139,7 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   protected <T> T execute(HttpRequestBase request, ResponseFactory<T> factory) throws IOException {
-    CloseableHttpResponse httpResponse = client.execute(request);
+    CloseableHttpResponse httpResponse = client.execute(request); // NOPMD closing is handled
     Runnable closeResponse = () -> {
       IOStreams.close(httpResponse);
       request.releaseConnection();

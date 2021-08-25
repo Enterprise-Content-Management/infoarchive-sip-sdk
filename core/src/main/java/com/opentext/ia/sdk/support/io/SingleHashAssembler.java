@@ -8,13 +8,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 /**
  * Assemble a single hash.
  */
+@NotThreadSafe
 public class SingleHashAssembler extends NoHashAssembler {
 
   private final Encoding encoding;
-  private final MessageDigest digester;
+  private final MessageDigest digester; // NOPMD not thread safe
 
   /**
    * Assemble hashes using the default hash function and encoding.

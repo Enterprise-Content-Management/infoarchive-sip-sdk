@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.yaml.core;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
@@ -111,7 +112,7 @@ public class YamlDiff {
     return value.isEmpty() ? null : value.toString().trim();
   }
 
-  private void addMissing(ListIterator<Value> iterator, List<Value> list) {
+  private void addMissing(ListIterator<Value> iterator, Collection<Value> list) {
     while (iterator.hasNext()) {
       iterator.next();
       list.add(new Value(NO_VALUE));

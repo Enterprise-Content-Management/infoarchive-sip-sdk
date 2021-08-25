@@ -45,7 +45,7 @@ public class WhenWorkingWithQueryResult extends TestCase {
 
   @Test
   public void shouldCloseStreamAndDependentResource() throws IOException {
-    DefaultQueryResult result = newQueryResult();
+    DefaultQueryResult result = newQueryResult(); // NOPMD by design
     result.close();
     verify(stream).close();
     verify(dependentResource).close();

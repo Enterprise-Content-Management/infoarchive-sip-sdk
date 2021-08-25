@@ -33,7 +33,7 @@ public class WhenFetchingHomeResource {
 
     @Override
     public Map<String, Link> getLinks() {
-      Map<String, Link> result = new HashMap<String, Link>();
+      Map<String, Link> result = new HashMap<>();
 
       Link link = new Link();
       link.setHref("http://documentum.opentext.com/infoarchive/");

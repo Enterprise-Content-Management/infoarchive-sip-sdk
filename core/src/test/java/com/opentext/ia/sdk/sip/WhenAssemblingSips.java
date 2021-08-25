@@ -40,7 +40,6 @@ import com.opentext.ia.sdk.support.io.MemoryBuffer;
 import com.opentext.ia.sdk.support.io.NoHashAssembler;
 import com.opentext.ia.sdk.support.xml.XmlUtil;
 
-
 @SuppressWarnings("unchecked")
 public class WhenAssemblingSips extends XmlTestCase {
 
@@ -63,25 +62,28 @@ public class WhenAssemblingSips extends XmlTestCase {
     String id2 = randomString(8);
     List<? extends DigitalObject> digitalObjects1 =
         Arrays.asList(someContentDataObject(id1a), someContentDataObject(id1b));
-    List<? extends DigitalObject> digitalObjects2 = Collections.singletonList(someContentDataObject(id2));
+    List<? extends DigitalObject> digitalObjects2 =
+        Collections.singletonList(someContentDataObject(id2));
     when(contentsExtraction.apply(object1)).thenAnswer(invocation -> digitalObjects1.iterator());
     when(contentsExtraction.apply(object2)).thenAnswer(invocation -> digitalObjects2.iterator());
     HashAssembler contentHashAssembler = mock(HashAssembler.class);
     Collection<EncodedHash> hashes1a = Collections.singletonList(someHash());
     Collection<EncodedHash> hashes1b = Collections.singletonList(someHash());
     Collection<EncodedHash> hashes2 = Collections.singletonList(someHash());
-    Iterator<Collection<EncodedHash>> hashes = Arrays.asList(hashes1a, hashes1b, hashes2)
-      .iterator();
+    Iterator<Collection<EncodedHash>> hashes =
+        Arrays.asList(hashes1a, hashes1b, hashes2).iterator();
     when(contentHashAssembler.get()).thenAnswer(invocation -> hashes.next());
     long digitalObjectSize = randomInt(5, 255);
     when(contentHashAssembler.numBytesHashed()).thenReturn(digitalObjectSize);
     Map<String, ContentInfo> hashesById1 = new HashMap<>();
     hashesById1.put(id1a, new ContentInfo(id1a, hashes1a));
     hashesById1.put(id1b, new ContentInfo(id1b, hashes1b));
-    Map<String, ContentInfo> hashesById2 = Collections.singletonMap(id2, new ContentInfo(id2, hashes2));
+    Map<String, ContentInfo> hashesById2 =
+        Collections.singletonMap(id2, new ContentInfo(id2, hashes2));
     PackagingInformation packagingInformationPrototype = somePackagingInformation();
-    SipAssembler<Object> sipAssembler = SipAssembler.forPdiAndContentWithHashing(packagingInformationPrototype,
-        pdiAssembler, pdiHashAssembler, contentsExtraction, contentHashAssembler);
+    SipAssembler<Object> sipAssembler =
+        SipAssembler.forPdiAndContentWithHashing(packagingInformationPrototype, pdiAssembler,
+            pdiHashAssembler, contentsExtraction, contentHashAssembler);
     DataBuffer buffer = new MemoryBuffer();
 
     long time = System.currentTimeMillis();
@@ -109,35 +111,32 @@ public class WhenAssemblingSips extends XmlTestCase {
     assertEquals(SipMetrics.NUM_AIUS, 2, metrics.numAius());
     assertEquals(SipMetrics.NUM_DIGITAL_OBJECTS, 3, metrics.numDigitalObjects());
     assertEquals(SipMetrics.ASSEMBLY_TIME, time, metrics.assemblyTime(), DELTA_MS);
-    assertEquals(SipMetrics.SIZE_DIGITAL_OBJECTS, 3 * digitalObjectSize, metrics.digitalObjectsSize());
+    assertEquals(SipMetrics.SIZE_DIGITAL_OBJECTS, 3 * digitalObjectSize,
+        metrics.digitalObjectsSize());
     assertEquals(SipMetrics.SIZE_PDI, pdiSize, metrics.pdiSize());
-    long packagingInformationSize = getPackagingInformationSize(packagingInformationPrototype, 2, Optional.of(hash));
+    long packagingInformationSize =
+        getPackagingInformationSize(packagingInformationPrototype, 2, Optional.of(hash));
     assertEquals(SipMetrics.SIZE_SIP, pdiSize + 3 * digitalObjectSize + packagingInformationSize,
         metrics.sipSize());
     assertEquals(SipMetrics.SIZE_SIP_FILE, buffer.length(), metrics.sipFileSize());
   }
 
-  private long getPackagingInformationSize(PackagingInformation packagingInformationPrototype, long numAius,
-      Optional<EncodedHash> pdiHash) throws IOException {
+  private long getPackagingInformationSize(PackagingInformation packagingInformationPrototype,
+      long numAius, Optional<EncodedHash> pdiHash) throws IOException {
     InfoArchivePackagingInformationAssembler packagingInformationAssembler =
         new InfoArchivePackagingInformationAssembler();
     DataBuffer buffer = new MemoryBuffer();
     packagingInformationAssembler.start(buffer);
     packagingInformationAssembler
-      .add(new DefaultPackagingInformationFactory(packagingInformationPrototype).newInstance(numAius, pdiHash));
+        .add(new DefaultPackagingInformationFactory(packagingInformationPrototype)
+            .newInstance(numAius, pdiHash));
     packagingInformationAssembler.end();
     return buffer.length();
   }
 
   private PackagingInformation somePackagingInformation() {
-    return PackagingInformation.builder()
-      .dss()
-      .application(randomString(64))
-      .holding(randomString(64))
-      .schema(randomString(256))
-      .entity(randomString(64))
-      .end()
-      .build();
+    return PackagingInformation.builder().dss().application(randomString(64))
+        .holding(randomString(64)).schema(randomString(256)).entity(randomString(64)).end().build();
   }
 
   private DigitalObject someContentDataObject(String id) {
@@ -175,34 +174,29 @@ public class WhenAssemblingSips extends XmlTestCase {
     zip.closeEntry();
   }
 
-  private void assertPackagingInformation(ZipInputStream zip, Collection<Object> objects, EncodedHash pdiHash)
-      throws IOException {
+  private void assertPackagingInformation(ZipInputStream zip, Collection<Object> objects,
+      EncodedHash pdiHash) throws IOException {
     ZipEntry entry = zip.getNextEntry();
     assertNotNull("Missing Packaging Information", entry);
     assertEquals("Zip entry", "eas_sip.xml", entry.getName());
 
-    ByteArrayInputOutputStream packagingInformation = new ByteArrayInputOutputStream();
-    IOUtils.copy(zip, packagingInformation);
-    Element sipElement =
-        assertValidXml(packagingInformation.getInputStream(), "PackagingInformation", "sip.xsd").getDocumentElement();
-    assertTrue("Missing pdi_hash: " + pdiHash, XmlUtil.namedElementsIn(sipElement, "pdi_hash")
-      .filter(e -> equals(pdiHash, e))
-      .findAny()
-      .isPresent());
-    String aiuCount = XmlUtil.getFirstChildElement(sipElement, "aiu_count")
-      .getTextContent();
-    assertEquals("# AIUs", objects.size(), Integer.parseInt(aiuCount));
-
+    try (ByteArrayInputOutputStream packagingInformation = new ByteArrayInputOutputStream()) {
+      IOUtils.copy(zip, packagingInformation);
+      Element sipElement =
+          assertValidXml(packagingInformation.getInputStream(), "PackagingInformation", "sip.xsd")
+              .getDocumentElement();
+      assertTrue("Missing pdi_hash: " + pdiHash, XmlUtil.namedElementsIn(sipElement, "pdi_hash")
+          .filter(e -> equals(pdiHash, e)).findAny().isPresent());
+      String aiuCount = XmlUtil.getFirstChildElement(sipElement, "aiu_count").getTextContent();
+      assertEquals("# AIUs", objects.size(), Integer.parseInt(aiuCount));
+    }
     zip.closeEntry();
   }
 
   private boolean equals(EncodedHash encodedHash, Element hashElement) {
-    return encodedHash.getHashFunction()
-      .equals(hashElement.getAttributeNS(null, "algorithm"))
-        && encodedHash.getEncoding()
-          .equals(hashElement.getAttributeNS(null, "encoding"))
-        && encodedHash.getValue()
-          .equals(hashElement.getTextContent());
+    return encodedHash.getHashFunction().equals(hashElement.getAttributeNS(null, "algorithm"))
+        && encodedHash.getEncoding().equals(hashElement.getAttributeNS(null, "encoding"))
+        && encodedHash.getValue().equals(hashElement.getTextContent());
   }
 
   @Test
@@ -217,9 +211,10 @@ public class WhenAssemblingSips extends XmlTestCase {
     };
     HashAssembler noHashAssembler = new NoHashAssembler();
     Assembler<HashedContents<Object>> pdiAssembler = mock(Assembler.class);
-    SipAssembler<Object> sipAssembler = new SipAssembler<>(
-        new DefaultPackagingInformationFactory(somePackagingInformation()), pdiAssembler, noHashAssembler,
-        () -> pdiBuffer, ContentAssembler.noDedup(domainObject -> Collections.emptyIterator(), noHashAssembler));
+    SipAssembler<Object> sipAssembler =
+        new SipAssembler<>(new DefaultPackagingInformationFactory(somePackagingInformation()),
+            pdiAssembler, noHashAssembler, () -> pdiBuffer,
+            ContentAssembler.noDedup(domainObject -> Collections.emptyIterator(), noHashAssembler));
 
     sipAssembler.start(new MemoryBuffer());
     sipAssembler.add(new Object());

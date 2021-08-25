@@ -20,7 +20,6 @@ import com.opentext.ia.sdk.sip.Template;
 import com.opentext.ia.sdk.support.datetime.Dates;
 import com.opentext.ia.test.TestCase;
 
-
 public class WhenReplacingPatternsUsingVelocity extends TestCase {
 
   @Test
@@ -34,8 +33,9 @@ public class WhenReplacingPatternsUsingVelocity extends TestCase {
     String prefix = someString('p');
     String infix = someString(' ');
     String suffix = someString(' ');
-    Template<Map<String, Object>> template = new VelocityTemplate<Map<String, Object>>(someString('a'), someString('a'),
-        prefix + "$model." + name1 + infix + "$model." + name2 + " $isodate.format($model." + name3 + ')' + suffix);
+    Template<Map<String, Object>> template =
+        new VelocityTemplate<>(someString('a'), someString('a'), prefix + "$model." + name1 + infix
+            + "$model." + name2 + " $isodate.format($model." + name3 + ')' + suffix);
     Map<String, Object> values = new HashMap<>();
     values.put(name1, value1);
     values.put(name2, value2);
@@ -45,7 +45,8 @@ public class WhenReplacingPatternsUsingVelocity extends TestCase {
 
     template.writeRow(values, Collections.emptyMap(), new PrintWriter(actual));
 
-    assertEquals("Text", prefix + value1 + infix + value2 + ' ' + Dates.toIso(value3) + suffix, actual.toString());
+    assertEquals("Text", prefix + value1 + infix + value2 + ' ' + Dates.toIso(value3) + suffix,
+        actual.toString());
   }
 
   private String someString(char prefix) {

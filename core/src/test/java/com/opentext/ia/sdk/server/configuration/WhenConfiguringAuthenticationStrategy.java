@@ -3,7 +3,8 @@
  */
 package com.opentext.ia.sdk.server.configuration;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class WhenConfiguringAuthenticationStrategy extends TestCase {
   public void shouldGetTokenAuthenticationConfiguration() {
     connection.setAuthenticationToken(randomString());
     AuthenticationStrategy authentication = authFactory.getAuthenticationStrategy(() -> null, () -> null);
-    assertTrue(authentication instanceof NonExpiringTokenAuthentication);
+    assertThat(authentication, instanceOf(NonExpiringTokenAuthentication.class));
   }
 
   @Test
@@ -36,7 +37,7 @@ public class WhenConfiguringAuthenticationStrategy extends TestCase {
     connection.setAuthenticationUser(randomString());
     connection.setAuthenticationPassword(randomString());
     AuthenticationStrategy authentication = authFactory.getAuthenticationStrategy(() -> null, () -> null);
-    assertTrue(authentication instanceof BasicAuthentication);
+    assertThat(authentication, instanceOf(BasicAuthentication.class));
   }
 
   @Test
@@ -49,7 +50,7 @@ public class WhenConfiguringAuthenticationStrategy extends TestCase {
     HttpClient httpClient = mock(HttpClient.class);
     Clock clock = mock(Clock.class);
     AuthenticationStrategy authentication = authFactory.getAuthenticationStrategy(() -> httpClient, () -> clock);
-    assertTrue(authentication instanceof JwtAuthentication);
+    assertThat(authentication, instanceOf(JwtAuthentication.class));
   }
 
   @Test(expected = IllegalArgumentException.class)

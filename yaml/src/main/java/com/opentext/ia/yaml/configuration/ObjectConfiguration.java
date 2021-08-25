@@ -5,6 +5,8 @@ package com.opentext.ia.yaml.configuration;
 
 import java.util.Locale;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 
 public enum ObjectConfiguration {
 
@@ -25,6 +27,7 @@ public enum ObjectConfiguration {
     this.mayUpdate = mayUpdate;
   }
 
+  @SuppressFBWarnings(value = "IMPROPER_UNICODE", justification = "No security sensitivity")
   public static ObjectConfiguration parse(String text) {
     if (text == null || text.isEmpty()) {
       return CREATE_OR_UPDATE;

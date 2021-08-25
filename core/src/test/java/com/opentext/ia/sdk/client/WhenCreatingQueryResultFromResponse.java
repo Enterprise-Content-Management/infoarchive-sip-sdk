@@ -36,7 +36,7 @@ public class WhenCreatingQueryResultFromResponse {
 
   @Test
   public void shouldReturnNullIfResponseBodyIsNull() throws IOException {
-    Response response = mock(Response.class);
+    Response response = mock(Response.class); // NOPMD mock only
     Runnable closer = mock(Runnable.class);
     assertNull("Missing query result", factory.create(response, closer));
     verify(closer).run();
@@ -48,8 +48,8 @@ public class WhenCreatingQueryResultFromResponse {
     int resultSetCount = data.integer();
     int aiuQuota = data.integer();
     int resultSetQuota = data.integer();
-    Response response = mock(Response.class);
-    InputStream body = mock(InputStream.class);
+    Response response = mock(Response.class); // NOPMD mock only
+    InputStream body = mock(InputStream.class); // NOPMD mock only
 
     when(response.getBody()).thenReturn(body);
     when(response.getHeaderValue("cacheOutAipIgnored", false)).thenReturn(Boolean.TRUE);

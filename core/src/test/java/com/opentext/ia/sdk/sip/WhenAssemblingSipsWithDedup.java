@@ -7,7 +7,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -97,7 +102,7 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
   }
 
   private List<TestObject> objects(String... ids) {
-    List<TestObject> objects = new ArrayList<TestObject>(ids.length);
+    List<TestObject> objects = new ArrayList<>(ids.length);
     for (String id : ids) {
       objects.add(object(id, id));
     }

@@ -137,7 +137,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
   @Test
   // #39
   public void shouldBeAbleToDeleteFileFromCallback() throws IOException {
-    AtomicReference<File> sip = new AtomicReference<File>();
+    AtomicReference<File> sip = new AtomicReference<>();
     Consumer<FileGenerationMetrics> deletingCallback = fgm -> {
       File file = fgm.getFile();
       sip.set(file);

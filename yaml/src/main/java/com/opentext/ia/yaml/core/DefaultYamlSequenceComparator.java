@@ -28,26 +28,26 @@ public class DefaultYamlSequenceComparator implements Comparator<Object>, Serial
   }
 
   private int compareMaps(Map<String, Object> m1, Map<String, Object> m2) {
-    int result = 0;
     Set<String> keys = new TreeSet<>(new DefaultYamlComparator());
     keys.addAll(m1.keySet());
     keys.addAll(m2.keySet());
+    int result = 0;
     for (String key : keys) {
       Object value1 = m1.get(key);
       Object value2 = m2.get(key);
       result = compareNulls(value1, value2);
       if (result != 0) {
-        return result;
+        break;
       }
       if (value1 == null) {
         continue;
       }
       result = compareValues(value1, value2);
       if (result != 0) {
-        return result;
+        break;
       }
     }
-    return 0;
+    return result;
   }
 
   private int compareNulls(Object value1, Object value2) {

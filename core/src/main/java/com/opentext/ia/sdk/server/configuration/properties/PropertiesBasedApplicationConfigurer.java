@@ -935,7 +935,7 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     return result;
   }
 
-  private List<String> resolveTemplatedKeys(List<String> templatedKeys, Object... vars) {
+  private List<String> resolveTemplatedKeys(Collection<String> templatedKeys, Object... vars) {
     return templatedKeys.stream()
       .map(key -> resolveTemplatedKey(key, vars))
       .collect(Collectors.toList());

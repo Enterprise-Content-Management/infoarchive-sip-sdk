@@ -54,7 +54,7 @@ public class WhenAssemblingFromTemplate extends TestCase {
     @SuppressWarnings("unchecked")
     Template<Person> template = mock(Template.class);
     MemoryBuffer buffer = new MemoryBuffer();
-    TemplatePdiAssembler<Person> assembler = new TemplatePdiAssembler<Person>(template, null);
+    TemplatePdiAssembler<Person> assembler = new TemplatePdiAssembler<>(template, null);
 
     assembler.start(buffer);
     assembler.add(hashedContents(p1));

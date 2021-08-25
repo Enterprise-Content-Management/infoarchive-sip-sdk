@@ -68,7 +68,7 @@ public class ConfigurationObject {
   }
 
   public boolean hasProperty(String name) {
-    return properties.has(name) && properties.get(name) != JSONObject.NULL;
+    return properties.has(name) && !JSONObject.NULL.equals(properties.get(name));
   }
 
   /**

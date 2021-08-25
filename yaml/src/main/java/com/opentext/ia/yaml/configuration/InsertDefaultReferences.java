@@ -147,7 +147,10 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
   }
 
   @Override
-  @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.CollapsibleIfStatements"})
+  @SuppressWarnings({
+      "PMD.CognitiveComplexity",
+      "PMD.CyclomaticComplexity",
+      "PMD.CollapsibleIfStatements" })
   protected boolean missesProperty(Visit visit, String property) {
     YamlMap yaml = visit.getMap();
     if (yaml.containsKey(property)) {

@@ -34,7 +34,7 @@ public class WhenReplacingPatternsUsingStringTemplate extends TestCase {
     String prefix = randomString();
     String infix = randomString();
     String suffix = randomString();
-    Template<Map<String, Object>> template = new StringTemplate<Map<String, Object>>(randomString(), randomString(),
+    Template<Map<String, Object>> template = new StringTemplate<>(randomString(), randomString(),
         prefix + "$model." + name1 + '$' + infix + "$model." + name2 + '$' + "$model." + name3 + '$' + suffix);
     Map<String, Object> values = new HashMap<>();
     values.put(name1, value1);

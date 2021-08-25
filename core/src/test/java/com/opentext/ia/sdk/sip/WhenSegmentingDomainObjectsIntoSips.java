@@ -22,11 +22,10 @@ import org.junit.Test;
 import com.opentext.ia.sdk.support.io.DomainObjectTooBigException;
 import com.opentext.ia.test.TestCase;
 
-
 public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
 
-  private static final String[] CONTENT_OBJECTS = new String[] { "Hello", "Doman", "yuiopqwertyuiop",
-      "poiuytrewqpoiuytrewq" };
+  private static final String[] CONTENT_OBJECTS =
+      { "Hello", "Doman", "yuiopqwertyuiop", "poiuytrewqpoiuytrewq" };
   private SipSegmentationStrategy<String> strategy;
   private int expected;
 
@@ -40,7 +39,8 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
     assertMaxCountPerSip(SipMetrics.NUM_AIUS, max -> SipSegmentationStrategy.byMaxAius(max));
   }
 
-  private void assertMaxCountPerSip(String counter, Function<Integer, SipSegmentationStrategy<String>> factory) {
+  private void assertMaxCountPerSip(String counter,
+      Function<Integer, SipSegmentationStrategy<String>> factory) {
     int maxCount = randomInt(2, 5);
     strategy = factory.apply(maxCount);
     assertNumSips(expected * maxCount, counters -> counters.inc(counter));
@@ -60,7 +60,8 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
 
   @Test
   public void shouldSegmentByNumberOfDigitalObjects() {
-    assertMaxCountPerSip(SipMetrics.NUM_DIGITAL_OBJECTS, max -> SipSegmentationStrategy.byMaxDigitalObjects(max));
+    assertMaxCountPerSip(SipMetrics.NUM_DIGITAL_OBJECTS,
+        max -> SipSegmentationStrategy.byMaxDigitalObjects(max));
   }
 
   @Test
@@ -68,7 +69,8 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
     assertMaxSizePerSip(SipMetrics.SIZE_PDI, max -> SipSegmentationStrategy.byMaxPdiSize(max));
   }
 
-  private void assertMaxSizePerSip(String size, Function<Integer, SipSegmentationStrategy<String>> factory) {
+  private void assertMaxSizePerSip(String size,
+      Function<Integer, SipSegmentationStrategy<String>> factory) {
     int sizeIncrement = randomInt(2, 5);
     int numPerSip = randomInt(3, 6);
     int maxSize = numPerSip * sizeIncrement;
@@ -84,7 +86,8 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
 
   @Test
   public void shouldSegmentByDigitalObjectsSize() {
-    assertMaxSizePerSip(SipMetrics.SIZE_DIGITAL_OBJECTS, max -> SipSegmentationStrategy.byMaxDigitalObjectsSize(max));
+    assertMaxSizePerSip(SipMetrics.SIZE_DIGITAL_OBJECTS,
+        max -> SipSegmentationStrategy.byMaxDigitalObjectsSize(max));
   }
 
   @Test
@@ -98,7 +101,8 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
     String object2 = randomString();
     String object3 = randomString();
 
-    strategy = SipSegmentationStrategy.combining(segmentOn(object1), segmentOn(object2), segmentOn(object3));
+    strategy = SipSegmentationStrategy.combining(segmentOn(object1), segmentOn(object2),
+        segmentOn(object3));
 
     assertTrue("# 1", strategy.shouldStartNewSip(object1, null));
     assertTrue("# 2", strategy.shouldStartNewSip(object2, null));
@@ -131,13 +135,13 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
   }
 
   private int sizeOf(String[] domainObjects) {
-    return Arrays.stream(domainObjects)
-        .collect(Collectors.summingInt(String::length));
+    return Arrays.stream(domainObjects).collect(Collectors.summingInt(String::length));
   }
 
-  private void assertSegmentByProspectiveSipSize(int maxSize, String... contentObjects) throws IOException {
-    SipSegmentationStrategy<String[]> byMaxSize = SipSegmentationStrategy.byMaxProspectiveSipSize(maxSize,
-        new ContentObjectsToDigitalObjects());
+  private void assertSegmentByProspectiveSipSize(int maxSize, String... contentObjects)
+      throws IOException {
+    SipSegmentationStrategy<String[]> byMaxSize = SipSegmentationStrategy
+        .byMaxProspectiveSipSize(maxSize, new ContentObjectsToDigitalObjects());
     int size = sizeOf(contentObjects);
     int expectedSips = 0;
     int sipSize = 0;
@@ -179,15 +183,13 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
     assertSegmentByProspectiveSipSize(45, CONTENT_OBJECTS);
   }
 
-
   private class ContentObjectsToDigitalObjects implements DigitalObjectsExtraction<String[]> {
 
     @Override
     public Iterator<? extends DigitalObject> apply(String[] contentObjects) {
-      return Arrays.stream(contentObjects)
-          .map(contentObject -> DigitalObject.fromString(randomString(), contentObject, StandardCharsets.UTF_8))
-          .collect(Collectors.toList())
-          .iterator();
+      return Arrays.stream(contentObjects).map(contentObject -> DigitalObject
+          .fromString(randomString(), contentObject, StandardCharsets.UTF_8))
+          .collect(Collectors.toList()).iterator();
     }
 
   }

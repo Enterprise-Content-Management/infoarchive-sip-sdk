@@ -16,10 +16,13 @@ import com.opentext.ia.sdk.support.http.MediaTypes;
 import com.opentext.ia.sdk.support.http.Response;
 import com.opentext.ia.sdk.support.http.ResponseBodyFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 
 /**
  * Factory for creating {@linkplain ContentResult} objects from an HTTP response body (envelope).
  */
+@SuppressFBWarnings(value = "IMPROPER_UNICODE", justification = "not security sensitive")
 public class ContentResultFactory extends ResponseBodyFactory<ContentResult> {
 
   @Override

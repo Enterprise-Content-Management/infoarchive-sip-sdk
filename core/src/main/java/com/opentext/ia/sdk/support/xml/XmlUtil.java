@@ -36,8 +36,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.opentext.ia.sdk.support.io.IOStreams;
-
 
 /**
  * Generic XML processing functions.
@@ -465,14 +463,12 @@ public final class XmlUtil {
 
   @SuppressWarnings({ "PMD.AvoidCatchingNPE", "PMD.AvoidCatchingGenericException" }) // Want better error message
   public static Validator newXmlSchemaValidator(InputStream xmlSchema) {
-    try {
+    try (InputStream xmlSchemaToClose = xmlSchema) {
       return SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-        .newSchema(new StreamSource(xmlSchema))
+          .newSchema(new StreamSource(xmlSchemaToClose))
         .newValidator();
-    } catch (SAXException | NullPointerException e) {
+    } catch (SAXException | NullPointerException | IOException e) {
       throw new ValidationException("Invalid XML Schema", e);
-    } finally {
-      IOStreams.close(xmlSchema);
     }
   }
 

@@ -22,7 +22,7 @@ public class WhenExtractingLinksFromLinkContainer {
 
   private final LinkContainer container = new LinkContainer();
   private final Link link = new Link();
-  private final Map<String, Link> links = new HashMap<String, Link>();
+  private final Map<String, Link> links = new HashMap<>();
 
   @Before
   public void init() {

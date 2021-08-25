@@ -100,10 +100,10 @@ public class ZipBuilder {
       result = FilenameUtils.separatorsToUnix(result.substring(basePath.length()));
     } else {
       // Outside base directory => ensure unique name
-      String fileName = "";
       String ext = FilenameUtils.getExtension(result);
       int index = numExternalFilesByExtension.getOrDefault(ext, 0);
       numExternalFilesByExtension.put(ext, 1 + index);
+      String fileName;
       if (preserveExternalFileName) {
         fileName = String.format("%d-%s", index, file.getName());
       } else {

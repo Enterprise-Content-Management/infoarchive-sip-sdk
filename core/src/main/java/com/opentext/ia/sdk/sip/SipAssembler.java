@@ -329,7 +329,7 @@ public class SipAssembler<D> implements Assembler<D> {
 
   @Override
   public synchronized void end() throws IOException {
-    try {
+    try { // NOPMD zip is closed
       endPdi();
       addPackagingInformation();
     } finally {

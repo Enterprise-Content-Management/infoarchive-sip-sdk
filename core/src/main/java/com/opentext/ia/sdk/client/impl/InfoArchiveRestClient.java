@@ -10,7 +10,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -198,7 +197,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return result;
   }
 
-  private String getValidJsonRequestForExport(String exportConfigurationUri, List<SearchResult> searchResults) {
+  private String getValidJsonRequestForExport(String exportConfigurationUri,
+      Collection<SearchResult> searchResults) {
     JsonNodeFactory jsonNodeFactory = new ObjectMapper().getNodeFactory();
     ObjectNode root = jsonNodeFactory.objectNode();
     root.set("exportConfiguration", jsonNodeFactory.textNode(exportConfigurationUri));
@@ -206,7 +206,8 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
     return root.toString();
   }
 
-  private ArrayNode getIncludedRows(List<SearchResult> searchResults, JsonNodeCreator jsonNodeCreator) {
+  private ArrayNode getIncludedRows(Collection<SearchResult> searchResults,
+      JsonNodeCreator jsonNodeCreator) {
     ArrayNode result = jsonNodeCreator.arrayNode();
     searchResults.stream()
         .map(SearchResult::getRows)
