@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 12.4.3 - 2021-08-25
+
+- Third party dependency upgrades for all libraries
+- Gradle 7.2
+- Code changes to match the new Gradle and third party libraries
+
 == 12.4.2 - 2021-08-20
 
 == Fixed in infoarchive-sdk-core 
