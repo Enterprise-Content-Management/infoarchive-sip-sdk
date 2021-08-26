@@ -15,7 +15,7 @@ import com.opentext.ia.sdk.support.http.Header;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenMakingClientSideAuthentication extends TestCase {
+class WhenMakingClientSideAuthentication extends TestCase {
 
   private final String username = randomString();
   private final String password = randomString();
@@ -24,28 +24,28 @@ public class WhenMakingClientSideAuthentication extends TestCase {
   private final NonExpiringTokenAuthentication tokenAuth = new NonExpiringTokenAuthentication(token);
 
   @Test
-  public void shouldFailBecauseOfUsername() {
+  void shouldFailBecauseOfUsername() {
     String illegalUsername = "";
     assertThrows(IllegalArgumentException.class,
         () -> new BasicAuthentication(illegalUsername, password));
   }
 
   @Test
-  public void shouldFailBecauseOfPassword() {
+  void shouldFailBecauseOfPassword() {
     String illegalPassword = "";
     assertThrows(IllegalArgumentException.class,
         () -> new BasicAuthentication(username, illegalPassword));
   }
 
   @Test
-  public void shouldFailBecauseOfToken() {
+  void shouldFailBecauseOfToken() {
     String illegalToken = "";
     assertThrows(IllegalArgumentException.class,
         () -> new NonExpiringTokenAuthentication(illegalToken));
   }
 
   @Test
-  public void shouldIssueBasicHeader() {
+  void shouldIssueBasicHeader() {
     String finalToken = "Basic " + Base64.getEncoder()
                                        .encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
     Header authHeader = new Header("Authorization", finalToken);
@@ -53,7 +53,7 @@ public class WhenMakingClientSideAuthentication extends TestCase {
   }
 
   @Test
-  public void shouldIssueGivenHeader() {
+  void shouldIssueGivenHeader() {
     String finalToken = "Bearer " + token;
     Header authHeader = new Header("Authorization", finalToken);
     assertEquals(authHeader, tokenAuth.issueAuthHeader(), "Tokens should be the same");

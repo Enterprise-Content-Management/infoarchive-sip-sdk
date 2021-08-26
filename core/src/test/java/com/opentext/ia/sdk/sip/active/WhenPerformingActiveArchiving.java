@@ -30,7 +30,7 @@ import com.opentext.ia.sdk.sip.SipSegmentationStrategy;
 import com.opentext.ia.sdk.sip.XmlPdiAssembler;
 
 
-public class WhenPerformingActiveArchiving extends SipAssemblingTestCase {
+class WhenPerformingActiveArchiving extends SipAssemblingTestCase {
 
   private int numSips;
   private final SipSegmentationStrategy<String> segmentationStrategy = (domainObject, metrics) -> true;
@@ -44,7 +44,7 @@ public class WhenPerformingActiveArchiving extends SipAssemblingTestCase {
   }
 
   @Test
-  public void shouldIngestSipsAsTheyAreAssembled() throws IOException {
+  void shouldIngestSipsAsTheyAreAssembled() throws IOException {
     when(archiveClient.ingestDirect(any())).thenAnswer(invocation -> {
       numSips++;
       String packageInformation = getPackageInformation(invocation.getArgument(0));
@@ -98,7 +98,7 @@ public class WhenPerformingActiveArchiving extends SipAssemblingTestCase {
   }
 
   @Test
-  public void shouldListSipsThatFailedToIngest() throws IOException {
+  void shouldListSipsThatFailedToIngest() throws IOException {
     when(archiveClient.ingestDirect(any())).thenAnswer(invocation -> {
       numSips++;
       throw new IOException("Failed to ingest SIP");

@@ -17,10 +17,10 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenContainingItemsInCollections extends TestCase {
+class WhenContainingItemsInCollections extends TestCase {
 
   @Test
-  public void shouldExtractItemsByKey() {
+  void shouldExtractItemsByKey() {
     ItemContainer<NamedLinkContainer> collection = new TestItems();
     String key = collection.getKey();
     Map<String, List<NamedLinkContainer>> embedded = new HashMap<>();
@@ -38,7 +38,7 @@ public class WhenContainingItemsInCollections extends TestCase {
   }
 
   @Test
-  public void shouldThrowIllegalArgumentExceptionIfEmbeddedListIsMissing() {
+  void shouldThrowIllegalArgumentExceptionIfEmbeddedListIsMissing() {
     ItemContainer<NamedLinkContainer> collection = new TestItems();
     assertThrows(IllegalArgumentException.class,
         () -> collection.setEmbedded(Collections.emptyMap()));

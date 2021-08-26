@@ -43,7 +43,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldPrintElementName() {
+  void shouldPrintElementName() {
     String name = aName();
     result.append(OPEN_ELEMENT).append(name).append("/>").append(NL);
 
@@ -62,7 +62,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldPrintNestedElements() {
+  void shouldPrintNestedElements() {
     String parent = aName();
     String child = aName();
     result.append(OPEN_ELEMENT).append(parent).append(CLOSE_ELEMENT_NL)
@@ -78,7 +78,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldPrintNamespace() {
+  void shouldPrintNamespace() {
     String ns1 = randomUri();
     String ns2 = randomUri();
     String parent = aName();
@@ -102,7 +102,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldPrintAttribute() {
+  void shouldPrintAttribute() {
     String namespace = randomUri();
     String parent = aName();
     String child = aName();
@@ -130,7 +130,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldEscapeReservedCharactersInAttribute() {
+  void shouldEscapeReservedCharactersInAttribute() {
     String root = aName();
     String name = aName();
     String text = "<'\"&>";
@@ -145,7 +145,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldPrintText() {
+  void shouldPrintText() {
     String parent = aName();
     String text1 = aName();
     String child = aName();
@@ -164,7 +164,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldIgnoreMissingText() {
+  void shouldIgnoreMissingText() {
     String root = aName();
     result.append(OPEN_ELEMENT).append(root).append("/>").append(NL);
 
@@ -176,7 +176,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldIgnoreMissingOptionalText() {
+  void shouldIgnoreMissingOptionalText() {
     String root = aName();
     result.append(OPEN_ELEMENT).append(root).append("/>").append(NL);
 
@@ -188,7 +188,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldPrintOptionalText() {
+  void shouldPrintOptionalText() {
     String root = aName();
     String text = aName();
     result.append(OPEN_ELEMENT).append(root).append('>').append(text).append("</").append(root).append('>').append(NL);
@@ -199,7 +199,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldEscapeReservedCharactersInText() {
+  void shouldEscapeReservedCharactersInText() {
     String root = aName();
     String text = "<'\"&>";
     result.append(OPEN_ELEMENT).append(root)
@@ -211,7 +211,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldIgnoreEmptyCollection() {
+  void shouldIgnoreEmptyCollection() {
     String root = aName();
     result.append(OPEN_ELEMENT).append(root).append("/>").append(NL);
 
@@ -223,7 +223,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldAddElementsForCollectionItems() {
+  void shouldAddElementsForCollectionItems() {
     String root = aName();
     String parent = aName();
     String child1 = aName();
@@ -243,7 +243,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   @Test
-  public void shouldImportXml() {
+  void shouldImportXml() {
     String root = aName();
     String parent = aName();
     String child1 = aName();

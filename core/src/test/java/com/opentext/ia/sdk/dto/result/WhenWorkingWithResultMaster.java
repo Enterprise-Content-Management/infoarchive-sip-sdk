@@ -10,10 +10,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 
-public class WhenWorkingWithResultMaster {
+class WhenWorkingWithResultMaster {
 
   @Test
-  public void shouldHaveDefaul3Panels() {
+  void shouldHaveDefaul3Panels() {
     ResultMaster master = new ResultMaster();
     List<Panel> panels = master.getPanels();
     assertEquals(3, panels.size());

@@ -16,14 +16,14 @@ import com.opentext.ia.test.RandomData;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenDeletingFile extends TestCase {
+class WhenDeletingFile extends TestCase {
 
   @TempDir
-  public Path temporaryFolder;
+  Path temporaryFolder;
   private final RandomData random = new RandomData();
 
   @Test
-  public void shouldRemoveFile() throws IOException {
+  void shouldRemoveFile() throws IOException {
     File file = newFile(temporaryFolder);
 
     Delete.file(file);
@@ -32,7 +32,7 @@ public class WhenDeletingFile extends TestCase {
   }
 
   @Test
-  public void shouldNotComplainAboutNonExistingFiles() {
+  void shouldNotComplainAboutNonExistingFiles() {
     Delete.file(new File(random.string()));
   }
 

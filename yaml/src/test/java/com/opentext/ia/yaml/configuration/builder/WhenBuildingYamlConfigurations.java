@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.configuration.ConfigurationBuilder;
 import com.opentext.ia.yaml.core.YamlMap;
 
-public class WhenBuildingYamlConfigurations {
+class WhenBuildingYamlConfigurations {
 
   private static final String NAME = "name";
   private static final String TENANT_NAME = "myTenant";
@@ -21,21 +21,21 @@ public class WhenBuildingYamlConfigurations {
       new ConfigurationBuilder<>(new YamlMapConfigurationProducer());
 
   @Test
-  public void shouldBuildYampMap() {
+  void shouldBuildYampMap() {
     YamlMap yaml = builder.withApplication().build().getYaml();
 
     assertEquals("1.0.0", yaml.get("version").toString(), "Version");
   }
 
   @Test
-  public void shouldExtractTenant() {
+  void shouldExtractTenant() {
     YamlMap tenant = builder.withTenant().named(TENANT_NAME).build().getTenant();
 
     assertEquals(TENANT_NAME, tenant.get(NAME).toString(), "Tenant name");
   }
 
   @Test
-  public void shouldExtractApplication() {
+  void shouldExtractApplication() {
     YamlMap application = builder.withTenant().named(TENANT_NAME).withApplication().named(APPLICATION_NAME).end()
         .build().getApplication();
 
@@ -46,7 +46,7 @@ public class WhenBuildingYamlConfigurations {
   }
 
   @Test
-  public void shouldExtractPdiWithMultipleContentObjects() {
+  void shouldExtractPdiWithMultipleContentObjects() {
     YamlMapConfiguration configuration =
         builder.withApplication().withPdi().withContent().as("foo").end().withContent().as("bar").end().build();
 

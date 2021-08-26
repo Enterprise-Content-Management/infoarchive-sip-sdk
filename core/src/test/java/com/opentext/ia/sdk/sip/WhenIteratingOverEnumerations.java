@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenIteratingOverEnumerations extends TestCase {
+class WhenIteratingOverEnumerations extends TestCase {
 
   @Test
-  public void shouldProvideAllItems() {
+  void shouldProvideAllItems() {
     Collection<String> expected = Arrays.asList(randomString(), randomString());
 
     Collection<String> actual = new ArrayList<>();

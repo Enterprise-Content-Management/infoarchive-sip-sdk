@@ -23,7 +23,7 @@ import com.opentext.ia.sdk.support.http.Response;
 import com.opentext.ia.test.RandomData;
 
 
-public class WhenCreatingQueryResultFromResponse {
+class WhenCreatingQueryResultFromResponse {
 
   private QueryResultFactory factory;
   private RandomData data;
@@ -35,7 +35,7 @@ public class WhenCreatingQueryResultFromResponse {
   }
 
   @Test
-  public void shouldReturnNullIfResponseBodyIsNull() throws IOException {
+  void shouldReturnNullIfResponseBodyIsNull() throws IOException {
     Response response = mock(Response.class); // NOPMD mock only
     Runnable closer = mock(Runnable.class);
     assertNull(factory.create(response, closer), "Missing query result");
@@ -43,7 +43,7 @@ public class WhenCreatingQueryResultFromResponse {
   }
 
   @Test
-  public void shouldCreateResultAndNotCloseResponse() throws IOException {
+  void shouldCreateResultAndNotCloseResponse() throws IOException {
     int aipQuota = data.integer();
     int resultSetCount = data.integer();
     int aiuQuota = data.integer();

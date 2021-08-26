@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.sdk.support.http.rest.Link;
 
 
-public class WhenFetchingHomeResource {
+class WhenFetchingHomeResource {
 
   private final TestHomeResource homeResource = new TestHomeResource();
 
@@ -24,7 +24,7 @@ public class WhenFetchingHomeResource {
   }
 
   @Test
-  public void fetchResourceName() {
+  void fetchResourceName() {
     assertEquals("TestApplication", homeResource.getName(), "Resource Name");
   }
 

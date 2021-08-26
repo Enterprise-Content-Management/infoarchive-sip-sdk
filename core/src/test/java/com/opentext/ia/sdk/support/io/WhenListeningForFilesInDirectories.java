@@ -24,13 +24,13 @@ import com.opentext.ia.test.TestCase;
 import com.opentext.ia.test.TestUtil;
 
 
-public class WhenListeningForFilesInDirectories extends TestCase {
+class WhenListeningForFilesInDirectories extends TestCase {
 
   @TempDir
-  public Path temporaryFolder;
+  Path temporaryFolder;
 
   @Test
-  public void shouldReportAddedFilesExactlyOnce() throws IOException {
+  void shouldReportAddedFilesExactlyOnce() throws IOException {
     DirectoryListener listener = new DefaultDirectoryListener(0);
     startListening(listener);
     File file1 = addFile();
@@ -83,7 +83,7 @@ public class WhenListeningForFilesInDirectories extends TestCase {
   }
 
   @Test
-  public void shouldReportExistingFilesOnStartup() throws IOException {
+  void shouldReportExistingFilesOnStartup() throws IOException {
     DirectoryListener listener = new DefaultDirectoryListener(0);
     File file = addFile();
     startListening(listener);

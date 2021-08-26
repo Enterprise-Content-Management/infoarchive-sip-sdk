@@ -22,7 +22,7 @@ import com.opentext.ia.sdk.support.io.MemoryBuffer;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenAssemblingSipsConcurrently extends TestCase {
+class WhenAssemblingSipsConcurrently extends TestCase {
 
   private static final int NUM_THREADS = 32;
   private static final long ASSEMBLE_SECONDS = 5;
@@ -32,7 +32,7 @@ public class WhenAssemblingSipsConcurrently extends TestCase {
 
   @Test
   @SuppressWarnings("PMD.AvoidCatchingGenericException")
-  public void shouldNotFail() throws InterruptedException, IOException {
+  void shouldNotFail() throws InterruptedException, IOException {
     URI entityUri = URI.create("urn:com.opentext.ia.sdk.test.concurrent:1.0");
     String entityName = "concurrent";
     PackagingInformation prototype = PackagingInformation.builder()

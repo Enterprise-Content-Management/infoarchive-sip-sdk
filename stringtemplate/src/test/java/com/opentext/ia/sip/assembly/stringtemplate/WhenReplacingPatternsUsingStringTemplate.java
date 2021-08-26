@@ -21,10 +21,10 @@ import com.opentext.ia.sdk.support.datetime.Dates;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenReplacingPatternsUsingStringTemplate extends TestCase {
+class WhenReplacingPatternsUsingStringTemplate extends TestCase {
 
   @Test
-  public void shouldReplaceVariables() throws IOException {
+  void shouldReplaceVariables() throws IOException {
     Date date = new Date();
     String name1 = randomString();
     String value1 = randomString();

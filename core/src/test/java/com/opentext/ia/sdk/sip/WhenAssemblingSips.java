@@ -41,12 +41,12 @@ import com.opentext.ia.sdk.support.io.NoHashAssembler;
 import com.opentext.ia.sdk.support.xml.XmlUtil;
 
 @SuppressWarnings("unchecked")
-public class WhenAssemblingSips extends XmlTestCase {
+class WhenAssemblingSips extends XmlTestCase {
 
   private static final float DELTA_MS = 10f;
 
   @Test
-  public void shouldZipContentsAndReportMetrics() throws IOException {
+  void shouldZipContentsAndReportMetrics() throws IOException {
     Assembler<HashedContents<Object>> pdiAssembler = mock(Assembler.class);
     HashAssembler pdiHashAssembler = mock(HashAssembler.class);
     EncodedHash hash = someHash();
@@ -200,7 +200,7 @@ public class WhenAssemblingSips extends XmlTestCase {
   }
 
   @Test
-  public void shouldMeasurePdiSizeBeforeEnd() throws IOException {
+  void shouldMeasurePdiSizeBeforeEnd() throws IOException {
     long pdiSize = randomInt(13, 313);
     DataBuffer pdiBuffer = new MemoryBuffer() {
 

@@ -68,7 +68,7 @@ import com.opentext.ia.sdk.support.io.RuntimeIoException;
 import com.opentext.ia.test.TestCase;
 
 @SuppressWarnings({ "PMD", "deprecation" }) // TODO: Clean this up
-public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations {
+class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations {
 
   private static final String BILLBOARD_URI = "http://foo.com/bar";
   private static final String AUTH_TOKEN = "XYZ123ABC";
@@ -454,7 +454,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void shouldWrapExceptionDuringConfiguration() throws IOException {
+  void shouldWrapExceptionDuringConfiguration() throws IOException {
     when(restClient.get(BILLBOARD_URI, Services.class)).thenThrow(IOException.class);
     assertThrows(RuntimeIoException.class, () -> configureServer());
   }
@@ -471,7 +471,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void shouldIngestSuccessfully() throws IOException {
+  void shouldIngestSuccessfully() throws IOException {
     configureServer();
 
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
@@ -490,7 +490,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void shouldIngestWithIngestDirect() throws IOException {
+  void shouldIngestWithIngestDirect() throws IOException {
     Link link = new Link();
     link.setHref(BILLBOARD_URI);
     links.put(InfoArchiveLinkRelations.LINK_INGEST_DIRECT, link);
@@ -509,7 +509,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void shouldIngestWithoutIngestDirect() throws IOException {
+  void shouldIngestWithoutIngestDirect() throws IOException {
     configureServer();
 
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
@@ -525,7 +525,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void ingestShouldThrowRuntimeExceptionWhenConfigureIsNotInvoked() throws IOException {
+  void ingestShouldThrowRuntimeExceptionWhenConfigureIsNotInvoked() throws IOException {
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
     assertThrows(RuntimeException.class, () -> archiveClient.ingest(sip));
   }
@@ -540,7 +540,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void shouldCreateApplicationWhenNotFound() throws IOException {
+  void shouldCreateApplicationWhenNotFound() throws IOException {
     final AtomicReference<Application> app = new AtomicReference<>(null);
     when(applications.byName(APPLICATION_NAME)).thenAnswer(invocation -> {
       return app.get();
@@ -564,12 +564,12 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void configure() throws IOException {
+  void configure() throws IOException {
     configureServer();
   }
 
   @Test
-  public void shouldRetryWhenTemporarilyUnavailable() throws IOException {
+  void shouldRetryWhenTemporarilyUnavailable() throws IOException {
     configuration.put(
         com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.FEDERATION_NAME,
         randomString());
@@ -588,7 +588,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void shouldSearchSuccessfully() throws IOException {
+  void shouldSearchSuccessfully() throws IOException {
     SearchResults searchResults = mock(SearchResults.class);
     when(searchResults.getUri("next")).thenReturn(null);
     when(restClient.post(anyString(), eq(SearchResults.class), anyString(), eq(MediaTypes.XML)))
@@ -620,7 +620,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void shouldExportSuccessfully() throws IOException {
+  void shouldExportSuccessfully() throws IOException {
     UriBuilder uriBuilder = mock(UriBuilder.class);
     String uri = randomString();
     when(uriBuilder.build()).thenReturn(uri);
@@ -647,7 +647,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void shouldFetchContentUnsuccessfully() throws IOException {
+  void shouldFetchContentUnsuccessfully() throws IOException {
     configureServer();
     assertThrows(NullPointerException.class, () -> archiveClient.fetchContent(randomString()));
   }
@@ -678,7 +678,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void getJobInstanceLog() throws IOException {
+  void getJobInstanceLog() throws IOException {
     JobInstance jobInstance = new JobInstance();
     Map<String, Link> link = new HashMap<>();
     link.put(InfoArchiveLinkRelations.LINK_LOG, new Link("uri-for-jobinstance-log"));
@@ -694,7 +694,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void getOrderItemLog() throws IOException {
+  void getOrderItemLog() throws IOException {
     OrderItem firstOrderItem = new OrderItem();
     Map<String, Link> link = new HashMap<>();
     link.put(InfoArchiveLinkRelations.LINK_LOG, new Link("uri-for-orderitem-log"));
@@ -710,7 +710,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void getBatchItemLog() throws IOException {
+  void getBatchItemLog() throws IOException {
     BatchItem firstBatchItem = new BatchItem();
     Map<String, Link> link = new HashMap<>();
     link.put(InfoArchiveLinkRelations.LINK_LOG, new Link("uri-for-batchitem-log"));
@@ -726,7 +726,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   }
 
   @Test
-  public void shouldUploadTransformationSuccessfully() throws IOException {
+  void shouldUploadTransformationSuccessfully() throws IOException {
     ExportTransformation exportTransformation = mock(ExportTransformation.class);
     when(exportTransformation.getUri(anyString())).thenReturn(randomString());
     InputStream zip = new ByteArrayInputStream(SOURCE.getBytes(StandardCharsets.UTF_8));

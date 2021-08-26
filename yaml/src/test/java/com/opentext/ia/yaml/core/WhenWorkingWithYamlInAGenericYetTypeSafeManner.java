@@ -34,7 +34,7 @@ import org.yaml.snakeyaml.Yaml;
 import com.opentext.ia.test.TestCase;
 import com.opentext.ia.test.TestUtil;
 
-public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
+class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   private static final String TYPE = "type";
   private static final String EMPTY = "Empty";
@@ -50,7 +50,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   public static final String VALUE_TIME = "time";
 
   @TempDir
-  public Path temporaryFolder;
+  Path temporaryFolder;
   private final YamlMap yaml = new YamlMap();
   private final String key = 'k' + someValue();
   private final String value = 'v' + someValue();
@@ -60,14 +60,14 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldStartEmpty() {
+  void shouldStartEmpty() {
     assertTrue(yaml.isEmpty(), "Not empty");
     assertEquals(0, yaml.size(), "Size");
     assertTrue(yaml.get(someValue()).isEmpty(), "Value found");
   }
 
   @Test
-  public void shouldBeAbleToAddItems() {
+  void shouldBeAbleToAddItems() {
     yaml.put(key, value);
 
     assertFalse(yaml.isEmpty(), EMPTY);
@@ -94,7 +94,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldLoadFromOtherMap() {
+  void shouldLoadFromOtherMap() {
     YamlMap map = new YamlMap(Collections.singletonMap(key, value));
     assertValue(value, map);
 
@@ -103,7 +103,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldLoadValueFromOtherMap() {
+  void shouldLoadValueFromOtherMap() {
     YamlMap map = new YamlMap().put(key, value);
     Value v = map.get(key);
 
@@ -114,7 +114,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldRemoveValue() {
+  void shouldRemoveValue() {
     assertFalse(yaml.containsKey(key), "Contains non-added value");
 
     yaml.put(key, value);
@@ -125,7 +125,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldRemoveValueRecursively() {
+  void shouldRemoveValueRecursively() {
     assertFalse(yaml.containsKey(LAST_MODIFIED_DATE_NAME), "Contains non-added value");
 
     Map<String, Object> child = new HashMap<>();
@@ -149,7 +149,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldRemoveValueRecursivelyOnlyFromParents() {
+  void shouldRemoveValueRecursivelyOnlyFromParents() {
     assertFalse(yaml.containsKey(LAST_MODIFIED_DATE_NAME), "Contains non-added value");
 
     final String nestedItem1 = NESTED_ITEM_NAME + "_1";
@@ -186,7 +186,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldRetrieveNestedValues() {
+  void shouldRetrieveNestedValues() {
     String outerKey = someValue();
     YamlMap map =
         new YamlMap(Collections.singletonMap(outerKey, Collections.singletonMap(key, value)));
@@ -195,7 +195,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldIterateOverEntriesAndValues() {
+  void shouldIterateOverEntriesAndValues() {
     String key1 = 'z' + someValue();
     String value1 = someValue();
     String key2 = 'a' + someValue();
@@ -210,7 +210,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldExtractNamedNestedObject() {
+  void shouldExtractNamedNestedObject() {
     String name = someValue();
     yaml.put(name, new YamlMap().put(key, value));
 
@@ -221,7 +221,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldCheckWhetherValueExists() {
+  void shouldCheckWhetherValueExists() {
     yaml.put(key, null);
     assertTrue(yaml.get(key).isEmpty(), "Null value");
 
@@ -230,7 +230,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldConvertValueToMap() {
+  void shouldConvertValueToMap() {
     yaml.put(key, value);
     assertFalse(yaml.get(key).isMap(), "String is a map");
 
@@ -246,7 +246,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldConvertValueToList() {
+  void shouldConvertValueToList() {
     assertTrue(yaml.get(key).toList().isEmpty(), "Empty by default");
     yaml.put(key, value);
     assertFalse(yaml.get(key).isList(), "String is a list");
@@ -261,7 +261,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldConvertValueToBoolean() {
+  void shouldConvertValueToBoolean() {
     assertFalse(yaml.get(key).toBoolean(), EMPTY);
 
     yaml.put(key, Boolean.TRUE);
@@ -272,7 +272,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldConvertValueToInt() {
+  void shouldConvertValueToInt() {
     assertEquals(0, yaml.get(key).toInt(), EMPTY);
 
     yaml.put(key, 42);
@@ -283,7 +283,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldConvertValueToDouble() {
+  void shouldConvertValueToDouble() {
     assertEquals(0.0, yaml.get(key).toDouble(), 1e-6, EMPTY);
 
     yaml.put(key, Math.PI);
@@ -294,7 +294,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldTestForScalarValue() {
+  void shouldTestForScalarValue() {
     assertFalse(new Value(null).isScalar(), EMPTY);
     assertFalse(new Value(Collections.singletonList(randomString())).isScalar(), "List");
     assertFalse(new Value(Collections.singletonMap(randomString(), randomString())).isScalar(),
@@ -307,7 +307,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSerializeToAndDeserializeFromString() {
+  void shouldSerializeToAndDeserializeFromString() {
     assertToString(YamlMap.from(SAMPLE_YAML_STRING), SAMPLE_YAML_STRING, "toString");
   }
 
@@ -331,7 +331,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSerializeSameAsSnakeYaml() {
+  void shouldSerializeSameAsSnakeYaml() {
     assertToString("Null",
         new YamlMap().put("gnu", new YamlMap().put("ape", "bear").put("cheetah", null)));
     assertToString("Empty string", new YamlMap().put("foobar", ""));
@@ -348,7 +348,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSerializeBetterThanSnakeYaml() {
+  void shouldSerializeBetterThanSnakeYaml() {
     assertToString(new YamlMap().put("zuul", Collections.emptyList()), "zuul: [ ]%n",
         "Empty collection");
     assertToString(new YamlMap(), "{ }%n", "Empty map");
@@ -380,7 +380,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldLoadYamlFromFile() throws IOException {
+  void shouldLoadYamlFromFile() throws IOException {
     File yamlFile = newFile(temporaryFolder);
     try (PrintWriter writer = new PrintWriter(yamlFile, StandardCharsets.UTF_8.name())) {
       writer.print(SAMPLE_YAML_STRING);
@@ -390,7 +390,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldReturnEmptyMapWhenLoadingFromNonExistingFile() throws IOException {
+  void shouldReturnEmptyMapWhenLoadingFromNonExistingFile() throws IOException {
     File nonExistingFile = newFile(temporaryFolder);
 
     if (!nonExistingFile.delete()) {
@@ -402,14 +402,14 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSerializeToStream() throws IOException {
+  void shouldSerializeToStream() throws IOException {
     assertEquals(SAMPLE_YAML_STRING,
         IOUtils.toString(YamlMap.from(SAMPLE_YAML_STRING).toStream(), StandardCharsets.UTF_8),
         "YAML from stream");
   }
 
   @Test
-  public void shouldDeleteListItem() {
+  void shouldDeleteListItem() {
     yaml.put(key, Collections.singletonList(value));
     List<Value> values = yaml.get(key).toList();
 
@@ -420,7 +420,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldIterateList() {
+  void shouldIterateList() {
     String value2 = '2' + someValue();
     yaml.put(key, Arrays.asList(value, value2));
 
@@ -437,7 +437,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSortWithDefaultComparator() {
+  void shouldSortWithDefaultComparator() {
     yaml.put("cheetah", "dingo");
     yaml.put("ape", "bear");
 
@@ -453,7 +453,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSortWithProvidedComparator() {
+  void shouldSortWithProvidedComparator() {
     yaml.put("elephant", "fox");
     yaml.put("giraffe", "hyena");
 
@@ -461,7 +461,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSortRecursively() {
+  void shouldSortRecursively() {
     yaml.put("iguana",
         new YamlMap()
             .put("leopard",
@@ -473,7 +473,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSortSequencesByName() {
+  void shouldSortSequencesByName() {
     yaml.put("unicorn",
         Arrays.asList(new YamlMap().put(NAME, "whale").put(TYPE, "a"),
             new YamlMap().put(NAME, "velociraptor").put(TYPE, "e"),
@@ -486,7 +486,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSortAtSingleLevel() {
+  void shouldSortAtSingleLevel() {
     yaml.put("bear", new YamlMap().put("elephant", "fox").put("cheetah", "dingo")).put("ape",
         new YamlMap().put("giraffe", "hyena"));
 
@@ -496,7 +496,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldLeaveSomeEntriesUnsorted() {
+  void shouldLeaveSomeEntriesUnsorted() {
     yaml.put("B", new YamlMap().put("b", "b").put("a", "a")).put("A", Arrays.asList("z", "y"))
         .put("C", new YamlMap().put("d", "d").put("c", "c"));
 
@@ -505,7 +505,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSortAnyMap() {
+  void shouldSortAnyMap() {
     Map<String, String> wrapped = new TreeMap<>((a, b) -> b.compareTo(a));
     wrapped.put("F", "G");
     wrapped.put("D", "E");
@@ -518,7 +518,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldVisitMap() {
+  void shouldVisitMap() {
     yaml.put("aardvark",
         Arrays.asList(
             new YamlMap().put("bee", "cobra").put("dog",
@@ -554,7 +554,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldStripEndingWhitespace() {
+  void shouldStripEndingWhitespace() {
     yaml.put("mongoose", "narwhal  ");
 
     assertValue("narwhal", yaml.get("mongoose"));
@@ -565,21 +565,21 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldStripWhitespaceAfterLineBreaks() {
+  void shouldStripWhitespaceAfterLineBreaks() {
     yaml.put("okapi", "panda  \nquail");
 
     assertValue(String.format("panda%nquail"), yaml.get("okapi"));
   }
 
   @Test
-  public void shouldMaintainOrderWhenReplacingEntries() {
+  void shouldMaintainOrderWhenReplacingEntries() {
     yaml.put("rabbit", "scorpion").put("tapir", "uakari").replace("rabbit", "vulture", "warthog");
 
     assertYaml("vulture: warthog%ntapir: uakari%n", yaml);
   }
 
   @Test
-  public void shouldReplaceNestedMaps() {
+  void shouldReplaceNestedMaps() {
     String oldKey = "xenops";
     yaml.put(oldKey, new YamlMap().put("yak", "zebra"));
 
@@ -589,7 +589,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldSortSequence() {
+  void shouldSortSequence() {
     yaml.put("Q", Arrays.asList("N", "M"))
         .put("O",
             Arrays.asList(new YamlMap().put("I", "J").put(NAME, "R"),
@@ -605,7 +605,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldResolveOffsetDateTime() {
+  void shouldResolveOffsetDateTime() {
     assertStringField("odt", "2002-05-30T12:00:00Z");
     assertStringField("ms", "2017-10-06T10:59:11.477+02:00");
   }
@@ -617,7 +617,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldGetProperFieldTypeAfterDeserialization() {
+  void shouldGetProperFieldTypeAfterDeserialization() {
     assertFieldTypeAfterDeserialization(String.class, "0000");
     assertFieldTypeAfterDeserialization(String.class, "01234");
     assertFieldTypeAfterDeserialization(String.class, "0123s");
@@ -633,7 +633,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   @Test
-  public void shouldAddQuotesToFieldStartingWithZeroAndConsistingOfDigits() {
+  void shouldAddQuotesToFieldStartingWithZeroAndConsistingOfDigits() {
     assertEquals(expectedYamlNameValue("'0000'"), actualYamlNameValue("0000"));
     assertEquals(expectedYamlNameValue("'01234'"), actualYamlNameValue("01234"));
     assertEquals(expectedYamlNameValue("1234"), actualYamlNameValue("1234"));

@@ -20,7 +20,7 @@ import org.w3c.dom.Document;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenWorkingWithXml extends TestCase {
+class WhenWorkingWithXml extends TestCase {
 
   private static final String NL = System.getProperty("line.separator");
   private static final String XML_WITH_CDATA =
@@ -34,7 +34,7 @@ public class WhenWorkingWithXml extends TestCase {
   private static final String CDATA_VALUE = "characters !&<>*\\n[[]] with markup";
 
   @Test
-  public void shouldPrettyPrintDocument() {
+  void shouldPrettyPrintDocument() {
     String expected = XmlUtil.XML_DECLARATION + "<root>" + NL
         + "  <child attr=\"value\"/>" + NL
         + "  <!-- Another child -->" + NL
@@ -60,7 +60,7 @@ public class WhenWorkingWithXml extends TestCase {
   }
 
   @Test
-  public void shouldNotEscapeCdata() {
+  void shouldNotEscapeCdata() {
     Document document = XmlBuilder.newDocument()
         .namespace(randomString())
         .element("parent")
@@ -79,7 +79,7 @@ public class WhenWorkingWithXml extends TestCase {
   }
 
   @Test
-  public void shouldSuppressPrintingRootNamespace() {
+  void shouldSuppressPrintingRootNamespace() {
     String elementName = randomString(5);
     Document document = XmlBuilder.newDocument().namespace(randomString()).element(elementName).end().build();
 
@@ -89,7 +89,7 @@ public class WhenWorkingWithXml extends TestCase {
   }
 
   @Test
-  public void shouldNotThrowExceptionOnValidDocumentWhenValidating() throws IOException {
+  void shouldNotThrowExceptionOnValidDocumentWhenValidating() throws IOException {
     String elementName = randomString(8);
     Document document = XmlBuilder.newDocument().element(elementName).build();
     Document schema = someSchema(elementName);
@@ -107,7 +107,7 @@ public class WhenWorkingWithXml extends TestCase {
   }
 
   @Test
-  public void shouldThrowExceptionOnInvalidDocumentWhenValidating() throws IOException {
+  void shouldThrowExceptionOnInvalidDocumentWhenValidating() throws IOException {
     Document document = XmlBuilder.newDocument().element(randomString(8)).build();
     Document schema = someSchema(randomString(8));
 
@@ -116,7 +116,7 @@ public class WhenWorkingWithXml extends TestCase {
   }
 
   @Test
-  public void shouldThrowExceptionOnInvalidSchemaWhenValidating() throws IOException {
+  void shouldThrowExceptionOnInvalidSchemaWhenValidating() throws IOException {
     Document document = XmlBuilder.newDocument().element(randomString(8)).build();
 
     assertThrows(ValidationException.class,
@@ -124,7 +124,7 @@ public class WhenWorkingWithXml extends TestCase {
   }
 
   @Test
-  public void shouldEscapeOrRemoveInvalidCharacters() {
+  void shouldEscapeOrRemoveInvalidCharacters() {
     assertEquals("a&apos;b&amp;c&quot;d&lt;e&gt;fgh\ni&#0009;j",
         XmlUtil.escape("a'b&c\"d<e>f\u0001g\u000Ch\ni\tj"), "Escaped text");
   }

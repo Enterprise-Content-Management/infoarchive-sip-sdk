@@ -13,10 +13,10 @@ import com.opentext.ia.sdk.dto.result.AllSearchComponents;
 import com.opentext.ia.sdk.dto.result.ResultMaster;
 
 
-public class WhenWorkingWithAllSearchComponenents {
+class WhenWorkingWithAllSearchComponenents {
 
   @Test
-  public void shouldHaveNoDefaults() {
+  void shouldHaveNoDefaults() {
     AllSearchComponents components = new AllSearchComponents();
     assertNull(components.getResultMaster());
     assertNull(components.getSearchComposition());
@@ -24,7 +24,7 @@ public class WhenWorkingWithAllSearchComponenents {
   }
 
   @Test
-  public void shouldUpdateStateWhenSettersAreCalled() {
+  void shouldUpdateStateWhenSettersAreCalled() {
     AllSearchComponents components = new AllSearchComponents();
     ResultMaster resultMaster = new ResultMaster();
     SearchComposition searchComposition = new SearchComposition();

@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 
-public class WhenWorkingWithSearch {
+class WhenWorkingWithSearch {
 
   private static final String TEST_SUBJECT = "subject";
   private static final String TEST_VALUE = "Test";
@@ -22,129 +22,129 @@ public class WhenWorkingWithSearch {
   private final SearchDataBuilder builder = SearchDataBuilder.builder();
 
   @Test
-  public void defaultDecriptionShouldBeNull() {
+  void defaultDecriptionShouldBeNull() {
     assertNull(search.getDescription());
   }
 
   @Test
-  public void defaultStateShouldNotBeNull() {
+  void defaultStateShouldNotBeNull() {
     assertEquals("DRAFT", search.getState());
   }
 
   @Test
-  public void defaultNestedSearchShouldNotBeNull() {
+  void defaultNestedSearchShouldNotBeNull() {
     assertFalse(search.isNestedSearch());
   }
 
   @Test
-  public void defaultInUseShouldNotBeNull() {
+  void defaultInUseShouldNotBeNull() {
     assertFalse(search.isInUse());
   }
 
   @Test
-  public void setDecription() {
+  void setDecription() {
     String description = "Test Search";
     search.setDescription(description);
     assertEquals(description, search.getDescription());
   }
 
   @Test
-  public void setState() {
+  void setState() {
     String state = "TestState";
     search.setState(state);
     assertEquals(state, search.getState());
   }
 
   @Test
-  public void setNestedSearch() {
+  void setNestedSearch() {
     search.setNestedSearch(true);
     assertTrue(search.isNestedSearch());
   }
 
   @Test
-  public void setInUse() {
+  void setInUse() {
     search.setInUse(true);
     assertTrue(search.isInUse());
   }
 
   @Test
-  public void setAic() {
+  void setAic() {
     String aic = "http://emailAic";
     search.setAic(aic);
     assertEquals(aic, search.getAic());
   }
 
   @Test
-  public void setQuery() {
+  void setQuery() {
     String query = "http://emailQuery";
     search.setQuery(query);
     assertEquals(query, search.getQuery());
   }
 
   @Test
-  public void searchesObjectCreationShouldBeSuccessful() {
+  void searchesObjectCreationShouldBeSuccessful() {
     assertNotNull(new Searches());
   }
 
   @Test
-  public void defaultSearchCompositionNameShouldBeSet1() {
+  void defaultSearchCompositionNameShouldBeSet1() {
     assertEquals("Set 1", composition.getName());
   }
 
   @Test
-  public void setSearchCompositionName() {
+  void setSearchCompositionName() {
     String name = "Test";
     composition.setName(name);
     assertEquals(name, composition.getName());
   }
 
   @Test
-  public void searchCompositionsObjectCreationShouldBeSuccessful() {
+  void searchCompositionsObjectCreationShouldBeSuccessful() {
     assertNotNull(new SearchCompositions());
   }
 
   @Test
-  public void searchDataBuilderObjectCreationSuccessful() {
+  void searchDataBuilderObjectCreationSuccessful() {
     assertNotNull(builder);
   }
 
   @Test
-  public void searchDataBuilderCriteriaEqualSuccessful() {
+  void searchDataBuilderCriteriaEqualSuccessful() {
     assertNotNull(builder.isEqual(TEST_SUBJECT, TEST_VALUE));
   }
 
   @Test
-  public void searchDataBuilderCriteriaNotEqualSuccessful() {
+  void searchDataBuilderCriteriaNotEqualSuccessful() {
     assertNotNull(builder.isNotEqual(TEST_SUBJECT, TEST_VALUE));
   }
 
   @Test
-  public void searchDataBuilderCriteriaStartsWithSuccessful() {
+  void searchDataBuilderCriteriaStartsWithSuccessful() {
     assertNotNull(builder.startsWith(TEST_SUBJECT, TEST_VALUE));
   }
 
   @Test
-  public void searchDataBuilderCriteriaEndsWithSuccessful() {
+  void searchDataBuilderCriteriaEndsWithSuccessful() {
     assertNotNull(builder.endsWith(TEST_SUBJECT, TEST_VALUE));
   }
 
   @Test
-  public void searchDataBuilderCriteriaContainsWithSuccessful() {
+  void searchDataBuilderCriteriaContainsWithSuccessful() {
     assertNotNull(builder.contains(TEST_SUBJECT, TEST_VALUE));
   }
 
   @Test
-  public void searchDataBuilderCriteriaBuildSuccessful() {
+  void searchDataBuilderCriteriaBuildSuccessful() {
     assertNotNull(builder.build());
   }
 
   @Test
-  public void searchResultsCreationIsSuccessful() {
+  void searchResultsCreationIsSuccessful() {
     assertNotNull(new SearchResults());
   }
 
   @Test
-  public void searchResultsDefaultRowsNotNull() {
+  void searchResultsDefaultRowsNotNull() {
     assertNotNull(new SearchResults().getRows());
   }
 

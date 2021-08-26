@@ -21,14 +21,14 @@ import org.junit.jupiter.api.io.TempDir;
 import com.opentext.ia.test.RandomData;
 import com.opentext.ia.test.TestCase;
 
-public class WhenCopyingFiles extends TestCase {
+class WhenCopyingFiles extends TestCase {
 
   @TempDir
-  public Path temporaryFolder;
+  Path temporaryFolder;
   private final RandomData random = new RandomData();
 
   @Test
-  public void shouldCreateFileWithSameNameAndContentsInProvidedDirectory() throws IOException {
+  void shouldCreateFileWithSameNameAndContentsInProvidedDirectory() throws IOException {
     String contents = random.string();
     File source = newFile(temporaryFolder, contents);
     File destinationDir = newFolder(temporaryFolder);

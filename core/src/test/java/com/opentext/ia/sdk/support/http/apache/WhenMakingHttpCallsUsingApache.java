@@ -45,7 +45,7 @@ import com.opentext.ia.sdk.support.http.TextPart;
 import com.opentext.ia.test.TestCase;
 
 @Tag("external")
-public class WhenMakingHttpCallsUsingApache extends TestCase {
+class WhenMakingHttpCallsUsingApache extends TestCase {
 
   private final TestApacheHttpClient httpClient = new TestApacheHttpClient();
   private final HttpResponse response = mock(HttpResponse.class);
@@ -63,7 +63,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
-  public void shouldGet() throws IOException {
+  void shouldGet() throws IOException {
     String uri = randomString();
     httpClient.setResponse(uri);
     String header = randomString();
@@ -87,7 +87,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
-  public void shouldThrowExceptionOnNonOkStatusCode() throws IOException {
+  void shouldThrowExceptionOnNonOkStatusCode() throws IOException {
     when(statusLine.getStatusCode()).thenReturn(400);
     assertThrows(HttpException.class, () -> getResponse(null));
   }
@@ -98,13 +98,13 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
-  public void shouldReturnNullWhenNoEntity() throws IOException {
+  void shouldReturnNullWhenNoEntity() throws IOException {
     Object body = getResponse(null);
     assertNull(body);
   }
 
   @Test
-  public void shouldReturnBodyAsString() throws IOException {
+  void shouldReturnBodyAsString() throws IOException {
     String expected = randomString();
     returnBody(expected);
 
@@ -118,7 +118,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
-  public void shouldReturnBodyAsJson() throws IOException {
+  void shouldReturnBodyAsJson() throws IOException {
     String expected = randomString();
     returnBody("{ \"bar\": \"" + expected + "\" }");
 
@@ -128,7 +128,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
-  public void shouldAllowCustomProcessingOfResponse() throws IOException {
+  void shouldAllowCustomProcessingOfResponse() throws IOException {
     String uri = "http://google.com";
     String expected = randomString();
     ResponseFactory<String> responseFactory = (resp, closer) -> {
@@ -150,7 +150,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
-  public void shouldPut() throws IOException {
+  void shouldPut() throws IOException {
     String uri = randomString();
 
     httpClient.put(uri, Collections.emptyList(), null);
@@ -159,7 +159,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
-  public void shouldPost() throws IOException {
+  void shouldPost() throws IOException {
     String uri = randomString();
     String payload = randomString();
 
@@ -170,7 +170,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
-  public void shouldPostMultiPart() throws IOException {
+  void shouldPostMultiPart() throws IOException {
     String uri = randomString();
     String data = randomString();
     try (InputStream stream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8))) {
@@ -184,31 +184,31 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
-  public void shouldBuildUris() {
+  void shouldBuildUris() {
     assertEquals("http://google.com?q=foo+bar",
         httpClient.uri("http://google.com").addParameter("q", "foo bar").build());
   }
 
   @Test
-  public void shouldBuildUrisWithParameters() {
+  void shouldBuildUrisWithParameters() {
     assertEquals("http://google.com/?q=foo",
         httpClient.uri("http://google.com/?q=foo").build());
   }
 
   @Test
-  public void shouldAddRequestParameterOnlyOnce() {
+  void shouldAddRequestParameterOnlyOnce() {
     assertEquals("http://google.com/?q=bar",
         httpClient.uri("http://google.com/?q=foo").addParameter("q", "bar").build());
   }
 
   @Test
-  public void shouldAddRequestParameterMultipleTimes() {
+  void shouldAddRequestParameterMultipleTimes() {
     assertEquals("http://google.com/?q=foo&q=bar",
         httpClient.uri("http://google.com/").addParameter("q", "foo").addParameter("q", "bar").build());
   }
 
   @Test
-  public void shouldDelete() throws IOException {
+  void shouldDelete() throws IOException {
     String uri = randomString();
 
     httpClient.delete(uri, Collections.emptyList());

@@ -39,10 +39,10 @@ import com.opentext.ia.sdk.support.io.DomainObjectTooBigException;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
 @SuppressWarnings("unchecked")
-public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
+class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
 
   @TempDir
-  public Path folder;
+  Path folder;
   private SipAssembler<String> sipAssembler;
   private SipSegmentationStrategy<String> segmentationStrategy;
   private final Consumer<FileGenerationMetrics> callback = mock(Consumer.class);
@@ -60,7 +60,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
   }
 
   @Test
-  public void shouldStartNewSipsbasedOnSegmentationStrategy() throws IOException {
+  void shouldStartNewSipsbasedOnSegmentationStrategy() throws IOException {
     String object1 = randomString();
     String object2 = randomString();
     String object3 = randomString();
@@ -102,7 +102,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
   }
 
   @Test
-  public void shouldCreateFilesInGivenDirectory() throws IOException {
+  void shouldCreateFilesInGivenDirectory() throws IOException {
     File dir = newFolder(folder);
     BatchSipAssembler<String> batcher = new BatchSipAssembler<>(sipAssembler, segmentationStrategy, dir);
 
@@ -114,7 +114,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
   }
 
   @Test
-  public void shouldInvokeCallback() throws IOException {
+  void shouldInvokeCallback() throws IOException {
     BatchSipAssemblerWithCallback<String> batcher =
         new BatchSipAssemblerWithCallback<>(sipAssembler, segmentationStrategy, () -> newFile(), callback);
 
@@ -126,7 +126,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
   }
 
   @Test
-  public void shouldRejectDomainObjectThatIsTooBig() throws IOException {
+  void shouldRejectDomainObjectThatIsTooBig() throws IOException {
     File dir = newFolder(folder);
     int maxSize = 2;
     SipSegmentationStrategy<String> strategy =
@@ -137,7 +137,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
 
   @Test
   // #39
-  public void shouldBeAbleToDeleteFileFromCallback() throws IOException {
+  void shouldBeAbleToDeleteFileFromCallback() throws IOException {
     AtomicReference<File> sip = new AtomicReference<>();
     Consumer<FileGenerationMetrics> deletingCallback = fgm -> {
       File file = fgm.getFile();
@@ -158,7 +158,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
 
   @Test
   // #39
-  public void shouldProduceValidSips() throws IOException {
+  void shouldProduceValidSips() throws IOException {
     AtomicInteger numSips = new AtomicInteger();
     Consumer<FileGenerationMetrics> sipValidatingCallback = fgm -> {
       numSips.incrementAndGet();

@@ -19,7 +19,7 @@ import org.mockito.ArgumentCaptor;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenTiming extends TestCase {
+class WhenTiming extends TestCase {
 
   private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
 
@@ -42,7 +42,7 @@ public class WhenTiming extends TestCase {
   }
 
   @Test
-  public void shouldRestartTimerWhenReset() {
+  void shouldRestartTimerWhenReset() {
     timer.reset();
 
     verify(clock).cancel(taskName);
@@ -51,7 +51,7 @@ public class WhenTiming extends TestCase {
   }
 
   @Test
-  public void shouldCallBackWhenTimePasses() {
+  void shouldCallBackWhenTimePasses() {
     ringer.run();
 
     verify(clock, never()).cancel(taskName);
@@ -60,7 +60,7 @@ public class WhenTiming extends TestCase {
   }
 
   @Test
-  public void shouldCancelTimerWhenStopped() {
+  void shouldCancelTimerWhenStopped() {
     timer.stop();
 
     verify(clock).cancel(taskName);

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.test.RandomData;
 
 
-public class WhenWorkingWithTime {
+class WhenWorkingWithTime {
 
   private static final int TASK_WAIT_DELTA = 200;
 
@@ -22,7 +22,7 @@ public class WhenWorkingWithTime {
   private final Clock clock = new DefaultClock();
 
   @Test
-  public void shouldSleepForSpecifiedTime() {
+  void shouldSleepForSpecifiedTime() {
     int expected = random.integer(10, 20);
     long start = System.currentTimeMillis();
 
@@ -33,13 +33,13 @@ public class WhenWorkingWithTime {
   }
 
   @Test
-  public void shouldTellTimeAccurately() {
+  void shouldTellTimeAccurately() {
     long delta = Math.abs(System.currentTimeMillis() - clock.time());
     assertTrue(delta <= 5, "Clock deviates from real time by " + delta);
   }
 
   @Test
-  public void shouldScheduleTaskForLaterExecution() throws InterruptedException {
+  void shouldScheduleTaskForLaterExecution() throws InterruptedException {
     int sleep = random.integer(20, 30);
     final AtomicBoolean executed = new AtomicBoolean(false);
     clock.schedule(random.string(), sleep, TimeUnit.MILLISECONDS, () -> executed.set(true));
@@ -50,7 +50,7 @@ public class WhenWorkingWithTime {
   }
 
   @Test
-  public void shouldCancelScheduledTask() throws InterruptedException {
+  void shouldCancelScheduledTask() throws InterruptedException {
     int sleep = random.integer(2, 10);
     String name = random.string();
     final AtomicBoolean executed = new AtomicBoolean(false);
@@ -66,7 +66,7 @@ public class WhenWorkingWithTime {
    * The task may have just run and be removed automatically.
    */
   @Test
-  public void shouldSilentlyIgnoreCancellingAnUnknowTask() {
+  void shouldSilentlyIgnoreCancellingAnUnknowTask() {
     clock.cancel(random.string());
   }
 

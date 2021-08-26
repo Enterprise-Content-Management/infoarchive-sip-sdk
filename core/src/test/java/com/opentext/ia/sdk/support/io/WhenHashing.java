@@ -16,13 +16,13 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenHashing extends TestCase {
+class WhenHashing extends TestCase {
 
   private static final String EXPECTED_HASH_FUNCTION = "SHA-256";
   private final HashAssembler hashAssembler = new SingleHashAssembler();
 
   @Test
-  public void shouldEncodeDigestOfContent() throws NoSuchAlgorithmException {
+  void shouldEncodeDigestOfContent() throws NoSuchAlgorithmException {
     byte[] content = randomBytes();
 
     hashAssembler.initialize();
@@ -39,7 +39,7 @@ public class WhenHashing extends TestCase {
   }
 
   @Test
-  public void shouldCountNumberOfHashedBytes() {
+  void shouldCountNumberOfHashedBytes() {
     hashAssembler.initialize();
     assertEquals(0, hashAssembler.numBytesHashed(), "Initial size");
 

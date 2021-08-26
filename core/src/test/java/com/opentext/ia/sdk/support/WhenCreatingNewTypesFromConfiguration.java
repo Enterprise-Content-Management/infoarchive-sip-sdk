@@ -15,12 +15,12 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.test.RandomData;
 
 @SuppressWarnings("PMD.LooseCoupling")
-public class WhenCreatingNewTypesFromConfiguration {
+class WhenCreatingNewTypesFromConfiguration {
 
   private final RandomData random = new RandomData();
 
   @Test
-  public void shouldReturnInstanceOfConfiguredClassAsRequestedType() {
+  void shouldReturnInstanceOfConfiguredClassAsRequestedType() {
     String option = random.string(16);
     Class<?> type = HashMap.class;
     Map<String, String> configuration = Collections.singletonMap(option, type.getName());
@@ -31,7 +31,7 @@ public class WhenCreatingNewTypesFromConfiguration {
   }
 
   @Test
-  public void shouldReturnInstanceOfDefaultClassWhenConfigurationIsMissing() {
+  void shouldReturnInstanceOfDefaultClassWhenConfigurationIsMissing() {
     Class<?> type = HashMap.class;
 
     Map<?, ?> instance =
@@ -41,7 +41,7 @@ public class WhenCreatingNewTypesFromConfiguration {
   }
 
   @Test
-  public void shouldThrowRuntimeExceptionWhenClassCantBeInstantiated() {
+  void shouldThrowRuntimeExceptionWhenClassCantBeInstantiated() {
     String option = random.string(16);
     Class<Integer> type = Integer.class;
 

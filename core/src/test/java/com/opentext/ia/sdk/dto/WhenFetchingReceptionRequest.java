@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class WhenFetchingReceptionRequest {
+class WhenFetchingReceptionRequest {
 
   private static final String FORMAT = "TestFormat";
 
@@ -21,12 +21,12 @@ public class WhenFetchingReceptionRequest {
   }
 
   @Test
-  public void fetchDefaultFormat() {
+  void fetchDefaultFormat() {
     assertEquals("sip_zip", reception.getFormat(), "Reception Default Format");
   }
 
   @Test
-  public void fetchName() {
+  void fetchName() {
     reception.setFormat(FORMAT);
     assertEquals(FORMAT, reception.getFormat(), "Reception Format");
   }

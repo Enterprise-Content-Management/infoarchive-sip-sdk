@@ -6,7 +6,7 @@ package com.opentext.ia.sdk.support.xml;
 import org.w3c.dom.Document;
 
 
-public class WhenBuildingXmlDocuments extends XmlBuilderTestCase<Document> {
+class WhenBuildingXmlDocuments extends XmlBuilderTestCase<Document> {
 
   @Override
   protected XmlBuilder<Document> newBuilder() {

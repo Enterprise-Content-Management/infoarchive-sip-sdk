@@ -28,7 +28,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 
-public class WhenTransferringDataUsingObjects extends AbstractDtoTestCase {
+class WhenTransferringDataUsingObjects extends AbstractDtoTestCase {
 
   private static final Collection<Class<?>> PRIMITIVE_WRAPPER_TYPES = Arrays.asList(String.class, Integer.class,
       Long.class, Byte.class, Boolean.class, Double.class, Float.class, Character.class);
@@ -48,7 +48,7 @@ public class WhenTransferringDataUsingObjects extends AbstractDtoTestCase {
 
   @ParameterizedTest
   @MethodSource("source")
-  public void shouldUseJavaBeans(Class<?> type) throws ReflectiveOperationException {
+  void shouldUseJavaBeans(Class<?> type) throws ReflectiveOperationException {
     types.add(type);
     while (!types.isEmpty()) {
       Class<?> bean = types.iterator().next();

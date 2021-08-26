@@ -15,7 +15,7 @@ import com.opentext.ia.test.RandomData;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenWorkingWithCriterion extends TestCase {
+class WhenWorkingWithCriterion extends TestCase {
 
   private String label;
   private String name;
@@ -37,7 +37,7 @@ public class WhenWorkingWithCriterion extends TestCase {
   }
 
   @Test
-  public void shouldHaveNoDefaults() {
+  void shouldHaveNoDefaults() {
     Criterion criterion = new Criterion();
     assertNull(criterion.getLabel());
     assertNull(criterion.getName());
@@ -49,7 +49,7 @@ public class WhenWorkingWithCriterion extends TestCase {
   }
 
   @Test
-  public void shouldHonorSetValues() {
+  void shouldHonorSetValues() {
     Criterion criterion = newCriterion();
 
     assertEquals(label, criterion.getLabel());
@@ -63,7 +63,7 @@ public class WhenWorkingWithCriterion extends TestCase {
   }
 
   @Test
-  public void shouldHaveDescriptiveToString() {
+  void shouldHaveDescriptiveToString() {
     Criterion criterion = newCriterion();
 
     String string = criterion.toString();

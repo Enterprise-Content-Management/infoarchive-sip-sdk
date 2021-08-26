@@ -28,7 +28,7 @@ import com.opentext.ia.configuration.json.JsonConfiguration;
 import com.opentext.ia.configuration.json.JsonConfigurationProducer;
 
 
-public class WhenBuildingConfigurations {
+class WhenBuildingConfigurations {
 
   private static final Pattern NAME_PATTERN = Pattern.compile("[a-z]{1,3}_(?<uuid>.*)");
   private static final String NAME = "name";
@@ -78,7 +78,7 @@ public class WhenBuildingConfigurations {
   private final ConfigurationBuilder<JsonConfiguration> builder = new ConfigurationBuilder<>(producer);
 
   @Test
-  public void shouldUseDefaultPropertiesForTenant() {
+  void shouldUseDefaultPropertiesForTenant() {
     Configuration<ConfigurationObject> configuration = builder.withTenant().build();
 
     assertEquals(DEFAULT_TENANT_NAME, configuration.getTenant().getProperties().getString(NAME),
@@ -86,7 +86,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesOfTenant() {
+  void shouldSetPropertiesOfTenant() {
     Configuration<ConfigurationObject> configuration = builder.withTenant()
         .named(TENANT_NAME)
     .build();
@@ -99,7 +99,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForApplication() {
+  void shouldUseDefaultPropertiesForApplication() {
     Configuration<ConfigurationObject> configuration = builder.withApplication().build();
     ConfigurationObject application = configuration.getApplication();
 
@@ -145,7 +145,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesOfApplication() {
+  void shouldSetPropertiesOfApplication() {
     Configuration<ConfigurationObject> configuration = builder.withTenant()
         .named(TENANT_NAME)
         .withApplication()
@@ -171,13 +171,13 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldThrowExceptionWhenAskedForMissingItem() {
+  void shouldThrowExceptionWhenAskedForMissingItem() {
     assertThrows(IllegalArgumentException.class,
         () -> builder.withTenant().build().getApplication());
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForSearch() {
+  void shouldUseDefaultPropertiesForSearch() {
     Configuration<ConfigurationObject> configuration = builder.withSearch().build();
     ConfigurationObject search = configuration.getSearch();
 
@@ -187,7 +187,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForSearch() {
+  void shouldSetPropertiesForSearch() {
     Configuration<ConfigurationObject> configuration = builder.withApplication()
         .named(APPLICATION_NAME)
         .withSearch()
@@ -205,7 +205,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForFileSystemRoot() {
+  void shouldUseDefaultPropertiesForFileSystemRoot() {
     Configuration<ConfigurationObject> configuration = builder.withFileSystemRoot().build();
     ConfigurationObject fileSystemRoot = configuration.getFileSystemRoot();
 
@@ -216,7 +216,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForFileSystemRoot() {
+  void shouldSetPropertiesForFileSystemRoot() {
     Configuration<ConfigurationObject> configuration = builder.withFileSystemRoot()
         .named(FILE_SYSTEM_ROOT_NAME)
         .withDescription(DESCRIPTIVE_TEXT)
@@ -233,7 +233,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForSpace() {
+  void shouldUseDefaultPropertiesForSpace() {
     Configuration<ConfigurationObject> configuration = builder.withSpace().build();
     ConfigurationObject space = configuration.getSpace();
 
@@ -241,7 +241,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForSpace() {
+  void shouldSetPropertiesForSpace() {
     Configuration<ConfigurationObject> configuration = builder.withApplication()
         .named(APPLICATION_NAME)
         .withSpace()
@@ -255,7 +255,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForSpaceRootFolder() {
+  void shouldUseDefaultPropertiesForSpaceRootFolder() {
     Configuration<ConfigurationObject> configuration = builder
         .withFileSystemRoot()
             .named(FILE_SYSTEM_ROOT_NAME)
@@ -270,7 +270,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForSpaceRootFolder() {
+  void shouldSetPropertiesForSpaceRootFolder() {
     Configuration<ConfigurationObject> configuration = builder
         .withFileSystemRoot()
             .named(FILE_SYSTEM_ROOT_NAME)
@@ -288,7 +288,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForSpaceRootXdbLibrary() {
+  void shouldUseDefaultPropertiesForSpaceRootXdbLibrary() {
     Configuration<ConfigurationObject> configuration = builder.withSpace()
         .withSpaceRootXdbLibrary()
     .build();
@@ -298,7 +298,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForSpaceRootXdbLibrary() {
+  void shouldSetPropertiesForSpaceRootXdbLibrary() {
     Configuration<ConfigurationObject> configuration = builder.withSpace()
         .named(SPACE_NAME)
         .withSpaceRootXdbLibrary()
@@ -312,7 +312,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForXdbLibrary() {
+  void shouldUseDefaultPropertiesForXdbLibrary() {
     Configuration<ConfigurationObject> configuration = builder.withSpace()
         .withSpaceRootXdbLibrary()
             .withXdbLibrary()
@@ -327,7 +327,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForXdbLibrary() {
+  void shouldSetPropertiesForXdbLibrary() {
     Configuration<ConfigurationObject> configuration = builder.withSpace()
         .named(SPACE_NAME)
         .withSpaceRootXdbLibrary()
@@ -350,7 +350,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForPdiSchema() {
+  void shouldUseDefaultPropertiesForPdiSchema() {
     Configuration<ConfigurationObject> configuration = builder.withApplication()
         .withPdiSchema()
     .build();
@@ -360,7 +360,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForPdiSchema() {
+  void shouldSetPropertiesForPdiSchema() {
     Configuration<ConfigurationObject> configuration = builder.withApplication()
         .named(APPLICATION_NAME)
         .withPdiSchema()
@@ -381,7 +381,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForHolding() {
+  void shouldUseDefaultPropertiesForHolding() {
     Configuration<ConfigurationObject> configuration = builder.withHolding().build();
     ConfigurationObject holding = configuration.getHolding();
 
@@ -390,7 +390,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForHolding() {
+  void shouldSetPropertiesForHolding() {
     Configuration<ConfigurationObject> configuration = builder.withApplication()
         .named(APPLICATION_NAME)
         .withHolding()
@@ -406,7 +406,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForCryptoObject() {
+  void shouldUseDefaultPropertiesForCryptoObject() {
     Configuration<ConfigurationObject> configuration = builder.withCryptoObject().build();
     ConfigurationObject cryptoObject = configuration.getCryptoObject();
 
@@ -420,7 +420,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForCryptoObject() {
+  void shouldSetPropertiesForCryptoObject() {
     Configuration<ConfigurationObject> configuration = builder.withCryptoObject()
         .named(CRYPTO_OBJECT_NAME)
         .providedBy("SunJCE")
@@ -440,7 +440,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForXdbFederation() {
+  void shouldUseDefaultPropertiesForXdbFederation() {
     Configuration<ConfigurationObject> configuration = builder.withXdbFederation().build();
     ConfigurationObject xdbFederation = configuration.getXdbFederation();
 
@@ -451,7 +451,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForXdbFederation() {
+  void shouldSetPropertiesForXdbFederation() {
     Configuration<ConfigurationObject> configuration = builder.withXdbFederation()
         .named(XDB_FEDERATION_NAME)
         .runningAt(XDB_BOOTSTRAP)
@@ -466,7 +466,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetCryptoObject() {
+  void shouldSetCryptoObject() {
     Configuration<ConfigurationObject> configuration = builder
         .withCryptoObject()
             .named(CRYPTO_OBJECT_NAME)
@@ -481,7 +481,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForXdbDatabase() {
+  void shouldUseDefaultPropertiesForXdbDatabase() {
     Configuration<ConfigurationObject> configuration = builder.withXdbDatabase().build();
     ConfigurationObject xdbDatabase = configuration.getXdbDatabase();
 
@@ -491,7 +491,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForXdbDatabase() {
+  void shouldSetPropertiesForXdbDatabase() {
     Configuration<ConfigurationObject> configuration = builder.withXdbDatabase()
         .named(XDB_DATABASE_NAME)
         .protectedWithPassword(SOME_PASSWORD)
@@ -504,7 +504,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForXdbCluster() {
+  void shouldUseDefaultPropertiesForXdbCluster() {
     Configuration<ConfigurationObject> configuration = builder.withXdbCluster().build();
     ConfigurationObject xdbCluster = configuration.getXdbCluster();
 
@@ -516,7 +516,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForXdbCluster() {
+  void shouldSetPropertiesForXdbCluster() {
     Configuration<ConfigurationObject> configuration = builder.withXdbCluster()
         .named(XDB_CLUSTER_NAME)
         .withDescription(DESCRIPTIVE_TEXT)
@@ -533,7 +533,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldAddXdbDatabaseToXdbCluster() {
+  void shouldAddXdbDatabaseToXdbCluster() {
     Configuration<ConfigurationObject> configuration = builder.withXdbCluster()
         .withXdbDatabase()
             .named(XDB_DATABASE_NAME)
@@ -548,7 +548,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldUseDefaultPropertiesForPdi() {
+  void shouldUseDefaultPropertiesForPdi() {
     Configuration<ConfigurationObject> configuration = builder.withApplication()
         .withPdi()
     .build();
@@ -558,7 +558,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldSetPropertiesForPdi() {
+  void shouldSetPropertiesForPdi() {
     Configuration<ConfigurationObject> configuration = builder.withApplication()
         .named(APPLICATION_NAME)
         .withPdi()
@@ -572,7 +572,7 @@ public class WhenBuildingConfigurations {
   }
 
   @Test
-  public void shouldAddMultipleContentObjectsToPdi() throws IOException {
+  void shouldAddMultipleContentObjectsToPdi() throws IOException {
     Configuration<ConfigurationObject> configuration;
     try (InputStream content2 = IOUtils.toInputStream(CONTENT2, StandardCharsets.UTF_8)) {
       configuration = builder.withApplication()

@@ -21,7 +21,7 @@ import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.resource.ResourceResolver;
 
 
-public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
+class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   private static final String VERSION = "version";
   private static final String VERSION_1 = "1.0.0";
@@ -89,21 +89,21 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldAddDefaultVersionWhenNotSpecified() {
+  void shouldAddDefaultVersionWhenNotSpecified() {
     normalizeYaml();
 
     assertValue(VERSION_1, yaml.get(VERSION), "Default version");
   }
 
   @Test
-  public void shouldNotOverwriteSpecifiedVersion() {
+  void shouldNotOverwriteSpecifiedVersion() {
     YamlConfiguration configuration = new YamlConfiguration("version: 2.0.0");
 
     assertValue("2.0.0", configuration.getMap().get(VERSION), "Version");
   }
 
   @Test
-  public void shouldReplaceSingularTopLevelObjectWithSequence() throws IOException {
+  void shouldReplaceSingularTopLevelObjectWithSequence() throws IOException {
     String name = someName();
     String type = APPLICATION;
     String otherType = someType();
@@ -118,7 +118,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldReplaceTopLevelMapOfMapsWithSequence() {
+  void shouldReplaceTopLevelMapOfMapsWithSequence() {
     String name = someName();
     yaml.put(APPLICATIONS, new YamlMap().put(name, new YamlMap().put(TYPE, "ACTIVE_ARCHIVING")));
 
@@ -128,7 +128,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldConvertEnumValue() {
+  void shouldConvertEnumValue() {
     yaml.put(APPLICATIONS, Collections.singletonList(new YamlMap().put(TYPE, "active archiving")));
     yaml.put(CONFIRMATIONS, Collections.singletonList(new YamlMap().put("types", Arrays.asList("receipt", "invalid"))));
 
@@ -139,7 +139,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldInsertDefaultReferences() {
+  void shouldInsertDefaultReferences() {
     String tenant = someName();
     String application = someName();
     String space = someName();
@@ -181,7 +181,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldInsertDefaultAicReferenceForSearchWhenDatabaseIsMissing() {
+  void shouldInsertDefaultAicReferenceForSearchWhenDatabaseIsMissing() {
     String search = someName();
     String database = someName();
     String aic = someName();
@@ -203,7 +203,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldInsertDefaultAicReferenceForSearchWhenDatabaseIsNull() {
+  void shouldInsertDefaultAicReferenceForSearchWhenDatabaseIsNull() {
     String search = someName();
     String database = someName();
     String aic = someName();
@@ -226,7 +226,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldNotInsertDefaultAicReferenceForSearchWhenDatabaseIsSet() {
+  void shouldNotInsertDefaultAicReferenceForSearchWhenDatabaseIsSet() {
     String search = someName();
     String database = someName();
     String aic = someName();
@@ -247,7 +247,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldInsertDefaultDatabaseReferenceForSearchWhenAicAndQueryAreMissing() {
+  void shouldInsertDefaultDatabaseReferenceForSearchWhenAicAndQueryAreMissing() {
     String search = someName();
     String database = someName();
 
@@ -262,7 +262,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldInsertDefaultDatabaseReferenceForSearchWhenAicAndQueryAreNull() {
+  void shouldInsertDefaultDatabaseReferenceForSearchWhenAicAndQueryAreNull() {
     String search = someName();
     String database = someName();
 
@@ -279,7 +279,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldNotInsertDefaultDatabaseReferenceForSearchWhenAicAndQueryAreSet() {
+  void shouldNotInsertDefaultDatabaseReferenceForSearchWhenAicAndQueryAreSet() {
     String search = someName();
     String database = someName();
     String aic = someName();
@@ -303,7 +303,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldNotInsertDefaultReferenceForExplicitNull() {
+  void shouldNotInsertDefaultReferenceForExplicitNull() {
     yaml.put(TENANTS, Collections.singletonList(new YamlMap().put(NAME, someName())));
     yaml.put(APPLICATIONS, Collections.singletonList(new YamlMap()
         .put(NAME, someName())
@@ -316,7 +316,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldNotInsertDefaultReferenceForExceptionalCases() {
+  void shouldNotInsertDefaultReferenceForExceptionalCases() {
     // The following are usually null. To prevent having to specify null (almost) everywhere, we simply don't insert
     // references by default for these exceptional cases.
     yaml.put("searchGroups", Collections.singletonList(new YamlMap().put(NAME, someName())));
@@ -333,7 +333,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldInsertDefaultValues() {
+  void shouldInsertDefaultValues() {
     yaml.put("exportPipelines", Collections.singletonList(new YamlMap().put(NAME, someName())));
     yaml.put(HOLDINGS, Collections.singletonList(new YamlMap().put(NAME, someName())));
     yaml.put("receiverNodes", Collections.singletonList(new YamlMap().put(NAME, someName())));
@@ -346,7 +346,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldNotInsertDefaultConfigurationForIngest() {
+  void shouldNotInsertDefaultConfigurationForIngest() {
     yaml.put(INGESTS, Collections.singletonList(new YamlMap().put(NAME, someName())));
 
     normalizeYaml();
@@ -355,7 +355,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldReplaceSingularObjectReferenceWithSequenceForReferenceCollections() throws IOException {
+  void shouldReplaceSingularObjectReferenceWithSequenceForReferenceCollections() throws IOException {
     String name = someName();
     yaml.put(HOLDINGS, Collections.singletonList(new YamlMap().put(NAME, name)))
         .put(CONFIRMATIONS, Collections.singletonList(new YamlMap().put("holding", name)));
@@ -369,7 +369,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldReplaceNestedMapOfMapsWithSequence() {
+  void shouldReplaceNestedMapOfMapsWithSequence() {
     String query = someName();
     String operand = someName();
     String path = someName();
@@ -388,7 +388,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldAddNamespaceDeclarationsToXqueryFields() {
+  void shouldAddNamespaceDeclarationsToXqueryFields() {
     String prefix = "n";
     String uri = randomUri();
     String text = "current-dateTime()";
@@ -407,7 +407,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldAddNamespaceDeclarationsToXqueryObjects() {
+  void shouldAddNamespaceDeclarationsToXqueryObjects() {
     String prefix = "n";
     String uri = randomUri();
     String text = "current-dateTime()";
@@ -426,7 +426,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldReplaceXqueryQueryObjectWithText() {
+  void shouldReplaceXqueryQueryObjectWithText() {
     String text = "current-dateTime()";
     yaml.put(XQUERIES, Collections.singletonList(new YamlMap()
             .put(NAME, someName())
@@ -439,7 +439,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldReplacePdiSchemaNamespaceWithName() {
+  void shouldReplacePdiSchemaNamespaceWithName() {
     String prefix = "n";
     String uri = randomUri();
     yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
@@ -457,7 +457,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldTranslatePdiYamlToXml() {
+  void shouldTranslatePdiYamlToXml() {
     String prefix1 = "n";
     String uri1 = randomUri();
     String prefix2 = "ex";
@@ -501,7 +501,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldTranslateResultConfigurationHelperYamlToXml() {
+  void shouldTranslateResultConfigurationHelperYamlToXml() {
     yaml.put(NAMESPACES, Arrays.asList(
         new YamlMap()
             .put(PREFIX, "n")
@@ -554,7 +554,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
 
   @Test
-  public void shouldTranslateIngestYamlToXml() {
+  void shouldTranslateIngestYamlToXml() {
     yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
             .put(PREFIX, "ri")
             .put(URI, "urn:x-emc:ia:schema:ri")))
@@ -646,7 +646,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldExpandNamespaceInResultMaster() {
+  void shouldExpandNamespaceInResultMaster() {
     String prefix = "n";
     String uri = randomUri();
     yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
@@ -664,7 +664,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldExpandNamespaceInQuery() {
+  void shouldExpandNamespaceInQuery() {
     String prefix = "n";
     String uri = randomUri();
     yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
@@ -682,7 +682,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldNotAddReferencesToPseudoContent() {
+  void shouldNotAddReferencesToPseudoContent() {
     addNamedObjectsFor(APPLICATION, "store");
     addPseudoContent(EXPORT_PIPELINE, EXPORT_TRANSFORMATION, "valueList");
 
@@ -709,7 +709,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldInsertDefaultPipelineAndTransformationIntoExportConfiguration() {
+  void shouldInsertDefaultPipelineAndTransformationIntoExportConfiguration() {
     addNamedObjectsFor(TENANT, APPLICATION, EXPORT_PIPELINE, EXPORT_TRANSFORMATION, "exportConfiguration");
 
     normalizeYaml();
@@ -719,7 +719,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldEnableAuditEventByDefault() {
+  void shouldEnableAuditEventByDefault() {
     yaml.put("auditEvents", Arrays.asList(new YamlMap()
         .put(NAME, someName())
         .put(TYPE, someName()), new YamlMap()
@@ -734,7 +734,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldNotInsertDefaultValueWhenNotConfiguring() {
+  void shouldNotInsertDefaultValueWhenNotConfiguring() {
     yaml.put("fileSystemRoots", Collections.singletonList(new YamlMap()
         .put(NAME, someName())
         .put(CONFIGURE, "use existing")));
@@ -748,7 +748,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldSubstituteProperties() {
+  void shouldSubstituteProperties() {
     String collection = English.plural(someName());
     String intProperty = someName();
     int intValue = randomInt(13, 42);
@@ -762,7 +762,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   }
 
   @Test
-  public void shouldResolvePropertiesToDefaultsWhenNoValuesProvided() {
+  void shouldResolvePropertiesToDefaultsWhenNoValuesProvided() {
     resourceResolver = ResourceResolver.none();
     yaml.put("gnus", Collections.singletonList(new YamlMap().put("gnat", "${waldo:fred}")));
 

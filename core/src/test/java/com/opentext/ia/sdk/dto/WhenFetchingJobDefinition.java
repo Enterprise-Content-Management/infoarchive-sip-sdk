@@ -10,7 +10,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class WhenFetchingJobDefinition {
+class WhenFetchingJobDefinition {
 
   private static final String HANDLERNAME = "TestHandler";
 
@@ -22,13 +22,13 @@ public class WhenFetchingJobDefinition {
   }
 
   @Test
-  public void fetchDefaultHandlerName() {
+  void fetchDefaultHandlerName() {
     assertEquals("ConfirmationJob", instance.getHandlerName(),
         "Job Definition Default Handler Name");
   }
 
   @Test
-  public void fetchHandlerName() {
+  void fetchHandlerName() {
     instance.setHandlerName(HANDLERNAME);
     assertEquals(HANDLERNAME, instance.getHandlerName(), "Reception Format");
   }

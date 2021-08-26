@@ -22,10 +22,10 @@ import com.opentext.ia.sdk.support.xml.XmlUtil;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenAssemblingXmlPdis extends TestCase {
+class WhenAssemblingXmlPdis extends TestCase {
 
   @Test
-  public void shouldValidateWhenSchemaIsProvided() throws IOException {
+  void shouldValidateWhenSchemaIsProvided() throws IOException {
     assertThrows(IOException.class, () -> assemblePdi(testSchema()));
   }
 
@@ -49,7 +49,7 @@ public class WhenAssemblingXmlPdis extends TestCase {
   }
 
   @Test
-  public void shouldNotValidateWhenNoSchemaIsProvided() throws IOException {
+  void shouldNotValidateWhenNoSchemaIsProvided() throws IOException {
     assemblePdi(null);
   }
 

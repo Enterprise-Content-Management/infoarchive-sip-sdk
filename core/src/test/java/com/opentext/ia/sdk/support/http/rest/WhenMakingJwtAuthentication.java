@@ -32,7 +32,7 @@ import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 import com.opentext.ia.test.TestCase;
 
-public class WhenMakingJwtAuthentication extends TestCase {
+class WhenMakingJwtAuthentication extends TestCase {
 
   private static final String GATEWAY_URL = "http://authgateway.com/";
 
@@ -68,47 +68,47 @@ public class WhenMakingJwtAuthentication extends TestCase {
   }
 
   @Test
-  public void shouldFailBecauseOfClientId() {
+  void shouldFailBecauseOfClientId() {
     String illegalClientId = "";
     assertThrows(IllegalArgumentException.class,
         () -> new GatewayInfo(GATEWAY_URL, illegalClientId, clientSecret));
   }
 
   @Test
-  public void shouldFailBecauseOfClientSecret() {
+  void shouldFailBecauseOfClientSecret() {
     String illegalSecret = "";
     assertThrows(IllegalArgumentException.class,
         () -> new GatewayInfo(GATEWAY_URL, clientId, illegalSecret));
   }
 
   @Test
-  public void shouldFailBecauseOfUsername() {
+  void shouldFailBecauseOfUsername() {
     String illegalUsername = "";
     assertThrows(IllegalArgumentException.class,
         () -> new JwtAuthentication(illegalUsername, password, gatewayInfo, httpClient, clock));
   }
 
   @Test
-  public void shouldFailBecauseOfPassword() {
+  void shouldFailBecauseOfPassword() {
     String illegalPassword = "";
     assertThrows(IllegalArgumentException.class,
         () -> new JwtAuthentication(username, illegalPassword, gatewayInfo, httpClient, clock));
   }
 
   @Test
-  public void shouldCorrectlyFormatToken() {
+  void shouldCorrectlyFormatToken() {
     assertEquals(authorizationHeader, authentication.issueAuthHeader(), "Should add prefix");
   }
 
   @Test
-  public void shouldCorrectlyFormUrl() throws IOException {
+  void shouldCorrectlyFormUrl() throws IOException {
     authentication.issueAuthHeader();
     verify(httpClient).post(eq("http://authgateway.com/oauth/token"), any(),
         eq(AuthenticationSuccess.class), anyString());
   }
 
   @Test
-  public void shouldCorrectlyFormAuthorizationHeader() throws IOException {
+  void shouldCorrectlyFormAuthorizationHeader() throws IOException {
     String authToken = Base64.getEncoder()
         .encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8));
     Header authHeader = new Header("Authorization", "Basic " + authToken);
@@ -120,21 +120,21 @@ public class WhenMakingJwtAuthentication extends TestCase {
   }
 
   @Test
-  public void shouldCorrectlyFormPayload() throws IOException {
+  void shouldCorrectlyFormPayload() throws IOException {
     String payload = "grant_type=password&username=" + username + "&password=" + password;
     authentication.issueAuthHeader();
     verify(httpClient).post(any(), any(), eq(AuthenticationSuccess.class), eq(payload));
   }
 
   @Test
-  public void shouldCorrectlySetRefreshingTime() throws IOException {
+  void shouldCorrectlySetRefreshingTime() throws IOException {
     authentication.issueAuthHeader();
     verify(clock).schedule(any(), eq(TimeUnit.MILLISECONDS.convert(15, TimeUnit.SECONDS)),
         eq(TimeUnit.MILLISECONDS), any());
   }
 
   @Test
-  public void shouldCorrectlySetLittleRefreshingTime() throws IOException {
+  void shouldCorrectlySetLittleRefreshingTime() throws IOException {
     authResult.setExpiresIn(18);
     authentication.issueAuthHeader();
     verify(clock).schedule(any(), eq(TimeUnit.MILLISECONDS.convert(9, TimeUnit.SECONDS)),
@@ -142,7 +142,7 @@ public class WhenMakingJwtAuthentication extends TestCase {
   }
 
   @Test
-  public void shouldChangeToken() throws IOException {
+  void shouldChangeToken() throws IOException {
     final ArgumentCaptor<Runnable> taskArgumentCaptor = ArgumentCaptor.forClass(Runnable.class);
     authentication.issueAuthHeader();
     verify(clock).schedule(any(), anyLong(), any(), taskArgumentCaptor.capture());
@@ -152,7 +152,7 @@ public class WhenMakingJwtAuthentication extends TestCase {
   }
 
   @Test
-  public void shouldFormCorrectPayloadToRefreshToken() throws IOException {
+  void shouldFormCorrectPayloadToRefreshToken() throws IOException {
     final ArgumentCaptor<Runnable> taskArgumentCaptor = ArgumentCaptor.forClass(Runnable.class);
     String payload = "grant_type=refresh_token&refresh_token=" + refreshToken;
     authentication.issueAuthHeader();
@@ -162,14 +162,14 @@ public class WhenMakingJwtAuthentication extends TestCase {
   }
 
   @Test
-  public void shouldNotRefreshTokenIfNotExpiring() throws IOException {
+  void shouldNotRefreshTokenIfNotExpiring() throws IOException {
     authResult.setExpiresIn(20);
     authentication.issueAuthHeader();
     assertEquals(authorizationHeader, authentication.issueAuthHeader(), "Should not be refreshed");
   }
 
   @Test
-  public void shouldFailWithRuntimeIoException() throws IOException {
+  void shouldFailWithRuntimeIoException() throws IOException {
     when(httpClient.post(any(), any(), eq(AuthenticationSuccess.class), anyString()))
         .thenThrow(new IOException());
     assertThrows(RuntimeIoException.class, () -> authentication.issueAuthHeader());

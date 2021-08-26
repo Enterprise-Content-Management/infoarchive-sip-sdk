@@ -12,17 +12,17 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 
-public class WhenWorkingWithResultConfigurationHelper {
+class WhenWorkingWithResultConfigurationHelper {
 
   private final ResultConfigurationHelper helper = new ResultConfigurationHelper();
 
   @Test
-  public void defaultResultSchemaShouldNotBeNULL() {
+  void defaultResultSchemaShouldNotBeNULL() {
     assertNotNull(helper.getResultSchema());
   }
 
   @Test
-  public void setResultSchema() {
+  void setResultSchema() {
     List<String> schema = new ArrayList<>();
     String schemaName = "testSchema";
     schema.add(schemaName);
@@ -32,7 +32,7 @@ public class WhenWorkingWithResultConfigurationHelper {
   }
 
   @Test
-  public void initResultConfigurationHelpers() {
+  void initResultConfigurationHelpers() {
     assertNotNull(new ResultConfigurationHelpers());
   }
 

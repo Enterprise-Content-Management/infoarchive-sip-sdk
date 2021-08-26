@@ -15,12 +15,12 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.test.RandomData;
 
 
-public class WhenWorkingWithDates {
+class WhenWorkingWithDates {
 
   private final RandomData random = new RandomData();
 
   @Test
-  public void shouldFormatXsdDateTime() {
+  void shouldFormatXsdDateTime() {
     Date dateTime = randomDate();
     TimeZone timeZone = TimeZone.getDefault();
     int offset = timeZone.getOffset(dateTime.getTime()) / 1000;
@@ -49,13 +49,13 @@ public class WhenWorkingWithDates {
   }
 
   @Test
-  public void shouldReturnNullOnMissingDateTime() {
+  void shouldReturnNullOnMissingDateTime() {
     assertNull(Dates.toIso(null), "To ISO");
     assertNull(Dates.fromIso(null), "From ISO");
   }
 
   @Test
-  public void shouldParseXsdDateTime() {
+  void shouldParseXsdDateTime() {
     Date expected = randomDate();
 
     Date actual = Dates.fromIso(Dates.toIso(expected));

@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.TestCase;
 
-public class WhenReadingRepeatingConfigurationGroups extends TestCase {
+class WhenReadingRepeatingConfigurationGroups extends TestCase {
 
   private static final String FIELD3 = "field3";
   private static final String FIELD2 = "field2";
@@ -36,7 +36,7 @@ public class WhenReadingRepeatingConfigurationGroups extends TestCase {
   }
 
   @Test
-  public void shouldReturnEmptyListIfMissingConfiguration() {
+  void shouldReturnEmptyListIfMissingConfiguration() {
     RepeatingConfigReader reader = new RepeatingConfigReader(name, fields);
     List<Map<String, String>> result = reader.read(Collections.emptyMap());
     assertNotNull(result);
@@ -45,28 +45,28 @@ public class WhenReadingRepeatingConfigurationGroups extends TestCase {
   }
 
   @Test
-  public void shouldThrowIllegalArgumentExceptionIfNullName() {
+  void shouldThrowIllegalArgumentExceptionIfNullName() {
     assertThrows(IllegalArgumentException.class, () -> new RepeatingConfigReader(null, fields));
   }
 
   @Test
-  public void shouldThrowIllegalArgumentExceptionIfBlankName() {
+  void shouldThrowIllegalArgumentExceptionIfBlankName() {
     assertThrows(IllegalArgumentException.class, () -> new RepeatingConfigReader("", fields));
   }
 
   @Test
-  public void shouldThrowIllegalArgumentExceptionIfNullFields() {
+  void shouldThrowIllegalArgumentExceptionIfNullFields() {
     assertThrows(IllegalArgumentException.class, () -> new RepeatingConfigReader(name, null));
   }
 
   @Test
-  public void shouldThrowIllegalArgumentExceptionIfEmptyFields() {
+  void shouldThrowIllegalArgumentExceptionIfEmptyFields() {
     assertThrows(IllegalArgumentException.class,
         () -> new RepeatingConfigReader(name, Collections.emptyList()));
   }
 
   @Test
-  public void shouldThrowExceptionIfMismatchedGroup() {
+  void shouldThrowExceptionIfMismatchedGroup() {
     configuration.put(FIELD1, "one,two");
     configuration.put(FIELD2, "onlyone");
     configuration.put(FIELD3, "1,2");
@@ -75,7 +75,7 @@ public class WhenReadingRepeatingConfigurationGroups extends TestCase {
   }
 
   @Test
-  public void shouldReturnRepeatingGroupAsListOfMap() {
+  void shouldReturnRepeatingGroupAsListOfMap() {
     configuration.put(FIELD1, "one,two");
     configuration.put(FIELD2, "a,b");
     configuration.put(FIELD3, "1,2");

@@ -26,7 +26,7 @@ import com.opentext.ia.test.TestCase;
 import com.sun.net.httpserver.HttpServer;
 
 
-public class WhenWorkingWithHttp extends TestCase {
+class WhenWorkingWithHttp extends TestCase {
 
   private static final String PATH = "/echo";
   private String uri;
@@ -62,7 +62,7 @@ public class WhenWorkingWithHttp extends TestCase {
   }
 
   @Test
-  public void shouldHandleTextData() throws IOException {
+  void shouldHandleTextData() throws IOException {
     String expected = randomString(8);
     assertNull(client.get(uri, headers, String.class), "GET");
     assertEquals(expected, client.put(uri, headers, String.class, expected), "PUT");
@@ -70,7 +70,7 @@ public class WhenWorkingWithHttp extends TestCase {
   }
 
   @Test
-  public void shouldHandleBinaryData() throws IOException {
+  void shouldHandleBinaryData() throws IOException {
     byte[] expected = randomBytes();
 
     assertResponse(new byte[0], client.get(uri, headers, InputStream.class), "GET");

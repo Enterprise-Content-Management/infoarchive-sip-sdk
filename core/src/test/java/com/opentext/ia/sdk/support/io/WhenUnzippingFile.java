@@ -20,13 +20,13 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.opentext.ia.test.TestCase;
 
-public class WhenUnzippingFile extends TestCase {
+class WhenUnzippingFile extends TestCase {
 
   @TempDir
-  public Path temporaryFolder;
+  Path temporaryFolder;
 
   @Test
-  public void shouldProcessEntry() throws IOException {
+  void shouldProcessEntry() throws IOException {
     String entry = randomString();
     byte[] expected = randomBytes();
     File zip = newFile(temporaryFolder);

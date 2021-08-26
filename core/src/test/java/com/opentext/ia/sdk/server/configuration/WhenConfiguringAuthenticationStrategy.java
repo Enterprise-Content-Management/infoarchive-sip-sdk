@@ -21,20 +21,20 @@ import com.opentext.ia.sdk.support.http.rest.NonExpiringTokenAuthentication;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenConfiguringAuthenticationStrategy extends TestCase {
+class WhenConfiguringAuthenticationStrategy extends TestCase {
 
   private final ArchiveConnection connection = new ArchiveConnection();
   private final AuthenticationStrategyFactory authFactory = new AuthenticationStrategyFactory(connection);
 
   @Test
-  public void shouldGetTokenAuthenticationConfiguration() {
+  void shouldGetTokenAuthenticationConfiguration() {
     connection.setAuthenticationToken(randomString());
     AuthenticationStrategy authentication = authFactory.getAuthenticationStrategy(() -> null, () -> null);
     assertThat(authentication, instanceOf(NonExpiringTokenAuthentication.class));
   }
 
   @Test
-  public void shouldGetBasicAuthentication() {
+  void shouldGetBasicAuthentication() {
     connection.setAuthenticationUser(randomString());
     connection.setAuthenticationPassword(randomString());
     AuthenticationStrategy authentication = authFactory.getAuthenticationStrategy(() -> null, () -> null);
@@ -42,7 +42,7 @@ public class WhenConfiguringAuthenticationStrategy extends TestCase {
   }
 
   @Test
-  public void shouldGetJwtAuthentication() {
+  void shouldGetJwtAuthentication() {
     connection.setClientId(randomString());
     connection.setClientSecret(randomString());
     connection.setAuthenticationGateway(randomString());
@@ -55,7 +55,7 @@ public class WhenConfiguringAuthenticationStrategy extends TestCase {
   }
 
   @Test
-  public void shouldThrowException() {
+  void shouldThrowException() {
     connection.setClientId(randomString());
     connection.setClientSecret(randomString());
     connection.setAuthenticationGateway(randomString());

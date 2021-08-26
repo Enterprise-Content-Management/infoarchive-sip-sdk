@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenWorkingWithFileSystemRoots extends TestCase {
+class WhenWorkingWithFileSystemRoots extends TestCase {
 
   @Test
-  public void shouldReturnFirst() {
+  void shouldReturnFirst() {
     FileSystemRoots collection = new FileSystemRoots();
     Map<String, List<FileSystemRoot>> embedded = new HashMap<>();
     FileSystemRoot item1 = new FileSystemRoot();

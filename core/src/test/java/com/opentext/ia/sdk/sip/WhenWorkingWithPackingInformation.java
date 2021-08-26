@@ -15,10 +15,10 @@ import com.opentext.ia.sdk.support.io.EncodedHash;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenWorkingWithPackingInformation extends TestCase {
+class WhenWorkingWithPackingInformation extends TestCase {
 
   @Test
-  public void shouldAcceptSetValues() {
+  void shouldAcceptSetValues() {
     DataSubmissionSession dss = mock(DataSubmissionSession.class);
     Date productionDate = mock(Date.class);
     int sequenceNumber = randomInt(0, Integer.MAX_VALUE);

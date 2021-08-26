@@ -21,12 +21,12 @@ import com.opentext.ia.sdk.support.io.MemoryBuffer;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenAssemblingFromTemplate extends TestCase {
+class WhenAssemblingFromTemplate extends TestCase {
 
   private static final String NL = System.getProperty("line.separator");
 
   @Test
-  public void shouldProvideHeaderAndFooter() throws IOException {
+  void shouldProvideHeaderAndFooter() throws IOException {
     String header = randomString();
     String footer = randomString();
     StringWriter output = new StringWriter();
@@ -48,7 +48,7 @@ public class WhenAssemblingFromTemplate extends TestCase {
   }
 
   @Test
-  public void shouldWriteTemplatedValues() throws IOException {
+  void shouldWriteTemplatedValues() throws IOException {
     Person p1 = newPerson(aName(), anEmail());
     Person p2 = newPerson(aName(), anEmail());
     @SuppressWarnings("unchecked")

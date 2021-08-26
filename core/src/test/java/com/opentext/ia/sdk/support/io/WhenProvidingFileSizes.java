@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenProvidingFileSizes extends TestCase {
+class WhenProvidingFileSizes extends TestCase {
 
   private static final long KILO = 1024;
 
   @Test
-  public void shouldUseHumanReadableNames() {
+  void shouldUseHumanReadableNames() {
     int bytes = random();
     int kilo = random();
     int mega = random();

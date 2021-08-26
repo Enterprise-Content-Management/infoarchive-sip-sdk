@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 
-public class WhenPrintingXmlDocuments extends XmlBuilderTestCase<Void> {
+class WhenPrintingXmlDocuments extends XmlBuilderTestCase<Void> {
 
   private static final String NL = System.getProperty("line.separator");
   private static final String XML_WITH_CDATA =
@@ -45,7 +45,7 @@ public class WhenPrintingXmlDocuments extends XmlBuilderTestCase<Void> {
   }
 
   @Test
-  public void shouldPrintCdataElement() {
+  void shouldPrintCdataElement() {
     newBuilder()
         .element("root")
         .attribute("name", "value")

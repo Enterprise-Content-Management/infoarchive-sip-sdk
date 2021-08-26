@@ -27,13 +27,13 @@ import org.mockito.ArgumentCaptor;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenZipping extends TestCase {
+class WhenZipping extends TestCase {
 
   private final ZipAssembler zip = new DefaultZipAssembler();
   private final ByteArrayInputOutputStream output = new ByteArrayInputOutputStream();
 
   @Test
-  public void shouldAddEntries() throws IOException {
+  void shouldAddEntries() throws IOException {
     String name1 = someName();
     byte[] content1 = randomBytes();
     String name2 = someName();
@@ -68,7 +68,7 @@ public class WhenZipping extends TestCase {
   }
 
   @Test
-  public void shouldCalculateHashes() throws IOException {
+  void shouldCalculateHashes() throws IOException {
     HashAssembler hashAssembler = mock(HashAssembler.class);
     Collection<EncodedHash> expected = Collections.singletonList(someHash());
     when(hashAssembler.get()).thenReturn(expected);

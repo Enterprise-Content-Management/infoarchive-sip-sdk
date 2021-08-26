@@ -16,11 +16,11 @@ import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.TestCase;
 
-public class WhenCreatingPackagingInformation extends TestCase {
+class WhenCreatingPackagingInformation extends TestCase {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void shouldHonorDssIdGenerationStrategy() {
+  void shouldHonorDssIdGenerationStrategy() {
     String id = randomString(8);
     Supplier<String> supplier = mock(Supplier.class);
     when(supplier.get()).thenReturn(id);

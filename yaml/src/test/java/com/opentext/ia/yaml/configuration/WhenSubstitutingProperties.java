@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.yaml.resource.ResourceResolver;
 
 
-public class WhenSubstitutingProperties {
+class WhenSubstitutingProperties {
 
   private final ResourceResolver resourceResolver = ResourceResolver.fromClasspath();
   private Function<String, String> propertyResolver;
 
   @Test
-  public void shouldReplacePropertyReferenceWithValue() {
+  void shouldReplacePropertyReferenceWithValue() {
     propertyResolver = new ConfigurationProperties(resourceResolver, "configuration.properties");
     assertEquals("foo", propertyResolver.apply("foo"), "Non-expression");
     assertProperty("bar", "foo", "Use existing value");
@@ -41,7 +41,7 @@ public class WhenSubstitutingProperties {
   }
 
   @Test
-  public void shouldOverrideParentProperties() {
+  void shouldOverrideParentProperties() {
     propertyResolver = new ConfigurationProperties(resourceResolver, "configuration.properties",
         new ConfigurationProperties(resourceResolver, "1.properties",
             new ConfigurationProperties(resourceResolver, "0.properties")));
@@ -51,7 +51,7 @@ public class WhenSubstitutingProperties {
   }
 
   @Test
-  public void shouldTrimValues() {
+  void shouldTrimValues() {
     propertyResolver = new ConfigurationProperties(resourceResolver, "configuration.properties");
     assertEquals("bar", propertyResolver.apply("${foo}"), "Trimmed value");
   }

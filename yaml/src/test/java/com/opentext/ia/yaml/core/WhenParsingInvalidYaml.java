@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.error.MarkedYAMLException;
 
 
-public class WhenParsingInvalidYaml {
+class WhenParsingInvalidYaml {
 
   private static final String INCORRECT_INDENTATION = "Incorrect indentation";
 
   @Test
-  public void shouldReportTooManySpacesAfterSequence() {
+  void shouldReportTooManySpacesAfterSequence() {
     assertInvalidYaml(INCORRECT_INDENTATION, "foo:%n- bar: baz%n   gnu: gnat");
   }
 
@@ -31,22 +31,22 @@ public class WhenParsingInvalidYaml {
   }
 
   @Test
-  public void shouldReportTooFewSpacesAfterSequence() {
+  void shouldReportTooFewSpacesAfterSequence() {
     assertInvalidYaml(INCORRECT_INDENTATION, "foo:%n- bar: baz%n gnu: gnat");
   }
 
   @Test
-  public void shouldReportTooFewSpacesAfterNestedSequence() {
+  void shouldReportTooFewSpacesAfterNestedSequence() {
     assertInvalidYaml(INCORRECT_INDENTATION, "foo:%n  bar:%n    - baz: gnu%n waldo: fred");
   }
 
   @Test
-  public void shouldReportInvalidBlock() {
+  void shouldReportInvalidBlock() {
     assertInvalidYaml(INCORRECT_INDENTATION, "foo:%n  bar:%n gnu: gnat");
   }
 
   @Test
-  public void shouldReportItemOutsideSequence() {
+  void shouldReportItemOutsideSequence() {
     assertInvalidYaml("Item outside of sequence", "foo: bar%n- baz: gnu");
   }
 

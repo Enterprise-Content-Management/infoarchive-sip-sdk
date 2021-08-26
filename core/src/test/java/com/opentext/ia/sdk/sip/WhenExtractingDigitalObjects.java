@@ -18,15 +18,15 @@ import org.junit.jupiter.api.io.TempDir;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenExtractingDigitalObjects extends TestCase {
+class WhenExtractingDigitalObjects extends TestCase {
 
   @TempDir
-  public Path folder;
+  Path folder;
   private final byte[] content = randomString().getBytes(StandardCharsets.UTF_16);
   private final String referenceInformation = randomString();
 
   @Test
-  public void shouldExtractFromFile() throws IOException {
+  void shouldExtractFromFile() throws IOException {
     assertDigitalObject(DigitalObject.fromFile(referenceInformation, newFile(folder, content)));
   }
 
@@ -39,17 +39,17 @@ public class WhenExtractingDigitalObjects extends TestCase {
   }
 
   @Test
-  public void shouldExtractFromPath() throws IOException {
+  void shouldExtractFromPath() throws IOException {
     assertDigitalObject(DigitalObject.fromPath(referenceInformation, newFile(folder, content).toPath()));
   }
 
   @Test
-  public void shouldExtractFromBytes() throws IOException {
+  void shouldExtractFromBytes() throws IOException {
     assertDigitalObject(DigitalObject.fromBytes(referenceInformation, content));
   }
 
   @Test
-  public void shouldExtractFromString() throws IOException {
+  void shouldExtractFromString() throws IOException {
     assertDigitalObject(DigitalObject.fromString(referenceInformation, new String(content, StandardCharsets.UTF_16),
         StandardCharsets.UTF_16));
   }

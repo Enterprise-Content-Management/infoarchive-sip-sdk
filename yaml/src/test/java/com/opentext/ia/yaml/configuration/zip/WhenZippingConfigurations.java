@@ -37,7 +37,7 @@ import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.core.YamlSyntaxErrorException;
 
-public class WhenZippingConfigurations extends TestCase {
+class WhenZippingConfigurations extends TestCase {
 
   private static final String INCLUDED_RESOURCE_NAME = "included.txt";
   private static final String CONFIGURATION_FILE_NAME = "configuration.yml";
@@ -48,7 +48,7 @@ public class WhenZippingConfigurations extends TestCase {
   private static final String INCLUDES = "includes";
 
   @TempDir
-  public Path tempFolder;
+  Path tempFolder;
   private File folder;
   private File yaml;
 
@@ -58,7 +58,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldAddConfigurationFile() throws IOException {
+  void shouldAddConfigurationFile() throws IOException {
     yaml = yamlFileContaining(new YamlMap());
 
     Map<String, InputStream> zipEntries = zipYaml();
@@ -103,7 +103,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldAddReferencedResourceFiles() throws IOException {
+  void shouldAddReferencedResourceFiles() throws IOException {
     File resource = newFile("resource.txt", "ipsum");
     yaml = yamlFileReferencingResource(resource);
 
@@ -118,7 +118,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldAddIncludedYamlFiles() throws IOException {
+  void shouldAddIncludedYamlFiles() throws IOException {
     File includedYaml = newFile("include.yaml", someYaml().toString());
     yaml = yamlFileIncluding(includedYaml);
 
@@ -141,7 +141,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldAddParentPropertiesFiles() throws IOException {
+  void shouldAddParentPropertiesFiles() throws IOException {
     File properties = newFile(CONFIGURATION_PROPERTIES, "foo=bar");
     yaml = yamlFileContaining(new YamlMap());
 
@@ -151,19 +151,19 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldNotAllowEmptyZip() throws IOException {
+  void shouldNotAllowEmptyZip() throws IOException {
     assertThrows(EmptyZipException.class, () -> zipYaml());
   }
 
   @Test
-  public void shouldNotAllowInvalidYamlInZip() throws IOException {
+  void shouldNotAllowInvalidYamlInZip() throws IOException {
     yaml = yamlFileContaining("foo: bar: baz");
     InvalidZipEntryException thrown = assertThrows(InvalidZipEntryException.class, () -> zipYaml());
     assertEquals(YamlSyntaxErrorException.class, thrown.getCause().getClass());
   }
 
   @Test
-  public void shouldAvoidNameConflictsWhenIncludingFilesOutsideTheDirectoryTree()
+  void shouldAvoidNameConflictsWhenIncludingFilesOutsideTheDirectoryTree()
       throws IOException {
     File otherFolder = newFolder(tempFolder);
     File includedFile1 = newFile(otherFolder, INCLUDED_RESOURCE_NAME, "foo");
@@ -185,7 +185,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldPutExternalIncludedYamlNearTheParentWhenSeveralLevelsOfNesting()
+  void shouldPutExternalIncludedYamlNearTheParentWhenSeveralLevelsOfNesting()
       throws IOException {
     File externalFolder = newFolder(tempFolder);
     File externalFile1 = newFile(externalFolder, INCLUDED_RESOURCE_NAME, "foo");
@@ -225,7 +225,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldAddReferencedResourcesUsingWildcards() throws IOException {
+  void shouldAddReferencedResourcesUsingWildcards() throws IOException {
     String extension = '.' + randomString(3);
     File resource1 = newFile("resource1" + extension, "ipsum");
     File resource2 = newFile("resource2" + extension, "lorem");
@@ -244,7 +244,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldAddReferencedResourcesUsingWildcardsInIncludedYamlFiles() throws IOException {
+  void shouldAddReferencedResourcesUsingWildcardsInIncludedYamlFiles() throws IOException {
     File subFolder = newFolder(tempFolder, "include");
     String extension = '.' + randomString(3);
     File resource1 = newFile(subFolder, "resource1" + extension, randomString(13));
@@ -273,7 +273,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldSubstitutePropertiesToDeterminePathsToResources() throws IOException {
+  void shouldSubstitutePropertiesToDeterminePathsToResources() throws IOException {
     String text = randomString();
     File resourceFile = newFile(someName() + ".txt", text);
     String resourceFileName = resourceFile.getName();
@@ -289,7 +289,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldResolvePathsUpAndDownTheFolderHierarchy() throws IOException {
+  void shouldResolvePathsUpAndDownTheFolderHierarchy() throws IOException {
     File dir = new File("src/test/resources/external-includes/root");
     Map<String, InputStream> zip = new RandomAccessZipFile(ZipConfiguration.of(dir, new File(EMPTY)));
 
@@ -312,7 +312,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldCustomizeZipConfiguration() throws IOException {
+  void shouldCustomizeZipConfiguration() throws IOException {
     File dir = new File("src/test/resources/customize");
     String key = someName();
     String value = someName();
@@ -346,7 +346,7 @@ public class WhenZippingConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldZipDirectoryContainingSpaces() throws IOException {
+  void shouldZipDirectoryContainingSpaces() throws IOException {
     // Should not throw an exception
     ZipConfiguration.of(configurationWithIncludesInDirectoryWithSpaces(), new File(EMPTY));
   }

@@ -11,10 +11,10 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 
-public class WhenHandlingIoExceptions {
+class WhenHandlingIoExceptions {
 
   @Test
-  public void shouldWrapIntoRuntimeException() {
+  void shouldWrapIntoRuntimeException() {
     IOException original = new IOException();
 
     RuntimeIoException wrapper = new RuntimeIoException(original);

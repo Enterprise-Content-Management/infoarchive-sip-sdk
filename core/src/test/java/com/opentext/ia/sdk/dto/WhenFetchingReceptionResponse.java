@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class WhenFetchingReceptionResponse {
+class WhenFetchingReceptionResponse {
 
   private final ReceptionResponse receptionResponse = new ReceptionResponse();
 
@@ -19,7 +19,7 @@ public class WhenFetchingReceptionResponse {
   }
 
   @Test
-  public void fetchName() {
+  void fetchName() {
     assertEquals("TestApplication", receptionResponse.getName(), "Resource Name");
   }
 

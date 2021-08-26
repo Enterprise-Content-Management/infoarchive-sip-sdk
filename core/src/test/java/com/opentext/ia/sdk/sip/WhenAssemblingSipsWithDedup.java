@@ -25,7 +25,7 @@ import com.opentext.ia.sdk.support.io.SingleHashAssembler;
 import com.opentext.ia.sdk.support.test.validation.SipFileValidator;
 
 
-public class WhenAssemblingSipsWithDedup extends XmlTestCase {
+class WhenAssemblingSipsWithDedup extends XmlTestCase {
 
   private static final String OBJECT_ID_5 = "file5";
   private static final String OBJECT_ID_4 = "file4";
@@ -135,7 +135,7 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
   }
 
   @Test
-  public void withNoDedupShouldIncludeEachCopyWhenThereAreNoDuplicates() throws IOException {
+  void withNoDedupShouldIncludeEachCopyWhenThereAreNoDuplicates() throws IOException {
     domainObjects = objects(OBJECT_ID_1, OBJECT_ID_2, OBJECT_ID_3, OBJECT_ID_4, OBJECT_ID_5);
 
     sip(ContentAssembler.noDedup(contentsExtraction)).assertFileCount(2 + 5)
@@ -148,7 +148,7 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
   }
 
   @Test
-  public void withNoDedupShouldIncludeEachCopyWhenThereAreDuplicates() throws IOException {
+  void withNoDedupShouldIncludeEachCopyWhenThereAreDuplicates() throws IOException {
     domainObjects = objects(OBJECT_ID_1, OBJECT_ID_2, OBJECT_ID_3, OBJECT_ID_4, OBJECT_ID_5);
     contentIdToResourceName.put(OBJECT_ID_3, CONTENT_1);
     contentIdToResourceName.put(OBJECT_ID_5, CONTENT_1);
@@ -163,7 +163,7 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
   }
 
   @Test
-  public void withDedupOnRiShouldIncludeEachCopyWhereThereAreNoDuplicatesEvenIfContentIsSame() throws IOException {
+  void withDedupOnRiShouldIncludeEachCopyWhereThereAreNoDuplicatesEvenIfContentIsSame() throws IOException {
     domainObjects = objects(OBJECT_ID_1, OBJECT_ID_2, OBJECT_ID_3, OBJECT_ID_4, OBJECT_ID_5);
     contentIdToResourceName.put(OBJECT_ID_3, CONTENT_1);
     contentIdToResourceName.put(OBJECT_ID_5, CONTENT_1);
@@ -178,7 +178,7 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
   }
 
   @Test
-  public void withDedupOnRiShouldIncludeOnlyUniqueRi() throws IOException {
+  void withDedupOnRiShouldIncludeOnlyUniqueRi() throws IOException {
     domainObjects = objects(object(OBJECT_ID_1), object(OBJECT_ID_2), object(OBJECT_ID_3, OBJECT_ID_1),
         object(OBJECT_ID_4), object(OBJECT_ID_5, OBJECT_ID_1));
 
@@ -191,7 +191,7 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
   }
 
   @Test
-  public void withDedupOnRiAndValidationErrorOnDifferentRISameContentShouldThrowException() throws IOException {
+  void withDedupOnRiAndValidationErrorOnDifferentRISameContentShouldThrowException() throws IOException {
     TestObject object1 = object(OBJECT_ID_1);
     TestObject object2 = object(OBJECT_ID_2);
     contentIdToResourceName.put(OBJECT_ID_2, CONTENT_1);
@@ -204,7 +204,7 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
   }
 
   @Test
-  public void withDedupOnRiAndValidationErrorOnSameRIDifferentContntShouldThrowException() throws IOException {
+  void withDedupOnRiAndValidationErrorOnSameRIDifferentContntShouldThrowException() throws IOException {
     TestObject object1 = object(OBJECT_ID_1);
     TestObject object2 = object(OBJECT_ID_2, OBJECT_ID_1);
 
@@ -218,7 +218,7 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
   }
 
   @Test
-  public void withDedupOnHashShouldIncludeOnlyUniqueContent() throws IOException {
+  void withDedupOnHashShouldIncludeOnlyUniqueContent() throws IOException {
     domainObjects = objects(OBJECT_ID_1, OBJECT_ID_2, OBJECT_ID_3, OBJECT_ID_4, OBJECT_ID_5);
     contentIdToResourceName.put(OBJECT_ID_3, CONTENT_1);
     contentIdToResourceName.put(OBJECT_ID_5, CONTENT_1);

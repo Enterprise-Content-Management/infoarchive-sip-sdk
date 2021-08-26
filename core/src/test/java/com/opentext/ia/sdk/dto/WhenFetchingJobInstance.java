@@ -11,7 +11,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class WhenFetchingJobInstance {
+class WhenFetchingJobInstance {
 
   private static final String STATUS = "SCHEDULED";
 
@@ -23,18 +23,18 @@ public class WhenFetchingJobInstance {
   }
 
   @Test
-  public void fetchDefaultStatus() {
+  void fetchDefaultStatus() {
     assertEquals("SUCCESS", instance.getStatus(), "Job Instance Default Format");
   }
 
   @Test
-  public void fetchStatus() {
+  void fetchStatus() {
     instance.setStatus(STATUS);
     assertEquals(STATUS, instance.getStatus(), "Reception Format");
   }
 
   @Test
-  public void invokeJobInstances() {
+  void invokeJobInstances() {
     JobInstances defs = new JobInstances();
     assertNotNull(defs);
   }

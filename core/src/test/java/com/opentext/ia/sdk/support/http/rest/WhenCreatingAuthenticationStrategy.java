@@ -16,17 +16,17 @@ import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenCreatingAuthenticationStrategy extends TestCase {
+class WhenCreatingAuthenticationStrategy extends TestCase {
 
   @Test
-  public void shouldConfigureNonExpiringAuthentication() {
+  void shouldConfigureNonExpiringAuthentication() {
     String token = randomString();
     assertTrue(NonExpiringTokenAuthentication.optional(token, null, null).isPresent(),
         "Should configure NonExpiringTokenAuthentication");
   }
 
   @Test
-  public void shoultNotConfigureNonExpiringAuthentication() {
+  void shoultNotConfigureNonExpiringAuthentication() {
     String token = randomString();
     String username = randomString();
     String password = randomString();
@@ -35,7 +35,7 @@ public class WhenCreatingAuthenticationStrategy extends TestCase {
   }
 
   @Test
-  public void shouldConfigureBasicAuthentication() {
+  void shouldConfigureBasicAuthentication() {
     String username = randomString();
     String password = randomString();
     assertTrue(BasicAuthentication.optional(username, password, null).isPresent(),
@@ -43,7 +43,7 @@ public class WhenCreatingAuthenticationStrategy extends TestCase {
   }
 
   @Test
-  public void shouldNotConfigureBasicAuthentication() {
+  void shouldNotConfigureBasicAuthentication() {
     String username = randomString();
     String password = randomString();
     String gateway = randomString();
@@ -52,7 +52,7 @@ public class WhenCreatingAuthenticationStrategy extends TestCase {
   }
 
   @Test
-  public void shouldConfigureJwtAuthentication() {
+  void shouldConfigureJwtAuthentication() {
     String username = randomString();
     String password = randomString();
     Optional<GatewayInfo> gatewayInfo = GatewayInfo.optional(randomString(), randomString(), randomString());
@@ -64,7 +64,7 @@ public class WhenCreatingAuthenticationStrategy extends TestCase {
   }
 
   @Test
-  public void shouldNotConfigureJwtAuthentication() {
+  void shouldNotConfigureJwtAuthentication() {
     String username = randomString();
     String password = randomString();
     HttpClient httpClient = mock(HttpClient.class);

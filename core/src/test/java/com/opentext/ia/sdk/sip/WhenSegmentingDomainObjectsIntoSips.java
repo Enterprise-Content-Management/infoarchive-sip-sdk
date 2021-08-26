@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.sdk.support.io.DomainObjectTooBigException;
 import com.opentext.ia.test.TestCase;
 
-public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
+class WhenSegmentingDomainObjectsIntoSips extends TestCase {
 
   private static final String[] CONTENT_OBJECTS =
       { "Hello", "Doman", "yuiopqwertyuiop", "poiuytrewqpoiuytrewq" };
@@ -35,7 +35,7 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
   }
 
   @Test
-  public void shouldSegmentByNumberOfAius() {
+  void shouldSegmentByNumberOfAius() {
     assertMaxCountPerSip(SipMetrics.NUM_AIUS, max -> SipSegmentationStrategy.byMaxAius(max));
   }
 
@@ -59,13 +59,13 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
   }
 
   @Test
-  public void shouldSegmentByNumberOfDigitalObjects() {
+  void shouldSegmentByNumberOfDigitalObjects() {
     assertMaxCountPerSip(SipMetrics.NUM_DIGITAL_OBJECTS,
         max -> SipSegmentationStrategy.byMaxDigitalObjects(max));
   }
 
   @Test
-  public void shouldSegmentByPdiSize() {
+  void shouldSegmentByPdiSize() {
     assertMaxSizePerSip(SipMetrics.SIZE_PDI, max -> SipSegmentationStrategy.byMaxPdiSize(max));
   }
 
@@ -85,18 +85,18 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
   }
 
   @Test
-  public void shouldSegmentByDigitalObjectsSize() {
+  void shouldSegmentByDigitalObjectsSize() {
     assertMaxSizePerSip(SipMetrics.SIZE_DIGITAL_OBJECTS,
         max -> SipSegmentationStrategy.byMaxDigitalObjectsSize(max));
   }
 
   @Test
-  public void shouldSegmentBySipSize() {
+  void shouldSegmentBySipSize() {
     assertMaxSizePerSip(SipMetrics.SIZE_SIP, max -> SipSegmentationStrategy.byMaxSipSize(max));
   }
 
   @Test
-  public void shouldCombineSegmentations() {
+  void shouldCombineSegmentations() {
     String object1 = randomString();
     String object2 = randomString();
     String object3 = randomString();
@@ -115,7 +115,7 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
   }
 
   @Test
-  public void shouldSegmentByRandomMaxProspectiveSipSize() throws IOException {
+  void shouldSegmentByRandomMaxProspectiveSipSize() throws IOException {
     int maxSize = randomInt(50, 150);
     String[] contentObjects = randomStrings(randomInt(4, 8));
     if (sizeOf(contentObjects) > maxSize) {
@@ -174,12 +174,12 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
   }
 
   @Test
-  public void shouldSegmentByMaxProspectiveSipSizeHalfMax() throws IOException {
+  void shouldSegmentByMaxProspectiveSipSizeHalfMax() throws IOException {
     assertSegmentByProspectiveSipSize(90, CONTENT_OBJECTS);
   }
 
   @Test
-  public void shouldSegmentByMaxProspectiveSipSizeExact() throws IOException {
+  void shouldSegmentByMaxProspectiveSipSizeExact() throws IOException {
     assertSegmentByProspectiveSipSize(45, CONTENT_OBJECTS);
   }
 

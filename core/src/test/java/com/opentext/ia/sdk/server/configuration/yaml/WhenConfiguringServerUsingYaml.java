@@ -39,7 +39,7 @@ import com.opentext.ia.yaml.configuration.YamlConfiguration;
 import com.opentext.ia.yaml.resource.ResourceResolver;
 
 
-public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArchiveLinkRelations {
+class WhenConfiguringServerUsingYaml extends TestCase implements InfoArchiveLinkRelations {
 
   private final HttpClient httpClient = mock(HttpClient.class);
   private final ArchiveConnection connection = new ArchiveConnection();
@@ -53,7 +53,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   }
 
   @Test
-  public void shouldDeferToServerWhenItSupportsYamlConfiguration() throws IOException {
+  void shouldDeferToServerWhenItSupportsYamlConfiguration() throws IOException {
     String configurationUri = randomUri();
     Services services = new Services();
     services.getLinks().put(LINK_CONFIGURATION, new Link(configurationUri));
@@ -66,7 +66,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   }
 
   @Test
-  public void shouldConfigureFromClientWhenServerDoesntSupportsYamlConfiguration() throws IOException {
+  void shouldConfigureFromClientWhenServerDoesntSupportsYamlConfiguration() throws IOException {
     Services services = new Services();
     when(httpClient.get(any(), any(), eq(Services.class))).thenReturn(services);
 
@@ -77,7 +77,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   }
 
   @Test
-  public void shouldConvertYamlToProperties() throws IOException {
+  void shouldConvertYamlToProperties() throws IOException {
     Map<String, String> expected = loadProperties();
     Map<String, String> actual = yamlToProperties();
     assertEqual(normalizeWhitespace(expected), normalizeWhitespace(actual));

@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.sdk.support.http.rest.Link;
 
 
-public class WhenExtractingApplicationFromApplicationsContainer {
+class WhenExtractingApplicationFromApplicationsContainer {
 
   private final TestApplication app = new TestApplication();
 
@@ -27,17 +27,17 @@ public class WhenExtractingApplicationFromApplicationsContainer {
   }
 
   @Test
-  public void fetchApplicationName() {
+  void fetchApplicationName() {
     assertEquals("TestApplication", app.getName(), "Application Name");
   }
 
   @Test
-  public void fetchType() {
+  void fetchType() {
     assertEquals("Test", app.getType(), "Type is");
   }
 
   @Test
-  public void fetchArchiveType() {
+  void fetchArchiveType() {
     assertEquals("TestArchive", app.getArchiveType(), "Archive Type");
   }
 

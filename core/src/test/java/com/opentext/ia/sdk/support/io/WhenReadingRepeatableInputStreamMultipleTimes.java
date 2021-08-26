@@ -17,12 +17,12 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.test.RandomData;
 
 
-public class WhenReadingRepeatableInputStreamMultipleTimes {
+class WhenReadingRepeatableInputStreamMultipleTimes {
 
   private final RandomData random = new RandomData();
 
   @Test
-  public void shouldReturnSameContentsEveryTime() throws IOException {
+  void shouldReturnSameContentsEveryTime() throws IOException {
     byte[] contents = random.bytes();
     Supplier<InputStream> supplier = new RepeatableInputStream(new ByteArrayInputStream(contents));
 

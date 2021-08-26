@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class WhenFetchingIngestionResponse {
+class WhenFetchingIngestionResponse {
 
   // private final TestIngestionResponse ingestionResponse = new TestIngestionResponse();
   private final IngestionResponse ingestionResponse = new IngestionResponse();
@@ -21,12 +21,12 @@ public class WhenFetchingIngestionResponse {
   }
 
   @Test
-  public void fetchName() {
+  void fetchName() {
     assertEquals("TestApplication", ingestionResponse.getName(), "Resource Name");
   }
 
   @Test
-  public void fetchAipID() {
+  void fetchAipID() {
     assertEquals("TestID", ingestionResponse.getAipId(), "AipId");
   }
 

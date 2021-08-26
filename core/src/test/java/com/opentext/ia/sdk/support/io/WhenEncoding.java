@@ -16,12 +16,12 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenEncoding extends TestCase {
+class WhenEncoding extends TestCase {
 
   private static final Charset CHAR_SET = StandardCharsets.UTF_8;
 
   @Test
-  public void shouldConvertToBase64() {
+  void shouldConvertToBase64() {
     String text = randomString();
 
     String actual = Encoding.BASE64.encode(text.getBytes(CHAR_SET));
@@ -30,7 +30,7 @@ public class WhenEncoding extends TestCase {
   }
 
   @Test
-  public void shouldConvertToHex() throws DecoderException {
+  void shouldConvertToHex() throws DecoderException {
     String text = randomString();
 
     String actual = Encoding.HEX.encode(text.getBytes(CHAR_SET));

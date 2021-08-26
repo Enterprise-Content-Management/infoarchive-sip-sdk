@@ -11,17 +11,17 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 
-public class WhenFormattingAsJson {
+class WhenFormattingAsJson {
 
   private final JsonFormatter formatter = new JsonFormatter();
 
   @Test
-  public void formatString() throws IOException {
+  void formatString() throws IOException {
     assertEquals("\"ape\"", formatter.format("ape"), "Resource Name");
   }
 
   @Test
-  public void shouldThrowNullPointerException() throws IOException {
+  void shouldThrowNullPointerException() throws IOException {
     assertThrows(NullPointerException.class, () -> formatter.format(null));
   }
 

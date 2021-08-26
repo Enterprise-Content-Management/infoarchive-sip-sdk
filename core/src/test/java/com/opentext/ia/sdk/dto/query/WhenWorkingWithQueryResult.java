@@ -20,7 +20,7 @@ import com.opentext.ia.sdk.client.impl.DefaultQueryResult;
 import com.opentext.ia.test.RandomData;
 import com.opentext.ia.test.TestCase;
 
-public class WhenWorkingWithQueryResult extends TestCase {
+class WhenWorkingWithQueryResult extends TestCase {
 
   private final RandomData random = new RandomData();
 
@@ -44,7 +44,7 @@ public class WhenWorkingWithQueryResult extends TestCase {
   }
 
   @Test
-  public void shouldCloseStreamAndDependentResource() throws IOException {
+  void shouldCloseStreamAndDependentResource() throws IOException {
     DefaultQueryResult result = newQueryResult(); // NOPMD by design
     result.close();
     verify(stream).close();
@@ -57,7 +57,7 @@ public class WhenWorkingWithQueryResult extends TestCase {
   }
 
   @Test
-  public void shouldHonorSetValues() throws IOException {
+  void shouldHonorSetValues() throws IOException {
     try (QueryResult result = newQueryResult()) {
       assertEquals(resultSetQuota, result.getResultSetQuota());
       assertEquals(resultSetCount, result.getResultSetCount());
@@ -69,7 +69,7 @@ public class WhenWorkingWithQueryResult extends TestCase {
   }
 
   @Test
-  public void shouldHaveDescriptiveToString() throws IOException {
+  void shouldHaveDescriptiveToString() throws IOException {
     try (QueryResult result = newQueryResult()) {
       String string = result.toString();
       assertTrue(string.contains(result.getClass()

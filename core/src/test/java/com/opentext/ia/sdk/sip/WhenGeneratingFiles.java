@@ -31,13 +31,13 @@ import com.opentext.ia.test.TestCase;
 
 
 @SuppressWarnings("unchecked")
-public class WhenGeneratingFiles extends TestCase {
+class WhenGeneratingFiles extends TestCase {
 
   @TempDir
-  public Path folder;
+  Path folder;
 
   @Test
-  public void shouldGenerateFileInProvidedDirectory() throws IOException {
+  void shouldGenerateFileInProvidedDirectory() throws IOException {
     File dir = newFolder(folder);
     FileGenerator<String> generator = new FileGenerator<>(mock(Assembler.class), dir);
 
@@ -48,7 +48,7 @@ public class WhenGeneratingFiles extends TestCase {
   }
 
   @Test
-  public void shouldProvideStreamOfGeneratedFileToWrappedGenerator() throws IOException {
+  void shouldProvideStreamOfGeneratedFileToWrappedGenerator() throws IOException {
     byte[] content = randomBytes();
     Assembler<String> wrapped = mock(Assembler.class);
     doAnswer(invocation -> {
@@ -74,7 +74,7 @@ public class WhenGeneratingFiles extends TestCase {
   }
 
   @Test
-  public void shouldCallWrappedGenerator() throws IOException {
+  void shouldCallWrappedGenerator() throws IOException {
     Assembler<String> wrapped = mock(Assembler.class);
     String content1 = randomString();
     String content2 = randomString();
@@ -87,7 +87,7 @@ public class WhenGeneratingFiles extends TestCase {
   }
 
   @Test
-  public void shouldReturnMetrics() throws IOException {
+  void shouldReturnMetrics() throws IOException {
     Assembler<String> wrapped = mock(Assembler.class);
     Counters counters = new Counters();
     long count = randomInt(1, 100);

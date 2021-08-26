@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.test.RandomData;
 
 
-public class WhenWorkingWithSearchResults {
+class WhenWorkingWithSearchResults {
 
   private RandomData data;
 
@@ -22,14 +22,14 @@ public class WhenWorkingWithSearchResults {
   }
 
   @Test
-  public void shouldHaveNoDefaults() {
+  void shouldHaveNoDefaults() {
     Column column = new Column();
     assertNull(column.getName());
     assertNull(column.getValue());
   }
 
   @Test
-  public void shouldUpdateStateAfterSettersAreCalled() {
+  void shouldUpdateStateAfterSettersAreCalled() {
     String name = data.string();
     String value = data.string();
     Column column = new Column();

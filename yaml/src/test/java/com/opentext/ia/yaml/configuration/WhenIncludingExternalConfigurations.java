@@ -19,7 +19,7 @@ import com.opentext.ia.yaml.resource.ResourceResolver;
 import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 
-public class WhenIncludingExternalConfigurations extends TestCase {
+class WhenIncludingExternalConfigurations extends TestCase {
 
   private static final String NAME = "name";
   private static final String CONFIGURE = "configure";
@@ -39,7 +39,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   private ResourceResolver resourceResolver = ResourceResolver.none();
 
   @Test
-  public void shouldIncludeConfiguration() {
+  void shouldIncludeConfiguration() {
     String key1 = English.plural(someName());
     String key2 = someName();
     String value = someName();
@@ -86,7 +86,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldIgnoreDuplicateEntryConfiguredAsExisting() {
+  void shouldIgnoreDuplicateEntryConfiguredAsExisting() {
     String type = someName();
     String collection = English.plural(type);
     String name = someName();
@@ -107,7 +107,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldIgnoreDuplicateEntriesConfiguredAsExisting() {
+  void shouldIgnoreDuplicateEntriesConfiguredAsExisting() {
     String type = someName();
     String collection = English.plural(type);
     String name = someName();
@@ -129,7 +129,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldReplaceOriginalEntryConfiguredAsExisting() {
+  void shouldReplaceOriginalEntryConfiguredAsExisting() {
     String type = someName();
     String collection = English.plural(type);
     String name = someName();
@@ -163,7 +163,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldIgnoreDuplicateVersionEntry() {
+  void shouldIgnoreDuplicateVersionEntry() {
     String included = new YamlMap()
         .put(VERSION, VERSION_1)
         .toString();
@@ -178,7 +178,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldIgnoreDuplicateNamespaceEntry() {
+  void shouldIgnoreDuplicateNamespaceEntry() {
     YamlMap namespace1 = someNamespace();
     YamlMap namespace2 = someNamespace();
     String included = new YamlMap()
@@ -205,7 +205,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldResolveInlineResourcesRelativeToIncludedResource() {
+  void shouldResolveInlineResourcesRelativeToIncludedResource() {
     String dir = someName();
     String file = someHtmlFileName();
     String relativeFile = dir + '/' + file;
@@ -239,7 +239,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldSubstitutePropertiesInInlinedYaml() {
+  void shouldSubstitutePropertiesInInlinedYaml() {
     String collection = English.plural(someName());
     resourceResolver = ResourceResolver.fromClasspath();
     yaml.put(collection, Collections.singletonList(new YamlMap().put(NAME, "${qux}")))
@@ -253,7 +253,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldInlineBasedOnSubstitutedProperty() {
+  void shouldInlineBasedOnSubstitutedProperty() {
     resourceResolver = ResourceResolver.fromClasspath("/stores");
     YamlMap map = YamlMap.from(resourceResolver.apply("configuration.yml"));
 
@@ -263,7 +263,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldInlineNestedIncludes() {
+  void shouldInlineNestedIncludes() {
     resourceResolver = ResourceResolver.fromClasspath("/nested-includes");
     yaml.put(INCLUDES, Collections.singletonList("root.yml"));
 
@@ -273,7 +273,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldNotInlineWhenIncludeIsConfiguredToBeIgnored() {
+  void shouldNotInlineWhenIncludeIsConfiguredToBeIgnored() {
     String key1 = English.plural(someName());
     String key2 = someName();
     String value = someName();
@@ -292,7 +292,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
   }
 
   @Test
-  public void shouldMergedInlinedYaml() {
+  void shouldMergedInlinedYaml() {
     resourceResolver = name -> {
       switch (name) {
         case FOO:

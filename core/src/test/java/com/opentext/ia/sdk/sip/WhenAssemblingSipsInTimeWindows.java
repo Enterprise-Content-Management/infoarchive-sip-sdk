@@ -29,10 +29,10 @@ import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.test.TestCase;
 
 @SuppressWarnings("unchecked")
-public class WhenAssemblingSipsInTimeWindows extends TestCase {
+class WhenAssemblingSipsInTimeWindows extends TestCase {
 
   @TempDir
-  public Path temporaryFolder;
+  Path temporaryFolder;
   private final SipAssembler<String> assembler = mock(SipAssembler.class);
   private final SipSegmentationStrategy<String> segmentationStrategy = mock(SipSegmentationStrategy.class);
   private final Clock clock = mock(Clock.class);
@@ -59,7 +59,7 @@ public class WhenAssemblingSipsInTimeWindows extends TestCase {
   }
 
   @Test
-  public void shouldResetTimerWhenObjectAdded() throws IOException {
+  void shouldResetTimerWhenObjectAdded() throws IOException {
     batchAssembler.add(randomString());
 
     verify(clock).cancel(taskName);
@@ -67,7 +67,7 @@ public class WhenAssemblingSipsInTimeWindows extends TestCase {
   }
 
   @Test
-  public void shouldCallBackWhenSipIsFullAfterAddingObject() throws IOException {
+  void shouldCallBackWhenSipIsFullAfterAddingObject() throws IOException {
     String domainObject1 = randomString();
     String domainObject2 = randomString();
     when(segmentationStrategy.shouldStartNewSip(eq(domainObject2), any(SipMetrics.class))).thenReturn(Boolean.TRUE);
@@ -87,7 +87,7 @@ public class WhenAssemblingSipsInTimeWindows extends TestCase {
   }
 
   @Test
-  public void shouldCallBackAfterTimePassedWhenSipIsNonEmpty() throws IOException {
+  void shouldCallBackAfterTimePassedWhenSipIsNonEmpty() throws IOException {
     batchAssembler.add(randomString());
 
     alarm.run();
@@ -96,14 +96,14 @@ public class WhenAssemblingSipsInTimeWindows extends TestCase {
   }
 
   @Test
-  public void shouldNotCallBackAfterTimePassedWhenSipIsEmpty() throws IOException {
+  void shouldNotCallBackAfterTimePassedWhenSipIsEmpty() throws IOException {
     alarm.run();
 
     verify(callback, never()).accept(any(FileGenerationMetrics.class));
   }
 
   @Test
-  public void shouldStopTimerWhenClosed() throws IOException {
+  void shouldStopTimerWhenClosed() throws IOException {
     batchAssembler.end();
 
     verify(clock).cancel(taskName);

@@ -17,7 +17,7 @@ import com.opentext.ia.sdk.dto.result.Column.Type;
 import com.opentext.ia.test.RandomData;
 
 
-public class WhenWorkingWithColumn {
+class WhenWorkingWithColumn {
 
   private RandomData data;
 
@@ -27,7 +27,7 @@ public class WhenWorkingWithColumn {
   }
 
   @Test
-  public void shouldHaveNoDefaults() {
+  void shouldHaveNoDefaults() {
     Column column = new Column();
     assertNull(column.getName());
     assertNull(column.getLabel());
@@ -48,7 +48,7 @@ public class WhenWorkingWithColumn {
   }
 
   @Test
-  public void shouldCreateSchemaColumn() {
+  void shouldCreateSchemaColumn() {
     String name = data.string();
     String label = data.string();
     String path = data.string();

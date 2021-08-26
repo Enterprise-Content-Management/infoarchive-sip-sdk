@@ -15,7 +15,7 @@ import com.opentext.ia.sdk.support.http.rest.Link;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 
 
-public class WhenExtractingLinksFromLinkContainer {
+class WhenExtractingLinksFromLinkContainer {
 
   private static final String LINK_HREF = "http://documentum.opentext.com/infoarchive/";
   private static final String KEY = "Test";
@@ -32,12 +32,12 @@ public class WhenExtractingLinksFromLinkContainer {
   }
 
   @Test
-  public void fetchLinkObjectFromContainer() {
+  void fetchLinkObjectFromContainer() {
     assertEquals(link, container.getLinks().get(KEY), "Link object information");
   }
 
   @Test
-  public void fetchLinkStringFromContainer() {
+  void fetchLinkStringFromContainer() {
     assertEquals(LINK_HREF, container.getLinks().get(KEY).getHref(), "Link string information");
   }
 

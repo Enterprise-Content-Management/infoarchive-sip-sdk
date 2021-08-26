@@ -21,7 +21,7 @@ import com.opentext.ia.yaml.resource.ResourceResolver;
 import com.opentext.ia.yaml.resource.UnknownResourceException;
 
 
-public class WhenInliningExternalResources extends TestCase {
+class WhenInliningExternalResources extends TestCase {
 
   private static final String NAME = "name";
   private static final String CONTENT = "content";
@@ -44,7 +44,7 @@ public class WhenInliningExternalResources extends TestCase {
   private ResourceResolver resourceResolver = ResourceResolver.none();
 
   @Test
-  public void shouldInlineResources() {
+  void shouldInlineResources() {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -112,7 +112,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNormalizedCustomPresentationHtmlTemplate() {
+  void shouldInlineNormalizedCustomPresentationHtmlTemplate() {
     String expected = someName();
     String resource = someHtmlFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -133,7 +133,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineSingleCustomPresentationHtmlTemplate() {
+  void shouldInlineSingleCustomPresentationHtmlTemplate() {
     String expected = someName();
     String resource = someHtmlFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -148,7 +148,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNamedCustomPresentationHtmlTemplate() {
+  void shouldInlineNamedCustomPresentationHtmlTemplate() {
     String expected = someName();
     String resource = someHtmlFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -167,7 +167,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNormalizedDatabaseMetadata() {
+  void shouldInlineNormalizedDatabaseMetadata() {
     String expected = someName();
     String resource = someXmlFile();
     resourceResolver = resolveResource(resource, expected);
@@ -187,7 +187,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineSingleDatabaseMetadata() {
+  void shouldInlineSingleDatabaseMetadata() {
     String expected = someName();
     String resource = someXmlFile();
     resourceResolver = resolveResource(resource, expected);
@@ -202,7 +202,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNamedDatabaseMetadata() {
+  void shouldInlineNamedDatabaseMetadata() {
     String expected = someName();
     String resource = someXmlFile();
     resourceResolver = resolveResource(resource, expected);
@@ -221,7 +221,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNormalizedTransformationXQuery() {
+  void shouldInlineNormalizedTransformationXQuery() {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -241,7 +241,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineSingleTransformationXQuery() {
+  void shouldInlineSingleTransformationXQuery() {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -256,7 +256,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNamedTransformationXQuery() {
+  void shouldInlineNamedTransformationXQuery() {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -271,7 +271,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineFileResourcesByPattern() {
+  void shouldInlineFileResourcesByPattern() {
     resourceResolver = ResourceResolver.fromFile(new File("src/test/resources/nested-includes/root.yml"));
     yaml.put(DATABASES, Collections.singletonList(new YamlMap()
         .put(NAME, someName())
@@ -285,7 +285,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineFileResourcesByPatterns() {
+  void shouldInlineFileResourcesByPatterns() {
     resourceResolver = ResourceResolver.fromFile(new File("src/test/resources/configuration.properties"));
     yaml.put(DATABASES, Collections.singletonList(new YamlMap()
         .put(NAME, someName())
@@ -299,7 +299,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldNotInlineBinaryResources() {
+  void shouldNotInlineBinaryResources() {
     String binaryExtension = "zip";
     String resourceName = someFileName(binaryExtension);
     yaml.put(ACCESS_NODE, new YamlMap()
@@ -316,7 +316,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNormalizedXQueryQuery() {
+  void shouldInlineNormalizedXQueryQuery() {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -336,7 +336,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineSingleXQueryQuery() {
+  void shouldInlineSingleXQueryQuery() {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);
@@ -351,7 +351,7 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   @Test
-  public void shouldInlineNamedXQueryQuery() {
+  void shouldInlineNamedXQueryQuery() {
     String expected = someName();
     String resource = someTextFileName();
     resourceResolver = resolveResource(resource, expected);

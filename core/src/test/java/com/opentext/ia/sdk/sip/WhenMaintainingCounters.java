@@ -8,12 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 
-public class WhenMaintainingCounters {
+class WhenMaintainingCounters {
 
   private final Counters counters = new Counters();
 
   @Test
-  public void shouldIncreaseCounter() {
+  void shouldIncreaseCounter() {
     assertEquals(0, counters.get(TestMetrics.FOO), "Initial value");
 
     counters.inc(TestMetrics.FOO);
@@ -21,7 +21,7 @@ public class WhenMaintainingCounters {
   }
 
   @Test
-  public void shouldClearCounterOnReset() {
+  void shouldClearCounterOnReset() {
     counters.inc(TestMetrics.FOO);
     counters.inc(TestMetrics.BAR);
 

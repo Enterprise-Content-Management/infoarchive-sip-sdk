@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenMatchingWildcardPatterns extends TestCase {
+class WhenMatchingWildcardPatterns extends TestCase {
 
   @Test
-  public void shouldMatchLiterals() {
+  void shouldMatchLiterals() {
     String pattern = randomString(12);
 
     assertMatch(pattern, true, pattern);
@@ -29,7 +29,7 @@ public class WhenMatchingWildcardPatterns extends TestCase {
   }
 
   @Test
-  public void shouldMatchQuestionMarkToAnyCharacter() {
+  void shouldMatchQuestionMarkToAnyCharacter() {
     String suffix = randomString(3);
     String pattern = '?' + suffix;
 
@@ -39,7 +39,7 @@ public class WhenMatchingWildcardPatterns extends TestCase {
   }
 
   @Test
-  public void shouldMatchAsteriskToAnyCharactersButPathSeparators() {
+  void shouldMatchAsteriskToAnyCharactersButPathSeparators() {
     String suffix = randomString(3);
     String pattern = '*' + suffix;
 
@@ -49,7 +49,7 @@ public class WhenMatchingWildcardPatterns extends TestCase {
   }
 
   @Test
-  public void shouldMatchTwoAsteriskesToAnyCharactersIncludingPathSeparators() {
+  void shouldMatchTwoAsteriskesToAnyCharactersIncludingPathSeparators() {
     String suffix = randomString(3);
     String pattern = "**/*" + suffix;
 
@@ -57,7 +57,7 @@ public class WhenMatchingWildcardPatterns extends TestCase {
   }
 
   @Test
-  public void shouldMatchSpecialChatractersAsIs() {
+  void shouldMatchSpecialChatractersAsIs() {
     String pattern = randomString(2) + "(foo-bar)" + randomString(3);
 
     assertMatch(pattern, true, pattern);

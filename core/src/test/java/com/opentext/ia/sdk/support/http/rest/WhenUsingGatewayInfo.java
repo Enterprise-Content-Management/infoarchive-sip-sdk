@@ -14,7 +14,7 @@ import com.opentext.ia.sdk.support.http.Header;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenUsingGatewayInfo extends TestCase {
+class WhenUsingGatewayInfo extends TestCase {
 
   private static final String GATEWAY_URL = "http://authgateway.com/";
   private final String clientId = randomString();
@@ -22,13 +22,13 @@ public class WhenUsingGatewayInfo extends TestCase {
   private final GatewayInfo gatewayInfo = new GatewayInfo(GATEWAY_URL, clientId, clientSecret);
 
   @Test
-  public void shouldCorrectlyFormUrl() {
+  void shouldCorrectlyFormUrl() {
     assertEquals(GATEWAY_URL + "oauth/token", gatewayInfo.getGatewayUrl(),
         "Endpoint suffix should be added");
   }
 
   @Test
-  public void shouldCorrecltyFormAuthorizationHeader() {
+  void shouldCorrecltyFormAuthorizationHeader() {
     String correctToken =
         "Basic " + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8));
     Header correctHeader = new Header("Authorization", correctToken);

@@ -12,7 +12,7 @@ import org.atteo.evo.inflector.English;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class WhenTransferringDataUsingCollections extends AbstractDtoTestCase {
+class WhenTransferringDataUsingCollections extends AbstractDtoTestCase {
 
   public static Object[] source() {
     return classesInDtoPackage()
@@ -26,7 +26,7 @@ public class WhenTransferringDataUsingCollections extends AbstractDtoTestCase {
 
   @ParameterizedTest
   @MethodSource("source")
-  public void shouldBeDtoCollection(Class<?> type) throws ReflectiveOperationException {
+  void shouldBeDtoCollection(Class<?> type) throws ReflectiveOperationException {
     assertHasOnlyPublicNoArgConstructor(type);
     assertNameIsPluralOfParameterizedType(type);
     assertHasNoMethods(type);

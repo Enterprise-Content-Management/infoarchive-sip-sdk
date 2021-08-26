@@ -20,10 +20,10 @@ import com.opentext.ia.sdk.sip.Template;
 import com.opentext.ia.sdk.support.datetime.Dates;
 import com.opentext.ia.test.TestCase;
 
-public class WhenReplacingPatternsUsingVelocity extends TestCase {
+class WhenReplacingPatternsUsingVelocity extends TestCase {
 
   @Test
-  public void shouldReplaceVariables() throws IOException {
+  void shouldReplaceVariables() throws IOException {
     String name1 = someString('n');
     String value1 = someString('1');
     String name2 = someString('n');

@@ -18,12 +18,12 @@ import com.opentext.ia.sdk.support.io.MemoryBuffer;
 import com.opentext.ia.sdk.support.xml.XmlUtil;
 
 
-public class WhenAssemblingPackagingInformation extends XmlTestCase {
+class WhenAssemblingPackagingInformation extends XmlTestCase {
 
   private final Assembler<PackagingInformation> assembler = new InfoArchivePackagingInformationAssembler();
 
   @Test
-  public void shouldGenerateValidXml() throws IOException {
+  void shouldGenerateValidXml() throws IOException {
     String application = "a_" + randomString(62);
     String holding = "h_" + randomString(62);
     String producer = "p_" + randomString(62);

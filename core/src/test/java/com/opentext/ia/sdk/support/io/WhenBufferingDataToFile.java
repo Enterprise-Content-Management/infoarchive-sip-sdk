@@ -20,13 +20,13 @@ import org.junit.jupiter.api.io.TempDir;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenBufferingDataToFile extends TestCase {
+class WhenBufferingDataToFile extends TestCase {
 
   @TempDir
-  public Path folder;
+  Path folder;
 
   @Test
-  public void shouldReadFileContents() throws IOException {
+  void shouldReadFileContents() throws IOException {
     byte[] expected = randomBytes();
     File file = newFile(folder, expected);
     FileBuffer buffer = new FileBuffer(file);
@@ -43,7 +43,7 @@ public class WhenBufferingDataToFile extends TestCase {
   }
 
   @Test
-  public void shouldWriteFileContents() throws IOException {
+  void shouldWriteFileContents() throws IOException {
     byte[] expected = randomBytes();
     File file = newFile(folder, expected);
 
@@ -53,7 +53,7 @@ public class WhenBufferingDataToFile extends TestCase {
   }
 
   @Test
-  public void shouldReportLength() throws IOException {
+  void shouldReportLength() throws IOException {
     File file = someFile(folder);
     FileBuffer buffer = new FileBuffer(file);
 

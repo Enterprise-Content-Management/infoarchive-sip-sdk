@@ -15,10 +15,10 @@ import com.opentext.ia.sdk.support.datetime.Dates;
 import com.opentext.ia.test.TestCase;
 
 
-public class WhenGeneratingDssIds extends TestCase {
+class WhenGeneratingDssIds extends TestCase {
 
   @Test
-  public void shouldGenerateIdFromPrefixAndSequence() {
+  void shouldGenerateIdFromPrefixAndSequence() {
     String prefix = randomString(8);
     Supplier<String> dssIdSupplier = new SequentialDssIdSupplier(prefix);
 
@@ -29,7 +29,7 @@ public class WhenGeneratingDssIds extends TestCase {
   }
 
   @Test
-  public void shouldGenerateIdFromPrefixAndDateTime() {
+  void shouldGenerateIdFromPrefixAndDateTime() {
     Date before = new Date();
     String prefix = randomString(8);
     Supplier<String> dssIdSupplier = new DateTimeDssIdSupplier(prefix);
