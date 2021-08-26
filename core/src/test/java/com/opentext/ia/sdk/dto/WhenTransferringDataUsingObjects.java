@@ -3,10 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -24,21 +24,16 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.atteo.evo.inflector.English;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 
-@RunWith(Parameterized.class)
 public class WhenTransferringDataUsingObjects extends AbstractDtoTestCase {
 
   private static final Collection<Class<?>> PRIMITIVE_WRAPPER_TYPES = Arrays.asList(String.class, Integer.class,
       Long.class, Byte.class, Boolean.class, Double.class, Float.class, Character.class);
 
-  @Parameters(name = "{0}")
-  public static Object[] getParameters() {
+  public static Object[] source() {
     return classesInDtoPackage()
         .filter(WhenTransferringDataUsingObjects::isDto)
         .toArray();
@@ -48,13 +43,12 @@ public class WhenTransferringDataUsingObjects extends AbstractDtoTestCase {
     return NamedLinkContainer.class.equals(type.getSuperclass());
   }
 
-  @Parameter
-  public Class<?> type;
   private final Collection<Class<?>> types = new LinkedHashSet<>();
   private final Collection<Class<?>> processedTypes = new LinkedHashSet<>();
 
-  @Test
-  public void shouldUseJavaBeans() throws ReflectiveOperationException {
+  @ParameterizedTest
+  @MethodSource("source")
+  public void shouldUseJavaBeans(Class<?> type) throws ReflectiveOperationException {
     types.add(type);
     while (!types.isEmpty()) {
       Class<?> bean = types.iterator().next();
@@ -91,8 +85,10 @@ public class WhenTransferringDataUsingObjects extends AbstractDtoTestCase {
     String extraMethods = allMethods.stream()
         .map(method -> method.getName())
         .collect(Collectors.joining("(), "));
-    assertTrue(String.format("DTO should not have any logic, but found non-getter/setter public %s in %s: %s()",
-        English.plural("method", allMethods.size()), bean, extraMethods), allMethods.isEmpty());
+    assertTrue(allMethods.isEmpty(),
+        String.format(
+            "DTO should not have any logic, but found non-getter/setter public %s in %s: %s()",
+            English.plural("method", allMethods.size()), bean, extraMethods));
   }
 
   private String getterPrefixFor(Class<?> fieldType) {
@@ -115,9 +111,10 @@ public class WhenTransferringDataUsingObjects extends AbstractDtoTestCase {
       throws ReflectiveOperationException {
     String methodName = String.format("%s.%s()", bean.getName(), name);
     Method result = bean.getDeclaredMethod(name, parameterTypes);
-    assertNotNull("Missing method: " + methodName, result);
-    assertEquals("Return type of " + methodName, returnType, result.getReturnType());
-    assertEquals("Modifiers of " + methodName, Modifier.PUBLIC, result.getModifiers() & ~Modifier.FINAL);
+    assertNotNull(result, "Missing method: " + methodName);
+    assertEquals(returnType, result.getReturnType(), "Return type of " + methodName);
+    assertEquals(Modifier.PUBLIC, result.getModifiers() & ~Modifier.FINAL,
+        "Modifiers of " + methodName);
     Object instance = bean.getDeclaredConstructor().newInstance();
     Object[] parameters = Arrays.stream(parameterTypes)
         .map(this::newInstanceOf)

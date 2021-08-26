@@ -3,24 +3,18 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 
 import org.atteo.evo.inflector.English;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-
-@RunWith(Parameterized.class)
 public class WhenTransferringDataUsingCollections extends AbstractDtoTestCase {
 
-  @Parameters(name = "{0}")
-  public static Object[] getParameters() {
+  public static Object[] source() {
     return classesInDtoPackage()
         .filter(WhenTransferringDataUsingCollections::isDtoCollection)
         .toArray();
@@ -30,29 +24,27 @@ public class WhenTransferringDataUsingCollections extends AbstractDtoTestCase {
     return ItemContainer.class.equals(type.getSuperclass());
   }
 
-  @Parameter
-  public Class<?> type;
-
-  @Test
-  public void shouldBeDtoCollection() throws ReflectiveOperationException {
+  @ParameterizedTest
+  @MethodSource("source")
+  public void shouldBeDtoCollection(Class<?> type) throws ReflectiveOperationException {
     assertHasOnlyPublicNoArgConstructor(type);
-    assertNameIsPluralOfParameterizedType();
-    assertHasNoMethods();
+    assertNameIsPluralOfParameterizedType(type);
+    assertHasNoMethods(type);
   }
 
-  private void assertNameIsPluralOfParameterizedType() {
+  private void assertNameIsPluralOfParameterizedType(Class<?> type) {
     if (Contents.class.equals(type)) {
       return;
     }
     ParameterizedType superClass = (ParameterizedType)type.getAnnotatedSuperclass().getType();
     String singularType = superClass.getActualTypeArguments()[0].getTypeName();
-    assertEquals("Name", English.plural(singularType), type.getName());
+    assertEquals(English.plural(singularType), type.getName(), "Name");
   }
 
-  private void assertHasNoMethods() {
-    assertEquals("# methods", 0, Arrays.stream(type.getDeclaredMethods())
+  private void assertHasNoMethods(Class<?> type) {
+    assertEquals(0, Arrays.stream(type.getDeclaredMethods())
         .filter(method -> !method.isSynthetic())
-        .count());
+        .count(), "# methods");
   }
 
 }

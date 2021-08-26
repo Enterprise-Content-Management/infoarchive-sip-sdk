@@ -3,9 +3,10 @@
  */
 package com.opentext.ia.sdk.support.http.apache;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,9 +32,10 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.http.BinaryPart;
 import com.opentext.ia.sdk.support.http.Header;
@@ -42,20 +44,20 @@ import com.opentext.ia.sdk.support.http.ResponseFactory;
 import com.opentext.ia.sdk.support.http.TextPart;
 import com.opentext.ia.test.TestCase;
 
-
+@Tag("external")
 public class WhenMakingHttpCallsUsingApache extends TestCase {
 
   private final TestApacheHttpClient httpClient = new TestApacheHttpClient();
   private final HttpResponse response = mock(HttpResponse.class);
   private final StatusLine statusLine = mock(StatusLine.class);
 
-  @Before
+  @BeforeEach
   public void init() throws IOException {
     when(response.getStatusLine()).thenReturn(statusLine);
     when(statusLine.getStatusCode()).thenReturn(200);
   }
 
-  @After
+  @AfterEach
   public void done() {
     httpClient.close();
   }
@@ -69,26 +71,25 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
 
     String actual = httpClient.get(uri, Collections.singleton(new Header(header, value)), String.class);
 
-    assertEquals("Response", uri, actual);
+    assertEquals(uri, actual, "Response");
     HttpUriRequest request = assertRequest(uri, HttpGet.class);
     org.apache.http.Header[] headers = request.getAllHeaders();
-    assertEquals("# headers", 1, headers.length);
-    assertEquals("Header name", header, headers[0].getName());
-    assertEquals("Header value", value, headers[0].getValue());
+    assertEquals(1, headers.length, "# headers");
+    assertEquals(header, headers[0].getName(), "Header name");
+    assertEquals(value, headers[0].getValue(), "Header value");
   }
 
   private <T extends HttpUriRequest> T assertRequest(String expectedUri, Class<T> expectedClass) {
     HttpUriRequest request = httpClient.getExecutedRequest();
-    assertEquals("Request", expectedClass, request.getClass());
-    assertEquals("Request URI", expectedUri, request.getURI().toString());
+    assertEquals(expectedClass, request.getClass(), "Request");
+    assertEquals(expectedUri, request.getURI().toString(), "Request URI");
     return expectedClass.cast(request);
   }
 
-  @Test(expected = HttpException.class)
+  @Test
   public void shouldThrowExceptionOnNonOkStatusCode() throws IOException {
     when(statusLine.getStatusCode()).thenReturn(400);
-
-    getResponse(null);
+    assertThrows(HttpException.class, () -> getResponse(null));
   }
 
   private <T> T getResponse(Class<T> type) throws IOException {
@@ -99,7 +100,6 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
   @Test
   public void shouldReturnNullWhenNoEntity() throws IOException {
     Object body = getResponse(null);
-
     assertNull(body);
   }
 
@@ -138,7 +138,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
     try {
       String actual = httpClient.get(uri, Collections.emptyList(), responseFactory);
 
-      assertEquals("Response", expected, actual);
+      assertEquals(expected, actual, "Response");
     } catch (HttpException e) {
       Throwable cause = e.getCause();
       if (cause instanceof SSLHandshakeException || cause instanceof UnknownHostException) {
@@ -166,7 +166,7 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
     httpClient.post(uri, Collections.emptyList(), null, payload);
 
     HttpPost request = assertRequest(uri, HttpPost.class);
-    assertEquals("Payload", payload, EntityUtils.toString(request.getEntity()));
+    assertEquals(payload, EntityUtils.toString(request.getEntity()), "Payload");
   }
 
   @Test
@@ -179,7 +179,8 @@ public class WhenMakingHttpCallsUsingApache extends TestCase {
     }
 
     HttpEntity entity = assertRequest(uri, HttpPost.class).getEntity();
-    assertTrue("Is multi part", entity.getClass().getSimpleName().toLowerCase(Locale.ENGLISH).contains("multipart"));
+    assertTrue(entity.getClass().getSimpleName().toLowerCase(Locale.ENGLISH).contains("multipart"),
+        "Is multi part");
   }
 
   @Test

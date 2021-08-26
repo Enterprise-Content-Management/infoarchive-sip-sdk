@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 import javax.xml.XMLConstants;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.io.MemoryBuffer;
 import com.opentext.ia.sdk.support.xml.XmlBuilder;

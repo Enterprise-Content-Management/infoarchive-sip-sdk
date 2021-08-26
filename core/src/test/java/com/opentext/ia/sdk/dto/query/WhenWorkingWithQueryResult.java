@@ -3,8 +3,8 @@
  */
 package com.opentext.ia.sdk.dto.query;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -12,8 +12,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.client.api.QueryResult;
 import com.opentext.ia.sdk.client.impl.DefaultQueryResult;
@@ -32,7 +32,7 @@ public class WhenWorkingWithQueryResult extends TestCase {
   private InputStream stream;
   private Closeable dependentResource;
 
-  @Before
+  @BeforeEach
   public void before() {
     resultSetQuota = random.integer();
     aiuQuota = random.integer();

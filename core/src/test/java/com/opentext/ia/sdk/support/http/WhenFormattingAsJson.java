@@ -3,11 +3,12 @@
  */
 package com.opentext.ia.sdk.support.http;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 
 public class WhenFormattingAsJson {
@@ -16,12 +17,12 @@ public class WhenFormattingAsJson {
 
   @Test
   public void formatString() throws IOException {
-    assertEquals("Resource Name", "\"ape\"", formatter.format("ape"));
+    assertEquals("\"ape\"", formatter.format("ape"), "Resource Name");
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void shouldThrowNullPointerException() throws IOException {
-    formatter.format(null);
+    assertThrows(NullPointerException.class, () -> formatter.format(null));
   }
 
 }

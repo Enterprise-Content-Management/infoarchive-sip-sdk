@@ -3,12 +3,13 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 import java.util.function.Supplier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.datetime.Dates;
 import com.opentext.ia.test.TestCase;
@@ -23,7 +24,7 @@ public class WhenGeneratingDssIds extends TestCase {
 
     int n = randomInt(3, 7);
     for (int i = 1; i <= n; i++) {
-      assertEquals("DSS ID #" + i, prefix + i, dssIdSupplier.get());
+      assertEquals(prefix + i, dssIdSupplier.get(), "DSS ID #" + i);
     }
   }
 
@@ -35,10 +36,10 @@ public class WhenGeneratingDssIds extends TestCase {
 
     String actual = dssIdSupplier.get();
 
-    assertTrue("Not prefixed", actual.startsWith(prefix));
+    assertTrue(actual.startsWith(prefix), "Not prefixed");
     Date inId = Dates.fromIso(actual.substring(prefix.length()));
-    assertTrue("Too early", before.compareTo(inId) <= 0);
-    assertTrue("Too late", inId.compareTo(new Date()) <= 0);
+    assertTrue(before.compareTo(inId) <= 0, "Too early");
+    assertTrue(inId.compareTo(new Date()) <= 0, "Too late");
   }
 
 }

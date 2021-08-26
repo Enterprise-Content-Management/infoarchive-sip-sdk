@@ -3,13 +3,13 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.http.rest.Link;
 
@@ -18,14 +18,14 @@ public class WhenFetchingHomeResource {
 
   private final TestHomeResource homeResource = new TestHomeResource();
 
-  @Before
+  @BeforeEach
   public void init() {
     homeResource.setName("TestApplication");
   }
 
   @Test
   public void fetchResourceName() {
-    assertEquals("Resource Name", "TestApplication", homeResource.getName());
+    assertEquals("TestApplication", homeResource.getName(), "Resource Name");
   }
 
 

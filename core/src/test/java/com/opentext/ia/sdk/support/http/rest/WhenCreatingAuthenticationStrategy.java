@@ -3,12 +3,13 @@
  */
 package com.opentext.ia.sdk.support.http.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.datetime.Clock;
 import com.opentext.ia.sdk.support.http.HttpClient;
@@ -20,8 +21,8 @@ public class WhenCreatingAuthenticationStrategy extends TestCase {
   @Test
   public void shouldConfigureNonExpiringAuthentication() {
     String token = randomString();
-    assertTrue("Should configure NonExpiringTokenAuthentication",
-        NonExpiringTokenAuthentication.optional(token, null, null).isPresent());
+    assertTrue(NonExpiringTokenAuthentication.optional(token, null, null).isPresent(),
+        "Should configure NonExpiringTokenAuthentication");
   }
 
   @Test
@@ -29,16 +30,16 @@ public class WhenCreatingAuthenticationStrategy extends TestCase {
     String token = randomString();
     String username = randomString();
     String password = randomString();
-    assertFalse("Should not configure NonExpiringTokenAuthentication because of user and password",
-        NonExpiringTokenAuthentication.optional(token, username, password).isPresent());
+    assertFalse(NonExpiringTokenAuthentication.optional(token, username, password).isPresent(),
+        "Should not configure NonExpiringTokenAuthentication because of user and password");
   }
 
   @Test
   public void shouldConfigureBasicAuthentication() {
     String username = randomString();
     String password = randomString();
-    assertTrue("Should configure BasicAuthentication",
-        BasicAuthentication.optional(username, password, null).isPresent());
+    assertTrue(BasicAuthentication.optional(username, password, null).isPresent(),
+        "Should configure BasicAuthentication");
   }
 
   @Test
@@ -46,8 +47,8 @@ public class WhenCreatingAuthenticationStrategy extends TestCase {
     String username = randomString();
     String password = randomString();
     String gateway = randomString();
-    assertFalse("Should not configure BasicAuthentication because of gateway",
-        BasicAuthentication.optional(username, password, gateway).isPresent());
+    assertFalse(BasicAuthentication.optional(username, password, gateway).isPresent(),
+        "Should not configure BasicAuthentication because of gateway");
   }
 
   @Test
@@ -57,8 +58,9 @@ public class WhenCreatingAuthenticationStrategy extends TestCase {
     Optional<GatewayInfo> gatewayInfo = GatewayInfo.optional(randomString(), randomString(), randomString());
     HttpClient httpClient = mock(HttpClient.class);
     Clock clock = mock(Clock.class);
-    assertTrue("Should configure JwtAuthentication",
-        JwtAuthentication.optional(username, password, gatewayInfo.orElse(null), httpClient, clock).isPresent());
+    assertTrue(JwtAuthentication
+        .optional(username, password, gatewayInfo.orElse(null), httpClient, clock).isPresent(),
+        "Should configure JwtAuthentication");
   }
 
   @Test
@@ -67,7 +69,7 @@ public class WhenCreatingAuthenticationStrategy extends TestCase {
     String password = randomString();
     HttpClient httpClient = mock(HttpClient.class);
     Clock clock = mock(Clock.class);
-    assertFalse("Should not configure JwtAuthentication because of abscence of gatewayInfo",
-        JwtAuthentication.optional(username, password, null, httpClient, clock).isPresent());
+    assertFalse(JwtAuthentication.optional(username, password, null, httpClient, clock).isPresent(),
+        "Should not configure JwtAuthentication because of abscence of gatewayInfo");
   }
 }

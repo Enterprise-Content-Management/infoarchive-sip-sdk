@@ -4,10 +4,10 @@
 
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class WhenFetchingReceptionRequest {
 
@@ -15,20 +15,20 @@ public class WhenFetchingReceptionRequest {
 
   private final ReceptionRequest reception = new ReceptionRequest();
 
-  @Before
+  @BeforeEach
   public void init() {
     reception.setFormat("sip_zip");
   }
 
   @Test
   public void fetchDefaultFormat() {
-    assertEquals("Reception Default Format", "sip_zip", reception.getFormat());
+    assertEquals("sip_zip", reception.getFormat(), "Reception Default Format");
   }
 
   @Test
   public void fetchName() {
     reception.setFormat(FORMAT);
-    assertEquals("Reception Format", FORMAT, reception.getFormat());
+    assertEquals(FORMAT, reception.getFormat(), "Reception Format");
   }
 
 }

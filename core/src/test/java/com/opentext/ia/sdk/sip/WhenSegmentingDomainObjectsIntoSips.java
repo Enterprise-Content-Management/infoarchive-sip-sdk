@@ -3,10 +3,10 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,8 +16,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.io.DomainObjectTooBigException;
 import com.opentext.ia.test.TestCase;
@@ -29,7 +29,7 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
   private SipSegmentationStrategy<String> strategy;
   private int expected;
 
-  @Before
+  @BeforeEach
   public void init() {
     expected = randomInt(3, 7);
   }
@@ -55,7 +55,7 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
       }
       countersUpdater.accept(metrics);
     }
-    assertEquals("# SIPs", expected, actual);
+    assertEquals(expected, actual, "# SIPs");
   }
 
   @Test
@@ -104,10 +104,10 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
     strategy = SipSegmentationStrategy.combining(segmentOn(object1), segmentOn(object2),
         segmentOn(object3));
 
-    assertTrue("# 1", strategy.shouldStartNewSip(object1, null));
-    assertTrue("# 2", strategy.shouldStartNewSip(object2, null));
-    assertTrue("# 3", strategy.shouldStartNewSip(object3, null));
-    assertFalse("Other", strategy.shouldStartNewSip(randomString(), null));
+    assertTrue(strategy.shouldStartNewSip(object1, null), "# 1");
+    assertTrue(strategy.shouldStartNewSip(object2, null), "# 2");
+    assertTrue(strategy.shouldStartNewSip(object3, null), "# 3");
+    assertFalse(strategy.shouldStartNewSip(randomString(), null), "Other");
   }
 
   private SipSegmentationStrategy<String> segmentOn(String segmentObject) {
@@ -170,7 +170,7 @@ public class WhenSegmentingDomainObjectsIntoSips extends TestCase {
         metrics.set(SipMetrics.SIZE_SIP, 0);
       }
     }
-    assertEquals("# SIPs", expectedSips, actualSips);
+    assertEquals(expectedSips, actualSips, "# SIPs");
   }
 
   @Test

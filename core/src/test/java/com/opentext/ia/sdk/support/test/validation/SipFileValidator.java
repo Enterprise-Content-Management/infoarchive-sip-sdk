@@ -3,7 +3,10 @@
  */
 package com.opentext.ia.sdk.support.test.validation;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +15,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xmlunit.builder.DiffBuilder;
@@ -34,13 +36,13 @@ public class SipFileValidator {
   }
 
   public SipFileValidator assertFileCount(int count) {
-    assertEquals("Entries in sip file.", count, zipFile.size());
+    assertEquals(count, zipFile.size(), "Entries in sip file.");
     return this;
   }
 
   public SipFileValidator assertPackagingInformation(int aiuCount) throws IOException {
     ZipEntry entry = zipFile.getEntry("eas_sip.xml");
-    Assert.assertNotNull("Missing Packaging Information", entry);
+    assertNotNull(entry, "Missing Packaging Information");
 
     try (ByteArrayInputOutputStream packagingInformation = new ByteArrayInputOutputStream();
         InputStream in = zipFile.getInputStream(entry)) {
@@ -49,7 +51,7 @@ public class SipFileValidator {
           assertValidXml(packagingInformation.getInputStream(), "PackagingInformation", "sip.xsd").getDocumentElement();
       String actualAiuCount = XmlUtil.getFirstChildElement(sipElement, "aiu_count")
         .getTextContent();
-      assertEquals("# AIUs", aiuCount, Integer.parseInt(actualAiuCount));
+      assertEquals(aiuCount, Integer.parseInt(actualAiuCount), "# AIUs");
     }
 
     return this;
@@ -57,7 +59,7 @@ public class SipFileValidator {
 
   public SipFileValidator assertPreservationInformationIdenticalTo(String resource) throws IOException {
     ZipEntry entry = zipFile.getEntry("eas_pdi.xml");
-    Assert.assertNotNull("Missing Preservation Information", entry);
+    assertNotNull(entry, "Missing Preservation Information");
 
     try (InputStream expectedIn = owner.getClass()
       .getResourceAsStream(resource); InputStream actualIn = zipFile.getInputStream(entry)) {
@@ -68,8 +70,7 @@ public class SipFileValidator {
         .ignoreWhitespace()
         .ignoreComments()
         .build();
-      Assert.assertFalse("XML similar " + myDiff, myDiff.hasDifferences());
-
+      assertFalse(myDiff.hasDifferences(), "XML similar " + myDiff);
     }
     return this;
 
@@ -86,11 +87,11 @@ public class SipFileValidator {
   public SipFileValidator assertContentFileIdenticalTo(String referenceInformation, String resource)
       throws IOException {
     ZipEntry entry = zipFile.getEntry(referenceInformation);
-    Assert.assertNotNull("Missing Digital Object", entry);
+    assertNotNull(entry, "Missing Digital Object");
     try (InputStream expectedIn = owner.getClass()
       .getResourceAsStream(resource); InputStream actualIn = zipFile.getInputStream(entry)) {
-      Assert.assertTrue("The DigitalObject " + referenceInformation + " is not the expected one.",
-          IOUtils.contentEquals(expectedIn, actualIn));
+      assertTrue(IOUtils.contentEquals(expectedIn, actualIn),
+          "The DigitalObject " + referenceInformation + " is not the expected one.");
     }
     return this;
   }

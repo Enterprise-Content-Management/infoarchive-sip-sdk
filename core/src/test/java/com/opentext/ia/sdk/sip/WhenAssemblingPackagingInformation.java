@@ -3,13 +3,13 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -58,17 +58,17 @@ public class WhenAssemblingPackagingInformation extends XmlTestCase {
     try (InputStream stream = buffer.openForReading()) {
       Element packageInfo = assertValidXml(stream, "Packaging Information", "sip.xsd").getDocumentElement();
       Element dss = XmlUtil.getFirstChildElement(packageInfo, "dss");
-      assertEquals("ID", dssId, getText(dss, "id"));
-      assertEquals("Application", application, getText(dss, "application"));
-      assertEquals("Holding", holding, getText(dss, "holding"));
-      assertEquals("PDI entity", entity, getText(dss, "entity"));
-      assertEquals("Producer", producer, getText(dss, "producer"));
-      assertEquals("PDI schema", pdiSchema, getText(dss, "pdi_schema"));
-      assertEquals("# AIUs", Integer.toString(aiuCount), getText(dss.getParentNode(), "aiu_count"));
+      assertEquals(dssId, getText(dss, "id"), "ID");
+      assertEquals(application, getText(dss, "application"), "Application");
+      assertEquals(holding, getText(dss, "holding"), "Holding");
+      assertEquals(entity, getText(dss, "entity"), "PDI entity");
+      assertEquals(producer, getText(dss, "producer"), "Producer");
+      assertEquals(pdiSchema, getText(dss, "pdi_schema"), "PDI schema");
+      assertEquals(Integer.toString(aiuCount), getText(dss.getParentNode(), "aiu_count"), "# AIUs");
       Element customAttributes = XmlUtil.getFirstChildElement(
           XmlUtil.getFirstChildElement(packageInfo, "custom"), "attributes");
-      assertEquals("Attr #1", value1, getAttributeValue(customAttributes, attr1));
-      assertEquals("Attr #2", value2, getAttributeValue(customAttributes, attr2));
+      assertEquals(value1, getAttributeValue(customAttributes, attr1), "Attr #1");
+      assertEquals(value2, getAttributeValue(customAttributes, attr2), "Attr #2");
     }
   }
 

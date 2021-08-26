@@ -5,9 +5,10 @@ package com.opentext.ia.sdk.server.configuration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.AuthenticationStrategyFactory;
@@ -53,7 +54,7 @@ public class WhenConfiguringAuthenticationStrategy extends TestCase {
     assertThat(authentication, instanceOf(JwtAuthentication.class));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldThrowException() {
     connection.setClientId(randomString());
     connection.setClientSecret(randomString());
@@ -61,7 +62,8 @@ public class WhenConfiguringAuthenticationStrategy extends TestCase {
     connection.setAuthenticationUser(randomString());
     HttpClient httpClient = mock(HttpClient.class);
     Clock clock = mock(Clock.class);
-    authFactory.getAuthenticationStrategy(() -> httpClient, () -> clock);
+    assertThrows(IllegalArgumentException.class,
+        () -> authFactory.getAuthenticationStrategy(() -> httpClient, () -> clock));
   }
 
 }

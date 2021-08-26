@@ -3,31 +3,33 @@
  */
 package com.opentext.ia.sdk.support.io;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-public class WhenCreatingUniqueDirectories {
+import com.opentext.ia.test.TestCase;
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+public class WhenCreatingUniqueDirectories extends TestCase {
+
+  @TempDir
+  public Path temporaryFolder;
 
   @Test
   public void shouldReturnExistingDirectory() throws IOException {
-    File dir = UniqueDirectory.in(temporaryFolder.newFolder());
+    File dir = UniqueDirectory.in(newFolder(temporaryFolder));
 
-    assertTrue("Directory doesn't exist", dir.exists());
+    assertTrue(dir.exists(), "Directory doesn't exist");
   }
 
   @Test
   public void shouldThrowExceptionWhenUnableToCreateDirectory() throws IOException {
-    assertThrows(RuntimeException.class, () -> UniqueDirectory.in(temporaryFolder.newFile()));
+    assertThrows(RuntimeException.class, () -> UniqueDirectory.in(newFile(temporaryFolder)));
   }
 
 }

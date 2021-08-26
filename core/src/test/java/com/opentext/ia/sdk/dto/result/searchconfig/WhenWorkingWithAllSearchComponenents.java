@@ -3,9 +3,9 @@
  */
 package com.opentext.ia.sdk.dto.result.searchconfig;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.dto.SearchComposition;
 import com.opentext.ia.sdk.dto.XForm;

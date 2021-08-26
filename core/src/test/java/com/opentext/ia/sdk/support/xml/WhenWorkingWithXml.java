@@ -3,8 +3,8 @@
  */
 package com.opentext.ia.sdk.support.xml;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import javax.validation.ValidationException;
 import javax.xml.XMLConstants;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
 import com.opentext.ia.test.TestCase;
@@ -52,7 +52,7 @@ public class WhenWorkingWithXml extends TestCase {
 
     String actual = XmlUtil.toString(document);
 
-    assertEquals("Formatted XML", expected, actual);
+    assertEquals(expected, actual, "Formatted XML");
   }
 
   private InputStream toStream(String text) {
@@ -75,7 +75,7 @@ public class WhenWorkingWithXml extends TestCase {
 
     String actual = XmlUtil.toString(document.getDocumentElement(), false);
 
-    assertEquals("Formatted XML", XML_WITH_CDATA, actual);
+    assertEquals(XML_WITH_CDATA, actual, "Formatted XML");
   }
 
   @Test
@@ -85,7 +85,7 @@ public class WhenWorkingWithXml extends TestCase {
 
     String actual = XmlUtil.toString(document.getDocumentElement(), false);
 
-    assertEquals("Formatted XML", '<' + elementName + "/>" + NL, actual);
+    assertEquals('<' + elementName + "/>" + NL, actual, "Formatted XML");
   }
 
   @Test
@@ -125,8 +125,8 @@ public class WhenWorkingWithXml extends TestCase {
 
   @Test
   public void shouldEscapeOrRemoveInvalidCharacters() {
-    assertEquals("Escaped text", "a&apos;b&amp;c&quot;d&lt;e&gt;fgh\ni&#0009;j",
-        XmlUtil.escape("a'b&c\"d<e>f\u0001g\u000Ch\ni\tj"));
+    assertEquals("a&apos;b&amp;c&quot;d&lt;e&gt;fgh\ni&#0009;j",
+        XmlUtil.escape("a'b&c\"d<e>f\u0001g\u000Ch\ni\tj"), "Escaped text");
   }
 
 }

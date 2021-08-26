@@ -3,8 +3,8 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -16,14 +16,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.opentext.ia.sdk.support.io.DataBuffer;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
@@ -33,18 +33,18 @@ import com.opentext.ia.test.TestCase;
 @SuppressWarnings("unchecked")
 public class WhenGeneratingFiles extends TestCase {
 
-  @Rule
-  public TemporaryFolder folder = new TemporaryFolder();
+  @TempDir
+  public Path folder;
 
   @Test
   public void shouldGenerateFileInProvidedDirectory() throws IOException {
-    File dir = folder.newFolder();
+    File dir = newFolder(folder);
     FileGenerator<String> generator = new FileGenerator<>(mock(Assembler.class), dir);
 
     File generated = generator.generate(Collections.singletonList(randomString()))
       .getFile();
 
-    assertEquals("Directory", dir, generated.getParentFile());
+    assertEquals(dir, generated.getParentFile(), "Directory");
   }
 
   @Test
@@ -69,7 +69,7 @@ public class WhenGeneratingFiles extends TestCase {
       .getFile();
 
     try (InputStream stream = Files.newInputStream(generated.toPath(), StandardOpenOption.READ)) {
-      assertArrayEquals("Content", content, IOUtils.toByteArray(stream));
+      assertArrayEquals(content, IOUtils.toByteArray(stream), "Content");
     }
   }
 
@@ -96,7 +96,7 @@ public class WhenGeneratingFiles extends TestCase {
 
     FileGenerationMetrics actual = new FileGenerator<String>(wrapped).generate(Collections.singletonList(randomString()));
 
-    assertEquals("Metric", count, ((TestMetrics)actual.getMetrics()).getFoo());
+    assertEquals(count, ((TestMetrics)actual.getMetrics()).getFoo(), "Metric");
   }
 
 }

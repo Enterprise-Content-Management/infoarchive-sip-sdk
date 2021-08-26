@@ -3,10 +3,10 @@
  */
 package com.opentext.ia.yaml.configuration.builder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.configuration.ConfigurationBuilder;
 import com.opentext.ia.yaml.core.YamlMap;
@@ -24,14 +24,14 @@ public class WhenBuildingYamlConfigurations {
   public void shouldBuildYampMap() {
     YamlMap yaml = builder.withApplication().build().getYaml();
 
-    assertEquals("Version", "1.0.0", yaml.get("version").toString());
+    assertEquals("1.0.0", yaml.get("version").toString(), "Version");
   }
 
   @Test
   public void shouldExtractTenant() {
     YamlMap tenant = builder.withTenant().named(TENANT_NAME).build().getTenant();
 
-    assertEquals("Tenant name", TENANT_NAME, tenant.get(NAME).toString());
+    assertEquals(TENANT_NAME, tenant.get(NAME).toString(), "Tenant name");
   }
 
   @Test
@@ -39,10 +39,10 @@ public class WhenBuildingYamlConfigurations {
     YamlMap application = builder.withTenant().named(TENANT_NAME).withApplication().named(APPLICATION_NAME).end()
         .build().getApplication();
 
-    assertEquals("Application name", APPLICATION_NAME, application.get(NAME).toString());
-    assertEquals("Tenant name", TENANT_NAME, application.get("tenant").toString());
-    assertTrue("Missing description", application.containsKey("description"));
-    assertTrue("Default description", application.get("description").isEmpty());
+    assertEquals(APPLICATION_NAME, application.get(NAME).toString(), "Application name");
+    assertEquals(TENANT_NAME, application.get("tenant").toString(), "Tenant name");
+    assertTrue(application.containsKey("description"), "Missing description");
+    assertTrue(application.get("description").isEmpty(), "Default description");
   }
 
   @Test
@@ -53,7 +53,7 @@ public class WhenBuildingYamlConfigurations {
     YamlMap application = configuration.getApplication();
     YamlMap pdi = configuration.getPdi(application);
 
-    assertEquals("# content objects", 2, pdi.get("content").toList().size());
+    assertEquals(2, pdi.get("content").toList().size(), "# content objects");
   }
 
 }

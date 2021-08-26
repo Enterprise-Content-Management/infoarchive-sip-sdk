@@ -4,12 +4,16 @@
 package com.opentext.ia.sdk.support.datetime;
 
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.opentext.ia.test.TestCase;
@@ -26,7 +30,7 @@ public class WhenTiming extends TestCase {
   private String taskName;
   private Runnable ringer;
 
-  @Before
+  @BeforeEach
   public void init() {
     maxTime = randomInt(37, 313);
     timer = new Timer(maxTime, callback, clock);

@@ -3,10 +3,11 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,10 +31,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.opentext.ia.sdk.support.io.DomainObjectTooBigException;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
@@ -40,13 +41,13 @@ import com.opentext.ia.sdk.support.io.RuntimeIoException;
 @SuppressWarnings("unchecked")
 public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
 
-  @Rule
-  public TemporaryFolder folder = new TemporaryFolder();
+  @TempDir
+  public Path folder;
   private SipAssembler<String> sipAssembler;
   private SipSegmentationStrategy<String> segmentationStrategy;
   private final Consumer<FileGenerationMetrics> callback = mock(Consumer.class);
 
-  @Before
+  @BeforeEach
   public void init() {
     sipAssembler =
         SipAssembler.forPdi(somePackagingInformation(), (Assembler<HashedContents<String>>)mock(Assembler.class));
@@ -80,35 +81,36 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
 
     assertSip(1, sips);
     assertSip(2, sips);
-    assertFalse("Extra SIPs", sips.hasNext());
+    assertFalse(sips.hasNext(), "Extra SIPs");
   }
 
   private File newFile() {
     try {
-      return folder.newFile();
+      return newFile(folder);
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
   }
 
   private void assertSip(int n, Iterator<FileGenerationMetrics> sips) {
-    assertTrue("Missing SIP #" + n, sips.hasNext());
+    assertTrue(sips.hasNext(), "Missing SIP #" + n);
 
     FileGenerationMetrics sip = sips.next();
-    assertEquals("SIP dir #" + n, folder.getRoot(), sip.getFile().getParentFile());
-    assertEquals("# objects in SIP #" + n, n, ((SipMetrics)sip.getMetrics()).numAius());
+    assertEquals(folder.toAbsolutePath().toString(),
+        sip.getFile().getParentFile().getAbsolutePath(), "SIP dir #" + n);
+    assertEquals(n, ((SipMetrics)sip.getMetrics()).numAius(), "# objects in SIP #" + n);
   }
 
   @Test
   public void shouldCreateFilesInGivenDirectory() throws IOException {
-    File dir = folder.newFolder();
+    File dir = newFolder(folder);
     BatchSipAssembler<String> batcher = new BatchSipAssembler<>(sipAssembler, segmentationStrategy, dir);
 
     batcher.add(randomString());
     batcher.end();
     Collection<FileGenerationMetrics> sips = batcher.getSipsMetrics();
 
-    sips.forEach(sip -> assertEquals("SIP directory", dir, sip.getFile().getParentFile()));
+    sips.forEach(sip -> assertEquals(dir, sip.getFile().getParentFile(), "SIP directory"));
   }
 
   @Test
@@ -123,15 +125,14 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
     verify(callback).accept(notNull());
   }
 
-  @Test(expected = DomainObjectTooBigException.class)
+  @Test
   public void shouldRejectDomainObjectThatIsTooBig() throws IOException {
-    File dir = folder.newFolder();
+    File dir = newFolder(folder);
     int maxSize = 2;
     SipSegmentationStrategy<String> strategy =
         SipSegmentationStrategy.byMaxProspectiveSipSize(maxSize, new StringToDigitalObjects());
     BatchSipAssembler<String> batcher = new BatchSipAssembler<>(sipAssembler, strategy, dir);
-
-    batcher.add(randomString(maxSize + 1));
+    assertThrows(DomainObjectTooBigException.class, () -> batcher.add(randomString(maxSize + 1)));
   }
 
   @Test
@@ -151,8 +152,8 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
     batcher.add(randomString());
 
     batcher.end();
-    assertNotNull("Callback not invoked", sip.get());
-    assertFalse("File not deleted", sip.get().isFile());
+    assertNotNull(sip.get(), "Callback not invoked");
+    assertFalse(sip.get().isFile(), "File not deleted");
   }
 
   @Test
@@ -164,7 +165,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
       File zip = fgm.getFile();
       try (InputStream sip = Files.newInputStream(zip.toPath(), StandardOpenOption.READ)) {
         String packageInformation = getPackageInformation(sip);
-        assertEquals("Is last", getSeqNo(packageInformation) > 1, isLast(packageInformation));
+        assertEquals(getSeqNo(packageInformation) > 1, isLast(packageInformation), "Is last");
       } catch (IOException e) {
         throw new RuntimeIoException(e);
       }
@@ -176,7 +177,7 @@ public class WhenAssemblingSipsInBatches extends SipAssemblingTestCase {
     batcher.add(randomString());
 
     batcher.end();
-    assertEquals("# SIPs", 2, numSips.get());
+    assertEquals(2, numSips.get(), "# SIPs");
   }
 
   private final class StringToDigitalObjects implements DigitalObjectsExtraction<String> {

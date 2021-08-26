@@ -3,14 +3,14 @@
  */
 package com.opentext.ia.sdk.support.datetime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.RandomData;
 
@@ -34,7 +34,7 @@ public class WhenWorkingWithDates {
 
     String actual = Dates.toIso(dateTime);
 
-    assertEquals("Date time", expectedDateTime + expectedTimeZone, actual);
+    assertEquals(expectedDateTime + expectedTimeZone, actual, "Date time");
   }
 
   @SuppressWarnings("deprecation")
@@ -50,8 +50,8 @@ public class WhenWorkingWithDates {
 
   @Test
   public void shouldReturnNullOnMissingDateTime() {
-    assertNull("To ISO", Dates.toIso(null));
-    assertNull("From ISO", Dates.fromIso(null));
+    assertNull(Dates.toIso(null), "To ISO");
+    assertNull(Dates.fromIso(null), "From ISO");
   }
 
   @Test
@@ -61,7 +61,7 @@ public class WhenWorkingWithDates {
     Date actual = Dates.fromIso(Dates.toIso(expected));
 
     long deltaSeconds = Math.abs(actual.getTime() - expected.getTime()) / 1000;
-    assertEquals("Date time", 0, deltaSeconds);
+    assertEquals(0, deltaSeconds, "Date time");
   }
 
 }

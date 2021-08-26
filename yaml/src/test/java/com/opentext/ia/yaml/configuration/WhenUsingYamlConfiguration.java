@@ -3,9 +3,9 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,11 +13,10 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.atteo.evo.inflector.English;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.Entry;
-import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.resource.ResourceResolver;
 
@@ -89,22 +88,18 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     return new YamlConfiguration(map, resourceResolver);
   }
 
-  private void assertValue(String message, String expected, Value actual) {
-    assertEquals(message, expected, actual.toString());
-  }
-
   @Test
   public void shouldAddDefaultVersionWhenNotSpecified() {
     normalizeYaml();
 
-    assertValue("Default version", VERSION_1, yaml.get(VERSION));
+    assertValue(VERSION_1, yaml.get(VERSION), "Default version");
   }
 
   @Test
   public void shouldNotOverwriteSpecifiedVersion() {
     YamlConfiguration configuration = new YamlConfiguration("version: 2.0.0");
 
-    assertValue("Version", "2.0.0", configuration.getMap().get(VERSION));
+    assertValue("2.0.0", configuration.getMap().get(VERSION), "Version");
   }
 
   @Test
@@ -118,8 +113,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue(NAME, name, yaml.get(English.plural(type), 0, NAME));
-    assertValue("Should not be changed", value, yaml.get(otherType, 0));
+    assertValue(name, yaml.get(English.plural(type), 0, NAME), NAME);
+    assertValue(value, yaml.get(otherType, 0), "Should not be changed");
   }
 
   @Test
@@ -129,7 +124,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue("Application", name, yaml.get(APPLICATIONS, 0, NAME));
+    assertValue(name, yaml.get(APPLICATIONS, 0, NAME), "Application");
   }
 
   @Test
@@ -139,8 +134,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue(TYPE, "ACTIVE_ARCHIVING", yaml.get(APPLICATIONS, 0, TYPE));
-    assertValue("Types", "RECEIPT", yaml.get(CONFIRMATIONS, 0, "types", 0));
+    assertValue("ACTIVE_ARCHIVING", yaml.get(APPLICATIONS, 0, TYPE), TYPE);
+    assertValue("RECEIPT", yaml.get(CONFIRMATIONS, 0, "types", 0), "Types");
   }
 
   @Test
@@ -173,15 +168,16 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue("Tenant", tenant, yaml.get(APPLICATIONS, 0, TENANT));
-    assertValue("Application", application, yaml.get(SPACES, 0, APPLICATION));
-    assertValue("Space root folder", spaceRootFolder, yaml.get(FILE_SYSTEM_FOLDERS, 0, "parentSpaceRootFolder"));
-    assertValue("xDB federation", xdbFederation, yaml.get("xdbDatabases", 0, "xdbFederation"));
+    assertValue(tenant, yaml.get(APPLICATIONS, 0, TENANT), "Tenant");
+    assertValue(application, yaml.get(SPACES, 0, APPLICATION), "Application");
+    assertValue(spaceRootFolder, yaml.get(FILE_SYSTEM_FOLDERS, 0, "parentSpaceRootFolder"),
+        "Space root folder");
+    assertValue(xdbFederation, yaml.get("xdbDatabases", 0, "xdbFederation"), "xDB federation");
     assertDatabaseStore("xdb", store);
     assertDatabaseStore("ci", store);
     assertDatabaseStore("managedItem", store);
-    assertFalse("Should NOT insert CryptoObject",
-        yaml.get("holdingCryptoes", 0, "ci").toMap().containsKey("cryptoObject"));
+    assertFalse(yaml.get("holdingCryptoes", 0, "ci").toMap().containsKey("cryptoObject"),
+        "Should NOT insert CryptoObject");
   }
 
   @Test
@@ -201,10 +197,9 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue(AIC, aic, yaml.get(SEARCHES, 0, AIC));
-    assertValue(QUERY, query, yaml.get(SEARCHES, 0, QUERY));
-    assertFalse("Should NOT insert database",
-        yaml.get(SEARCHES, 0).toMap().containsKey(DATABASE));
+    assertValue(aic, yaml.get(SEARCHES, 0, AIC), AIC);
+    assertValue(query, yaml.get(SEARCHES, 0, QUERY), QUERY);
+    assertFalse(yaml.get(SEARCHES, 0).toMap().containsKey(DATABASE), "Should NOT insert database");
   }
 
   @Test
@@ -225,10 +220,9 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue(AIC, aic, yaml.get(SEARCHES, 0, AIC));
-    assertValue(QUERY, query, yaml.get(SEARCHES, 0, QUERY));
-    assertTrue("Should NOT insert database",
-        yaml.get(SEARCHES, 0, DATABASE).isEmpty());
+    assertValue(aic, yaml.get(SEARCHES, 0, AIC), AIC);
+    assertValue(query, yaml.get(SEARCHES, 0, QUERY), QUERY);
+    assertTrue(yaml.get(SEARCHES, 0, DATABASE).isEmpty(), "Should NOT insert database");
   }
 
   @Test
@@ -247,11 +241,9 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertFalse("Should NOT insert AIC",
-        yaml.get(SEARCHES, 0).toMap().containsKey(AIC));
-    assertFalse("Should NOT insert Query",
-        yaml.get(SEARCHES, 0).toMap().containsKey(QUERY));
-    assertValue(DATABASE, database, yaml.get(SEARCHES, 0, DATABASE));
+    assertFalse(yaml.get(SEARCHES, 0).toMap().containsKey(AIC), "Should NOT insert AIC");
+    assertFalse(yaml.get(SEARCHES, 0).toMap().containsKey(QUERY), "Should NOT insert Query");
+    assertValue(database, yaml.get(SEARCHES, 0, DATABASE), DATABASE);
   }
 
   @Test
@@ -265,9 +257,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue("Database", database, yaml.get(SEARCHES, 0, DATABASE));
-    assertFalse("Should NOT insert aic",
-        yaml.get(SEARCHES, 0).toMap().containsKey(AIC));
+    assertValue(database, yaml.get(SEARCHES, 0, DATABASE), "Database");
+    assertFalse(yaml.get(SEARCHES, 0).toMap().containsKey(AIC), "Should NOT insert aic");
   }
 
   @Test
@@ -283,9 +274,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue("Database", database, yaml.get(SEARCHES, 0, DATABASE));
-    assertTrue("Should NOT insert aic",
-        yaml.get(SEARCHES, 0, AIC).isEmpty());
+    assertValue(database, yaml.get(SEARCHES, 0, DATABASE), "Database");
+    assertTrue(yaml.get(SEARCHES, 0, AIC).isEmpty(), "Should NOT insert aic");
   }
 
   @Test
@@ -303,14 +293,13 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertFalse("Should NOT insert database",
-        yaml.get(SEARCHES, 0).toMap().containsKey(DATABASE));
-    assertValue(AIC, aic, yaml.get(SEARCHES, 0, AIC));
-    assertValue(QUERY, query, yaml.get(SEARCHES, 0, QUERY));
+    assertFalse(yaml.get(SEARCHES, 0).toMap().containsKey(DATABASE), "Should NOT insert database");
+    assertValue(aic, yaml.get(SEARCHES, 0, AIC), AIC);
+    assertValue(query, yaml.get(SEARCHES, 0, QUERY), QUERY);
   }
 
   private void assertDatabaseStore(String storeType, String expected) {
-    assertValue(storeType + "Store", expected, yaml.get(DATABASES, 0, storeType + "Store"));
+    assertValue(expected, yaml.get(DATABASES, 0, storeType + "Store"), storeType + "Store");
   }
 
   @Test
@@ -322,7 +311,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertTrue("Explicit null is overridden with default", yaml.get(APPLICATIONS, 0, TENANT).isEmpty());
+    assertTrue(yaml.get(APPLICATIONS, 0, TENANT).isEmpty(),
+        "Explicit null is overridden with default");
   }
 
   @Test
@@ -336,9 +326,10 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertTrue("Search group should not be inserted", yaml.get(SEARCHES, 0, "searchGroup").isEmpty());
-    assertTrue("Custom presentation configuration should not be inserted",
-        yaml.get("searchCompositions", 0, "customPresentationConfiguration").isEmpty());
+    assertTrue(yaml.get(SEARCHES, 0, "searchGroup").isEmpty(),
+        "Search group should not be inserted");
+    assertTrue(yaml.get("searchCompositions", 0, "customPresentationConfiguration").isEmpty(),
+        "Custom presentation configuration should not be inserted");
   }
 
   @Test
@@ -349,8 +340,9 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertTrue("exportPipeline.includesContent", yaml.get("exportPipelines", 0, "includesContent").toBoolean());
-    assertValue("holding.xdbMode", "PRIVATE", yaml.get(HOLDINGS, 0, "xdbMode"));
+    assertTrue(yaml.get("exportPipelines", 0, "includesContent").toBoolean(),
+        "exportPipeline.includesContent");
+    assertValue("PRIVATE", yaml.get(HOLDINGS, 0, "xdbMode"), "holding.xdbMode");
   }
 
   @Test
@@ -359,7 +351,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue("ingest.processors.format", "", yaml.get(INGESTS, 0, "content"));
+    assertValue("", yaml.get(INGESTS, 0, "content"), "ingest.processors.format");
   }
 
   @Test
@@ -370,8 +362,10 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue("Sequence of references not created", name, yaml.get(CONFIRMATIONS, 0, HOLDINGS, 0));
-    assertFalse("Singular reference not removed", yaml.get(CONFIRMATIONS, 0).toMap().containsKey("holding"));
+    assertValue(name, yaml.get(CONFIRMATIONS, 0, HOLDINGS, 0),
+        "Sequence of references not created");
+    assertFalse(yaml.get(CONFIRMATIONS, 0).toMap().containsKey("holding"),
+        "Singular reference not removed");
   }
 
   @Test
@@ -388,9 +382,9 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue(NAME, query, yaml.get(QUERIES, 0, NAME));
-    assertValue("Operand", operand, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, NAME));
-    assertValue("Path", path, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, PATH));
+    assertValue(query, yaml.get(QUERIES, 0, NAME), NAME);
+    assertValue(operand, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, NAME), "Operand");
+    assertValue(path, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, PATH), "Path");
   }
 
   @Test
@@ -408,8 +402,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue("Query", String.format("declare namespace %s = \"%s\";%n%s", prefix, uri, text),
-        yaml.get("xdbLibraryPolicies", 0, "closeHintDateQuery"));
+    assertValue(String.format("declare namespace %s = \"%s\";%n%s", prefix, uri, text),
+        yaml.get("xdbLibraryPolicies", 0, "closeHintDateQuery"), "Query");
   }
 
   @Test
@@ -427,8 +421,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue("Query", String.format("declare namespace %s = \"%s\";%n%s", prefix, uri, text),
-        yaml.get(XQUERIES, 0, QUERY));
+    assertValue(String.format("declare namespace %s = \"%s\";%n%s", prefix, uri, text),
+        yaml.get(XQUERIES, 0, QUERY), "Query");
   }
 
   @Test
@@ -441,7 +435,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue("Query", text, yaml.get(XQUERIES, 0, QUERY));
+    assertValue(text, yaml.get(XQUERIES, 0, QUERY), "Query");
   }
 
   @Test
@@ -457,8 +451,9 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue(String.format("Name%n%s", yaml), uri, yaml.get("pdiSchemas", 0, NAME));
-    assertTrue(String.format("Leaves namespace:%n%s", yaml), yaml.get("pdiSchemas", 0, NAMESPACE).isEmpty());
+    assertValue(uri, yaml.get("pdiSchemas", 0, NAME), String.format("Name%n%s", yaml));
+    assertTrue(yaml.get("pdiSchemas", 0, NAMESPACE).isEmpty(),
+        String.format("Leaves namespace:%n%s", yaml));
   }
 
   @Test
@@ -497,11 +492,12 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     normalizeYaml();
 
     String xml = yaml.get(PDIS, 0, CONTENT, TEXT).toString();
-    assertTrue("path #1", xml.contains(String.format("/{%1$s}gnu/{%1$s}gnat", uri1)));
-    assertTrue("path #2", xml.contains(String.format("/{%1$s}foo/{%1$s}bar[{%1$s}baz]", uri1)));
-    assertTrue("Default compressed", xml.contains("<compressed>false</compressed>"));
-    assertTrue("Default filter.english.stop.words", xml.contains("<filter.english.stop.words>false</filter.english.stop.words>"));
-    assertTrue("Schema", xml.contains(String.format("<result.schema>%s</result.schema>", uri2)));
+    assertTrue(xml.contains(String.format("/{%1$s}gnu/{%1$s}gnat", uri1)), "path #1");
+    assertTrue(xml.contains(String.format("/{%1$s}foo/{%1$s}bar[{%1$s}baz]", uri1)), "path #2");
+    assertTrue(xml.contains("<compressed>false</compressed>"), "Default compressed");
+    assertTrue(xml.contains("<filter.english.stop.words>false</filter.english.stop.words>"),
+        "Default filter.english.stop.words");
+    assertTrue(xml.contains(String.format("<result.schema>%s</result.schema>", uri2)), "Schema");
   }
 
   @Test
@@ -535,10 +531,10 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     normalizeYaml();
 
     YamlMap content = yaml.get("resultConfigurationHelpers", 0, CONTENT).toMap();
-    assertValue("Format", XML, content.get(FORMAT));
-    assertTrue("Namespaces are still there", content.get(NAMESPACES).isEmpty());
+    assertValue(XML, content.get(FORMAT), "Format");
+    assertTrue(content.get(NAMESPACES).isEmpty(), "Namespaces are still there");
     String xml = content.get(TEXT).toString();
-    assertEquals("XML", String.format(
+    assertEquals(String.format(
         "<resultConfigurationHelper xmlns:n=\"urn:eas-samples:en:xsd:phonecalls.1.0\" xmlns:pdi=\"urn:x-emc:ia:schema:pdi\">%n"
         + "  <element>%n"
         + "    <label>ID</label>%n"
@@ -552,7 +548,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
         + "    <path>n:SentToArchiveDate</path>%n"
         + "    <type>DATE_TIME</type>%n"
         + "  </element>%n"
-        + "</resultConfigurationHelper>"), xml);
+            + "</resultConfigurationHelper>"),
+        xml, "XML");
   }
 
 
@@ -595,9 +592,9 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     normalizeYaml();
 
     YamlMap content = yaml.get(INGESTS, 0, CONTENT).toMap();
-    assertValue("Format", XML, content.get(FORMAT));
+    assertValue(XML, content.get(FORMAT), "Format");
     String xml = content.get(TEXT).toString();
-    assertEquals("XML", String.format("<processors>%n"
+    assertEquals(String.format("<processors>%n"
         + START_PROCESSOR
         + "    <class>com.emc.ia.ingestion.processor.downloader.SipContentDownloader</class>%n"
         + "    <id>sip.download</id>%n"
@@ -645,7 +642,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
         + "    <id>ci.hash</id>%n"
         + "    <name>CI hash generator and validator</name>%n"
         + END_PROCESSOR
-        + "</processors>"), xml);
+        + "</processors>"), xml, "XML");
   }
 
   @Test
@@ -662,8 +659,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     normalizeYaml();
 
     YamlMap namespace = yaml.get("resultMasters", 0, NAMESPACES, 0).toMap();
-    assertValue("Namespace prefix", prefix, namespace.get("prefix"));
-    assertValue("Namespace URI", uri, namespace.get("uri"));
+    assertValue(prefix, namespace.get("prefix"), "Namespace prefix");
+    assertValue(uri, namespace.get("uri"), "Namespace URI");
   }
 
   @Test
@@ -680,8 +677,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     normalizeYaml();
 
     YamlMap namespace = yaml.get("queries", 0, NAMESPACES, 0).toMap();
-    assertValue("Namespace prefix", prefix, namespace.get("prefix"));
-    assertValue("Namespace URI", uri, namespace.get("uri"));
+    assertValue(prefix, namespace.get("prefix"), "Namespace prefix");
+    assertValue(uri, namespace.get("uri"), "Namespace URI");
   }
 
   @Test
@@ -693,8 +690,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     Arrays.asList(APPLICATION, "store").forEach(ref -> {
       Arrays.asList(EXPORT_PIPELINE, EXPORT_TRANSFORMATION, "valueList").forEach(type -> {
-        assertTrue("Incorrect: " + ref + " in " + type + "'s content",
-            yaml.get(English.plural(type), 0, CONTENT, ref).isEmpty());
+        assertTrue(yaml.get(English.plural(type), 0, CONTENT, ref).isEmpty(),
+            "Incorrect: " + ref + " in " + type + "'s content");
       });
     });
   }
@@ -718,7 +715,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     normalizeYaml();
 
     Arrays.asList("pipeline", TRANSFORMATION).forEach(property ->
-          assertFalse("Missing " + property, yaml.get("exportConfigurations", 0, property).isEmpty()));
+    assertFalse(yaml.get("exportConfigurations", 0, property).isEmpty(), "Missing " + property));
   }
 
   @Test
@@ -732,8 +729,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertTrue("Not enabled by default", yaml.get("auditEvents", 0, "enabled").toBoolean());
-    assertFalse("Overridden specified value", yaml.get("auditEvents", 1, "enabled").toBoolean());
+    assertTrue(yaml.get("auditEvents", 0, "enabled").toBoolean(), "Not enabled by default");
+    assertFalse(yaml.get("auditEvents", 1, "enabled").toBoolean(), "Overridden specified value");
   }
 
   @Test
@@ -744,10 +741,10 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertEquals("Keys", Arrays.asList(CONFIGURE, NAME), yaml.get("fileSystemRoots", 0).toMap().entries()
+    assertEquals(Arrays.asList(CONFIGURE, NAME), yaml.get("fileSystemRoots", 0).toMap().entries()
         .sorted()
         .map(Entry::getKey)
-        .collect(Collectors.toList()));
+        .collect(Collectors.toList()), "Keys");
   }
 
   @Test
@@ -760,8 +757,8 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertValue("Substituted value", "thud", yaml.get(collection, 0, NAME));
-    assertEquals("Ignored value", intValue, yaml.get(collection, 0, intProperty).toInt());
+    assertValue("thud", yaml.get(collection, 0, NAME), "Substituted value");
+    assertEquals(intValue, yaml.get(collection, 0, intProperty).toInt(), "Ignored value");
   }
 
   @Test
@@ -771,7 +768,7 @@ public class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml(yaml);
 
-    assertValue("Resolved value", "fred", yaml.get("gnus", 0, "gnat"));
+    assertValue("fred", yaml.get("gnus", 0, "gnat"), "Resolved value");
   }
 
 }

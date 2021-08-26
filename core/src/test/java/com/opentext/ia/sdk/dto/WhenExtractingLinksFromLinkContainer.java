@@ -3,13 +3,13 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.http.rest.Link;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
@@ -24,7 +24,7 @@ public class WhenExtractingLinksFromLinkContainer {
   private final Link link = new Link();
   private final Map<String, Link> links = new HashMap<>();
 
-  @Before
+  @BeforeEach
   public void init() {
     link.setHref(LINK_HREF);
     links.put(KEY, link);
@@ -33,12 +33,12 @@ public class WhenExtractingLinksFromLinkContainer {
 
   @Test
   public void fetchLinkObjectFromContainer() {
-    assertEquals("Link object information", link, container.getLinks().get(KEY));
+    assertEquals(link, container.getLinks().get(KEY), "Link object information");
   }
 
   @Test
   public void fetchLinkStringFromContainer() {
-    assertEquals("Link string information", LINK_HREF, container.getLinks().get(KEY).getHref());
+    assertEquals(LINK_HREF, container.getLinks().get(KEY).getHref(), "Link string information");
   }
 
 }

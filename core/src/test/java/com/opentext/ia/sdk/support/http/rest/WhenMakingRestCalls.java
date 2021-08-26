@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.support.http.rest;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.http.Header;
 import com.opentext.ia.sdk.support.http.HttpClient;
@@ -34,7 +34,7 @@ public class WhenMakingRestCalls extends TestCase {
   private final AuthenticationStrategy authentication = new NonExpiringTokenAuthentication(token);
   private final RestClient restClient = new RestClient(httpClient);
 
-  @Before
+  @BeforeEach
   public void init() {
     restClient.init(authentication);
   }
@@ -111,7 +111,7 @@ public class WhenMakingRestCalls extends TestCase {
 
     Foo actual = restClient.createCollectionItem(collection, new Foo(), relation);
 
-    assertSame("Result", expected, actual);
+    assertSame(expected, actual, "Result");
   }
 
   @Test
@@ -128,7 +128,7 @@ public class WhenMakingRestCalls extends TestCase {
 
     UriBuilder actual = restClient.uri(randomString());
 
-    assertSame("URI Builder", expected, actual);
+    assertSame(expected, actual, "URI Builder");
   }
 
   @Test

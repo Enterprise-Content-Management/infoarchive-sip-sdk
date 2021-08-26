@@ -3,9 +3,9 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 
 public class WhenMaintainingCounters {
@@ -14,10 +14,10 @@ public class WhenMaintainingCounters {
 
   @Test
   public void shouldIncreaseCounter() {
-    assertEquals("Initial value", 0, counters.get(TestMetrics.FOO));
+    assertEquals(0, counters.get(TestMetrics.FOO), "Initial value");
 
     counters.inc(TestMetrics.FOO);
-    assertEquals("Incremented value", 1, counters.get(TestMetrics.FOO));
+    assertEquals(1, counters.get(TestMetrics.FOO), "Incremented value");
   }
 
   @Test
@@ -27,8 +27,8 @@ public class WhenMaintainingCounters {
 
     counters.reset();
 
-    assertEquals("Reset foo", 0, counters.get(TestMetrics.FOO));
-    assertEquals("Reset bar", 0, counters.get(TestMetrics.BAR));
+    assertEquals(0, counters.get(TestMetrics.FOO), "Reset foo");
+    assertEquals(0, counters.get(TestMetrics.BAR), "Reset bar");
   }
 
 }

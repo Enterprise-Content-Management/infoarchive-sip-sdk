@@ -3,9 +3,9 @@
  */
 package com.opentext.ia.sdk.support.http;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,10 +16,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.internal.ArrayComparisonFailure;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.http.apache.ApacheHttpClient;
 import com.opentext.ia.sdk.support.io.ByteArrayInputOutputStream;
@@ -36,7 +35,7 @@ public class WhenWorkingWithHttp extends TestCase {
   private HttpServer server;
   private Thread serverThread;
 
-  @Before
+  @BeforeEach
   public void init() throws IOException {
     server = HttpServer.create(new InetSocketAddress(0), 0);
     int port = server.getAddress().getPort();
@@ -55,7 +54,7 @@ public class WhenWorkingWithHttp extends TestCase {
     serverThread.start();
   }
 
-  @After
+  @AfterEach
   public void done() throws InterruptedException {
     client.close();
     server.stop(0);
@@ -65,26 +64,27 @@ public class WhenWorkingWithHttp extends TestCase {
   @Test
   public void shouldHandleTextData() throws IOException {
     String expected = randomString(8);
-    assertNull("GET", client.get(uri, headers, String.class));
-    assertEquals("PUT",  expected, client.put(uri,  headers, String.class, expected));
-    assertEquals("POST", expected, client.post(uri, headers, String.class, expected));
+    assertNull(client.get(uri, headers, String.class), "GET");
+    assertEquals(expected, client.put(uri, headers, String.class, expected), "PUT");
+    assertEquals(expected, client.post(uri, headers, String.class, expected), "POST");
   }
 
   @Test
   public void shouldHandleBinaryData() throws IOException {
     byte[] expected = randomBytes();
 
-    assertResponse("GET", new byte[0], client.get(uri, headers, InputStream.class));
-    assertResponse("PUT", expected, client.put(uri, headers, InputStream.class,
-        new ByteArrayInputStream(expected)));
-    assertResponse("POST", expected, client.post(uri, headers, InputStream.class,
-        new ByteArrayInputStream(expected)));
+    assertResponse(new byte[0], client.get(uri, headers, InputStream.class), "GET");
+    assertResponse(expected, client.put(uri, headers, InputStream.class,
+        new ByteArrayInputStream(expected)), "PUT");
+    assertResponse(expected, client.post(uri, headers, InputStream.class,
+        new ByteArrayInputStream(expected)), "POST");
   }
 
-  private void assertResponse(String message, byte[] expected, InputStream actual) throws IOException, ArrayComparisonFailure {
+  private void assertResponse(byte[] expected, InputStream actual, String message)
+      throws IOException {
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     IOUtils.copy(actual, output);
-    assertArrayEquals(message, expected, output.toByteArray());
+    assertArrayEquals(expected, output.toByteArray(), message);
   }
 
 }

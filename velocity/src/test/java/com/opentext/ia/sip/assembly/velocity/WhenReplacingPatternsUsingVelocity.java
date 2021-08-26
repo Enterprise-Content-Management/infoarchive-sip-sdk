@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sip.assembly.velocity;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.sip.Template;
 import com.opentext.ia.sdk.support.datetime.Dates;
@@ -45,8 +45,8 @@ public class WhenReplacingPatternsUsingVelocity extends TestCase {
 
     template.writeRow(values, Collections.emptyMap(), new PrintWriter(actual));
 
-    assertEquals("Text", prefix + value1 + infix + value2 + ' ' + Dates.toIso(value3) + suffix,
-        actual.toString());
+    assertEquals(prefix + value1 + infix + value2 + ' ' + Dates.toIso(value3) + suffix,
+        actual.toString(), "Text");
   }
 
   private String someString(char prefix) {

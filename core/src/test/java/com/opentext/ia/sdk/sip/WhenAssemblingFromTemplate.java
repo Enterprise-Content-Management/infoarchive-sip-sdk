@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -15,7 +15,7 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.io.MemoryBuffer;
 import com.opentext.ia.test.TestCase;
@@ -41,10 +41,10 @@ public class WhenAssemblingFromTemplate extends TestCase {
         };
 
     template.writeHeader(writer);
-    assertEquals("Header", header + NL, output.toString());
+    assertEquals(header + NL, output.toString(), "Header");
 
     template.writeFooter(writer);
-    assertEquals("Footer", header + NL + footer + NL, output.toString());
+    assertEquals(header + NL + footer + NL, output.toString(), "Footer");
   }
 
   @Test

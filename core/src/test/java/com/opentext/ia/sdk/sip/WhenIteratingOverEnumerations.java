@@ -3,11 +3,15 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.TestCase;
 
@@ -22,7 +26,7 @@ public class WhenIteratingOverEnumerations extends TestCase {
     Iterator<String> iterator = new EnumerationIterator<>(Collections.enumeration(expected));
     iterator.forEachRemaining(item -> actual.add(item));
 
-    assertEquals("Items", expected, actual);
+    assertEquals(expected, actual, "Items");
   }
 
 }

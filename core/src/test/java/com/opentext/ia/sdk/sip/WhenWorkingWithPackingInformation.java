@@ -3,13 +3,13 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import java.util.Date;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.io.EncodedHash;
 import com.opentext.ia.test.TestCase;
@@ -31,11 +31,11 @@ public class WhenWorkingWithPackingInformation extends TestCase {
 
     long newAiuCount = randomInt(0, Integer.MAX_VALUE);
     pi.setAiuCount(newAiuCount);
-    assertEquals("AIU Count is changed.", newAiuCount, pi.getAiuCount());
+    assertEquals(newAiuCount, pi.getAiuCount(), "AIU Count is changed.");
 
     long newPageCount = randomInt(0, Integer.MAX_VALUE);
     pi.setPageCount(newPageCount);
-    assertEquals("Page Count is changed.", newPageCount, pi.getPageCount());
+    assertEquals(newPageCount, pi.getPageCount(), "Page Count is changed.");
 
   }
 }

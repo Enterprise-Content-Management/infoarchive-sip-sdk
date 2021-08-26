@@ -3,15 +3,15 @@
  */
 package com.opentext.ia.sdk.support.xml;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.TestCase;
 
@@ -33,7 +33,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   private final StringBuilder result = new StringBuilder(256);
   private XmlBuilder<T> builder;
 
-  @Before
+  @BeforeEach
   public void init() {
     this.builder = newBuilder();
   }
@@ -58,7 +58,7 @@ public abstract class XmlBuilderTestCase<T> extends TestCase {
   }
 
   private void assertXml() {
-    assertEquals("XML", result.toString(), getOutput());
+    assertEquals(result.toString(), getOutput(), "XML");
   }
 
   @Test

@@ -3,9 +3,9 @@
  */
 package com.opentext.ia.sdk.support.io;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.TestCase;
 
@@ -22,11 +22,11 @@ public class WhenProvidingFileSizes extends TestCase {
     int giga = random();
     int tera = random();
 
-    assertEquals("bytes", bytes, FileSize.of(bytes).bytes());
-    assertEquals("kilo", kilo * KILO, FileSize.of(kilo).kiloBytes());
-    assertEquals("mega", mega * KILO * KILO, FileSize.of(mega).megaBytes());
-    assertEquals("giga", giga * KILO * KILO * KILO, FileSize.of(giga).gigaBytes());
-    assertEquals("tera", tera * KILO * KILO * KILO * KILO, FileSize.of(tera).teraBytes());
+    assertEquals(bytes, FileSize.of(bytes).bytes(), "bytes");
+    assertEquals(kilo * KILO, FileSize.of(kilo).kiloBytes(), "kilo");
+    assertEquals(mega * KILO * KILO, FileSize.of(mega).megaBytes(), "mega");
+    assertEquals(giga * KILO * KILO * KILO, FileSize.of(giga).gigaBytes(), "giga");
+    assertEquals(tera * KILO * KILO * KILO * KILO, FileSize.of(tera).teraBytes(), "tera");
   }
 
   private int random() {

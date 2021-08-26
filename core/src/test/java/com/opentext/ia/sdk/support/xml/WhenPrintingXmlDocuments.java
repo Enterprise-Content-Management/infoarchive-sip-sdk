@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.support.xml;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class WhenPrintingXmlDocuments extends XmlBuilderTestCase<Void> {
 
@@ -57,7 +57,7 @@ public class WhenPrintingXmlDocuments extends XmlBuilderTestCase<Void> {
         .end()
         .build();
 
-    assertEquals("Formatted XML", XML_WITH_CDATA, getOutput());
+    assertEquals(XML_WITH_CDATA, getOutput(), "Formatted XML");
   }
 
 }

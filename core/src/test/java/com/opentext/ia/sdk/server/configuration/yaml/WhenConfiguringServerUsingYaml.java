@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.server.configuration.yaml;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,8 +23,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.client.api.ArchiveConnection;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
@@ -47,7 +47,7 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
   private final YamlBasedApplicationConfigurer configurer = new YamlBasedApplicationConfigurer(
       new YamlConfiguration("version: 1.0.0"), (yaml, conn) -> clientSideConfigurer);
 
-  @Before
+  @BeforeEach
   public void init() throws IOException {
     connection.setRestClient(new RestClient(httpClient));
   }
@@ -121,7 +121,8 @@ public class WhenConfiguringServerUsingYaml extends TestCase implements InfoArch
       fail(String.format("Missing key: %s%nGot:%n%s", expected.getKey(),
           actual.keySet().stream().collect(Collectors.joining(System.lineSeparator()))));
     }
-    TestUtil.assertEquals(expected.getKey(), normalize(expected.getValue()), normalize(actual.get(expected.getKey())));
+    TestUtil.assertEquals(normalize(expected.getValue()), normalize(actual.get(expected.getKey())),
+        expected.getKey());
   }
 
   private List<String> normalize(String value) {

@@ -3,12 +3,12 @@
  */
 package com.opentext.ia.yaml.resource;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.TestCase;
 
@@ -25,7 +25,7 @@ public class WhenMatchingWildcardPatterns extends TestCase {
 
   private void assertMatch(String pattern, boolean expected, String value) {
     Predicate<String> matcher = new MatchesWildcardPattern<>(pattern, Function.identity());
-    assertEquals(String.format("%s ~ %s", value, pattern), expected, matcher.test(value));
+    assertEquals(expected, matcher.test(value), String.format("%s ~ %s", value, pattern));
   }
 
   @Test

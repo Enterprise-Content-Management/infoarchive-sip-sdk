@@ -3,10 +3,10 @@
  */
 package com.opentext.ia.configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +22,7 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.configuration.json.JsonConfiguration;
 import com.opentext.ia.configuration.json.JsonConfigurationProducer;
@@ -81,7 +81,8 @@ public class WhenBuildingConfigurations {
   public void shouldUseDefaultPropertiesForTenant() {
     Configuration<ConfigurationObject> configuration = builder.withTenant().build();
 
-    assertEquals(NAME, DEFAULT_TENANT_NAME, configuration.getTenant().getProperties().getString(NAME));
+    assertEquals(DEFAULT_TENANT_NAME, configuration.getTenant().getProperties().getString(NAME),
+        NAME);
   }
 
   @Test
@@ -90,7 +91,7 @@ public class WhenBuildingConfigurations {
         .named(TENANT_NAME)
     .build();
 
-    assertEquals(NAME, TENANT_NAME, nameOf(configuration.getTenant()));
+    assertEquals(TENANT_NAME, nameOf(configuration.getTenant()), NAME);
   }
 
   private String nameOf(ConfigurationObject object) {
@@ -140,7 +141,7 @@ public class WhenBuildingConfigurations {
   }
 
   private void assertProperty(String expected, JSONObject object, String name) {
-    assertEquals(name, expected, object.optString(name));
+    assertEquals(expected, object.optString(name), name);
   }
 
   @Test
@@ -589,17 +590,17 @@ public class WhenBuildingConfigurations {
     ConfigurationObject pdi = configuration.getPdi(configuration.getApplication());
 
     Object contents = pdi.getProperties().get("content");
-    assertNotNull("Missing contents", contents);
-    assertEquals("Contents", JSONArray.class, contents.getClass());
+    assertNotNull(contents, "Missing contents");
+    assertEquals(JSONArray.class, contents.getClass(), "Contents");
 
     JSONArray contentObjects = (JSONArray)contents;
-    assertEquals("# content objects", 2, contentObjects.length());
+    assertEquals(2, contentObjects.length(), "# content objects");
 
     List<String> texts = StreamSupport.stream(contentObjects.spliterator(), false)
         .map(JSONObject.class::cast)
         .map(o -> o.getString("text"))
         .collect(Collectors.toList());
-    assertEquals("Texts", Arrays.asList(CONTENT1, CONTENT2), texts);
+    assertEquals(Arrays.asList(CONTENT1, CONTENT2), texts, "Texts");
   }
 
 }

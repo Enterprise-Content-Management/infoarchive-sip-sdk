@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.io.MemoryBuffer;
 import com.opentext.ia.test.TestCase;
@@ -93,7 +93,7 @@ public class WhenAssemblingSipsConcurrently extends TestCase {
     } finally {
       assembler.end();
     }
-    assertNull("Error during concurrent SIP assembly", error.get());
+    assertNull(error.get(), "Error during concurrent SIP assembly");
   }
 
 }

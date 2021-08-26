@@ -6,7 +6,8 @@ package com.opentext.ia.sdk.dto;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -28,8 +29,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.stubbing.OngoingStubbing;
 
@@ -85,7 +86,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
   private Application application;
   private XdbFederations federations;
 
-  @Before
+  @BeforeEach
   public void init() throws IOException {
     prepareConfiguration();
     connection = new PropertiesBasedArchiveConnection(configuration);
@@ -452,10 +453,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     when(restClient.refresh(collection)).thenReturn(collection);
   }
 
-  @Test(expected = RuntimeIoException.class)
+  @Test
   public void shouldWrapExceptionDuringConfiguration() throws IOException {
     when(restClient.get(BILLBOARD_URI, Services.class)).thenThrow(IOException.class);
-    configureServer();
+    assertThrows(RuntimeIoException.class, () -> configureServer());
   }
 
   private void configureServer() throws IOException {
@@ -485,7 +486,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     String aipId = "sip001";
     when(ingestionResponse.getAipId()).thenReturn(aipId);
 
-    assertEquals("AIP ID", aipId, archiveClient.ingest(sip));
+    assertEquals(aipId, archiveClient.ingest(sip), "AIP ID");
   }
 
   @Test
@@ -504,7 +505,7 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     String aipId = "sip002";
     when(ingestionResponse.getAipId()).thenReturn(aipId);
 
-    assertEquals("AIP ID", aipId, archiveClient.ingestDirect(sip));
+    assertEquals(aipId, archiveClient.ingestDirect(sip), "AIP ID");
   }
 
   @Test
@@ -520,24 +521,22 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     String aipId = "sip003";
     when(ingestionResponse.getAipId()).thenReturn(aipId);
 
-    assertEquals("AIP ID", aipId, archiveClient.ingestDirect(sip));
+    assertEquals(aipId, archiveClient.ingestDirect(sip), "AIP ID");
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void ingestShouldThrowRuntimeExceptionWhenConfigureIsNotInvoked() throws IOException {
     InputStream sip = IOUtils.toInputStream(SOURCE, StandardCharsets.UTF_8);
-    archiveClient.ingest(sip);
+    assertThrows(RuntimeException.class, () -> archiveClient.ingest(sip));
   }
 
-  @Test(expected = RuntimeException.class)
   public void ingestShouldThrowRuntimeExceptionWhenSipIsNull() throws IOException {
-    archiveClient.ingest(null);
+    assertThrows(RuntimeException.class, () -> archiveClient.ingest(null));
   }
 
-  @Test(expected = NullPointerException.class)
   public void shouldThrowNullPointerExceptionWhenConfigurationParametersAreNull()
       throws IOException {
-    configureServer(new HashMap<>());
+    assertThrows(NullPointerException.class, () -> configureServer(new HashMap<>()));
   }
 
   @Test
@@ -647,10 +646,10 @@ public class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRel
     assertEquals(orderItem, result);
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void shouldFetchContentUnsuccessfully() throws IOException {
     configureServer();
-    archiveClient.fetchContent(randomString());
+    assertThrows(NullPointerException.class, () -> archiveClient.fetchContent(randomString()));
   }
 
   @Test

@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.support.io;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -11,25 +11,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.opentext.ia.test.TestCase;
 
 public class WhenUnzippingFile extends TestCase {
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir
+  public Path temporaryFolder;
 
   @Test
   public void shouldProcessEntry() throws IOException {
     String entry = randomString();
     byte[] expected = randomBytes();
-    File zip = temporaryFolder.newFile();
+    File zip = newFile(temporaryFolder);
     try (OutputStream out = Files.newOutputStream(zip.toPath(), StandardOpenOption.CREATE);
         ZipAssembler zipper = new DefaultZipAssembler()) {
       zipper.begin(out);
@@ -38,7 +38,7 @@ public class WhenUnzippingFile extends TestCase {
 
     byte[] actual = Unzip.file(zip).andProcessEntry(entry, stream -> readContents(stream));
 
-    assertArrayEquals("Contents", expected, actual);
+    assertArrayEquals(expected, actual, "Contents");
   }
 
   private byte[] readContents(InputStream stream) {

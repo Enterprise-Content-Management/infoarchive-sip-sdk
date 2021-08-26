@@ -3,44 +3,44 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.opentext.ia.test.TestCase;
 
 
 public class WhenExtractingDigitalObjects extends TestCase {
 
-  @Rule
-  public TemporaryFolder folder = new TemporaryFolder();
+  @TempDir
+  public Path folder;
   private final byte[] content = randomString().getBytes(StandardCharsets.UTF_16);
   private final String referenceInformation = randomString();
 
   @Test
   public void shouldExtractFromFile() throws IOException {
-    assertDigitalObject(DigitalObject.fromFile(referenceInformation, file(folder, content)));
+    assertDigitalObject(DigitalObject.fromFile(referenceInformation, newFile(folder, content)));
   }
 
   private void assertDigitalObject(DigitalObject actual) throws IOException {
-    assertEquals("Reference information", referenceInformation, actual.getReferenceInformation());
+    assertEquals(referenceInformation, actual.getReferenceInformation(), "Reference information");
     try (InputStream stream = actual.get()) {
-      assertArrayEquals("Content", content, IOUtils.toByteArray(stream));
+      assertArrayEquals(content, IOUtils.toByteArray(stream), "Content");
     }
-    assertEquals("Size", content.length, actual.getSize());
+    assertEquals(content.length, actual.getSize(), "Size");
   }
 
   @Test
   public void shouldExtractFromPath() throws IOException {
-    assertDigitalObject(DigitalObject.fromPath(referenceInformation, file(folder, content).toPath()));
+    assertDigitalObject(DigitalObject.fromPath(referenceInformation, newFile(folder, content).toPath()));
   }
 
   @Test

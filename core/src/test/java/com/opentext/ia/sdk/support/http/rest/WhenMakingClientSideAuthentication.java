@@ -3,12 +3,13 @@
  */
 package com.opentext.ia.sdk.support.http.rest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.http.Header;
 import com.opentext.ia.test.TestCase;
@@ -22,22 +23,25 @@ public class WhenMakingClientSideAuthentication extends TestCase {
   private final BasicAuthentication basicAuth = new BasicAuthentication(username, password);
   private final NonExpiringTokenAuthentication tokenAuth = new NonExpiringTokenAuthentication(token);
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldFailBecauseOfUsername() {
     String illegalUsername = "";
-    new BasicAuthentication(illegalUsername, password);
+    assertThrows(IllegalArgumentException.class,
+        () -> new BasicAuthentication(illegalUsername, password));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldFailBecauseOfPassword() {
     String illegalPassword = "";
-    new BasicAuthentication(username, illegalPassword);
+    assertThrows(IllegalArgumentException.class,
+        () -> new BasicAuthentication(username, illegalPassword));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldFailBecauseOfToken() {
     String illegalToken = "";
-    new NonExpiringTokenAuthentication(illegalToken);
+    assertThrows(IllegalArgumentException.class,
+        () -> new NonExpiringTokenAuthentication(illegalToken));
   }
 
   @Test
@@ -45,14 +49,14 @@ public class WhenMakingClientSideAuthentication extends TestCase {
     String finalToken = "Basic " + Base64.getEncoder()
                                        .encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
     Header authHeader = new Header("Authorization", finalToken);
-    assertEquals("Tokens should be the same", authHeader, basicAuth.issueAuthHeader());
+    assertEquals(authHeader, basicAuth.issueAuthHeader(), "Tokens should be the same");
   }
 
   @Test
   public void shouldIssueGivenHeader() {
     String finalToken = "Bearer " + token;
     Header authHeader = new Header("Authorization", finalToken);
-    assertEquals("Tokens should be the same", authHeader, tokenAuth.issueAuthHeader());
+    assertEquals(authHeader, tokenAuth.issueAuthHeader(), "Tokens should be the same");
   }
 
 }

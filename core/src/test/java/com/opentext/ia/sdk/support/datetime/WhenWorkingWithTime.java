@@ -3,19 +3,20 @@
  */
 package com.opentext.ia.sdk.support.datetime;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.RandomData;
 
 
 public class WhenWorkingWithTime {
 
-  private static final int TASK_WAIT_DELTA = 100;
+  private static final int TASK_WAIT_DELTA = 200;
 
   private final RandomData random = new RandomData();
   private final Clock clock = new DefaultClock();
@@ -28,13 +29,13 @@ public class WhenWorkingWithTime {
     clock.sleep(expected, TimeUnit.MILLISECONDS);
 
     long actual = System.currentTimeMillis() - start;
-    assertTrue("Did not sleep: " + actual, actual > 0);
+    assertTrue(actual > 0, "Did not sleep: " + actual);
   }
 
   @Test
   public void shouldTellTimeAccurately() {
     long delta = Math.abs(System.currentTimeMillis() - clock.time());
-    assertTrue("Clock deviates from real time by " + delta, delta <= 5);
+    assertTrue(delta <= 5, "Clock deviates from real time by " + delta);
   }
 
   @Test
@@ -42,10 +43,10 @@ public class WhenWorkingWithTime {
     int sleep = random.integer(20, 30);
     final AtomicBoolean executed = new AtomicBoolean(false);
     clock.schedule(random.string(), sleep, TimeUnit.MILLISECONDS, () -> executed.set(true));
-    assertFalse("Task run right away", executed.get());
+    assertFalse(executed.get(), "Task run right away");
 
     Thread.sleep(sleep + TASK_WAIT_DELTA);
-    assertTrue("Task not run after specified time", executed.get());
+    assertTrue(executed.get(), "Task not run after specified time");
   }
 
   @Test
@@ -58,7 +59,7 @@ public class WhenWorkingWithTime {
     clock.cancel(name);
 
     Thread.sleep(sleep + TASK_WAIT_DELTA);
-    assertFalse("Canceled task is run", executed.get());
+    assertFalse(executed.get(), "Canceled task is run");
   }
 
   /**

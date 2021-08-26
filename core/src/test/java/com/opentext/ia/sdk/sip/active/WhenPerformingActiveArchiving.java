@@ -3,9 +3,9 @@
  */
 package com.opentext.ia.sdk.sip.active;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.sip.ContentInfo;
@@ -38,7 +38,7 @@ public class WhenPerformingActiveArchiving extends SipAssemblingTestCase {
   private ActiveArchiver<String> archiver;
   private final Collection<File> failedSips = new ArrayList<>();
 
-  @Before
+  @BeforeEach
   public void init() {
     numSips = 0;
   }
@@ -49,8 +49,8 @@ public class WhenPerformingActiveArchiving extends SipAssemblingTestCase {
       numSips++;
       String packageInformation = getPackageInformation(invocation.getArgument(0));
       assertNotNull("Missing package information in SIP", packageInformation);
-      assertEquals("SeqNo", 1, getSeqNo(packageInformation));
-      assertTrue("IsLast", isLast(packageInformation));
+      assertEquals(1, getSeqNo(packageInformation), "SeqNo");
+      assertTrue(isLast(packageInformation), "IsLast");
       return null;
     });
     archiver = newArchiver();
@@ -59,7 +59,7 @@ public class WhenPerformingActiveArchiving extends SipAssemblingTestCase {
     addDomainObjectToArchive();
     archiver.end();
 
-    assertTrue("Failed to ingest SIPs", failedSips.isEmpty());
+    assertTrue(failedSips.isEmpty(), "Failed to ingest SIPs");
   }
 
   private ActiveArchiver<String> newArchiver() {
@@ -109,7 +109,7 @@ public class WhenPerformingActiveArchiving extends SipAssemblingTestCase {
     addDomainObjectToArchive();
     archiver.end();
 
-    assertEquals("# Failed SIPs", numSips, failedSips.size());
+    assertEquals(numSips, failedSips.size(), "# Failed SIPs");
   }
 
 }

@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -81,7 +81,7 @@ abstract class AbstractDtoTestCase {
   }
 
   protected void assertHasOnlyPublicNoArgConstructor(Class<?> clazz) throws ReflectiveOperationException {
-    assertTrue("Constructor should be public", hasOnlyPublicNoArgConstructor(clazz));
+    assertTrue(hasOnlyPublicNoArgConstructor(clazz), "Constructor should be public");
   }
 
 }

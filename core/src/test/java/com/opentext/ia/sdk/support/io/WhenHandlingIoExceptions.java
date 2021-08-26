@@ -3,11 +3,12 @@
  */
 package com.opentext.ia.sdk.support.io;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 
 public class WhenHandlingIoExceptions {
@@ -18,8 +19,9 @@ public class WhenHandlingIoExceptions {
 
     RuntimeIoException wrapper = new RuntimeIoException(original);
 
-    assertTrue("Not a RuntimeException", RuntimeException.class.isAssignableFrom(wrapper.getClass()));
-    assertSame("Wrapped exception", original, wrapper.getCause());
+    assertTrue(RuntimeException.class.isAssignableFrom(wrapper.getClass()),
+        "Not a RuntimeException");
+    assertSame(original, wrapper.getCause(), "Wrapped exception");
   }
 
 }

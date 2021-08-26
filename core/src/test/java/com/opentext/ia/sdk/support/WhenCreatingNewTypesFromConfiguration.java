@@ -3,14 +3,14 @@
  */
 package com.opentext.ia.sdk.support;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.RandomData;
 
@@ -27,7 +27,7 @@ public class WhenCreatingNewTypesFromConfiguration {
 
     Map<?, ?> instance = NewInstance.fromConfiguration(configuration, option, null).as(Map.class);
 
-    assertEquals("Type", type, instance.getClass());
+    assertEquals(type, instance.getClass(), "Type");
   }
 
   @Test
@@ -37,7 +37,7 @@ public class WhenCreatingNewTypesFromConfiguration {
     Map<?, ?> instance =
         NewInstance.fromConfiguration(Collections.emptyMap(), "", type.getName()).as(Map.class);
 
-    assertEquals("Type", type, instance.getClass());
+    assertEquals(type, instance.getClass(), "Type");
   }
 
   @Test

@@ -3,10 +3,10 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -27,7 +27,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
 import com.opentext.ia.sdk.support.io.ByteArrayInputOutputStream;
@@ -104,21 +104,21 @@ public class WhenAssemblingSips extends XmlTestCase {
       assertContentDataObject(zip, id2);
       assertPreservationDescriptionInformation(zip);
       assertPackagingInformation(zip, objects, hash);
-      assertNull("Additional zip entries", zip.getNextEntry());
+      assertNull(zip.getNextEntry(), "Additional zip entries");
     }
 
     SipMetrics metrics = sipAssembler.getMetrics();
-    assertEquals(SipMetrics.NUM_AIUS, 2, metrics.numAius());
-    assertEquals(SipMetrics.NUM_DIGITAL_OBJECTS, 3, metrics.numDigitalObjects());
-    assertEquals(SipMetrics.ASSEMBLY_TIME, time, metrics.assemblyTime(), DELTA_MS);
-    assertEquals(SipMetrics.SIZE_DIGITAL_OBJECTS, 3 * digitalObjectSize,
-        metrics.digitalObjectsSize());
-    assertEquals(SipMetrics.SIZE_PDI, pdiSize, metrics.pdiSize());
+    assertEquals(2, metrics.numAius(), SipMetrics.NUM_AIUS);
+    assertEquals(3, metrics.numDigitalObjects(), SipMetrics.NUM_DIGITAL_OBJECTS);
+    assertEquals(time, metrics.assemblyTime(), DELTA_MS, SipMetrics.ASSEMBLY_TIME);
+    assertEquals(3 * digitalObjectSize, metrics.digitalObjectsSize(),
+        SipMetrics.SIZE_DIGITAL_OBJECTS);
+    assertEquals(pdiSize, metrics.pdiSize(), SipMetrics.SIZE_PDI);
     long packagingInformationSize =
         getPackagingInformationSize(packagingInformationPrototype, 2, Optional.of(hash));
-    assertEquals(SipMetrics.SIZE_SIP, pdiSize + 3 * digitalObjectSize + packagingInformationSize,
-        metrics.sipSize());
-    assertEquals(SipMetrics.SIZE_SIP_FILE, buffer.length(), metrics.sipFileSize());
+    assertEquals(pdiSize + 3 * digitalObjectSize + packagingInformationSize, metrics.sipSize(),
+        SipMetrics.SIZE_SIP);
+    assertEquals(buffer.length(), metrics.sipFileSize(), SipMetrics.SIZE_SIP_FILE);
   }
 
   private long getPackagingInformationSize(PackagingInformation packagingInformationPrototype,
@@ -160,16 +160,16 @@ public class WhenAssemblingSips extends XmlTestCase {
 
   private void assertContentDataObject(ZipInputStream zip, String id) throws IOException {
     ZipEntry entry = zip.getNextEntry();
-    assertNotNull("Missing content: " + id, entry);
-    assertEquals("Zip entry", id, entry.getName());
+    assertNotNull(entry, "Missing content: " + id);
+    assertEquals(id, entry.getName(), "Zip entry");
 
     zip.closeEntry();
   }
 
   private void assertPreservationDescriptionInformation(ZipInputStream zip) throws IOException {
     ZipEntry entry = zip.getNextEntry();
-    assertNotNull("Missing PDI", entry);
-    assertEquals("Zip entry", "eas_pdi.xml", entry.getName());
+    assertNotNull(entry, "Missing PDI");
+    assertEquals("eas_pdi.xml", entry.getName(), "Zip entry");
 
     zip.closeEntry();
   }
@@ -177,18 +177,18 @@ public class WhenAssemblingSips extends XmlTestCase {
   private void assertPackagingInformation(ZipInputStream zip, Collection<Object> objects,
       EncodedHash pdiHash) throws IOException {
     ZipEntry entry = zip.getNextEntry();
-    assertNotNull("Missing Packaging Information", entry);
-    assertEquals("Zip entry", "eas_sip.xml", entry.getName());
+    assertNotNull(entry, "Missing Packaging Information");
+    assertEquals("eas_sip.xml", entry.getName(), "Zip entry");
 
     try (ByteArrayInputOutputStream packagingInformation = new ByteArrayInputOutputStream()) {
       IOUtils.copy(zip, packagingInformation);
       Element sipElement =
           assertValidXml(packagingInformation.getInputStream(), "PackagingInformation", "sip.xsd")
               .getDocumentElement();
-      assertTrue("Missing pdi_hash: " + pdiHash, XmlUtil.namedElementsIn(sipElement, "pdi_hash")
-          .filter(e -> equals(pdiHash, e)).findAny().isPresent());
+      assertTrue(XmlUtil.namedElementsIn(sipElement, "pdi_hash").filter(e -> equals(pdiHash, e))
+          .findAny().isPresent(), "Missing pdi_hash: " + pdiHash);
       String aiuCount = XmlUtil.getFirstChildElement(sipElement, "aiu_count").getTextContent();
-      assertEquals("# AIUs", objects.size(), Integer.parseInt(aiuCount));
+      assertEquals(objects.size(), Integer.parseInt(aiuCount), "# AIUs");
     }
     zip.closeEntry();
   }
@@ -220,7 +220,7 @@ public class WhenAssemblingSips extends XmlTestCase {
     sipAssembler.add(new Object());
 
     SipMetrics metrics = sipAssembler.getMetrics();
-    assertEquals(SipMetrics.SIZE_PDI, pdiSize, metrics.pdiSize());
+    assertEquals(pdiSize, metrics.pdiSize(), SipMetrics.SIZE_PDI);
   }
 
 }

@@ -3,12 +3,15 @@
  */
 package com.opentext.ia.test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 public final class TestUtil {
 
@@ -16,20 +19,22 @@ public final class TestUtil {
     // Utility class
   }
 
-  public static <T> void assertEquals(String message, Collection<T> expected, Collection<T> actual) {
+  public static <T> void assertEquals(Collection<T> expected, Collection<T> actual,
+      String message) {
     String details = String.format("%nWanted:%n%s%nGotten:%n%s%n", join(expected), join(actual));
     Iterator<T> wanted = expected.iterator();
     Iterator<T> gotten = actual.iterator();
     while (wanted.hasNext()) {
       T wantedItem = wanted.next();
-      Assert.assertTrue(message + " - missing item: " + wantedItem + details, gotten.hasNext());
+      assertTrue(gotten.hasNext(), message + " - missing item: " + wantedItem + details);
 
       T gottenItem = gotten.next();
       if (!Objects.equals(wantedItem, gottenItem)) {
-        Assert.assertEquals(message + " - wrong item" + details, String.valueOf(wantedItem), String.valueOf(gottenItem));
+        Assertions.assertEquals(String.valueOf(wantedItem), String.valueOf(gottenItem),
+            message + " - wrong item" + details);
       }
     }
-    Assert.assertFalse(message + " - extra items" + details, gotten.hasNext());
+    assertFalse(gotten.hasNext(), message + " - extra items" + details);
   }
 
   private static <T> String join(Collection<T> items) {

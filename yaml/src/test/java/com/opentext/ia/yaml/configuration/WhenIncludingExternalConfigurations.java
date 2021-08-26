@@ -3,15 +3,14 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.atteo.evo.inflector.English;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.Value;
@@ -53,8 +52,8 @@ public class WhenIncludingExternalConfigurations extends TestCase {
 
     normalizeYaml();
 
-    assertValue("Included value", value, yaml.get(key1, 0, key2));
-    assertTrue("Includes should be removed", yaml.get(INCLUDES).isEmpty());
+    assertValue(value, yaml.get(key1, 0, key2), "Included value");
+    assertTrue(yaml.get(INCLUDES).isEmpty(), "Includes should be removed");
   }
 
   private String someName() {
@@ -86,10 +85,6 @@ public class WhenIncludingExternalConfigurations extends TestCase {
     return someFileName("yml");
   }
 
-  private void assertValue(String message, String expected, Value actual) {
-    assertEquals(message, expected, actual.toString());
-  }
-
   @Test
   public void shouldIgnoreDuplicateEntryConfiguredAsExisting() {
     String type = someName();
@@ -107,8 +102,8 @@ public class WhenIncludingExternalConfigurations extends TestCase {
 
     normalizeYaml();
 
-    assertValue(NAME, name, yaml.get(collection, 0, NAME));
-    assertFalse("Singular should not be added", yaml.containsKey(type));
+    assertValue(name, yaml.get(collection, 0, NAME), NAME);
+    assertFalse(yaml.containsKey(type), "Singular should not be added");
   }
 
   @Test
@@ -129,8 +124,8 @@ public class WhenIncludingExternalConfigurations extends TestCase {
     normalizeYaml();
 
     Value object = yaml.get(collection, 0);
-    assertValue(NAME, name, object.toMap().get(NAME));
-    assertValue(CONFIGURE, "", yaml.get(CONFIGURE));
+    assertValue(name, object.toMap().get(NAME), NAME);
+    assertValue("", yaml.get(CONFIGURE), CONFIGURE);
   }
 
   @Test
@@ -161,10 +156,10 @@ public class WhenIncludingExternalConfigurations extends TestCase {
 
     normalizeYaml();
 
-    assertTrue("Singular should not be added", yaml.get(type).isEmpty());
+    assertTrue(yaml.get(type).isEmpty(), "Singular should not be added");
     YamlMap map = yaml.get(collection, 0).toMap();
-    assertValue(NAME, name, map.get(NAME));
-    assertValue("Other property", value, map.get(property));
+    assertValue(name, map.get(NAME), NAME);
+    assertValue(value, map.get(property), "Other property");
   }
 
   @Test
@@ -179,7 +174,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
 
     normalizeYaml();
 
-    assertValue(VERSION, VERSION_1, yaml.get(VERSION));
+    assertValue(VERSION_1, yaml.get(VERSION), VERSION);
   }
 
   @Test
@@ -236,7 +231,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
 
     normalizeYaml();
 
-    assertValue("Included resource should be resolved", text, yaml.get(English.plural(key), 0, CONTENT, TEXT));
+    assertValue(text, yaml.get(English.plural(key), 0, CONTENT, TEXT), "Included resource should be resolved");
   }
 
   private String someHtmlFileName() {
@@ -252,9 +247,9 @@ public class WhenIncludingExternalConfigurations extends TestCase {
 
     normalizeYaml();
 
-    assertValue("Substituted value", "thud", yaml.get(collection, 0, NAME));
-    assertValue("Inherited inline value", "bar", yaml.get("inc", 0, "foo"));
-    assertValue("Overridden inline value", "xyzzy", yaml.get("inc", 0, NAME));
+    assertValue("thud", yaml.get(collection, 0, NAME), "Substituted value");
+    assertValue("bar", yaml.get("inc", 0, "foo"), "Inherited inline value");
+    assertValue("xyzzy", yaml.get("inc", 0, NAME), "Overridden inline value");
   }
 
   @Test
@@ -264,7 +259,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
 
     normalizeYaml(map);
 
-    assertValue("Store name", "aws-s3", map.get("stores", 0, NAME));
+    assertValue("aws-s3", map.get("stores", 0, NAME), "Store name");
   }
 
   @Test
@@ -274,7 +269,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
 
     normalizeYaml(yaml);
 
-    assertValue("Inlined value", "bar", yaml.get("foo"));
+    assertValue("bar", yaml.get("foo"), "Inlined value");
   }
 
   @Test
@@ -293,7 +288,7 @@ public class WhenIncludingExternalConfigurations extends TestCase {
 
     normalizeYaml();
 
-    assertFalse("Value should not be included", yaml.containsKey(key1));
+    assertFalse(yaml.containsKey(key1), "Value should not be included");
   }
 
   @Test
@@ -324,9 +319,9 @@ public class WhenIncludingExternalConfigurations extends TestCase {
     normalizeYaml();
 
     YamlMap inlined = yaml.sort();
-    assertValue(BAR, BAR, inlined.get(APPLICATIONS, 0, NAME));
-    assertValue(BAZ, BAZ, inlined.get(APPLICATIONS, 1, NAME));
-    assertValue(FOO, FOO, inlined.get(APPLICATIONS, 2, NAME));
+    assertValue(BAR, inlined.get(APPLICATIONS, 0, NAME), BAR);
+    assertValue(BAZ, inlined.get(APPLICATIONS, 1, NAME), BAZ);
+    assertValue(FOO, inlined.get(APPLICATIONS, 2, NAME), FOO);
   }
 
 }

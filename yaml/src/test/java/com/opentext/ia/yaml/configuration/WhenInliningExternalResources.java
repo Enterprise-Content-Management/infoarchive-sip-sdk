@@ -3,15 +3,15 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.atteo.evo.inflector.English;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.Value;
@@ -57,10 +57,10 @@ public class WhenInliningExternalResources extends TestCase {
 
     normalizeYaml();
 
-    assertContentIsInlined("list", expected, yaml.get(singularType, 0));
-    assertContentIsInlined("map", expected, yaml.get(pluralType));
-    assertValue(String.format("Multiple content objects not inlinedinlined%n%s", yaml), expected,
-        yaml.get(multipleContent, 0, CONTENT, 0, TEXT));
+    assertContentIsInlined(expected, yaml.get(singularType, 0), "list");
+    assertContentIsInlined(expected, yaml.get(pluralType), "map");
+    assertValue(expected, yaml.get(multipleContent, 0, CONTENT, 0, TEXT),
+        String.format("Multiple content objects not inlinedinlined%n%s", yaml));
   }
 
   private String someName() {
@@ -106,13 +106,9 @@ public class WhenInliningExternalResources extends TestCase {
     return new YamlConfiguration(map, resourceResolver);
   }
 
-  private void assertContentIsInlined(String type, String expected, Value owner) {
-    assertValue(String.format("Content in %s not inlined:%n%s", type, yaml), expected,
-        owner.toMap().get(CONTENT, TEXT));
-  }
-
-  private void assertValue(String message, String expected, Value actual) {
-    assertEquals(message, expected, actual.toString());
+  private void assertContentIsInlined(String expected, Value owner, String type) {
+    assertValue(expected, owner.toMap().get(CONTENT, TEXT),
+        String.format("Content in %s not inlined:%n%s", type, yaml));
   }
 
   @Test
@@ -131,8 +127,9 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   private void assertCustomPresentationHasInlinedHtmlTemplate(String expected) {
-    assertEquals("Inlined resource", expected,
-        yaml.get(English.plural("customPresentationConfiguration"), 0, HTML_TEMPLATE, TEXT).toString());
+    assertEquals(expected, yaml
+        .get(English.plural("customPresentationConfiguration"), 0, HTML_TEMPLATE, TEXT).toString(),
+        "Inlined resource");
   }
 
   @Test
@@ -186,7 +183,7 @@ public class WhenInliningExternalResources extends TestCase {
 
   private void assertDatabaseMetadataIsInlined(String expected) {
     YamlMap databaseMetadata = yaml.get(DATABASES, 0, METADATA, 0).toMap();
-    assertEquals("Metadata", expected, databaseMetadata.get(TEXT).toString());
+    assertEquals(expected, databaseMetadata.get(TEXT).toString(), "Metadata");
   }
 
   @Test
@@ -239,8 +236,8 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   private void assertTransformationXQueryIsInlined(String expected) {
-    assertEquals("Inlined transformation xquery", expected,
-        yaml.get(TRANSFORMATIONS, 0, XQUERY, TEXT).toString());
+    assertEquals(expected, yaml.get(TRANSFORMATIONS, 0, XQUERY, TEXT).toString(),
+        "Inlined transformation xquery");
   }
 
   @Test
@@ -284,7 +281,7 @@ public class WhenInliningExternalResources extends TestCase {
     normalizeYaml(yaml);
 
     YamlSequence contents = yaml.get(DATABASES, 0, METADATA).toList();
-    assertTrue("# inlined:\n" + yaml, contents.size() > 1);
+    assertTrue(contents.size() > 1, "# inlined:\n" + yaml);
   }
 
   @Test
@@ -298,7 +295,7 @@ public class WhenInliningExternalResources extends TestCase {
     normalizeYaml(yaml);
 
     YamlSequence contents = yaml.get(DATABASES, 0, METADATA).toList();
-    assertTrue("# inlined:\n" + yaml, contents.size() > 1);
+    assertTrue(contents.size() > 1, "# inlined:\n" + yaml);
   }
 
   @Test
@@ -314,8 +311,8 @@ public class WhenInliningExternalResources extends TestCase {
     normalizeYaml();
 
     YamlMap content = yaml.get(ACCESS_NODES, 0, CONTENT).toMap();
-    assertValue("Original value should remain", resourceName, content.get(RESOURCE));
-    assertTrue("No text should be added", content.get(TEXT).isEmpty());
+    assertValue(resourceName, content.get(RESOURCE), "Original value should remain");
+    assertTrue(content.get(TEXT).isEmpty(), "No text should be added");
   }
 
   @Test
@@ -334,8 +331,8 @@ public class WhenInliningExternalResources extends TestCase {
   }
 
   private void assertXQueryQueryIsInlined(String expected) {
-    assertEquals("Inlined transformation xquery", expected,
-        yaml.get(XQUERIES, 0, QUERY).toString());
+    assertEquals(expected, yaml.get(XQUERIES, 0, QUERY).toString(),
+        "Inlined transformation xquery");
   }
 
   @Test

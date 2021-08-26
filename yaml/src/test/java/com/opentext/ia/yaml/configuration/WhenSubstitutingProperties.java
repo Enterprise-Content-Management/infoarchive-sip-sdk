@@ -3,11 +3,11 @@
  */
 package com.opentext.ia.yaml.configuration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.function.Function;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.yaml.resource.ResourceResolver;
 
@@ -20,24 +20,24 @@ public class WhenSubstitutingProperties {
   @Test
   public void shouldReplacePropertyReferenceWithValue() {
     propertyResolver = new ConfigurationProperties(resourceResolver, "configuration.properties");
-    assertEquals("Non-expression", "foo", propertyResolver.apply("foo"));
-    assertProperty("Use existing value", "bar", "foo");
-    assertProperty("Substitute with value", "gnat", "baz");
-    assertProperty("Substitute with default if not found", "quux", "qux");
-    assertProperty("Substitute with empty default", "", "waldo");
-    assertProperty("Don't substitute if not found and no default", "${grault}", "corge");
-    assertProperty("Keep prefix and suffix", "hamANDeggs", "spam");
-    assertProperty("Multiple subsitutions", "http://localhost:8765/services", "url");
-    assertProperty("Multiple subsitutions", "http://localhost:8765/services", "url");
-    assertPropertyExpression("Empty value should not override", "bottle", "${empty:bottle}");
+    assertEquals("foo", propertyResolver.apply("foo"), "Non-expression");
+    assertProperty("bar", "foo", "Use existing value");
+    assertProperty("gnat", "baz", "Substitute with value");
+    assertProperty("quux", "qux", "Substitute with default if not found");
+    assertProperty("", "waldo", "Substitute with empty default");
+    assertProperty("${grault}", "corge", "Don't substitute if not found and no default");
+    assertProperty("hamANDeggs", "spam", "Keep prefix and suffix");
+    assertProperty("http://localhost:8765/services", "url", "Multiple subsitutions");
+    assertProperty("http://localhost:8765/services", "url", "Multiple subsitutions");
+    assertPropertyExpression("bottle", "${empty:bottle}", "Empty value should not override");
   }
 
-  private void assertProperty(String message, String expected, String name) {
-    assertPropertyExpression(message, expected, String.format("${%s}", name));
+  private void assertProperty(String expected, String name, String message) {
+    assertPropertyExpression(expected, String.format("${%s}", name), message);
   }
 
-  private void assertPropertyExpression(String message, String expected, String expression) {
-    assertEquals(message, expected, propertyResolver.apply(expression));
+  private void assertPropertyExpression(String expected, String expression, String message) {
+    assertEquals(expected, propertyResolver.apply(expression), message);
   }
 
   @Test
@@ -46,14 +46,14 @@ public class WhenSubstitutingProperties {
         new ConfigurationProperties(resourceResolver, "1.properties",
             new ConfigurationProperties(resourceResolver, "0.properties")));
 
-    assertProperty("From parent", "thud", "qux");
-    assertProperty("From grandparent", "garply", "corge");
+    assertProperty("thud", "qux", "From parent");
+    assertProperty("garply", "corge", "From grandparent");
   }
 
   @Test
   public void shouldTrimValues() {
     propertyResolver = new ConfigurationProperties(resourceResolver, "configuration.properties");
-    assertEquals("Trimmed value", "bar", propertyResolver.apply("${foo}"));
+    assertEquals("bar", propertyResolver.apply("${foo}"), "Trimmed value");
   }
 
 }

@@ -3,10 +3,10 @@
  */
 package com.opentext.ia.yaml.core;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.error.MarkedYAMLException;
 
 
@@ -25,7 +25,8 @@ public class WhenParsingInvalidYaml {
       YamlMap map = YamlMap.from(yaml);
       fail("No exception for invalid YAML; " + yaml + " ->\n" + map);
     } catch (MarkedYAMLException e) {
-      assertTrue("Problem doesn't contain '" + expected + "': " + e.getProblem(), e.getProblem().contains(expected));
+      assertTrue(e.getProblem().contains(expected),
+          "Problem doesn't contain '" + expected + "': " + e.getProblem());
     }
   }
 

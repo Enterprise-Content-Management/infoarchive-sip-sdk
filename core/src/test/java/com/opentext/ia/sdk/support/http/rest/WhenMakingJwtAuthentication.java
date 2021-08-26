@@ -3,8 +3,15 @@
  */
 package com.opentext.ia.sdk.support.http.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -15,8 +22,8 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.entity.ContentType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.opentext.ia.sdk.support.datetime.Clock;
@@ -24,7 +31,6 @@ import com.opentext.ia.sdk.support.http.Header;
 import com.opentext.ia.sdk.support.http.HttpClient;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 import com.opentext.ia.test.TestCase;
-
 
 public class WhenMakingJwtAuthentication extends TestCase {
 
@@ -45,9 +51,10 @@ public class WhenMakingJwtAuthentication extends TestCase {
   private final AuthenticationSuccess authResult = new AuthenticationSuccess();
   private final AuthenticationSuccess authRefresh = new AuthenticationSuccess();
   private final Header authorizationHeader = new Header("Authorization", "Bearer " + accessToken);
-  private final Header secondAuthorizationHeader = new Header("Authorization", "Bearer " + secondAccessToken);
+  private final Header secondAuthorizationHeader =
+      new Header("Authorization", "Bearer " + secondAccessToken);
 
-  @Before
+  @BeforeEach
   public void init() throws IOException {
     authResult.setAccessToken(accessToken);
     authResult.setRefreshToken(refreshToken);
@@ -57,52 +64,56 @@ public class WhenMakingJwtAuthentication extends TestCase {
     authRefresh.setTokenType("Bearer");
     authRefresh.setExpiresIn(25);
     when(httpClient.post(anyString(), any(), eq(AuthenticationSuccess.class), anyString()))
-        .thenReturn(authResult)
-        .thenReturn(authRefresh);
+        .thenReturn(authResult).thenReturn(authRefresh);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldFailBecauseOfClientId() {
     String illegalClientId = "";
-    new GatewayInfo(GATEWAY_URL, illegalClientId, clientSecret);
+    assertThrows(IllegalArgumentException.class,
+        () -> new GatewayInfo(GATEWAY_URL, illegalClientId, clientSecret));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldFailBecauseOfClientSecret() {
     String illegalSecret = "";
-    new GatewayInfo(GATEWAY_URL, clientId, illegalSecret);
+    assertThrows(IllegalArgumentException.class,
+        () -> new GatewayInfo(GATEWAY_URL, clientId, illegalSecret));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldFailBecauseOfUsername() {
     String illegalUsername = "";
-    new JwtAuthentication(illegalUsername, password, gatewayInfo, httpClient, clock);
+    assertThrows(IllegalArgumentException.class,
+        () -> new JwtAuthentication(illegalUsername, password, gatewayInfo, httpClient, clock));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldFailBecauseOfPassword() {
     String illegalPassword = "";
-    new JwtAuthentication(username, illegalPassword, gatewayInfo, httpClient, clock);
+    assertThrows(IllegalArgumentException.class,
+        () -> new JwtAuthentication(username, illegalPassword, gatewayInfo, httpClient, clock));
   }
 
   @Test
   public void shouldCorrectlyFormatToken() {
-    assertEquals("Should add prefix", authorizationHeader, authentication.issueAuthHeader());
+    assertEquals(authorizationHeader, authentication.issueAuthHeader(), "Should add prefix");
   }
 
   @Test
   public void shouldCorrectlyFormUrl() throws IOException {
     authentication.issueAuthHeader();
-    verify(httpClient).post(eq("http://authgateway.com/oauth/token"), any(), eq(AuthenticationSuccess.class),
-        anyString());
+    verify(httpClient).post(eq("http://authgateway.com/oauth/token"), any(),
+        eq(AuthenticationSuccess.class), anyString());
   }
 
   @Test
   public void shouldCorrectlyFormAuthorizationHeader() throws IOException {
     String authToken = Base64.getEncoder()
-                           .encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8));
+        .encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8));
     Header authHeader = new Header("Authorization", "Basic " + authToken);
-    Header contentTypeHeader = new Header("Content-Type", ContentType.APPLICATION_FORM_URLENCODED.toString());
+    Header contentTypeHeader =
+        new Header("Content-Type", ContentType.APPLICATION_FORM_URLENCODED.toString());
     Collection<Header> headers = new ArrayList<>(Arrays.asList(authHeader, contentTypeHeader));
     authentication.issueAuthHeader();
     verify(httpClient).post(any(), eq(headers), eq(AuthenticationSuccess.class), anyString());
@@ -118,16 +129,16 @@ public class WhenMakingJwtAuthentication extends TestCase {
   @Test
   public void shouldCorrectlySetRefreshingTime() throws IOException {
     authentication.issueAuthHeader();
-    verify(clock)
-        .schedule(any(), eq(TimeUnit.MILLISECONDS.convert(15, TimeUnit.SECONDS)), eq(TimeUnit.MILLISECONDS), any());
+    verify(clock).schedule(any(), eq(TimeUnit.MILLISECONDS.convert(15, TimeUnit.SECONDS)),
+        eq(TimeUnit.MILLISECONDS), any());
   }
 
   @Test
   public void shouldCorrectlySetLittleRefreshingTime() throws IOException {
     authResult.setExpiresIn(18);
     authentication.issueAuthHeader();
-    verify(clock)
-        .schedule(any(), eq(TimeUnit.MILLISECONDS.convert(9, TimeUnit.SECONDS)), eq(TimeUnit.MILLISECONDS), any());
+    verify(clock).schedule(any(), eq(TimeUnit.MILLISECONDS.convert(9, TimeUnit.SECONDS)),
+        eq(TimeUnit.MILLISECONDS), any());
   }
 
   @Test
@@ -136,7 +147,8 @@ public class WhenMakingJwtAuthentication extends TestCase {
     authentication.issueAuthHeader();
     verify(clock).schedule(any(), anyLong(), any(), taskArgumentCaptor.capture());
     taskArgumentCaptor.getValue().run();
-    assertEquals("Should be refreshed", secondAuthorizationHeader, authentication.issueAuthHeader());
+    assertEquals(secondAuthorizationHeader, authentication.issueAuthHeader(),
+        "Should be refreshed");
   }
 
   @Test
@@ -153,14 +165,14 @@ public class WhenMakingJwtAuthentication extends TestCase {
   public void shouldNotRefreshTokenIfNotExpiring() throws IOException {
     authResult.setExpiresIn(20);
     authentication.issueAuthHeader();
-    assertEquals("Should not be refreshed", authorizationHeader, authentication.issueAuthHeader());
+    assertEquals(authorizationHeader, authentication.issueAuthHeader(), "Should not be refreshed");
   }
 
-  @Test(expected = RuntimeIoException.class)
+  @Test
   public void shouldFailWithRuntimeIoException() throws IOException {
     when(httpClient.post(any(), any(), eq(AuthenticationSuccess.class), anyString()))
         .thenThrow(new IOException());
-    authentication.issueAuthHeader();
+    assertThrows(RuntimeIoException.class, () -> authentication.issueAuthHeader());
   }
 
 }

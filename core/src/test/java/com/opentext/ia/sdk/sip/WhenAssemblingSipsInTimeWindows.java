@@ -3,8 +3,8 @@
  */
 package com.opentext.ia.sdk.sip;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -16,13 +16,13 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 
 import com.opentext.ia.sdk.support.datetime.Clock;
@@ -31,8 +31,8 @@ import com.opentext.ia.test.TestCase;
 @SuppressWarnings("unchecked")
 public class WhenAssemblingSipsInTimeWindows extends TestCase {
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir
+  public Path temporaryFolder;
   private final SipAssembler<String> assembler = mock(SipAssembler.class);
   private final SipSegmentationStrategy<String> segmentationStrategy = mock(SipSegmentationStrategy.class);
   private final Clock clock = mock(Clock.class);
@@ -43,11 +43,11 @@ public class WhenAssemblingSipsInTimeWindows extends TestCase {
   private String taskName;
   private Runnable alarm;
 
-  @Before
+  @BeforeEach
   public void init() throws IOException {
     PackagingInformationFactory factory = mock(PackagingInformationFactory.class);
     when(assembler.getPackagingInformationFactory()).thenReturn(factory);
-    sipDir = temporaryFolder.newFolder();
+    sipDir = newFolder(temporaryFolder);
     maxTime = randomInt(37, 313);
     batchAssembler = new TimeBasedBatchSipAssembler<>(assembler, segmentationStrategy, sipDir,
         new SipAssemblyTimer(maxTime, clock, callback));
@@ -82,8 +82,8 @@ public class WhenAssemblingSipsInTimeWindows extends TestCase {
     ArgumentCaptor<FileGenerationMetrics> metricsCaptor = ArgumentCaptor.forClass(FileGenerationMetrics.class);
     verify(callback).accept(metricsCaptor.capture());
     FileGenerationMetrics metrics = metricsCaptor.getValue();
-    assertEquals("SIP directory", sipDir, metrics.getFile().getParentFile());
-    assertSame("SIP metrics", sipMetrics, metrics.getMetrics());
+    assertEquals(sipDir, metrics.getFile().getParentFile(), "SIP directory");
+    assertSame(sipMetrics, metrics.getMetrics(), "SIP metrics");
   }
 
   @Test

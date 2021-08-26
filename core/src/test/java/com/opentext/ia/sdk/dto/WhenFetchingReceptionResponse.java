@@ -3,24 +3,24 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class WhenFetchingReceptionResponse {
 
   private final ReceptionResponse receptionResponse = new ReceptionResponse();
 
-  @Before
+  @BeforeEach
   public void init() {
     receptionResponse.setName("TestApplication");
   }
 
   @Test
   public void fetchName() {
-    assertEquals("Resource Name", "TestApplication", receptionResponse.getName());
+    assertEquals("TestApplication", receptionResponse.getName(), "Resource Name");
   }
 
 }

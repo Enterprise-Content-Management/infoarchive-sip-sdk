@@ -3,12 +3,12 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class WhenFetchingJobDefinition {
 
@@ -16,21 +16,21 @@ public class WhenFetchingJobDefinition {
 
   private final JobDefinition instance = new JobDefinition();
 
-  @Before
+  @BeforeEach
   public void init() throws IOException {
     instance.setHandlerName("ConfirmationJob");
   }
 
   @Test
   public void fetchDefaultHandlerName() {
-    assertEquals("Job Definition Default Handler Name", "ConfirmationJob",
-        instance.getHandlerName());
+    assertEquals("ConfirmationJob", instance.getHandlerName(),
+        "Job Definition Default Handler Name");
   }
 
   @Test
   public void fetchHandlerName() {
     instance.setHandlerName(HANDLERNAME);
-    assertEquals("Reception Format", HANDLERNAME, instance.getHandlerName());
+    assertEquals(HANDLERNAME, instance.getHandlerName(), "Reception Format");
   }
 
 }

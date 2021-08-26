@@ -3,7 +3,7 @@
  */
 package com.opentext.ia.sdk.support.io;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.util.function.Supplier;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.RandomData;
 
@@ -26,8 +26,8 @@ public class WhenReadingRepeatableInputStreamMultipleTimes {
     byte[] contents = random.bytes();
     Supplier<InputStream> supplier = new RepeatableInputStream(new ByteArrayInputStream(contents));
 
-    assertArrayEquals("Contents #1", contents, getContents(supplier));
-    assertArrayEquals("Contents #2", contents, getContents(supplier));
+    assertArrayEquals(contents, getContents(supplier), "Contents #1");
+    assertArrayEquals(contents, getContents(supplier), "Contents #2");
   }
 
   private byte[] getContents(Supplier<InputStream> supplier) throws IOException {

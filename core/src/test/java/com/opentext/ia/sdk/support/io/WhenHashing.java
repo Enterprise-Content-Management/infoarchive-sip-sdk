@@ -3,14 +3,15 @@
  */
 package com.opentext.ia.sdk.support.io;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
 import org.apache.commons.codec.binary.Base64;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.TestCase;
 
@@ -28,26 +29,26 @@ public class WhenHashing extends TestCase {
     hashAssembler.add(content, content.length);
     Collection<EncodedHash> actual = hashAssembler.get();
 
-    assertEquals("# hashes", 1, actual.size());
+    assertEquals(1, actual.size(), "# hashes");
     EncodedHash encodedHash = actual.iterator()
       .next();
-    assertEquals("Algorithm", EXPECTED_HASH_FUNCTION, encodedHash.getHashFunction());
-    assertEquals("Encoding", "base64", encodedHash.getEncoding());
-    assertArrayEquals("Digest", MessageDigest.getInstance(EXPECTED_HASH_FUNCTION)
-      .digest(content), Base64.decodeBase64(encodedHash.getValue()));
+    assertEquals(EXPECTED_HASH_FUNCTION, encodedHash.getHashFunction(), "Algorithm");
+    assertEquals("base64", encodedHash.getEncoding(), "Encoding");
+    assertArrayEquals(MessageDigest.getInstance(EXPECTED_HASH_FUNCTION).digest(content),
+        Base64.decodeBase64(encodedHash.getValue()), "Digest");
   }
 
   @Test
   public void shouldCountNumberOfHashedBytes() {
     hashAssembler.initialize();
-    assertEquals("Initial size", 0, hashAssembler.numBytesHashed());
+    assertEquals(0, hashAssembler.numBytesHashed(), "Initial size");
 
     byte[] content = randomBytes();
     hashAssembler.add(content, content.length);
-    assertEquals("Size after hashing", content.length, hashAssembler.numBytesHashed());
+    assertEquals(content.length, hashAssembler.numBytesHashed(), "Size after hashing");
 
     hashAssembler.initialize();
-    assertEquals("Size after initializing", 0, hashAssembler.numBytesHashed());
+    assertEquals(0, hashAssembler.numBytesHashed(), "Size after initializing");
   }
 
 }

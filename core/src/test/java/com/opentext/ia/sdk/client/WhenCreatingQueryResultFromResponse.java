@@ -3,9 +3,9 @@
  */
 package com.opentext.ia.sdk.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -14,8 +14,8 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.client.api.QueryResult;
 import com.opentext.ia.sdk.client.impl.QueryResultFactory;
@@ -28,7 +28,7 @@ public class WhenCreatingQueryResultFromResponse {
   private QueryResultFactory factory;
   private RandomData data;
 
-  @Before
+  @BeforeEach
   public void before() {
     factory = new QueryResultFactory();
     data = new RandomData();
@@ -38,7 +38,7 @@ public class WhenCreatingQueryResultFromResponse {
   public void shouldReturnNullIfResponseBodyIsNull() throws IOException {
     Response response = mock(Response.class); // NOPMD mock only
     Runnable closer = mock(Runnable.class);
-    assertNull("Missing query result", factory.create(response, closer));
+    assertNull(factory.create(response, closer), "Missing query result");
     verify(closer).run();
   }
 
@@ -59,11 +59,11 @@ public class WhenCreatingQueryResultFromResponse {
     when(response.getHeaderValue("resultSetQuota", 0)).thenReturn(resultSetQuota);
 
     try (QueryResult result = factory.create(response, () -> { })) {
-      assertTrue("Is cache-out of AIPs ignored", result.isCacheOutAipIgnored());
-      assertEquals("AIP quota", aipQuota, result.getAipQuota());
-      assertEquals("AIU quota", aiuQuota, result.getAiuQuota());
-      assertEquals("# results", resultSetCount, result.getResultSetCount());
-      assertEquals("Result set quota", resultSetQuota, result.getResultSetQuota());
+      assertTrue(result.isCacheOutAipIgnored(), "Is cache-out of AIPs ignored");
+      assertEquals(aipQuota, result.getAipQuota(), "AIP quota");
+      assertEquals(aiuQuota, result.getAiuQuota(), "AIU quota");
+      assertEquals(resultSetCount, result.getResultSetCount(), "# results");
+      assertEquals(resultSetQuota, result.getResultSetQuota(), "Result set quota");
 
       verify(body, never()).close();
       verify(response, never()).close();

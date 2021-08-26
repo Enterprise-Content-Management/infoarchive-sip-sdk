@@ -3,31 +3,32 @@
  */
 package com.opentext.ia.sdk.support.io;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.opentext.ia.test.RandomData;
+import com.opentext.ia.test.TestCase;
 
 
-public class WhenDeletingFile {
+public class WhenDeletingFile extends TestCase {
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir
+  public Path temporaryFolder;
   private final RandomData random = new RandomData();
 
   @Test
   public void shouldRemoveFile() throws IOException {
-    File file = temporaryFolder.newFile();
+    File file = newFile(temporaryFolder);
 
     Delete.file(file);
 
-    assertFalse("File still exists", file.exists());
+    assertFalse(file.exists(), "File still exists");
   }
 
   @Test

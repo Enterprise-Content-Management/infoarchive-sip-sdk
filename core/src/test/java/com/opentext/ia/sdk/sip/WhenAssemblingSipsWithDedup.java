@@ -4,6 +4,7 @@
 package com.opentext.ia.sdk.sip;
 
 import static java.util.Objects.requireNonNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.io.DataBuffer;
 import com.opentext.ia.sdk.support.io.MemoryBuffer;
@@ -63,7 +64,7 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
 
   }
 
-  @Before
+  @BeforeEach
   public void before() {
     buffer = new MemoryBuffer();
     pdiAssembler = new XmlPdiAssembler<TestObject>(URI.create("test"), "objects") {
@@ -189,7 +190,7 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
       .assertContentFileIdenticalTo(OBJECT_ID_4, CONTENT_4);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void withDedupOnRiAndValidationErrorOnDifferentRISameContentShouldThrowException() throws IOException {
     TestObject object1 = object(OBJECT_ID_1);
     TestObject object2 = object(OBJECT_ID_2);
@@ -199,10 +200,10 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
         ContentAssembler.withDedupOnRiAndValidation(contentsExtraction, new SingleHashAssembler(), false, true));
     sipAssembler.start(buffer);
     sipAssembler.add(object1);
-    sipAssembler.add(object2);
+    assertThrows(IllegalStateException.class, () -> sipAssembler.add(object2));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void withDedupOnRiAndValidationErrorOnSameRIDifferentContntShouldThrowException() throws IOException {
     TestObject object1 = object(OBJECT_ID_1);
     TestObject object2 = object(OBJECT_ID_2, OBJECT_ID_1);
@@ -213,7 +214,7 @@ public class WhenAssemblingSipsWithDedup extends XmlTestCase {
     sipAssembler.add(object1);
     // Swap so file1 now references another content
     contentIdToResourceName.put(OBJECT_ID_1, CONTENT_2);
-    sipAssembler.add(object2);
+    assertThrows(IllegalStateException.class, () -> sipAssembler.add(object2));
   }
 
   @Test

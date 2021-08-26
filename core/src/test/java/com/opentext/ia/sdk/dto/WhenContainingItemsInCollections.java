@@ -3,7 +3,8 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.TestCase;
 
@@ -33,13 +34,14 @@ public class WhenContainingItemsInCollections extends TestCase {
 
     collection.setEmbedded(embedded);
 
-    assertSame("Item by name", item1, collection.byName(name1));
+    assertSame(item1, collection.byName(name1), "Item by name");
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldThrowIllegalArgumentExceptionIfEmbeddedListIsMissing() {
     ItemContainer<NamedLinkContainer> collection = new TestItems();
-    collection.setEmbedded(Collections.emptyMap());
+    assertThrows(IllegalArgumentException.class,
+        () -> collection.setEmbedded(Collections.emptyMap()));
   }
 
 

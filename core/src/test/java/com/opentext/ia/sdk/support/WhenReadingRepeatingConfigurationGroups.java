@@ -3,15 +3,21 @@
  */
 package com.opentext.ia.sdk.support;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.test.TestCase;
-
 
 public class WhenReadingRepeatingConfigurationGroups extends TestCase {
 
@@ -23,7 +29,7 @@ public class WhenReadingRepeatingConfigurationGroups extends TestCase {
   private Map<String, String> configuration;
   private final List<String> fields = Arrays.asList(FIELD1, FIELD2, FIELD3);
 
-  @Before
+  @BeforeEach
   public void before() {
     name = randomString();
     configuration = new HashMap<>();
@@ -38,33 +44,34 @@ public class WhenReadingRepeatingConfigurationGroups extends TestCase {
     assertTrue(result.isEmpty());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldThrowIllegalArgumentExceptionIfNullName() {
-    new RepeatingConfigReader(null, fields);
+    assertThrows(IllegalArgumentException.class, () -> new RepeatingConfigReader(null, fields));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldThrowIllegalArgumentExceptionIfBlankName() {
-    new RepeatingConfigReader("", fields);
+    assertThrows(IllegalArgumentException.class, () -> new RepeatingConfigReader("", fields));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldThrowIllegalArgumentExceptionIfNullFields() {
-    new RepeatingConfigReader(name, null);
+    assertThrows(IllegalArgumentException.class, () -> new RepeatingConfigReader(name, null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldThrowIllegalArgumentExceptionIfEmptyFields() {
-    new RepeatingConfigReader(name, Collections.emptyList());
+    assertThrows(IllegalArgumentException.class,
+        () -> new RepeatingConfigReader(name, Collections.emptyList()));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldThrowExceptionIfMismatchedGroup() {
     configuration.put(FIELD1, "one,two");
     configuration.put(FIELD2, "onlyone");
     configuration.put(FIELD3, "1,2");
     RepeatingConfigReader reader = new RepeatingConfigReader(name, fields);
-    reader.read(configuration);
+    assertThrows(IllegalArgumentException.class, () -> reader.read(configuration));
   }
 
   @Test

@@ -3,14 +3,15 @@
  */
 package com.opentext.ia.yaml.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,9 +24,8 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.DumperOptions.LineBreak;
@@ -49,8 +49,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   private static final String DOESN_T_CONTAIN_ADDED_VALUE = "Doesn't contain added value";
   public static final String VALUE_TIME = "time";
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir
+  public Path temporaryFolder;
   private final YamlMap yaml = new YamlMap();
   private final String key = 'k' + someValue();
   private final String value = 'v' + someValue();
@@ -61,17 +61,17 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldStartEmpty() {
-    assertTrue("Not empty", yaml.isEmpty());
-    assertEquals("Size", 0, yaml.size());
-    assertTrue("Value found", yaml.get(someValue()).isEmpty());
+    assertTrue(yaml.isEmpty(), "Not empty");
+    assertEquals(0, yaml.size(), "Size");
+    assertTrue(yaml.get(someValue()).isEmpty(), "Value found");
   }
 
   @Test
   public void shouldBeAbleToAddItems() {
     yaml.put(key, value);
 
-    assertFalse(EMPTY, yaml.isEmpty());
-    assertEquals("Size", 1, yaml.size());
+    assertFalse(yaml.isEmpty(), EMPTY);
+    assertEquals(1, yaml.size(), "Size");
     assertValue();
   }
 
@@ -89,7 +89,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   private void assertValue(Object expected, Value actual) {
     if (!actual.equals(expected)) {
-      assertEquals("Value", expected, actual);
+      assertEquals(expected, actual, "Value");
     }
   }
 
@@ -115,18 +115,18 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldRemoveValue() {
-    assertFalse("Contains non-added value", yaml.containsKey(key));
+    assertFalse(yaml.containsKey(key), "Contains non-added value");
 
     yaml.put(key, value);
-    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(key));
+    assertTrue(yaml.containsKey(key), DOESN_T_CONTAIN_ADDED_VALUE);
 
     yaml.remove(key);
-    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.containsKey(key));
+    assertFalse(yaml.containsKey(key), STILL_CONTAINS_REMOVED_VALUE);
   }
 
   @Test
   public void shouldRemoveValueRecursively() {
-    assertFalse("Contains non-added value", yaml.containsKey(LAST_MODIFIED_DATE_NAME));
+    assertFalse(yaml.containsKey(LAST_MODIFIED_DATE_NAME), "Contains non-added value");
 
     Map<String, Object> child = new HashMap<>();
     child.put(LAST_MODIFIED_DATE_NAME, VALUE_TIME);
@@ -134,21 +134,23 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put(NESTED_ITEM_NAME, child);
     yaml.put(LAST_MODIFIED_DATE_NAME, VALUE_TIME);
 
-    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(NESTED_ITEM_NAME));
-    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(LAST_MODIFIED_DATE_NAME));
-    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.get(NESTED_ITEM_NAME).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
+    assertTrue(yaml.containsKey(NESTED_ITEM_NAME), DOESN_T_CONTAIN_ADDED_VALUE);
+    assertTrue(yaml.containsKey(LAST_MODIFIED_DATE_NAME), DOESN_T_CONTAIN_ADDED_VALUE);
+    assertTrue(yaml.get(NESTED_ITEM_NAME).toMap().containsKey(LAST_MODIFIED_DATE_NAME),
+        DOESN_T_CONTAIN_ADDED_VALUE);
 
     yaml.removeRecursively(LAST_MODIFIED_DATE_NAME);
-    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.containsKey(LAST_MODIFIED_DATE_NAME));
-    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.get(NESTED_ITEM_NAME).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
+    assertFalse(yaml.containsKey(LAST_MODIFIED_DATE_NAME), STILL_CONTAINS_REMOVED_VALUE);
+    assertTrue(yaml.get(NESTED_ITEM_NAME).toMap().containsKey(LAST_MODIFIED_DATE_NAME),
+        DOESN_T_CONTAIN_ADDED_VALUE);
 
     yaml.removeRecursively("nestedItem");
-    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.containsKey(NESTED_ITEM_NAME));
+    assertFalse(yaml.containsKey(NESTED_ITEM_NAME), STILL_CONTAINS_REMOVED_VALUE);
   }
 
   @Test
   public void shouldRemoveValueRecursivelyOnlyFromParents() {
-    assertFalse("Contains non-added value", yaml.containsKey(LAST_MODIFIED_DATE_NAME));
+    assertFalse(yaml.containsKey(LAST_MODIFIED_DATE_NAME), "Contains non-added value");
 
     final String nestedItem1 = NESTED_ITEM_NAME + "_1";
     final String nestedItem2 = NESTED_ITEM_NAME + "_2";
@@ -163,20 +165,24 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
     yaml.put(LAST_MODIFIED_DATE_NAME, VALUE_TIME);
 
-    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(nestedItem1));
-    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(nestedItem2));
-    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.containsKey(LAST_MODIFIED_DATE_NAME));
-    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.get(nestedItem1).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
-    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.get(nestedItem2).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
+    assertTrue(yaml.containsKey(nestedItem1), DOESN_T_CONTAIN_ADDED_VALUE);
+    assertTrue(yaml.containsKey(nestedItem2), DOESN_T_CONTAIN_ADDED_VALUE);
+    assertTrue(yaml.containsKey(LAST_MODIFIED_DATE_NAME), DOESN_T_CONTAIN_ADDED_VALUE);
+    assertTrue(yaml.get(nestedItem1).toMap().containsKey(LAST_MODIFIED_DATE_NAME),
+        DOESN_T_CONTAIN_ADDED_VALUE);
+    assertTrue(yaml.get(nestedItem2).toMap().containsKey(LAST_MODIFIED_DATE_NAME),
+        DOESN_T_CONTAIN_ADDED_VALUE);
 
     yaml.removeRecursively(LAST_MODIFIED_DATE_NAME, Collections.singletonList(nestedItem2));
 
-    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.containsKey(LAST_MODIFIED_DATE_NAME));
-    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.get(nestedItem2).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
-    assertTrue(DOESN_T_CONTAIN_ADDED_VALUE, yaml.get(nestedItem1).toMap().containsKey(LAST_MODIFIED_DATE_NAME));
+    assertFalse(yaml.containsKey(LAST_MODIFIED_DATE_NAME), STILL_CONTAINS_REMOVED_VALUE);
+    assertFalse(yaml.get(nestedItem2).toMap().containsKey(LAST_MODIFIED_DATE_NAME),
+        STILL_CONTAINS_REMOVED_VALUE);
+    assertTrue(yaml.get(nestedItem1).toMap().containsKey(LAST_MODIFIED_DATE_NAME),
+        DOESN_T_CONTAIN_ADDED_VALUE);
 
     yaml.removeRecursively(nestedItem2);
-    assertFalse(STILL_CONTAINS_REMOVED_VALUE, yaml.containsKey(nestedItem2));
+    assertFalse(yaml.containsKey(nestedItem2), STILL_CONTAINS_REMOVED_VALUE);
   }
 
   @Test
@@ -197,10 +203,10 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put(key1, value1);
     yaml.put(key2, value2);
 
-    assertEquals("Keys", key2 + ',' + key1,
-        yaml.entries().sorted().map(Entry::getKey).collect(Collectors.joining(",")));
-    assertEquals("Values", value2 + ',' + value1, yaml.entries().sorted().map(Entry::getValue)
-        .map(Value::toString).collect(Collectors.joining(",")));
+    assertEquals(key2 + ',' + key1,
+        yaml.entries().sorted().map(Entry::getKey).collect(Collectors.joining(",")), "Keys");
+    assertEquals(value2 + ',' + value1, yaml.entries().sorted().map(Entry::getValue)
+        .map(Value::toString).collect(Collectors.joining(",")), "Values");
   }
 
   @Test
@@ -210,27 +216,27 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
     YamlMap nestedObject = yaml.entries().map(Entry::toMap).findFirst().get();
 
-    assertEquals("Name", name, nestedObject.get(NAME).toString());
-    assertEquals("Property", value, nestedObject.get(key).toString());
+    assertEquals(name, nestedObject.get(NAME).toString(), "Name");
+    assertEquals(value, nestedObject.get(key).toString(), "Property");
   }
 
   @Test
   public void shouldCheckWhetherValueExists() {
     yaml.put(key, null);
-    assertTrue("Null value", yaml.get(key).isEmpty());
+    assertTrue(yaml.get(key).isEmpty(), "Null value");
 
     yaml.put(key, value);
-    assertFalse("Still null value", yaml.get(key).isEmpty());
+    assertFalse(yaml.get(key).isEmpty(), "Still null value");
   }
 
   @Test
   public void shouldConvertValueToMap() {
     yaml.put(key, value);
-    assertFalse("String is a map", yaml.get(key).isMap());
+    assertFalse(yaml.get(key).isMap(), "String is a map");
 
     yaml.put(key, new YamlMap().put(key, value));
     Value v = yaml.get(key);
-    assertTrue("Map is not a map", v.isMap());
+    assertTrue(v.isMap(), "Map is not a map");
     YamlMap map = v.toMap();
     assertValue(value, map);
 
@@ -241,14 +247,14 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldConvertValueToList() {
-    assertTrue("Empty by default", yaml.get(key).toList().isEmpty());
+    assertTrue(yaml.get(key).toList().isEmpty(), "Empty by default");
     yaml.put(key, value);
-    assertFalse("String is a list", yaml.get(key).isList());
+    assertFalse(yaml.get(key).isList(), "String is a list");
 
     String value2 = someValue();
     yaml.put(key, Arrays.asList(value, value2));
     Value v = yaml.get(key);
-    assertTrue("List is not a list", v.isList());
+    assertTrue(v.isList(), "List is not a list");
     List<Value> values = v.toList();
     assertValue(value, values.get(0));
     assertValue(value2, values.get(1));
@@ -256,63 +262,63 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldConvertValueToBoolean() {
-    assertFalse(EMPTY, yaml.get(key).toBoolean());
+    assertFalse(yaml.get(key).toBoolean(), EMPTY);
 
     yaml.put(key, Boolean.TRUE);
-    assertTrue("Boolean", yaml.get(key).toBoolean());
+    assertTrue(yaml.get(key).toBoolean(), "Boolean");
 
     yaml.put(key, Boolean.toString(true));
-    assertTrue("Boolean string", yaml.get(key).toBoolean());
+    assertTrue(yaml.get(key).toBoolean(), "Boolean string");
   }
 
   @Test
   public void shouldConvertValueToInt() {
-    assertEquals(EMPTY, 0, yaml.get(key).toInt());
+    assertEquals(0, yaml.get(key).toInt(), EMPTY);
 
     yaml.put(key, 42);
-    assertEquals("Int", 42, yaml.get(key).toInt());
+    assertEquals(42, yaml.get(key).toInt(), "Int");
 
     yaml.put(key, Integer.toString(313));
-    assertEquals("Integer string", 313, yaml.get(key).toInt());
+    assertEquals(313, yaml.get(key).toInt(), "Integer string");
   }
 
   @Test
   public void shouldConvertValueToDouble() {
-    assertEquals(EMPTY, 0.0, yaml.get(key).toDouble(), 1e-6);
+    assertEquals(0.0, yaml.get(key).toDouble(), 1e-6, EMPTY);
 
     yaml.put(key, Math.PI);
-    assertEquals("Double", Math.PI, yaml.get(key).toDouble(), 1e-6);
+    assertEquals(Math.PI, yaml.get(key).toDouble(), 1e-6, "Double");
 
     yaml.put(key, Double.toString(Math.E));
-    assertEquals("Double string", Math.E, yaml.get(key).toDouble(), 1e-6);
+    assertEquals(Math.E, yaml.get(key).toDouble(), 1e-6, "Double string");
   }
 
   @Test
   public void shouldTestForScalarValue() {
-    assertFalse(EMPTY, new Value(null).isScalar());
-    assertFalse("List", new Value(Collections.singletonList(randomString())).isScalar());
-    assertFalse("Map",
-        new Value(Collections.singletonMap(randomString(), randomString())).isScalar());
+    assertFalse(new Value(null).isScalar(), EMPTY);
+    assertFalse(new Value(Collections.singletonList(randomString())).isScalar(), "List");
+    assertFalse(new Value(Collections.singletonMap(randomString(), randomString())).isScalar(),
+        "Map");
 
-    assertTrue("Boolean", new Value(Boolean.TRUE).isScalar());
-    assertTrue("String", new Value(randomString()).isScalar());
-    assertTrue("Int", new Value(313).isScalar());
-    assertTrue("Double", new Value(Math.PI).isScalar());
+    assertTrue(new Value(Boolean.TRUE).isScalar(), "Boolean");
+    assertTrue(new Value(randomString()).isScalar(), "String");
+    assertTrue(new Value(313).isScalar(), "Int");
+    assertTrue(new Value(Math.PI).isScalar(), "Double");
   }
 
   @Test
   public void shouldSerializeToAndDeserializeFromString() {
-    assertToString("toString", YamlMap.from(SAMPLE_YAML_STRING), SAMPLE_YAML_STRING);
+    assertToString(YamlMap.from(SAMPLE_YAML_STRING), SAMPLE_YAML_STRING, "toString");
   }
 
-  private void assertToString(String message, YamlMap actual, String format, Object... args) {
+  private void assertToString(YamlMap actual, String format, String message, Object... args) {
     assertAsString(message, actual, String.format(format, args));
   }
 
   private void assertAsString(String message, YamlMap actual, String expected) {
     String actualStr = actual.toString();
-    assertEquals(message, expected, actualStr);
-    assertEquals(message + " - parsed", expected, YamlMap.from(actualStr).toString());
+    assertEquals(expected, actualStr, message);
+    assertEquals(expected, YamlMap.from(actualStr).toString(), message + " - parsed");
   }
 
   private void assertToString(String message, YamlMap map) {
@@ -343,62 +349,63 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   @Test
   public void shouldSerializeBetterThanSnakeYaml() {
-    assertToString("Empty collection", new YamlMap().put("zuul", Collections.emptyList()),
-        "zuul: [ ]%n");
-    assertToString("Empty map", new YamlMap(), "{ }%n");
-    assertToString("Starting with quote", new YamlMap().put("foo", "'bar"), "foo: \"'bar\"%n");
-    assertToString("Starting with quote, containing double quote",
-        new YamlMap().put("qq", "'qwe\"rty"), "qq: \"'qwe\\\"rty\"%n");
-    assertToString("Containing tab", new YamlMap().put("tab", "b\tar"), "tab: b  ar%n");
-    assertToString("New lines",
-        new YamlMap().put("gnat",
-            new YamlMap().put("spam", "ham\neggs").put("spam2",
-                Arrays.asList("ham2\reggs2", "yuck\n\rpuck"))),
-        "gnat:%n  spam: |%n    ham%n    eggs%n  spam2:%n  - |%n    ham2%n    eggs2%n  - |%n    yuck%n    puck%n");
-    assertToString("Nested maps and sequences with long text",
-        new YamlMap().put("databases",
-            Collections.singletonList(new YamlMap().put(NAME, "db").put("metadata",
-                Collections.singletonList(new YamlMap().put("text", "<foo>\n  <bar/>\n</foo>\n"))))),
-        "databases:%n- name: db%n  metadata:%n  - text: |%n      <foo>%n        <bar/>%n      </foo>%n");
+    assertToString(new YamlMap().put("zuul", Collections.emptyList()), "zuul: [ ]%n",
+        "Empty collection");
+    assertToString(new YamlMap(), "{ }%n", "Empty map");
+    assertToString(new YamlMap().put("foo", "'bar"), "foo: \"'bar\"%n", "Starting with quote");
+    assertToString(new YamlMap().put("qq", "'qwe\"rty"),
+        "qq: \"'qwe\\\"rty\"%n", "Starting with quote, containing double quote");
+    assertToString(new YamlMap().put("tab", "b\tar"), "tab: b  ar%n", "Containing tab");
+    assertToString(new YamlMap().put("gnat",
+        new YamlMap().put("spam", "ham\neggs").put("spam2",
+            Arrays.asList("ham2\reggs2", "yuck\n\rpuck"))),
+        "gnat:%n  spam: |%n    ham%n    eggs%n  spam2:%n  - |%n    ham2%n    eggs2%n  - |%n    yuck%n    puck%n",
+        "New lines");
+    assertToString(new YamlMap().put("databases",
+        Collections.singletonList(new YamlMap().put(NAME, "db").put("metadata",
+            Collections.singletonList(new YamlMap().put("text", "<foo>\n  <bar/>\n</foo>\n"))))),
+        "databases:%n- name: db%n  metadata:%n  - text: |%n      <foo>%n        <bar/>%n      </foo>%n",
+        "Nested maps and sequences with long text");
     // Want to be as good as snakeyaml 1.18, but 1.17 is different
-    assertToString("Long text", new YamlMap().put("qbf",
+    assertToString(new YamlMap().put("qbf",
         "Ex qui quidam postulant. Diam delicatissimi ut ius, eu quo autem putent conclusionemque, te volutpat "
             + "democritum sea. Ad est amet integre adipisci, quo id quis vituperata. In modo labitur disputationi sit. Eu "
             + "quo dolores pertinax theophrastus, usu quidam feugiat adipiscing ei. Usu graece gloriatur at, quo brute "
-            + "altera gloriatur in, mea elitr primis invidunt ut."),
-        "qbf: Ex qui quidam postulant. Diam delicatissimi ut ius, eu quo autem putent conclusionemque,%n"
-            + "  te volutpat democritum sea. Ad est amet integre adipisci, quo id quis vituperata.%n"
-            + "  In modo labitur disputationi sit. Eu quo dolores pertinax theophrastus, usu quidam%n"
-            + "  feugiat adipiscing ei. Usu graece gloriatur at, quo brute altera gloriatur in, mea%n"
-            + "  elitr primis invidunt ut.%n");
+            + "altera gloriatur in, mea elitr primis invidunt ut."), "qbf: Ex qui quidam postulant. Diam delicatissimi ut ius, eu quo autem putent conclusionemque,%n"
+        + "  te volutpat democritum sea. Ad est amet integre adipisci, quo id quis vituperata.%n"
+        + "  In modo labitur disputationi sit. Eu quo dolores pertinax theophrastus, usu quidam%n"
+        + "  feugiat adipiscing ei. Usu graece gloriatur at, quo brute altera gloriatur in, mea%n"
+        + "  elitr primis invidunt ut.%n",
+        "Long text");
   }
 
   @Test
   public void shouldLoadYamlFromFile() throws IOException {
-    File yamlFile = temporaryFolder.newFile();
+    File yamlFile = newFile(temporaryFolder);
     try (PrintWriter writer = new PrintWriter(yamlFile, StandardCharsets.UTF_8.name())) {
       writer.print(SAMPLE_YAML_STRING);
     }
 
-    assertEquals("YAML from file", SAMPLE_YAML_STRING, YamlMap.from(yamlFile).toString());
+    assertEquals(SAMPLE_YAML_STRING, YamlMap.from(yamlFile).toString(), "YAML from file");
   }
 
   @Test
   public void shouldReturnEmptyMapWhenLoadingFromNonExistingFile() throws IOException {
-    File nonExistingFile = temporaryFolder.newFile();
+    File nonExistingFile = newFile(temporaryFolder);
 
     if (!nonExistingFile.delete()) {
       throw new IllegalStateException("Could not delete " + nonExistingFile.getAbsolutePath());
     }
 
-    assertTrue("YAML loaded from non-existing file is not empty",
-        YamlMap.from(nonExistingFile).isEmpty());
+    assertTrue(YamlMap.from(nonExistingFile).isEmpty(),
+        "YAML loaded from non-existing file is not empty");
   }
 
   @Test
   public void shouldSerializeToStream() throws IOException {
-    assertEquals("YAML from stream", SAMPLE_YAML_STRING,
-        IOUtils.toString(YamlMap.from(SAMPLE_YAML_STRING).toStream(), StandardCharsets.UTF_8));
+    assertEquals(SAMPLE_YAML_STRING,
+        IOUtils.toString(YamlMap.from(SAMPLE_YAML_STRING).toStream(), StandardCharsets.UTF_8),
+        "YAML from stream");
   }
 
   @Test
@@ -408,8 +415,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
     values.remove(0);
 
-    assertTrue("Sequence should be empty after removing only item",
-        yaml.get(key).toList().isEmpty());
+    assertTrue(yaml.get(key).toList().isEmpty(),
+        "Sequence should be empty after removing only item");
   }
 
   @Test
@@ -418,15 +425,15 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     yaml.put(key, Arrays.asList(value, value2));
 
     ListIterator<Value> iterator = yaml.get(key).toList().listIterator();
-    assertEquals("Item #1", value, iterator.next().toString());
+    assertEquals(value, iterator.next().toString(), "Item #1");
 
     iterator.remove();
-    assertEquals("Item after remove", value2, iterator.next().toString());
+    assertEquals(value2, iterator.next().toString(), "Item after remove");
 
-    assertEquals("Previous item", value2, iterator.previous().toString());
+    assertEquals(value2, iterator.previous().toString(), "Previous item");
 
     iterator.remove();
-    assertTrue("List should be empty after removing all values", yaml.get(key).toList().isEmpty());
+    assertTrue(yaml.get(key).toList().isEmpty(), "List should be empty after removing all values");
   }
 
   @Test
@@ -442,7 +449,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   private void assertYaml(String expected, YamlMap actual) {
-    assertEquals("YAML", String.format(expected), actual.toString());
+    assertEquals(String.format(expected), actual.toString(), "YAML");
   }
 
   @Test
@@ -542,8 +549,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
       }
     });
 
-    TestUtil.assertEquals("Visited paths", Arrays.asList("/", "/aardvark/0", "/aardvark/0/dog",
-        "@/aardvark/0/dog", "@/aardvark/0", "/aardvark/1", "@/aardvark/1", "@/"), visitedPaths);
+    TestUtil.assertEquals(Arrays.asList("/", "/aardvark/0", "/aardvark/0/dog", "@/aardvark/0/dog",
+        "@/aardvark/0", "/aardvark/1", "@/aardvark/1", "@/"), visitedPaths, "Visited paths");
   }
 
   @Test
@@ -554,7 +561,7 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   private void assertValue(String expected, Value actual) {
-    assertEquals("Value", expected, actual.toString());
+    assertEquals(expected, actual.toString(), "Value");
   }
 
   @Test
@@ -604,8 +611,9 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
   }
 
   private void assertStringField(String fieldName, String fieldValue) {
-    assertEquals(fieldValue, String.class,
-        YamlMap.from(fieldName + SEMICOLON + fieldValue).getRawData().get(fieldName).getClass());
+    assertEquals(String.class,
+        YamlMap.from(fieldName + SEMICOLON + fieldValue).getRawData().get(fieldName).getClass(),
+        fieldValue);
   }
 
   @Test
@@ -620,7 +628,8 @@ public class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
 
   private void assertFieldTypeAfterDeserialization(Class<?> fieldType, String fieldValue) {
     String serializedYaml = new YamlMap().put(NAME, fieldValue).toString();
-    assertEquals(fieldValue, fieldType, YamlMap.from(serializedYaml).getRawData().get(NAME).getClass());
+    assertEquals(fieldType, YamlMap.from(serializedYaml).getRawData().get(NAME).getClass(),
+        fieldValue);
   }
 
   @Test

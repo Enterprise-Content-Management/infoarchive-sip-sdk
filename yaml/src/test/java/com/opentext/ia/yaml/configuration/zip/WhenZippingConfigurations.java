@@ -4,9 +4,9 @@
 package com.opentext.ia.yaml.configuration.zip;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,10 +29,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.opentext.ia.test.TestCase;
 import com.opentext.ia.yaml.core.YamlMap;
@@ -47,14 +47,14 @@ public class WhenZippingConfigurations extends TestCase {
   private static final String RESOURCE = "resource";
   private static final String INCLUDES = "includes";
 
-  @Rule
-  public TemporaryFolder tempFolder = new TemporaryFolder();
+  @TempDir
+  public Path tempFolder;
   private File folder;
   private File yaml;
 
-  @Before
+  @BeforeEach
   public void init() throws IOException {
-    folder = tempFolder.newFolder();
+    folder = newFolder(tempFolder);
   }
 
   @Test
@@ -63,7 +63,7 @@ public class WhenZippingConfigurations extends TestCase {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntry("Missing configuration file", CONFIGURATION_FILE_NAME::equals, zipEntries);
+    assertZipEntry(CONFIGURATION_FILE_NAME::equals, zipEntries, "Missing configuration file");
   }
 
   private File yamlFileContaining(YamlMap content) throws IOException {
@@ -96,10 +96,10 @@ public class WhenZippingConfigurations extends TestCase {
     return new RandomAccessZipFile(ZipConfiguration.of(yaml, new File(EMPTY)));
   }
 
-  private void assertZipEntry(String message, Predicate<String> expected,
-      Map<String, InputStream> actual) {
+  private void assertZipEntry(Predicate<String> expected, Map<String, InputStream> actual,
+      String message) {
     Set<String> keys = actual.keySet();
-    assertTrue(message + ":\n" + keys, keys.stream().anyMatch(expected));
+    assertTrue(keys.stream().anyMatch(expected), message + ":\n" + keys);
   }
 
   @Test
@@ -109,7 +109,7 @@ public class WhenZippingConfigurations extends TestCase {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntry("Missing external resource", resource.getName()::equals, zipEntries);
+    assertZipEntry(resource.getName()::equals, zipEntries, "Missing external resource");
   }
 
   private File yamlFileReferencingResource(File resource) throws IOException {
@@ -124,7 +124,7 @@ public class WhenZippingConfigurations extends TestCase {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntry("Missing included YAML file", includedYaml.getName()::equals, zipEntries);
+    assertZipEntry(includedYaml.getName()::equals, zipEntries, "Missing included YAML file");
   }
 
   private YamlMap someYaml() {
@@ -147,12 +147,12 @@ public class WhenZippingConfigurations extends TestCase {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntry("Missing properties file", properties.getName()::equals, zipEntries);
+    assertZipEntry(properties.getName()::equals, zipEntries, "Missing properties file");
   }
 
-  @Test(expected = EmptyZipException.class)
+  @Test
   public void shouldNotAllowEmptyZip() throws IOException {
-    zipYaml();
+    assertThrows(EmptyZipException.class, () -> zipYaml());
   }
 
   @Test
@@ -165,7 +165,7 @@ public class WhenZippingConfigurations extends TestCase {
   @Test
   public void shouldAvoidNameConflictsWhenIncludingFilesOutsideTheDirectoryTree()
       throws IOException {
-    File otherFolder = tempFolder.newFolder();
+    File otherFolder = newFolder(tempFolder);
     File includedFile1 = newFile(otherFolder, INCLUDED_RESOURCE_NAME, "foo");
     File includedFile2 = newFile(new File(otherFolder, "subfolder"), INCLUDED_RESOURCE_NAME, "bar");
     File includedYaml = newFile(otherFolder, "include.yml",
@@ -177,17 +177,17 @@ public class WhenZippingConfigurations extends TestCase {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntry("Missing included YAML file", expectedYamlName::equals, zipEntries);
-    assertZipEntry("Missing included text file #1", expectedFileName1::equals, zipEntries);
-    assertZipEntry("Missing included text file #2", expectedFileName2::equals, zipEntries);
+    assertZipEntry(expectedYamlName::equals, zipEntries, "Missing included YAML file");
+    assertZipEntry(expectedFileName1::equals, zipEntries, "Missing included text file #1");
+    assertZipEntry(expectedFileName2::equals, zipEntries, "Missing included text file #2");
     YamlMap zipped = YamlMap.from(zipEntries.get(CONFIGURATION_FILE_NAME));
-    assertEquals("Included file", expectedYamlName, zipped.get(INCLUDES, 0).toString());
+    assertEquals(expectedYamlName, zipped.get(INCLUDES, 0).toString(), "Included file");
   }
 
   @Test
   public void shouldPutExternalIncludedYamlNearTheParentWhenSeveralLevelsOfNesting()
       throws IOException {
-    File externalFolder = tempFolder.newFolder();
+    File externalFolder = newFolder(tempFolder);
     File externalFile1 = newFile(externalFolder, INCLUDED_RESOURCE_NAME, "foo");
     File externalFile2 = newFile(new File(externalFolder, "subfolder"), INCLUDED_RESOURCE_NAME, "bar");
     File includedExternalYaml = newFile(externalFolder, "included.yml",
@@ -208,14 +208,14 @@ public class WhenZippingConfigurations extends TestCase {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntry("Missing main YAML file", mainYmlFileName::equals, zipEntries);
-    assertZipEntry("Missing included text file #1", expectedFileName1::equals, zipEntries);
-    assertZipEntry("Missing included text file #2", expectedFileName2::equals, zipEntries);
-    assertZipEntry("Missing included YAML file", includeNestedPath::equals, zipEntries);
-    assertZipEntry("Missing included external YAML file",
-        (subfolderName + expectedYamlName)::equals, zipEntries);
+    assertZipEntry(mainYmlFileName::equals, zipEntries, "Missing main YAML file");
+    assertZipEntry(expectedFileName1::equals, zipEntries, "Missing included text file #1");
+    assertZipEntry(expectedFileName2::equals, zipEntries, "Missing included text file #2");
+    assertZipEntry(includeNestedPath::equals, zipEntries, "Missing included YAML file");
+    assertZipEntry((subfolderName + expectedYamlName)::equals,
+        zipEntries, "Missing included external YAML file");
     YamlMap zipped = YamlMap.from(zipEntries.get(mainYmlFileName));
-    assertEquals("Included file", includeNestedPath, zipped.get(INCLUDES, 0).toString());
+    assertEquals(includeNestedPath, zipped.get(INCLUDES, 0).toString(), "Included file");
   }
 
 
@@ -236,16 +236,16 @@ public class WhenZippingConfigurations extends TestCase {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntry("Missing resource #1", resource1.getName()::equals, zipEntries);
-    assertZipEntry("Missing resource #2", resource2.getName()::equals, zipEntries);
+    assertZipEntry(resource1.getName()::equals, zipEntries, "Missing resource #1");
+    assertZipEntry(resource2.getName()::equals, zipEntries, "Missing resource #2");
 
     YamlMap configuration = YamlMap.from(zipEntries.get(CONFIGURATION_FILE_NAME));
-    assertEquals("Pattern", pattern, configuration.get(key, CONTENT, RESOURCE).toString());
+    assertEquals(pattern, configuration.get(key, CONTENT, RESOURCE).toString(), "Pattern");
   }
 
   @Test
   public void shouldAddReferencedResourcesUsingWildcardsInIncludedYamlFiles() throws IOException {
-    File subFolder = tempFolder.newFolder("include");
+    File subFolder = newFolder(tempFolder, "include");
     String extension = '.' + randomString(3);
     File resource1 = newFile(subFolder, "resource1" + extension, randomString(13));
     File resource2 = newFile(subFolder, "resource2" + extension, randomString(13));
@@ -261,14 +261,14 @@ public class WhenZippingConfigurations extends TestCase {
     File included = newFile(subFolder, CONFIGURATION_FILE_NAME, includedYaml.toString());
     YamlMap configuration = new YamlMap().put(INCLUDES,
         Collections.singletonList(String.format("%s/%s", subFolder.getName(), included.getName())));
-    yaml = tempFolder.newFile(CONFIGURATION_FILE_NAME);
+    yaml = Files.createFile(tempFolder.resolve(CONFIGURATION_FILE_NAME)).toFile();
     setContent(yaml, configuration.toString());
 
     Map<String, InputStream> zipEntries = zipYaml();
 
     Arrays.asList(resource1, resource2, resource3).forEach(file -> {
       String path = String.format("%s/%s", subFolder.getName(), file.getName());
-      assertZipEntry("Missing resource", path::equals, zipEntries);
+      assertZipEntry(path::equals, zipEntries, "Missing resource");
     });
   }
 
@@ -284,8 +284,8 @@ public class WhenZippingConfigurations extends TestCase {
 
     Map<String, InputStream> zipEntries = zipYaml();
 
-    assertZipEntry("Resource not included: " + resourceFileName,
-        resourceFileName::equals, zipEntries);
+    assertZipEntry(resourceFileName::equals,
+        zipEntries, "Resource not included: " + resourceFileName);
   }
 
   @Test
@@ -295,15 +295,15 @@ public class WhenZippingConfigurations extends TestCase {
 
     YamlMap map = YamlMap.from(zip.get(CONFIGURATION_FILE_NAME));
     String zipEntry = map.get(INCLUDES, 0).toString();
-    assertTrue("Missing root include: " + zipEntry, zip.containsKey(zipEntry));
+    assertTrue(zip.containsKey(zipEntry), "Missing root include: " + zipEntry);
 
     map = YamlMap.from(zip.get(zipEntry));
     zipEntry = map.get(INCLUDES, 0).toString();
-    assertTrue("Missing external include: " + zipEntry, zip.containsKey(zipEntry));
+    assertTrue(zip.containsKey(zipEntry), "Missing external include: " + zipEntry);
 
     map = YamlMap.from(zip.get(zipEntry));
     zipEntry = map.get("pdiSchema", "content", "resource").toString();
-    assertTrue("Missing external resource: " + zipEntry, zip.containsKey(zipEntry));
+    assertTrue(zip.containsKey(zipEntry), "Missing external resource: " + zipEntry);
 
     assertEquals(zip.entrySet().stream().map(it -> it.getKey()).collect(Collectors.toSet()),
             new HashSet<String>(Arrays.asList("0-configuration.yml",
@@ -323,26 +323,26 @@ public class WhenZippingConfigurations extends TestCase {
 
     Map<String, InputStream> zip = new RandomAccessZipFile(
         ZipConfiguration.of(dir, ZipCustomization.builder().init((names, contentSupplier) -> {
-          assertTrue("Missing " + CONFIGURATION_FILE_NAME, names.contains(CONFIGURATION_FILE_NAME));
-          assertTrue("Missing " + CONFIGURATION_PROPERTIES,
-              names.contains(CONFIGURATION_PROPERTIES));
+          assertTrue(names.contains(CONFIGURATION_FILE_NAME), "Missing " + CONFIGURATION_FILE_NAME);
+          assertTrue(names.contains(CONFIGURATION_PROPERTIES),
+              "Missing " + CONFIGURATION_PROPERTIES);
           initialized.set(true);
         }).properties((name, properties) -> properties.setProperty(key, value))
             .yaml((name, map) -> map.put("version", version))
             .extra(() -> ExtraZipEntry.of(entryName, entryContent)).build(), new File[0]));
 
-    assertTrue("Not initialized", initialized.get());
+    assertTrue(initialized.get(), "Not initialized");
 
     Properties properties = new Properties();
     properties.load(zip.get(CONFIGURATION_PROPERTIES));
-    assertEquals("Value", value, properties.getProperty(key));
+    assertEquals(value, properties.getProperty(key), "Value");
 
-    assertEquals("Version", version,
-        YamlMap.from(zip.get(CONFIGURATION_FILE_NAME)).get("version").toString());
+    assertEquals(version, YamlMap.from(zip.get(CONFIGURATION_FILE_NAME)).get("version").toString(),
+        "Version");
 
-    assertTrue("Missing extra content", zip.containsKey(entryName));
-    assertEquals("Extra content", entryContent,
-        IOUtils.toString(zip.get(entryName), StandardCharsets.UTF_8));
+    assertTrue(zip.containsKey(entryName), "Missing extra content");
+    assertEquals(entryContent, IOUtils.toString(zip.get(entryName), StandardCharsets.UTF_8),
+        "Extra content");
   }
 
   @Test
@@ -355,7 +355,8 @@ public class WhenZippingConfigurations extends TestCase {
     File result = new File("build/dir with space/configuration.yml").getCanonicalFile();
     File includeFile = new File(result.getParentFile(), "sub/configuration.yml").getCanonicalFile();
     if (!includeFile.getParentFile().exists()) {
-      assertTrue("Failed to create directory: " + includeFile.getParent(), includeFile.getParentFile().mkdirs());
+      assertTrue(includeFile.getParentFile().mkdirs(),
+          "Failed to create directory: " + includeFile.getParent());
     }
     save(someConfiguration(), includeFile);
     save(configurationWithIncludes(includeFile), result);

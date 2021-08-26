@@ -3,10 +3,10 @@
  */
 package com.opentext.ia.sdk.dto;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class WhenFetchingIngestionResponse {
@@ -14,7 +14,7 @@ public class WhenFetchingIngestionResponse {
   // private final TestIngestionResponse ingestionResponse = new TestIngestionResponse();
   private final IngestionResponse ingestionResponse = new IngestionResponse();
 
-  @Before
+  @BeforeEach
   public void init() {
     ingestionResponse.setName("TestApplication");
     ingestionResponse.setAipId("TestID");
@@ -22,12 +22,12 @@ public class WhenFetchingIngestionResponse {
 
   @Test
   public void fetchName() {
-    assertEquals("Resource Name", "TestApplication", ingestionResponse.getName());
+    assertEquals("TestApplication", ingestionResponse.getName(), "Resource Name");
   }
 
   @Test
   public void fetchAipID() {
-    assertEquals("AipId", "TestID", ingestionResponse.getAipId());
+    assertEquals("TestID", ingestionResponse.getAipId(), "AipId");
   }
 
 }
