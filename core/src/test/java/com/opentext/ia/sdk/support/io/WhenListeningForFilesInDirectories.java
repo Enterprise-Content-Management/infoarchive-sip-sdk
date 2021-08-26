@@ -55,7 +55,7 @@ class WhenListeningForFilesInDirectories extends TestCase {
     Set<File> reportedFiles = new TreeSet<>(fileComparator());
     int numExpectedFiles = expected.length;
     await()
-        .atMost(500, TimeUnit.MILLISECONDS)
+        .atMost(1000, TimeUnit.MILLISECONDS)
         .with().pollInterval(10, TimeUnit.MILLISECONDS)
         .until(() -> updateReportedFiles(listener, reportedFiles), hasSize(numExpectedFiles));
     TestUtil.assertEquals(toSet(expected), updateReportedFiles(listener, reportedFiles),
