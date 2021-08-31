@@ -152,7 +152,7 @@ subprojects {
     pmd {
       ruleSets = []
       ruleSetFiles = rootProject.files('config/pmd.xml')
-      toolVersion = '6.37.0'
+      toolVersion = '6.38.0'
       ignoreFailures = false
     }
   
