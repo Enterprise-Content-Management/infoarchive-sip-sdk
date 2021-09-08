@@ -1,4 +1,20 @@
 ext.publishProjects = subprojects.findAll { it.name.startsWith('infoarchive-') }
+  
+// Set nexusUsername/nexusPassword or sonatypeUsername/sonatypePassword
+// in ~/.gradle/gradle.properties or specify on command line using -P
+nexusPublishing {
+  repositories {
+    sonatype {
+      if (project.hasProperty('nexusUsername')) {
+        username = nexusUsername
+      }
+      if (project.hasProperty('nexusPassword')) {
+        username = nexusPassword
+      }
+      stagingProfileId = 'a74884fea6f3c'
+    }
+  }
+}
 
 configure(publishProjects) {
   apply plugin: 'maven-publish'
@@ -9,7 +25,7 @@ configure(publishProjects) {
     from javadoc
     classifier 'javadoc'
   }
-    
+
   task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     classifier 'sources'
@@ -33,29 +49,13 @@ configure(publishProjects) {
   -Dpackaging=jar""".execute()
     }
   }
-  
-  // Set nexusUsername/Password in ~/.gradle/gradle.properties or specify on command line using -P
-  ext {
-    ossrhUsername = project.hasProperty('nexusUsername') ? nexusUsername : ''
-    ossrhPassword = project.hasProperty('nexusPassword') ? nexusPassword : ''
-  }
-  
+
   publishing {
-    repositories {
-      maven {
-        def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-        def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
-        url = project.version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-  
-        credentials {
-          username = ossrhUsername
-          password = ossrhPassword
-        }
-      }
-    }
-  
     publications {
       mavenJava(MavenPublication) {
+        artifact jar
+        artifact sourcesJar
+        artifact javadocJar
         groupId = project.group
         artifactId = project.name
 
@@ -89,8 +89,8 @@ configure(publishProjects) {
             }
           }
           
-          contributors {
-            contributor {
+        contributors {
+          contributor {
               name = 'Remon Sinnema'
               organization = 'OpenText'
             }
@@ -119,17 +119,6 @@ configure(publishProjects) {
               organization = 'Dell Technologies'
             }
           }
-
-          // For some reason the dependencies don't come across, so do it manually
-          withXml { 
-            def dependenciesNode = asNode().appendNode('dependencies')
-            prj.configurations.compile.allDependencies.each {
-              def dependencyNode = dependenciesNode.appendNode('dependency')
-              dependencyNode.appendNode('groupId', it.group)
-              dependencyNode.appendNode('artifactId', it.name)
-              dependencyNode.appendNode('version', it.version)
-            }
-          }
         }
       }
     }
@@ -141,15 +130,11 @@ configure(publishProjects) {
     sign configurations.archives
     sign publishing.publications.mavenJava
   }
+  
+  signMavenJavaPublication.dependsOn generatePomFileForMavenJavaPublication 
 }
 
-apply plugin: 'io.codearte.nexus-staging'
-
-nexusStaging {
-  packageGroup = 'com.opentext'
-}
-
-task publish {
-  dependsOn publishProjects*.tasks*.publish
-  finalizedBy closeAndReleaseRepository
+publish {
+  dependsOn publishProjects*.tasks*.signMavenJavaPublication
+  finalizedBy closeSonatypeStagingRepository
 }

@@ -7,7 +7,6 @@ buildscript {
   }
   if (!project.hasProperty('compileOnly')) {
     dependencies {
-      classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0'
       classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3'
     }
   }
@@ -16,6 +15,8 @@ buildscript {
 plugins {
   id 'com.github.ben-manes.versions' version '0.39.0'
   id 'com.github.spotbugs' version '4.7.3' apply false
+  id 'maven-publish'
+  id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 }
 
 ext.SpotBugsTask = com.github.spotbugs.snom.SpotBugsTask
@@ -247,6 +248,8 @@ if (!project.hasProperty('compileOnly')) {
 }
 
 project(':infoarchive-configuration') {
+  description = 'InfoArchive configuration library'
+
   configurations {
     api.extendsFrom commonsIo, evoInflector, json
   }
@@ -254,6 +257,7 @@ project(':infoarchive-configuration') {
 
 
 project(':infoarchive-yaml') {
+  description = 'InfoArchive YAML library'
   configurations {
     api.extendsFrom commonsIo, commonsLang, evoInflector, yaml
   }
@@ -264,6 +268,8 @@ project(':infoarchive-yaml') {
 
 
 project(':infoarchive-sdk-core') {
+  description = 'InfoArchive SDK core library'
+
   configurations {
     api.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, commonsLang, evoInflector, 
         httpclient, httpmime, jacksonCore, jacksonDatabind, semVer, validation, yaml
@@ -284,6 +290,8 @@ project(':infoarchive-sdk-core') {
 
 
 project(':infoarchive-sdk-stringtemplate') {
+  description = 'InfoArchive SDK stringtemplate library'
+
   configurations {
     stringtemplate
     api.extendsFrom stringtemplate
@@ -298,6 +306,8 @@ project(':infoarchive-sdk-stringtemplate') {
 
 
 project(':infoarchive-sdk-velocity') {
+  description = 'InfoArchive SDK velocity library'
+
   configurations {
     velocity
     api.extendsFrom commonsCollections, velocity
