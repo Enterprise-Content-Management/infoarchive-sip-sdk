@@ -37,6 +37,8 @@ subprojects {
   apply plugin: 'java-library'
   apply plugin: 'distribution'
 
+  sourceCompatibility = 11
+
   configurations {
     commonsBeanutils {
       exclude module: 'commons-collections'
