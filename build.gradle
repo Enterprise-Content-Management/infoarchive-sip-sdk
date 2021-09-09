@@ -2,6 +2,7 @@ buildscript {
   repositories {
     maven { url mavenRepo }
     maven { url 'https://plugins.gradle.org/m2/' }
+    mavenCentral()
   }
   if (!project.hasProperty('compileOnly')) {
     dependencies {
