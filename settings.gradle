@@ -15,7 +15,7 @@ project(':stringtemplate').name = 'infoarchive-sdk-stringtemplate'
 include 'velocity'
 project(':velocity').name = 'infoarchive-sdk-velocity'
 
-new File('samples').listFiles().each { dir ->
+file('samples').listFiles().each { dir ->
   include "samples/$dir.name"
   project (":samples/$dir.name").name = dir.name
 } 
