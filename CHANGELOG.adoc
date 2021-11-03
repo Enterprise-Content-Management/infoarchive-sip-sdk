@@ -6,9 +6,9 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
-== 12.5.0 = 2021-11-02
+== 12.5.0 = 2021-11-03
 
-- Add new stuff for the new architecture
+- Add new data transfer objects for the new architecture (postgres)
 
 == 12.4.6 - 2021-09-09
 
