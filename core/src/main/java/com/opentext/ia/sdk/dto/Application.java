@@ -10,6 +10,7 @@ public class Application extends NamedLinkContainer {
   private String archiveType;
   private String description;
   private String category;
+  private String migration;
 
   public Application() {
     setType("ACTIVE_ARCHIVING");
@@ -46,6 +47,14 @@ public class Application extends NamedLinkContainer {
 
   public void setCategory(String category) {
     this.category = category;
+  }
+
+  public String getMigration() {
+    return migration;
+  }
+
+  public void setMigration(String migration) {
+    this.migration = migration;
   }
 
 }

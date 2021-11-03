@@ -24,6 +24,7 @@ class WhenExtractingApplicationFromApplicationsContainer {
     app.setName("TestApplication");
     app.setType("Test");
     app.setArchiveType("TestArchive");
+    app.setMigration("REQUIRED");
   }
 
   @Test
@@ -41,6 +42,10 @@ class WhenExtractingApplicationFromApplicationsContainer {
     assertEquals("TestArchive", app.getArchiveType(), "Archive Type");
   }
 
+  @Test
+  void fetchMigration() {
+    assertEquals("REQUIRED", app.getMigration(), "Migration State");
+  }
 
   public static class TestApplication extends Application {
 
