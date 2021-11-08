@@ -9,6 +9,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 
 /**
@@ -21,6 +22,7 @@ public class JsonFormatter {
     mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
     mapper.configure(SerializationFeature.INDENT_OUTPUT, false);
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    mapper.registerModule(new JavaTimeModule());
     return mapper.writer().writeValueAsString(Objects.requireNonNull(value));
   }
 

@@ -52,6 +52,7 @@ subprojects {
     jacksonCore
     jacksonDatabind
     jacksonDatabindXml
+    jacksonDataType
     json
     semVer
     validation
@@ -71,6 +72,8 @@ subprojects {
     jacksonCore "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
     jacksonDatabind "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     jacksonDatabindXml "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion"
+    jacksonDataType "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion", 
+                    "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
     json "org.json:json:$jsonVersion"
     semVer "com.github.zafarkhaja:java-semver:$semVerVersion"
     validation "javax.validation:validation-api:$validationVersion"
@@ -273,7 +276,7 @@ project(':infoarchive-sdk-core') {
 
   configurations {
     api.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, commonsLang, evoInflector, 
-        httpclient, httpmime, jacksonCore, jacksonDatabind, semVer, validation, yaml
+        httpclient, httpmime, jacksonCore, jacksonDataType, jacksonDatabind, semVer, validation, yaml
   }
   
   dependencies {

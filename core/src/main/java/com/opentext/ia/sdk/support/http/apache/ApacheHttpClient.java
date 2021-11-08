@@ -40,6 +40,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.opentext.ia.sdk.support.http.BinaryPart;
 import com.opentext.ia.sdk.support.http.Header;
 import com.opentext.ia.sdk.support.http.HttpClient;
@@ -86,6 +87,7 @@ public class ApacheHttpClient implements HttpClient {
       .setConnectionManager(manager)
       .build();
     mapper = new ObjectMapper();
+    mapper.registerModule(new JavaTimeModule());
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
@@ -102,6 +104,7 @@ public class ApacheHttpClient implements HttpClient {
       .setDefaultRequestConfig(defaultRequestConfig)
       .build();
     mapper = new ObjectMapper();
+    mapper.registerModule(new JavaTimeModule());
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
