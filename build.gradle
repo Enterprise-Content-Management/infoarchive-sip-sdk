@@ -13,7 +13,7 @@ buildscript {
 
 plugins {
   id 'com.github.ben-manes.versions' version '0.39.0'
-  id 'com.github.spotbugs' version '4.7.3' apply false
+  id 'com.github.spotbugs' version '4.8.0' apply false
   id 'maven-publish'
   id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 }
@@ -83,7 +83,7 @@ subprojects {
             'com.sun.xml.bind:jaxb-core:2.3.0',
             'javax.xml.bind:jaxb-api:2.3.1',
             'com.sun.xml.bind:jaxb-impl:2.3.2'
-    compileOnlyApi 'com.github.spotbugs:spotbugs-annotations:4.4.0'
+    compileOnlyApi 'com.github.spotbugs:spotbugs-annotations:4.5.0'
     
     testImplementation 'org.awaitility:awaitility:' + awaitilityVersion,
       'org.hamcrest:hamcrest:2.2',
