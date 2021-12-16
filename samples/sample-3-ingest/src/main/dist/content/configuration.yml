@@ -24,6 +24,7 @@ application:
   name: Animals
   archiveType: sip
   type: active archiving
+  migration: REQUIRED
 
 xdbDatabases:
 - name: Animals-xdb
