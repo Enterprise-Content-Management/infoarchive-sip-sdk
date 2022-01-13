@@ -12,10 +12,11 @@ buildscript {
 }
 
 plugins {
-  id 'com.github.ben-manes.versions' version '0.39.0'
-  id 'com.github.spotbugs' version '4.8.0' apply false
+  id 'com.github.ben-manes.versions' version '0.41.0'
+  id 'com.github.spotbugs' version '5.0.4' apply false
   id 'maven-publish'
   id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
+  id 'ca.cutterslade.analyze' version '1.8.3'
 }
 
 ext.SpotBugsTask = com.github.spotbugs.snom.SpotBugsTask
@@ -24,7 +25,7 @@ allprojects {
   repositories {
     maven { url mavenRepo }
   }
-}
+ }  
 
 import org.gradle.api.logging.StandardOutputListener
 
@@ -35,8 +36,21 @@ apply plugin: 'idea'
 subprojects {
   apply plugin: 'java-library'
   apply plugin: 'distribution'
+  apply plugin: 'ca.cutterslade.analyze'
 
   sourceCompatibility = 11
+
+  analyzeClassesDependencies {
+    warnUsedUndeclared = true
+    warnUnusedDeclared = true
+    logDependencyInformationToFiles = true
+  }
+
+  analyzeTestClassesDependencies {
+    warnUsedUndeclared = true
+    warnUnusedDeclared = true
+    logDependencyInformationToFiles = true
+  }
 
   configurations {
     commonsBeanutils {
@@ -58,6 +72,9 @@ subprojects {
     validation
     xmlunit
     yaml
+
+    permitUnusedDeclared.extendsFrom compileOnlyApi
+    permitUsedUndeclared.extendsFrom api, implementation, runtime
   }
 
   dependencies {
@@ -79,19 +96,17 @@ subprojects {
     validation "javax.validation:validation-api:$validationVersion"
     yaml "org.yaml:snakeyaml:$snakeYamlVersion"
 
-    api 'com.google.code.findbugs:jsr305:3.0.2',
-            'com.sun.xml.bind:jaxb-core:2.3.0',
-            'javax.xml.bind:jaxb-api:2.3.1',
-            'com.sun.xml.bind:jaxb-impl:2.3.2'
-    compileOnlyApi 'com.github.spotbugs:spotbugs-annotations:4.5.0'
+    api 'javax.xml.bind:jaxb-api:2.3.1'
+    permitUnusedDeclared 'javax.xml.bind:jaxb-api:2.3.1'
+
+    compileOnlyApi 'com.google.code.findbugs:jsr305:3.0.2',
+      'com.github.spotbugs:spotbugs-annotations:4.5.3'
     
-    testImplementation 'org.awaitility:awaitility:' + awaitilityVersion,
-      'org.hamcrest:hamcrest:2.2',
+    testImplementation 'org.hamcrest:hamcrest:2.2',
       'org.junit.jupiter:junit-jupiter-api:' + junitVersion,
       'org.junit.jupiter:junit-jupiter-params:' + junitVersion,
       'org.mockito:mockito-junit-jupiter:' + mockitoVersion,
-      'org.mockito:mockito-inline:' + mockitoVersion,
-      'org.xmlunit:xmlunit-core:' + xmlunitVersion
+      'org.mockito:mockito-inline:' + mockitoVersion
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:' + junitVersion
   }
@@ -224,7 +239,7 @@ subprojects {
 
 if (!project.hasProperty('compileOnly')) {
   apply plugin: 'codenarc'
-  
+
   codenarc { toolVersion = '1.6.1' }
   
   task codenarc(type: CodeNarc) {
@@ -281,7 +296,9 @@ project(':infoarchive-sdk-core') {
   
   dependencies {
     api project(':infoarchive-yaml')
-    testImplementation project(':infoarchive-yaml').sourceSets.test.output
+    testImplementation project(':infoarchive-yaml').sourceSets.test.output,
+      'org.awaitility:awaitility:' + awaitilityVersion,
+      'org.xmlunit:xmlunit-core:' + xmlunitVersion
   }
 
   javadoc {
