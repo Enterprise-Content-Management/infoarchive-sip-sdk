@@ -6,6 +6,10 @@ The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 
+== 12.5.6 = 2022-02-24
+
+- Fix tests and set up application required for legacy example
+
 == 12.5.1 = 2021-11-08
 
 - Fix the issue of jackson handling java 8 date
