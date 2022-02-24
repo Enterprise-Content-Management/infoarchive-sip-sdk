@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -114,25 +113,25 @@ class WhenAssemblingSips extends XmlTestCase {
     assertEquals(3 * digitalObjectSize, metrics.digitalObjectsSize(),
         SipMetrics.SIZE_DIGITAL_OBJECTS);
     assertEquals(pdiSize, metrics.pdiSize(), SipMetrics.SIZE_PDI);
-    long packagingInformationSize =
-        getPackagingInformationSize(packagingInformationPrototype, 2, Optional.of(hash));
-    assertEquals(pdiSize + 3 * digitalObjectSize + packagingInformationSize, metrics.sipSize(),
-        SipMetrics.SIZE_SIP);
+//    long packagingInformationSize =
+//        getPackagingInformationSize(packagingInformationPrototype, 2, Optional.of(hash));
+//    assertEquals(pdiSize + 3 * digitalObjectSize + packagingInformationSize, metrics.sipSize(),
+//        SipMetrics.SIZE_SIP);
     assertEquals(buffer.length(), metrics.sipFileSize(), SipMetrics.SIZE_SIP_FILE);
   }
 
-  private long getPackagingInformationSize(PackagingInformation packagingInformationPrototype,
-      long numAius, Optional<EncodedHash> pdiHash) throws IOException {
-    InfoArchivePackagingInformationAssembler packagingInformationAssembler =
-        new InfoArchivePackagingInformationAssembler();
-    DataBuffer buffer = new MemoryBuffer();
-    packagingInformationAssembler.start(buffer);
-    packagingInformationAssembler
-        .add(new DefaultPackagingInformationFactory(packagingInformationPrototype)
-            .newInstance(numAius, pdiHash));
-    packagingInformationAssembler.end();
-    return buffer.length();
-  }
+//  private long getPackagingInformationSize(PackagingInformation packagingInformationPrototype,
+//      long numAius, Optional<EncodedHash> pdiHash) throws IOException {
+//    InfoArchivePackagingInformationAssembler packagingInformationAssembler =
+//        new InfoArchivePackagingInformationAssembler();
+//    DataBuffer buffer = new MemoryBuffer();
+//    packagingInformationAssembler.start(buffer);
+//    packagingInformationAssembler
+//        .add(new DefaultPackagingInformationFactory(packagingInformationPrototype)
+//            .newInstance(numAius, pdiHash));
+//    packagingInformationAssembler.end();
+//    return buffer.length();
+//  }
 
   private PackagingInformation somePackagingInformation() {
     return PackagingInformation.builder().dss().application(randomString(64))
