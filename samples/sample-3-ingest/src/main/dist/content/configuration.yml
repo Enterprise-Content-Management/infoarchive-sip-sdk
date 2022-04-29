@@ -4,122 +4,13 @@ tenant:
   name: INFOARCHIVE
   configure: use existing
 
-fileSystemRoot:
-  name: defaultFileSystemRoot
-  configure: create
-  description: Default FileSystemRoot
-  path: data/root
-
-xdbFederations:
-- name: mainFederation
-  bootstrap: xhive://127.0.0.1:2910
-  configure: create
-  superUserPassword: test
-- name: searchResultsFederation
-  bootstrap: xhive://127.0.0.1:2910
-  configure: create
-  superUserPassword: test
-
 application:
   name: Animals
   archiveType: sip
+  category: null
+  description: null
+  offline: false
   type: active archiving
-  migration: REQUIRED
-
-xdbDatabases:
-- name: Animals-xdb
-  configure: create
-  default: true
-  adminPassword: catwalksacrosskeyboard
-  xdbFederation: mainFederation
-
-ingestNode:
-  name: ingest_node_01
-  enumerationCutoffDays: 10
-  enumerationMaxResultCount: 30
-  enumerationMinusRunning: true
-  logLevel: INFO
-
-receiverNode:
-  name: receiver_node_01
-
-space:
-  name: Animals-space
-
-spaceRootFolder:
-  name: defaultFileSystemRoot
-
-fileSystemFolders:
-- name: animals
-  parentSpaceRootFolder: defaultFileSystemRoot
-  subPath: stores/animals
-- name: animals-confirmation
-  parentSpaceRootFolder: defaultFileSystemRoot
-  subPath: stores/animals-confirmation
-
-spaceRootXdbLibraries:
-- name: Animals-space-lib
-- name: Animals-space-search-results-lib
-  type: search results
-
-xdbLibrary:
-  name: Animals-holding-xdb-library
-  parentSpaceRootXdbLibrary: Animals-space-lib
-  subPath: aips/Animals-holding
-
-stores:
-- name: Animals-store
-  default: true
-  fileSystemFolder: animals
-- name: Animals-confirmation-store
-  fileSystemFolder: animals-confirmation
-  storeType: delivery channel
-
-xdbLibraryPolicy:
-  name: Animals-holding-xdb-library-policy
-  aipQuota: 10
-  aiuQuota: 100
-
-holding:
-  name: Animals-holding
-  defaultRetentionClass: default
-  ingestNodes:
-  - ingest_node_01
-  pdiConfigs:
-  - schema: urn:opentext:ia:schema:sample:animal:1.0
-  priority: 1
-  retentionClasses:
-  - name: default
-    policies:
-    - Animals-rentention-policy
-  stagingStore: null
-  subPriorities:
-  - deadLine: 100
-    priority: 0
-  - deadLine: 200
-    priority: 1
-  xdbLibraryParent: Animals-holding-xdb-library
-  xdbMode: ${holding.xdbMode:PRIVATE}
-
-deliveryChannel:
-  name: default-delivery-channel
-  fileName: confirmation
-  overwrite: true
-  prefix: '%aip_id%-'
-  store: Animals-confirmation-store
-  subPath: confirmation/%ia_conf_type%
-  suffix: .xml
-
-confirmation:
-  name: Animals-holding-confirmation
-  deliveryChannelParameters:
-    aip_id: '%ia_conf_aip_id%'
-    ia_conf_datetime: '%ia_conf_datetime%'
-    ia_conf_type: '%ia_conf_type%'
-  holdings:
-  - Animals-holding
-  types:
-  - receipt
 
 retentionPolicy:
   name: Animals-rentention-policy
@@ -130,91 +21,199 @@ retentionPolicy:
     type: duration
   dispositionStrategy:
     type: destroy all
-
-pdi:
-  name: Animals-holding-pdi
-  content:
-    format: xml
-    resource: pdi.xml
-
-pdiSchema:
-  name: urn:opentext:ia:schema:sample:animal:1.0
-  content:
-    format: xsd
-    resource: pdi-schema.xsd
-
-aic:
-  name: Animals-holding-aic
-  criteria:
-  - name: animal_name
-    label: Animal Name
+ 
+confirmation:
+  name: Animals-holding-confirmation
+  aiuQuery: null
+  deliveryChannelEnabled: true
+  deliveryChannelParameters:
+    aip_id: '%ia_conf_aip_id%'
+    ia_conf_datetime: '%ia_conf_datetime%'
+    ia_conf_type: '%ia_conf_type%'
   holdings:
   - Animals-holding
+  includeConfirmationInAuditEnabled: false
+  inputSchema: urn:opentext:ia:schema:sample:animal:1.0
+  types:
+  - receipt
 
-order:
-  name: Animals-holding-order
-  duration: 86400
+deliveryChannel:
+  name: default-delivery-channel
+  fileName: confirmation
+  overwrite: true
+  prefix: '%aip_id%-'
+  store: Animals-confirmation-store
+  subPath: confirmation/%ia_conf_type%
+  suffix: .xml
+
+fileSystemFolders:
+- name: SearchResult
+  configure: create
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/SearchResult
+- name: animals
+  configure: create
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/animals
+- name: animals-confirmation
+  configure: create
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/animals-confirmation
+- name: default-export
+  configure: create
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/default-export
+- name: default-library
+  configure: create
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/default-library
+- name: export
+  configure: create
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/export
+
+holding:
+  name: Animals-holding
+  ciPurgePolicy: BLANK
+  ciPurgeRatio: 75
+  ciStore: Animals-store
+  defaultRetentionClass: default
+  ingestNodes:
+  - ingest_node_01
+  libraryBackupStore: Animals-store
+  libraryMode: PRIVATE
+  logStore: Animals-store
+  metaData: [ ]
+  pdiConfigs:
+  - schema: urn:opentext:ia:schema:sample:animal:1.0
+  pdiPurgePolicy: KEEP
+  permissions:
+    completed: null
+    ingestion: null
+    invalid: null
+    purge: null
+    reception: null
+    reject: null
+    waitingCommit: null
   priority: 1
+  renditionStore: Animals-store
+  retentionBackupStore: Animals-store
+  retentionClasses:
+  - name: default
+    aiuRetention: false
+    policies:
+    - Animals-rentention-policy
+  retentionDataStore: default-lucene-store
+  sipStore: Animals-store
+  stagingStore: null
+  subPriorities:
+  - deadLine: 100
+    priority: 0
+  - deadLine: 200
+    priority: 1
+  xdbLibraryParent: null
+  xmlStore: Animals-store
 
-query:
-  name: Animals-holding-query
-  aics:
-  - Animals-holding-aic
-  namespaces:
-  - prefix: n
-    uri: urn:opentext:ia:schema:sample:animal:1.0
-  quota: Animals-holding-quota
-  quotaAsync: Animals-holding-quota
-  resultSchema: urn:opentext:ia:schema:sample:animal:1.0
-  xdbPdiConfigs:
-  - entityPath: /n:animals/n:animal
-    operands:
-    - name: animal_name
-      path: n:animal_name
-    schema: urn:opentext:ia:schema:sample:animal:1.0
+ingestNode:
+  name: ingest_node_01
+  enumerationCutoffDays: 10
+  enumerationMaxResultCount: 30
+  enumerationMinusRunning: true
 
-queryQuota:
-  name: Animals-holding-quota
+libraryPolicy:
+  name: Animals-holding-xdb-library-policy
+  aipQuota: 10
+  aiuQuota: 100
+  cacheInMode: parent
+  cacheLockPeriod: 0
+  closeHintDateQuery: null
+  closeMode: null
+  closePeriod: 0
+  closeWithQuota: false
+  libraryStores:
+  - default-lucene-store
+  loadBalancingMode: primary
+  pKeyQuery: null
 
-resultConfigurationHelper:
-  name: urn:opentext:ia:schema:sample:animal:1.0
-  content:
-    format: xml
-    resource: DefaultResultHelper.xml
-  resultSchema:
-  - urn:opentext:ia:schema:sample:animal:1.0
+receiverNode:
+  name: receiver_node_01
 
-resultMaster:
-  namespaces:
-  - prefix: ia
-    uri: urn:x-emc:ia:schema:pdi
-  - prefix: n
-    uri: urn:opentext:ia:schema:sample:animal:1.0
-  panels:
-  - name: Main Panel
-    tabs:
-    - name: _ia_Default_Main_tab_
-      columns:
-      - name: animal_name
-        defaultSort: ASCENDING
-        label: Animal Name
-        path: n:animal_name
-        sortable: true
-        type: schema column name
-      - name: cid
-        dataType: CID
-        label: Cid
-        path: n:file_path/@ia:cid
-        type: content
+space:
+  name: Animals-space
 
-search:
-  name: Find by name
-  state: draft
+spaceRootFolder:
+  name: defaultFileSystemRoot
 
-searchComposition:
-  name: Set 1
+stores:
+- name: Animals-confirmation-store
+  bucket: null
+  configure: create
+  fileSystemFolder: animals-confirmation
+  fileSystemRoot: null
+  offlineSupport: false
+  setS3StorageClass: null
+  storageClass: null
+  storeType: delivery channel
+- name: Animals-store
+  bucket: null
+  configure: create
+  fileSystemFolder: animals
+  fileSystemRoot: null
+  offlineSupport: false
+  setS3StorageClass: null
+  storageClass: null
+- name: default-lucene-store
+  bucket: null
+  configure: create
+  fileSystemFolder: default-library
+  fileSystemRoot: null
+  offlineSupport: false
+  setS3StorageClass: null
+  storageClass: null
+  storeType: library
+- name: default-result-store
+  bucket: null
+  configure: create
+  fileSystemFolder: default-export
+  fileSystemRoot: null
+  offlineSupport: false
+  setS3StorageClass: null
+  storageClass: null
+  storeType: result
+- name: default-search-result-store
+  bucket: null
+  configure: create
+  fileSystemFolder: SearchResult
+  fileSystemRoot: null
+  offlineSupport: false
+  setS3StorageClass: null
+  storageClass: null
+  storeType: search result
+- name: export
+  bucket: null
+  configure: create
+  fileSystemFolder: export
+  fileSystemRoot: null
+  offlineSupport: false
+  setS3StorageClass: null
+  storageClass: null
 
-xform:
-  name: Find by name
-  form:
-    resource: FindAnimals.form.xml
+includes:
+- data-model-config/configuration.yml
+- searches/configuration.yml
+
+fileSystemRoots:
+- name: defaultFileSystemRoot
+  configure: create
+  description: Default FileSystemRoot
+  path: data/root
+
+retentionPolicy:
+  name: Animals-rentention-policy
+  agingStrategy:
+    agingPeriod:
+      units: years
+      value: 7
+    type: duration
+  dispositionStrategy:
+    type: destroy all

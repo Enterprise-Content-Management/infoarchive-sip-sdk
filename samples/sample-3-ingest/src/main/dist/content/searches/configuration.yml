@@ -1,0 +1,112 @@
+version: 1.0.0
+
+tenant:
+  name: INFOARCHIVE
+  configure: use existing
+
+application:
+  name: Animals
+  configure: use existing
+
+aic:
+  name: Animals-holding-aic
+  criteria:
+  - name: animal_name
+    label: Animal Name
+  holdings:
+  - Animals-holding
+  searchHandlerImpl: null
+
+query:
+  name: Animals-holding-query
+  aics:
+  - Animals-holding-aic
+  libraryPdiConfigs:
+  - entityPath: /n:animals/n:animal
+    operands:
+    - name: animal_name
+      hashedType: null
+      path: n:animal_name
+    schema: urn:opentext:ia:schema:sample:animal:1.0
+  namespaces:
+  - prefix: n
+    uri: urn:opentext:ia:schema:sample:animal:1.0
+  resultSchema: urn:opentext:ia:schema:sample:animal:1.0
+
+holding:
+  name: Animals-holding
+  configure: use existing
+
+resultConfigurationHelper:
+  name: urn:opentext:ia:schema:sample:animal:1.0
+  content:
+    format: xml
+    resource: resultConfigurationHelper-urnOpentextIaSchemaSampleAnimal1.0.xml
+    store: Animals-store
+  resultSchema:
+  - urn:opentext:ia:schema:sample:animal:1.0
+
+resultMaster:
+  application: Animals
+  namespaces:
+  - prefix: ia
+    uri: urn:x-emc:ia:schema:pdi
+  - prefix: n
+    uri: urn:opentext:ia:schema:sample:animal:1.0
+  panels:
+  - name: Main Panel
+    tabs:
+    - syncExportEnabled: false
+      hidden: false
+      columns:
+      - name: animal_name
+        defaultSort: ASCENDING
+        disableThousandSeparator: false
+        exportConfigurations: null
+        formatting: null
+        hideOnConditions: [ ]
+        hint: null
+        label: Animal Name
+        localTimeZoneIgnored: false
+        path: n:animal_name
+        renditionConfigurations: null
+        sortable: true
+        syncExportEnabled: false
+        type: schema column name
+      - name: cid
+        dataType: CID
+        disableThousandSeparator: false
+        exportConfigurations: null
+        formatting: null
+        hideOnConditions: [ ]
+        hint: null
+        label: Cid
+        localTimeZoneIgnored: false
+        path: n:file_path/@ia:cid
+        renditionConfigurations: null
+        syncExportEnabled: false
+        type: content
+      name: _ia_Default_Main_tab_
+      hideOnConditions: [ ]
+  tenant: INFOARCHIVE
+  timeline: null
+  useOrderBySearchResultIdIndex: null
+
+search:
+  name: Find by name
+  aic: Animals-holding-aic
+  application: Animals
+  categories: null
+  crossApplicationSearch: false
+  query: Animals-holding-query
+  type: PRIMARY
+
+searchComposition:
+  name: Set 1
+  application: Animals
+  type: PRIMARY
+
+xform:
+  name: Find by name
+  form:
+    resource: xform-FindByName.html
