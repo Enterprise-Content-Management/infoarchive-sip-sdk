@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.opentext.ia.sdk.sip.DataSubmissionSession.DataSubmissionSessionBuilder;
 import com.opentext.ia.sdk.support.io.EncodedHash;
 
@@ -28,14 +30,15 @@ public class PackagingInformation {
   private long pageCount;
   private Optional<EncodedHash> pdiHash;
   private final Map<String, String> customAttributes = new HashMap<>();
-
+  private final String externalId;
+  
   public PackagingInformation(DataSubmissionSession dss, Date productionDate, int sequenceNumber, boolean isLast,
       long aiuCount, long pageCount, Optional<EncodedHash> pdiHash) {
-    this(dss, productionDate, sequenceNumber, isLast, aiuCount, pageCount, pdiHash, Collections.emptyMap());
+    this(dss, productionDate, sequenceNumber, isLast, aiuCount, pageCount, pdiHash, Collections.emptyMap(), null);
   }
 
   public PackagingInformation(DataSubmissionSession dss, Date productionDate, int sequenceNumber, boolean isLast,
-      long aiuCount, long pageCount, Optional<EncodedHash> pdiHash, Map<String, String> customAttributes) {
+      long aiuCount, long pageCount, Optional<EncodedHash> pdiHash, Map<String, String> customAttributes, String externalId) {
     this.dss = dss;
     this.productionDate = productionDate;
     this.sequenceNumber = sequenceNumber;
@@ -44,6 +47,7 @@ public class PackagingInformation {
     this.pageCount = pageCount;
     this.pdiHash = pdiHash;
     this.customAttributes.putAll(customAttributes);
+    this.externalId = externalId;
   }
 
   public DataSubmissionSession getDss() {
@@ -110,11 +114,15 @@ public class PackagingInformation {
     this.customAttributes.putAll(customAttributes);
   }
 
+  public String getExternalId() {
+	return externalId;
+  }
+  
   @Override
   public String toString() {
     return getClass().getSimpleName() + " [dss=" + dss + ", productionDate=" + productionDate + ", sequenceNumber="
         + sequenceNumber + ", isLast=" + last + ", aiuCount=" + aiuCount + ", pageCount=" + pageCount + ", hashes="
-        + pdiHash + "]";
+        + pdiHash + ", externalId=" + externalId + "]";
   }
 
   /**
@@ -126,12 +134,19 @@ public class PackagingInformation {
   }
 
   public static PackagingInformationBuilder builder(PackagingInformation prototype) {
-    PackagingInformationBuilder result = builder().dss(prototype.getDss())
+    PackagingInformationBuilder result = builder()
+      .dss(prototype.getDss())
       .last(prototype.isLast())
       .pageCount(prototype.getPageCount())
       .productionDate(prototype.getProductionDate())
       .sequenceNumber(prototype.getSequenceNumber());
     prototype.getCustomAttributes().forEach(result::customAttribute);
+    
+    // we want to ensure the externalId is not blank
+    if (StringUtils.isNotBlank(prototype.getExternalId())) {
+    	result.externalId(prototype.getExternalId());
+    }
+    
     return result;
   }
 
@@ -148,7 +163,8 @@ public class PackagingInformation {
     private long aiuCount;
     private long pageCount;
     private final Map<String, String> customAttributes = new HashMap<>();
-
+    private String externalId;
+    
     public PackagingInformationBuilder dss(DataSubmissionSession dss) {
       dssBuilder.from(dss);
       return this;
@@ -201,9 +217,14 @@ public class PackagingInformation {
       return this;
     }
 
+    public PackagingInformationBuilder externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+    
     public PackagingInformation build() {
       return new PackagingInformation(dssBuilder.build(), productionDate, sequenceNumber, isLast, aiuCount, pageCount,
-          encodedHash, customAttributes);
+          encodedHash, customAttributes, externalId);
     }
 
   }

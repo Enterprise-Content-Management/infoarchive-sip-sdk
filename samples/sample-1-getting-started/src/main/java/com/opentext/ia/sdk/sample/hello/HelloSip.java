@@ -11,6 +11,7 @@ import java.util.Map;
 import org.atteo.evo.inflector.English;
 
 import com.opentext.ia.sdk.sip.ContentInfo;
+import com.opentext.ia.sdk.sip.FileGenerationMetrics;
 import com.opentext.ia.sdk.sip.FileGenerator;
 import com.opentext.ia.sdk.sip.PackagingInformation;
 import com.opentext.ia.sdk.sip.PdiAssembler;
@@ -37,12 +38,13 @@ public class HelloSip {
     URI entityUri = URI.create("urn:com.opentext.ia.sdk.sample.greeting:1.0");
     String entityName = "greeting";
     PackagingInformation prototype = PackagingInformation.builder()
+        .externalId("myExternalId")
         .dss()
-            .application("greetingApplication")
-            .holding("greetingHolding")
-            .producer("world")
-            .entity(entityName)
-            .schema(entityUri.toString())
+        .application("greetingApplication")
+        .holding("greetingHolding")
+        .producer("world")
+        .entity(entityName)
+        .schema(entityUri.toString())
         .end()
     .build();
 
@@ -58,7 +60,11 @@ public class HelloSip {
     SipAssembler<Greeting> sipAssembler = SipAssembler.forPdi(prototype, pdiAssembler);
     FileGenerator<Greeting> generator = new FileGenerator<>(sipAssembler, () -> new File("hello-sip.zip"));
     Greeting greeting = new Greeting("Hello, SIP");
-    SipMetrics metrics = (SipMetrics)generator.generate(greeting).getMetrics();
+    
+    FileGenerationMetrics fileGenerate = generator.generate(greeting);
+    System.out.println("Location of file = " + fileGenerate.getFile().getAbsolutePath());
+    
+	SipMetrics metrics = (SipMetrics)fileGenerate.getMetrics();
     long numAius = metrics.numAius();
     System.out.printf("  Added %d %s to SIP of %d bytes in %d ms%n", numAius,
         English.plural("AIU", (int)numAius), metrics.sipFileSize(), metrics.assemblyTime());

@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 
 import com.opentext.ia.sdk.support.datetime.Dates;
 import com.opentext.ia.sdk.support.xml.XmlBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 
 /**
@@ -28,6 +29,10 @@ public class InfoArchivePackagingInformationAssembler extends PrintWriterAssembl
     XmlBuilder<?> builder = XmlBuilder.newDocument(writer)
         .namespace("urn:x-emc:ia:schema:sip:1.0")
         .element("sip");
+    if (StringUtils.isNotBlank(packagingInformation.getExternalId())) {
+    	builder.element("external_id", packagingInformation.getExternalId());
+    }
+    
     DataSubmissionSession dss = packagingInformation.getDss();
     builder.element("dss")
         .element("holding", dss.getHolding())
