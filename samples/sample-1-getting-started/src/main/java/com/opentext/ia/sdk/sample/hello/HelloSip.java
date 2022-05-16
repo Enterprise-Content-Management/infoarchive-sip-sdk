@@ -60,11 +60,11 @@ public class HelloSip {
     SipAssembler<Greeting> sipAssembler = SipAssembler.forPdi(prototype, pdiAssembler);
     FileGenerator<Greeting> generator = new FileGenerator<>(sipAssembler, () -> new File("hello-sip.zip"));
     Greeting greeting = new Greeting("Hello, SIP");
-    
+
     FileGenerationMetrics fileGenerate = generator.generate(greeting);
     System.out.println("Location of file = " + fileGenerate.getFile().getAbsolutePath());
-    
-	SipMetrics metrics = (SipMetrics)fileGenerate.getMetrics();
+
+    SipMetrics metrics = (SipMetrics)fileGenerate.getMetrics();
     long numAius = metrics.numAius();
     System.out.printf("  Added %d %s to SIP of %d bytes in %d ms%n", numAius,
         English.plural("AIU", (int)numAius), metrics.sipFileSize(), metrics.assemblyTime());
