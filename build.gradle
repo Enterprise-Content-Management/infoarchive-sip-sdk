@@ -13,10 +13,10 @@ buildscript {
 
 plugins {
   id 'com.github.ben-manes.versions' version '0.42.0'
-  id 'com.github.spotbugs' version '5.0.6' apply false
+  id 'com.github.spotbugs' version '5.0.7' apply false
   id 'maven-publish'
   id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
-  id 'ca.cutterslade.analyze' version '1.8.3'
+  id 'ca.cutterslade.analyze' version '1.9.0'
 }
 
 ext.SpotBugsTask = com.github.spotbugs.snom.SpotBugsTask
@@ -96,19 +96,14 @@ subprojects {
     validation "javax.validation:validation-api:$validationVersion"
     yaml "org.yaml:snakeyaml:$snakeYamlVersion"
 
-    api 'javax.xml.bind:jaxb-api:2.3.1'
-    permitUnusedDeclared 'javax.xml.bind:jaxb-api:2.3.1'
+    api libs.jaxb.api
+    permitUnusedDeclared libs.jaxb.api
 
     compileOnlyApi 'com.google.code.findbugs:jsr305:3.0.2',
-      'com.github.spotbugs:spotbugs-annotations:4.5.3'
+      'com.github.spotbugs:spotbugs-annotations:4.7.0'
     
-    testImplementation 'org.hamcrest:hamcrest:2.2',
-      'org.junit.jupiter:junit-jupiter-api:' + junitVersion,
-      'org.junit.jupiter:junit-jupiter-params:' + junitVersion,
-      'org.mockito:mockito-junit-jupiter:' + mockitoVersion,
-      'org.mockito:mockito-inline:' + mockitoVersion
-
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:' + junitVersion
+    testImplementation libs.bundles.mockito
+    testRuntimeOnly libs.junit.engine
   }
 
   tasks.withType(JavaCompile) {
@@ -179,7 +174,7 @@ subprojects {
     apply plugin: 'com.github.spotbugs'
 
     dependencies {
-      spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.11.0',
+      spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0',
         'com.mebigfatguy.fb-contrib:fb-contrib:7.4.7'
     }
     
@@ -297,7 +292,7 @@ project(':infoarchive-sdk-core') {
   dependencies {
     api project(':infoarchive-yaml')
     testImplementation project(':infoarchive-yaml').sourceSets.test.output,
-      'org.awaitility:awaitility:' + awaitilityVersion,
+      libs.awaitility,
       'org.xmlunit:xmlunit-core:' + xmlunitVersion
   }
 
