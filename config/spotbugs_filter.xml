@@ -141,10 +141,8 @@
     <Bug pattern="HARD_CODE_PASSWORD" />
     <Or>
       <!-- Default passwords for test data only, suppress for now -->
-      <Class name="com.opentext.ia.configuration.XdbClusterBuilder" />
       <Class name="com.opentext.ia.configuration.XdbDatabaseBuilder" />
       <Class name="com.opentext.ia.configuration.XdbFederationBuilder" />
-
       <!-- Sample password only -->
       <Class name="com.opentext.ia.sdk.sample.authenticate.Authenticate$1" />
     </Or>
@@ -241,8 +239,8 @@
     <!-- No practical impact -->
     <Bug pattern="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" />
     <Or>
-    
       <Class name="com.opentext.ia.configuration.ContentBuilder" />
+      <Class name="com.opentext.ia.configuration.ContentObjectBuilder" />
       <Class name="com.opentext.ia.sdk.client.api.ArchiveConnection" />
       <Class name="com.opentext.ia.yaml.core.Entry" />
       <Class name="com.opentext.ia.yaml.core.Value" />

@@ -5,7 +5,6 @@ package com.opentext.ia.configuration;
 
 import java.util.List;
 
-
 /**
  * Configuration of an InfoArchive installation.
  * @author Ray Sinnema
@@ -43,12 +42,11 @@ public interface Configuration<T> {
    */
   List<T> getTenants();
 
-
   /**
    * Returns the first configured application for the first tenant.
    * @return The first configured application for the first tenant
-   * @throws IllegalArgumentException when no tenants are configured or when no applications are configured for the
-   * first tenant
+   * @throws IllegalArgumentException when no tenants are configured or when no applications are
+   *           configured for the first tenant
    */
   default T getApplication() {
     return getApplication(getTenant());
@@ -71,12 +69,12 @@ public interface Configuration<T> {
    */
   List<T> getApplications(T tenant);
 
-
   /**
    * Returns the first configured search for the first application of the first tenant.
    * @return The first configured search for the first application of the first tenant
-   * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
-   * tenant or when no searches are configured for the first application of the first tenant
+   * @throws IllegalArgumentException when no tenants are configured or no applications are
+   *           configured for the first tenant or when no searches are configured for the first
+   *           application of the first tenant
    */
   default T getSearch() {
     return first(getSearches());
@@ -85,8 +83,8 @@ public interface Configuration<T> {
   /**
    * Returns all configured searches for the first application of the first tenant.
    * @return All configured searches for the first application of the first tenant
-   * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
-   * tenant
+   * @throws IllegalArgumentException when no tenants are configured or no applications are
+   *           configured for the first tenant
    */
   default List<T> getSearches() {
     return getSearches(getApplication());
@@ -98,7 +96,6 @@ public interface Configuration<T> {
    * @return All configured searches for the given application
    */
   List<T> getSearches(T application);
-
 
   /**
    * Returns the first configured file system root.
@@ -117,12 +114,12 @@ public interface Configuration<T> {
    */
   List<T> getFileSystemRoots();
 
-
   /**
    * Returns the first configured space for the first application of the first tenant.
    * @return The first configured space for the first application of the first tenant
-   * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
-   * tenant or when no spaces are configured for the first application of the first tenant
+   * @throws IllegalArgumentException when no tenants are configured or no applications are
+   *           configured for the first tenant or when no spaces are configured for the first
+   *           application of the first tenant
    * @since 9.5.0
    */
   default T getSpace() {
@@ -132,8 +129,8 @@ public interface Configuration<T> {
   /**
    * Returns all configured spaces for the first application of the first tenant.
    * @return All configured spaces for the first application of the first tenant
-   * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
-   * tenant
+   * @throws IllegalArgumentException when no tenants are configured or no applications are
+   *           configured for the first tenant
    * @since 9.5.0
    */
   default List<T> getSpaces() {
@@ -147,7 +144,6 @@ public interface Configuration<T> {
    * @since 9.5.0
    */
   List<T> getSpaces(T application);
-
 
   /**
    * Returns the first configured spaceRootFolder for the given space.
@@ -168,16 +164,20 @@ public interface Configuration<T> {
    */
   List<T> getSpaceRootFolders(T space);
 
-
   /**
    * Returns the first configured spaceRootXdbLibrary for the given space.
    * @param space The owner of the spaceRootXdbLibrary
    * @return The first configured spaceRootXdbLibrary for the given space
-   * @throws IllegalArgumentException when no spaceRootXdbLibraries are configured for the given space
+   * @throws IllegalArgumentException when no spaceRootXdbLibraries are configured for the given
+   *           space
    * @since 9.5.0
    */
   default T getSpaceRootXdbLibrary(T space) {
     return first(getSpaceRootXdbLibraries(space));
+  }
+
+  default T getSpaceRootRdbDatabase(T space) {
+    return first(getSpaceRootRdbDatabases(space));
   }
 
   /**
@@ -188,13 +188,14 @@ public interface Configuration<T> {
    */
   List<T> getSpaceRootXdbLibraries(T space);
 
+  List<T> getSpaceRootRdbDatabases(T space);
 
   /**
    * Returns The first configured xdbLibrary for the given spaceRootXdbLibrary.
    * @param spaceRootXdbLibrary The spaceRootXdbLibrary that owns the xdbLibraries
    * @return The first configured xdbLibrary for the given spaceRootXdbLibrary
-   * @throws IllegalArgumentException when no xdbLibraries are configured
-   * for the given spaceRootXdbLibrary
+   * @throws IllegalArgumentException when no xdbLibraries are configured for the given
+   *           spaceRootXdbLibrary
    * @since 9.5.0
    */
   default T getXdbLibrary(T spaceRootXdbLibrary) {
@@ -208,7 +209,6 @@ public interface Configuration<T> {
    * @since 9.5.0
    */
   List<T> getXdbLibraries(T spaceRootXdbLibrary);
-
 
   /**
    * Returns the first configured pdi schema for the given application.
@@ -230,12 +230,12 @@ public interface Configuration<T> {
    */
   List<T> getPdiSchemas(T application);
 
-
   /**
    * Returns the first configured holding for the first application of the first tenant.
    * @return The first configured holding for the first application of the first tenant
-   * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
-   * tenant or when no holdings are configured for the first application of the first tenant
+   * @throws IllegalArgumentException when no tenants are configured or no applications are
+   *           configured for the first tenant or when no holdings are configured for the first
+   *           application of the first tenant
    * @since 9.5.0
    */
   default T getHolding() {
@@ -245,8 +245,8 @@ public interface Configuration<T> {
   /**
    * Returns all configured holdings for the first application of the first tenant.
    * @return All configured holdings for the first application of the first tenant
-   * @throws IllegalArgumentException when no tenants are configured or no applications are configured for the first
-   * tenant
+   * @throws IllegalArgumentException when no tenants are configured or no applications are
+   *           configured for the first tenant
    * @since 9.5.0
    */
   default List<T> getHoldings() {
@@ -289,6 +289,16 @@ public interface Configuration<T> {
   }
 
   /**
+   * Returns the first configured rDB dataNode.
+   * @return The first configured rDB dataNode
+   * @throws IllegalArgumentException when no rDB dataNode are configured
+   * @since 12.5.7
+   */
+  default T getRdbDataNode() {
+    return first(getRdbDataNodes());
+  }
+
+  /**
    * Returns all the configured xDB federations.
    * @return All the configured xDB federations
    * @since 9.6.0
@@ -296,10 +306,17 @@ public interface Configuration<T> {
   List<T> getXdbFederations();
 
   /**
+   * Returns all the configured rDB dataNodes.
+   * @return All the configured rDB dataNodes
+   * @since 12.5.7
+   */
+  List<T> getRdbDataNodes();
+
+  /**
    * Returns the first configured xDB database for the first xDB federation.
    * @return The first configured xDB database for the first xDB federation
-   * @throws IllegalArgumentException when no xDB federations are configured or no xDB database are configured for the
-   * first xDB federation
+   * @throws IllegalArgumentException when no xDB federations are configured or no xDB database are
+   *           configured for the first xDB federation
    * @since 9.6.0
    */
   default T getXdbDatabase() {
@@ -307,10 +324,22 @@ public interface Configuration<T> {
   }
 
   /**
+   * Returns the first configured RDB database for the first rDB dataNode.
+   * @return The first configured RDB database for the first rDB dataNode
+   * @throws IllegalArgumentException when no rDB dataNode are configured or no rDB database are
+   *           configured for the first rDB dataNode
+   * @since 12.5.7
+   */
+  default T getRdbDatabase() {
+    return getRdbDatabase(getRdbDataNode());
+  }
+
+  /**
    * Returns the first configured xDB database for the given xDB federation or cluster.
    * @param xdbFederationOrXdbCluster The xDB federation or cluster that owns the xDB databases
    * @return The first configured xDB database for the given xDB federation or cluster
-   * @throws IllegalArgumentException when no xDB database are configured for the given xDB federation or cluster
+   * @throws IllegalArgumentException when no xDB database are configured for the given xDB
+   *           federation or cluster
    * @since 9.6.0
    */
   default T getXdbDatabase(T xdbFederationOrXdbCluster) {
@@ -318,12 +347,31 @@ public interface Configuration<T> {
   }
 
   /**
+   * Returns the first configured RDB database for the given rDB dataNode.
+   * @param rdbDataNode The rDB dataNode that owns the rDB databases
+   * @return The first configured rDB database for the given rDB dataNode
+   * @throws IllegalArgumentException when no rDB database are configured for the given rDB dataNode
+   * @since 12.5.7
+   */
+  default T getRdbDatabase(T rdbDataNode) {
+    return first(getRdbDatabases(rdbDataNode));
+  }
+
+  /**
    * Returns all configured xDB databases for the given xDB federation or cluster.
-   * @param xdbFederationOrXdbCluster The xDB federation or cluster that owns the xDB databases
+   * @param xdbFederation The xDB federation or cluster that owns the xDB databases
    * @return All configured xDB databases for the given xDB federation or cluster
    * @since 9.6.0
    */
-  List<T> getXdbDatabases(T xdbFederationOrXdbCluster);
+  List<T> getXdbDatabases(T xdbFederation);
+
+  /**
+   * Returns all configured rDB databases for the given rDB dataNode.
+   * @param rdbDataNode The rDB Data Node that owns the rDB databases
+   * @return All configured rDB databases for the given rDB dataNode
+   * @since 12.5.7
+   */
+  List<T> getRdbDatabases(T rdbDataNode);
 
   /**
    * Returns the first configured job definition.
@@ -341,23 +389,6 @@ public interface Configuration<T> {
    * @since 9.7.0
    */
   List<T> getJobDefinitions();
-
-  /**
-   * Returns the first configured xDB cluster.
-   * @return The first configured xDB cluster
-   * @throws IllegalArgumentException when no xDB clusters are configured
-   * @since 9.9.0
-   */
-  default T getXdbCluster() {
-    return first(getXdbClusters());
-  }
-
-  /**
-   * Returns all the configured xDB clusters.
-   * @return All the configured xDB clusters
-   * @since 9.9.0
-   */
-  List<T> getXdbClusters();
 
   /**
    * Returns the first configured pdi for the given application.
@@ -378,7 +409,6 @@ public interface Configuration<T> {
    * @since 9.13.0
    */
   List<T> getPdis(T application);
-
 
   /**
    * Returns all the content objects owned by a given object.

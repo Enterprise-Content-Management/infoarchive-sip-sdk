@@ -5,7 +5,7 @@ jacoco {
 }
 
 ext.limits = [
-  'line' : 80,
+  'line' : 50,
   'complexity' : 67
 ]
 
