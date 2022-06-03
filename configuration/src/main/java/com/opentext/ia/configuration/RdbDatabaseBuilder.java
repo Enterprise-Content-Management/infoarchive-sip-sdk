@@ -37,8 +37,22 @@ public class RdbDatabaseBuilder<P extends BaseBuilder<?, C>, C extends Configura
     return this;
   }
 
+  private void setName(String name) {
+    setProperty("name", name);
+  }
+
+  public RdbDatabaseBuilder<P, C> withName(String nodeName) {
+    setName(nodeName);
+    return this;
+  }
+
   private void setEncoding(String encoding) {
     setProperty("encoding", encoding);
+  }
+
+  public RdbDatabaseBuilder<P, C> encryptedBy(String cryptoObjectName) {
+    setProperty("cryptoObject", cryptoObjectName);
+    return this;
   }
 
   public RdbDatabaseBuilder<P, C> withEncoding(String encoding) {

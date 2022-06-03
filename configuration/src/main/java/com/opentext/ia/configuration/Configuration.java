@@ -176,6 +176,14 @@ public interface Configuration<T> {
     return first(getSpaceRootXdbLibraries(space));
   }
 
+  /**
+   * Returns the first configured spaceRootRdbDatabase for the given space.
+   * @param space The owner of the spaceRootRdbDatabase
+   * @return The first configured spaceRootRdbDatabase for the given space
+   * @throws IllegalArgumentException when no spaceRootXdbLibraries are configured for the given
+   *           space
+   * @since 9.5.0
+   */
   default T getSpaceRootRdbDatabase(T space) {
     return first(getSpaceRootRdbDatabases(space));
   }
@@ -188,6 +196,12 @@ public interface Configuration<T> {
    */
   List<T> getSpaceRootXdbLibraries(T space);
 
+  /**
+   * Returns all configured spaceRootRdbDatabases for the given space.
+   * @param space The space that owns the spaceRootRdbDatabases
+   * @return All configured spaceRootRdbDatabases for the given space
+   * @since 9.5.0
+   */
   List<T> getSpaceRootRdbDatabases(T space);
 
   /**

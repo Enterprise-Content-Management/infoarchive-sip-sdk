@@ -17,6 +17,7 @@ public class RdbDataNodeBuilder<C extends Configuration<?>>
   protected RdbDataNodeBuilder(ConfigurationBuilder<C> parent) {
     super(parent, "rdbDataNode");
     setBootstrap("jdbc:postgresql://localhost:5432");
+    setEncoding("base64");
   }
 
   private void setBootstrap(String bootstrap) {
@@ -53,6 +54,10 @@ public class RdbDataNodeBuilder<C extends Configuration<?>>
   public RdbDataNodeBuilder<C> withName(String nodeName) {
     setName(nodeName);
     return this;
+  }
+
+  private void setEncoding(String encoding) {
+    setProperty("encoding", encoding);
   }
 
   public RdbDataNodeBuilder<C> encryptedBy(String cryptoObjectName) {

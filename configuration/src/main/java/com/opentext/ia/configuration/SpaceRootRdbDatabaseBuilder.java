@@ -10,6 +10,19 @@ public class SpaceRootRdbDatabaseBuilder<C extends Configuration<?>>
     super(parent, "spaceRootRdbDatabase");
   }
 
+  private void setName(String name) {
+    setProperty("name", name);
+  }
+
+  public SpaceRootRdbDatabaseBuilder<C> withName(String name) {
+    setName(name);
+    return this;
+  }
+
+  public RdbDatabaseBuilder<SpaceRootRdbDatabaseBuilder<C>, C> withRdbDatabase() {
+    return new RdbDatabaseBuilder<>(this);
+  }
+
   @Override
   protected String parentProperty() {
     return "parentSpaceRootRdbDatabase";
