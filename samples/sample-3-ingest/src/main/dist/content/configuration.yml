@@ -4,102 +4,38 @@ tenant:
   name: INFOARCHIVE
   configure: use existing
 
-fileSystemRoot:
-  name: defaultFileSystemRoot
-  configure: create
-  description: Default FileSystemRoot
-  path: data/root
-
-xdbFederations:
-- name: mainFederation
-  bootstrap: xhive://127.0.0.1:2910
-  configure: create
-  superUserPassword: test
-- name: searchResultsFederation
-  bootstrap: xhive://127.0.0.1:2910
-  configure: create
-  superUserPassword: test
-
 application:
   name: Animals
   archiveType: sip
+  category: null
+  description: null
+  offline: false
   type: active archiving
-  migration: REQUIRED
 
-xdbDatabases:
-- name: Animals-xdb
-  configure: create
-  default: true
-  adminPassword: catwalksacrosskeyboard
-  xdbFederation: mainFederation
-
-ingestNode:
-  name: ingest_node_01
-  enumerationCutoffDays: 10
-  enumerationMaxResultCount: 30
-  enumerationMinusRunning: true
-  logLevel: INFO
-
-receiverNode:
-  name: receiver_node_01
-
-space:
-  name: Animals-space
-
-spaceRootFolder:
-  name: defaultFileSystemRoot
-
-fileSystemFolders:
-- name: animals
-  parentSpaceRootFolder: defaultFileSystemRoot
-  subPath: stores/animals
-- name: animals-confirmation
-  parentSpaceRootFolder: defaultFileSystemRoot
-  subPath: stores/animals-confirmation
-
-spaceRootXdbLibraries:
-- name: Animals-space-lib
-- name: Animals-space-search-results-lib
-  type: search results
-
-xdbLibrary:
-  name: Animals-holding-xdb-library
-  parentSpaceRootXdbLibrary: Animals-space-lib
-  subPath: aips/Animals-holding
-
-stores:
-- name: Animals-store
-  default: true
-  fileSystemFolder: animals
-- name: Animals-confirmation-store
-  fileSystemFolder: animals-confirmation
-  storeType: delivery channel
-
-xdbLibraryPolicy:
-  name: Animals-holding-xdb-library-policy
-  aipQuota: 10
-  aiuQuota: 100
-
-holding:
-  name: Animals-holding
-  defaultRetentionClass: default
-  ingestNodes:
-  - ingest_node_01
-  pdiConfigs:
-  - schema: urn:opentext:ia:schema:sample:animal:1.0
-  priority: 1
-  retentionClasses:
-  - name: default
-    policies:
-    - Animals-rentention-policy
-  stagingStore: null
-  subPriorities:
-  - deadLine: 100
-    priority: 0
-  - deadLine: 200
-    priority: 1
-  xdbLibraryParent: Animals-holding-xdb-library
-  xdbMode: ${holding.xdbMode:PRIVATE}
+retentionPolicy:
+  name: Animals-rentention-policy
+  agingStrategy:
+    agingPeriod:
+      units: years
+      value: 7
+    type: duration
+  dispositionStrategy:
+    type: destroy all
+ 
+confirmation:
+  name: Animals-holding-confirmation
+  aiuQuery: null
+  deliveryChannelEnabled: true
+  deliveryChannelParameters:
+    aip_id: '%ia_conf_aip_id%'
+    ia_conf_datetime: '%ia_conf_datetime%'
+    ia_conf_type: '%ia_conf_type%'
+  holdings:
+  - Animals-holding
+  includeConfirmationInAuditEnabled: false
+  inputSchema: urn:opentext:ia:schema:sample:animal:1.0
+  types:
+  - receipt
 
 deliveryChannel:
   name: default-delivery-channel
@@ -110,16 +46,163 @@ deliveryChannel:
   subPath: confirmation/%ia_conf_type%
   suffix: .xml
 
-confirmation:
-  name: Animals-holding-confirmation
-  deliveryChannelParameters:
-    aip_id: '%ia_conf_aip_id%'
-    ia_conf_datetime: '%ia_conf_datetime%'
-    ia_conf_type: '%ia_conf_type%'
-  holdings:
-  - Animals-holding
-  types:
-  - receipt
+fileSystemFolders:
+- name: SearchResult
+  configure: create
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/SearchResult
+- name: animals
+  configure: create
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/animals
+- name: animals-confirmation
+  configure: create
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/animals-confirmation
+- name: default-export
+  configure: create
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/default-export
+- name: default-library
+  configure: create
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/default-library
+- name: export
+  configure: create
+  parentSpaceRootFolder: defaultFileSystemRoot
+  subPath: stores/export
+
+holding:
+  name: Animals-holding
+  ciPurgePolicy: BLANK
+  ciPurgeRatio: 75
+  ciStore: Animals-store
+  defaultRetentionClass: default
+  ingestNodes:
+  - ingest_node_01
+  libraryBackupStore: Animals-store
+  libraryMode: PRIVATE
+  logStore: Animals-store
+  metaData: [ ]
+  pdiConfigs:
+  - schema: urn:opentext:ia:schema:sample:animal:1.0
+  pdiPurgePolicy: KEEP
+  permissions:
+    completed: null
+    ingestion: null
+    invalid: null
+    purge: null
+    reception: null
+    reject: null
+    waitingCommit: null
+  priority: 1
+  renditionStore: Animals-store
+  retentionBackupStore: Animals-store
+  retentionClasses:
+  - name: default
+    aiuRetention: false
+    policies:
+    - Animals-rentention-policy
+  retentionDataStore: default-lucene-store
+  sipStore: Animals-store
+  stagingStore: null
+  subPriorities:
+  - deadLine: 100
+    priority: 0
+  - deadLine: 200
+    priority: 1
+  xdbLibraryParent: null
+  xmlStore: Animals-store
+
+ingestNode:
+  name: ingest_node_01
+  enumerationCutoffDays: 10
+  enumerationMaxResultCount: 30
+  enumerationMinusRunning: true
+
+libraryPolicy:
+  name: Animals-holding-xdb-library-policy
+  aipQuota: 10
+  aiuQuota: 100
+  cacheInMode: parent
+  cacheLockPeriod: 0
+  closeHintDateQuery: null
+  closeMode: null
+  closePeriod: 0
+  closeWithQuota: false
+  libraryStores:
+  - default-lucene-store
+  loadBalancingMode: primary
+  pKeyQuery: null
+
+receiverNode:
+  name: receiver_node_01
+
+space:
+  name: Animals-space
+
+spaceRootFolder:
+  name: defaultFileSystemRoot
+
+stores:
+- name: Animals-confirmation-store
+  bucket: null
+  configure: create
+  fileSystemFolder: animals-confirmation
+  fileSystemRoot: null
+  offlineSupport: false
+  setS3StorageClass: null
+  storageClass: null
+  storeType: delivery channel
+- name: Animals-store
+  bucket: null
+  configure: create
+  fileSystemFolder: animals
+  fileSystemRoot: null
+  offlineSupport: false
+  setS3StorageClass: null
+  storageClass: null
+- name: default-lucene-store
+  bucket: null
+  configure: create
+  fileSystemFolder: default-library
+  fileSystemRoot: null
+  offlineSupport: false
+  setS3StorageClass: null
+  storageClass: null
+  storeType: library
+- name: default-result-store
+  bucket: null
+  configure: create
+  fileSystemFolder: default-export
+  fileSystemRoot: null
+  offlineSupport: false
+  setS3StorageClass: null
+  storageClass: null
+  storeType: result
+- name: default-search-result-store
+  bucket: null
+  configure: create
+  fileSystemFolder: SearchResult
+  fileSystemRoot: null
+  offlineSupport: false
+  setS3StorageClass: null
+  storageClass: null
+  storeType: search result
+- name: export
+  bucket: null
+  configure: create
+  fileSystemFolder: export
+  fileSystemRoot: null
+  offlineSupport: false
+  setS3StorageClass: null
+  storageClass: null
+
+fileSystemRoots:
+- name: defaultFileSystemRoot
+  configure: create
+  description: Default FileSystemRoot
+  path: data/root
 
 retentionPolicy:
   name: Animals-rentention-policy
@@ -131,17 +214,46 @@ retentionPolicy:
   dispositionStrategy:
     type: destroy all
 
-pdi:
-  name: Animals-holding-pdi
-  content:
-    format: xml
-    resource: pdi.xml
-
 pdiSchema:
   name: urn:opentext:ia:schema:sample:animal:1.0
   content:
     format: xsd
-    resource: pdi-schema.xsd
+    resource: pdiSchema-urnOpentextIaSchemaSampleAnimal1.0.xsd
+    store: Animals-store
+
+pdi:
+  name: Animals-holding-pdi
+  aiuPath: /{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal
+  aiuRetention: null
+  cis:
+  - compress: false
+    encrypt: false
+    hashes: [ ]
+    lengthPath: null
+    mimeType: application/octet-stream
+    mimeTypePath: null
+    offsetMode: null
+    offsetPath: null
+    path: /{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal/{urn:opentext:ia:schema:sample:animal:1.0}file_path
+  content:
+    format: xml
+    resource: pdi-content.xml
+    store: Animals-store
+  handlers: [ ]
+  pdiSchema: urn:opentext:ia:schema:sample:animal:1.0
+  properties:
+    { }
+  search:
+    criteria:
+    - name: animal_name
+      fulltext: false
+      hint: true
+      indexed: true
+      path: /{urn:opentext:ia:schema:sample:animal:1.0}animals/{urn:opentext:ia:schema:sample:animal:1.0}animal/{urn:opentext:ia:schema:sample:animal:1.0}animal_name
+      pkeys: [ ]
+      type: STRING
+  transformation: null
+  useDeclarativeConfiguration: true
 
 aic:
   name: Animals-holding-aic
@@ -150,41 +262,35 @@ aic:
     label: Animal Name
   holdings:
   - Animals-holding
-
-order:
-  name: Animals-holding-order
-  duration: 86400
-  priority: 1
+  searchHandlerImpl: null
 
 query:
   name: Animals-holding-query
   aics:
   - Animals-holding-aic
-  namespaces:
-  - prefix: n
-    uri: urn:opentext:ia:schema:sample:animal:1.0
-  quota: Animals-holding-quota
-  quotaAsync: Animals-holding-quota
-  resultSchema: urn:opentext:ia:schema:sample:animal:1.0
-  xdbPdiConfigs:
+  libraryPdiConfigs:
   - entityPath: /n:animals/n:animal
     operands:
     - name: animal_name
+      hashedType: null
       path: n:animal_name
     schema: urn:opentext:ia:schema:sample:animal:1.0
-
-queryQuota:
-  name: Animals-holding-quota
+  namespaces:
+  - prefix: n
+    uri: urn:opentext:ia:schema:sample:animal:1.0
+  resultSchema: urn:opentext:ia:schema:sample:animal:1.0
 
 resultConfigurationHelper:
   name: urn:opentext:ia:schema:sample:animal:1.0
   content:
     format: xml
-    resource: DefaultResultHelper.xml
+    resource: resultConfigurationHelper-urnOpentextIaSchemaSampleAnimal1.0.xml
+    store: Animals-store
   resultSchema:
   - urn:opentext:ia:schema:sample:animal:1.0
 
 resultMaster:
+  application: Animals
   namespaces:
   - prefix: ia
     uri: urn:x-emc:ia:schema:pdi
@@ -193,28 +299,57 @@ resultMaster:
   panels:
   - name: Main Panel
     tabs:
-    - name: _ia_Default_Main_tab_
+    - syncExportEnabled: false
+      hidden: false
       columns:
       - name: animal_name
         defaultSort: ASCENDING
+        disableThousandSeparator: false
+        exportConfigurations: null
+        formatting: null
+        hideOnConditions: [ ]
+        hint: null
         label: Animal Name
+        localTimeZoneIgnored: false
         path: n:animal_name
+        renditionConfigurations: null
         sortable: true
+        syncExportEnabled: false
         type: schema column name
       - name: cid
         dataType: CID
+        disableThousandSeparator: false
+        exportConfigurations: null
+        formatting: null
+        hideOnConditions: [ ]
+        hint: null
         label: Cid
+        localTimeZoneIgnored: false
         path: n:file_path/@ia:cid
+        renditionConfigurations: null
+        syncExportEnabled: false
         type: content
+      name: _ia_Default_Main_tab_
+      hideOnConditions: [ ]
+  tenant: INFOARCHIVE
+  timeline: null
+  useOrderBySearchResultIdIndex: null
 
 search:
   name: Find by name
-  state: draft
+  aic: Animals-holding-aic
+  application: Animals
+  categories: null
+  crossApplicationSearch: false
+  query: Animals-holding-query
+  type: PRIMARY
 
 searchComposition:
   name: Set 1
+  application: Animals
+  type: PRIMARY
 
 xform:
   name: Find by name
   form:
-    resource: FindAnimals.form.xml
+    resource: xform-FindByName.html

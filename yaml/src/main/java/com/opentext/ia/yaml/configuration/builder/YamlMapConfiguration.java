@@ -14,7 +14,6 @@ import com.opentext.ia.configuration.Configuration;
 import com.opentext.ia.yaml.core.Value;
 import com.opentext.ia.yaml.core.YamlMap;
 
-
 /**
  * An InfoArchive configuration in YAML.
  * @author Ray Sinnema
@@ -28,7 +27,11 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   private static final String SPACE = "space";
   private static final String XDB_FEDERATION = "xdbFederation";
   private static final String XDB_DATABASE = "xdbDatabase";
-  private static final String XDB_CLUSTER = "xdbCluster";
+  private static final String SPACE_ROOT_XDB_LIBRARY = "spaceRootXdbLibrary";
+
+  private static final String RDB_DATANODE = "rdbDataNode";
+  private static final String RDB_DATABASE = "rdbDatabase";
+  private static final String SPACE_ROOT_RDB_DATABASE = "spaceRootRdbDatabase";
 
   private final YamlMap yaml;
 
@@ -101,12 +104,17 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
 
   @Override
   public List<YamlMap> getSpaceRootXdbLibraries(YamlMap space) {
-    return childList(space, SPACE, "spaceRootXdbLibrary");
+    return childList(space, SPACE, SPACE_ROOT_XDB_LIBRARY);
   }
 
   @Override
   public List<YamlMap> getXdbLibraries(YamlMap spaceRootXdbLibrary) {
-    return childList(spaceRootXdbLibrary, "spaceRootXdbLibrary", "xdbLibrary");
+    return childList(spaceRootXdbLibrary, SPACE_ROOT_XDB_LIBRARY, "xdbLibrary");
+  }
+
+  @Override
+  public List<YamlMap> getSpaceRootRdbDatabases(YamlMap space) {
+    return childList(space, SPACE, SPACE_ROOT_RDB_DATABASE);
   }
 
   @Override
@@ -135,10 +143,21 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   }
 
   @Override
-  public List<YamlMap> getXdbDatabases(YamlMap xdbFederationOrCluster) {
+  public List<YamlMap> getXdbDatabases(YamlMap xdbFederation) {
     List<YamlMap> result = new ArrayList<>();
-    result.addAll(childList(xdbFederationOrCluster, XDB_FEDERATION, XDB_DATABASE));
-    result.addAll(childList(xdbFederationOrCluster, XDB_CLUSTER, XDB_DATABASE));
+    result.addAll(childList(xdbFederation, XDB_FEDERATION, XDB_DATABASE));
+    return result;
+  }
+
+  @Override
+  public List<YamlMap> getRdbDataNodes() {
+    return toList(streamOfType(RDB_DATANODE));
+  }
+
+  @Override
+  public List<YamlMap> getRdbDatabases(YamlMap rdbDataNode) {
+    List<YamlMap> result = new ArrayList<>();
+    result.addAll(childList(rdbDataNode, RDB_DATANODE, RDB_DATABASE));
     return result;
   }
 
@@ -148,15 +167,8 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   }
 
   @Override
-  public List<YamlMap> getXdbClusters() {
-    return toList(streamOfType(XDB_CLUSTER));
-  }
-
-  @Override
   public List<YamlMap> getContentOwnedBy(YamlMap owner) {
-    return owner.get("content").toList().stream()
-        .map(Value::toMap)
-        .collect(Collectors.toList());
+    return owner.get("content").toList().stream().map(Value::toMap).collect(Collectors.toList());
   }
 
 }

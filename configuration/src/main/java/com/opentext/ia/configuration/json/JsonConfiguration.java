@@ -12,7 +12,6 @@ import org.json.JSONObject;
 import com.opentext.ia.configuration.Configuration;
 import com.opentext.ia.configuration.ConfigurationObject;
 
-
 /**
  * An InfoArchive configuration in JSON format.
  * @author Ray Sinnema
@@ -73,6 +72,11 @@ public class JsonConfiguration implements Configuration<ConfigurationObject> {
   }
 
   @Override
+  public List<ConfigurationObject> getSpaceRootRdbDatabases(ConfigurationObject space) {
+    return childrenOf(space, "spaceRootRdbDatabases");
+  }
+
+  @Override
   public List<ConfigurationObject> getXdbLibraries(ConfigurationObject spaceRootXdbLibrary) {
     return childrenOf(spaceRootXdbLibrary, "xdbLibraries");
   }
@@ -103,8 +107,18 @@ public class JsonConfiguration implements Configuration<ConfigurationObject> {
   }
 
   @Override
-  public List<ConfigurationObject> getXdbDatabases(ConfigurationObject xdbFederationOrCluster) {
-    return childrenOf(xdbFederationOrCluster, "xdbDatabases");
+  public List<ConfigurationObject> getXdbDatabases(ConfigurationObject xdbDatabase) {
+    return childrenOf(xdbDatabase, "xdbDatabases");
+  }
+
+  @Override
+  public List<ConfigurationObject> getRdbDataNodes() {
+    return childrenOf(container, "rdbDataNodes");
+  }
+
+  @Override
+  public List<ConfigurationObject> getRdbDatabases(ConfigurationObject rdbDatabase) {
+    return childrenOf(rdbDatabase, "rdbDatabases");
   }
 
   @Override
@@ -113,26 +127,19 @@ public class JsonConfiguration implements Configuration<ConfigurationObject> {
   }
 
   @Override
-  public List<ConfigurationObject> getXdbClusters() {
-    return childrenOf(container, "xdbClusters");
-  }
-
-  @Override
   public List<ConfigurationObject> getContentOwnedBy(ConfigurationObject owner) {
     JSONObject properties = owner.getProperties();
     if (!properties.has(CONTENT)) {
       return Collections.emptyList();
     }
-    return properties.getJSONArray(CONTENT).toList().stream()
-        .map(this::jsonToContent)
+    return properties.getJSONArray(CONTENT).toList().stream().map(this::jsonToContent)
         .collect(Collectors.toList());
   }
 
   private ConfigurationObject jsonToContent(Object object) {
     ConfigurationObject result = new ConfigurationObject(CONTENT);
     JSONObject json = (JSONObject)object;
-    json.keySet().forEach(key ->
-        result.setProperty(key, json.getString(key)));
+    json.keySet().forEach(key -> result.setProperty(key, json.getString(key)));
     return result;
   }
 
