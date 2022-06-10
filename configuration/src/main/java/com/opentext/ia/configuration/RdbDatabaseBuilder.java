@@ -4,10 +4,10 @@
 package com.opentext.ia.configuration;
 
 /**
- * Build an xDB database.
+ * Build an rDB database.
  * 
  * @author Ray Sinnema
- * @since 9.6.0
+ * @since 12.6.0
  *
  * @param <C> The type of configuration to build
  */

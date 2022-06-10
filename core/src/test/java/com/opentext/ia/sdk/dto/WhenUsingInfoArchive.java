@@ -84,7 +84,7 @@ class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations 
   private ArchiveClient archiveClient;
   private Applications applications;
   private Application application;
-  private XdbFederations federations;
+  private RdbDataNodes rdbDataNodes;
 
   @BeforeEach
   public void init() throws IOException {
@@ -97,15 +97,15 @@ class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations 
     Tenant tenant = new Tenant();
     application = new Application();
     applications = mock(Applications.class);
-    federations = mock(XdbFederations.class);
+    rdbDataNodes = mock(RdbDataNodes.class);
     Spaces spaces = mock(Spaces.class);
-    XdbDatabases databases = mock(XdbDatabases.class);
+    RdbDatabases databases = mock(RdbDatabases.class);
     FileSystemRoots fileSystemRoots = mock(FileSystemRoots.class);
     FileSystemRoot fileSystemRoot = new FileSystemRoot();
     when(fileSystemRoots.first()).thenReturn(fileSystemRoot);
     Holdings holdings = mock(Holdings.class);
     ReceiverNodes receiverNodes = mock(ReceiverNodes.class);
-    SpaceRootXdbLibraries spaceRootLibraries = mock(SpaceRootXdbLibraries.class);
+    SpaceRootRdbDatabases spaceRootRdbDatabases = mock(SpaceRootRdbDatabases.class);
     SpaceRootFolders rootFolders = mock(SpaceRootFolders.class);
     FileSystemFolders systemFolders = mock(FileSystemFolders.class);
     Stores stores = mock(Stores.class);
@@ -114,7 +114,7 @@ class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations 
     Pdis pdis = mock(Pdis.class);
     PdiSchemas pdiSchemas = mock(PdiSchemas.class);
     Ingests ingests = mock(Ingests.class);
-    XdbLibraries libraries = mock(XdbLibraries.class);
+
     Contents contents = new Contents();
     Aics aics = mock(Aics.class);
     LinkContainer aips = new LinkContainer();
@@ -162,13 +162,13 @@ class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations 
     aips.setLinks(links);
 
     mockCollection(Applications.class, applications);
-    mockCollection(XdbFederations.class, federations);
+    mockCollection(RdbDataNodes.class, rdbDataNodes);
     mockCollection(Spaces.class, spaces);
-    mockCollection(XdbDatabases.class, databases);
+    mockCollection(RdbDatabases.class, databases);
     mockCollection(FileSystemRoots.class, fileSystemRoots);
     mockCollection(Holdings.class, holdings);
     mockCollection(ReceiverNodes.class, receiverNodes);
-    mockCollection(SpaceRootXdbLibraries.class, spaceRootLibraries);
+    mockCollection(SpaceRootRdbDatabases.class, spaceRootRdbDatabases);
     mockCollection(SpaceRootFolders.class, rootFolders);
     mockCollection(FileSystemFolders.class, systemFolders);
     mockCollection(Stores.class, stores);
@@ -177,7 +177,7 @@ class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations 
     mockCollection(Pdis.class, pdis);
     mockCollection(PdiSchemas.class, pdiSchemas);
     mockCollection(Ingests.class, ingests);
-    mockCollection(XdbLibraries.class, libraries);
+
     mockCollection(Aics.class, aics);
     mockCollection(QueryQuotas.class, quotas);
     mockCollection(Queries.class, queries);
@@ -197,11 +197,11 @@ class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations 
     when(restClient.createCollectionItem(any(LinkContainer.class), any(XForm.class), eq(LINK_SELF)))
         .thenReturn(xForm);
 
-    mockByName(federations, new XdbFederation());
-    mockByName(databases, new XdbDatabase());
+    mockByName(rdbDataNodes, new RdbDataNode());
+    mockByName(databases, new RdbDatabase());
     mockByName(applications, application);
     mockByName(spaces, new Space());
-    mockByName(spaceRootLibraries, new SpaceRootXdbLibrary());
+    mockByName(spaceRootRdbDatabases, new SpaceRootRdbDatabase());
     mockByName(rootFolders, new SpaceRootFolder());
     mockByName(fileSystemRoots, new FileSystemRoot());
     mockByName(systemFolders, new FileSystemFolder());
@@ -212,7 +212,7 @@ class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations 
     mockByName(pdis, new Pdi());
     mockByName(pdiSchemas, new PdiSchema());
     mockByName(ingests, new Ingest());
-    mockByName(libraries, new XdbLibrary());
+
     mockByName(holdings, new Holding());
     mockByName(aics, aic);
     mockByName(quotas, new QueryQuota());
@@ -322,11 +322,11 @@ class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations 
     configuration.put("ia.query.Query.result.root.ns.enabled", Boolean.TRUE.toString());
     configuration.put("ia.query.Query.result.schema", NAMESPACE);
 
-    configuration.put("ia.query.Query.xdbpdi.entity.path", "/n:object/n:objects");
-    configuration.put("ia.query.Query.xdbpdi.schema", NAMESPACE);
-    configuration.put("ia.query.Query.xdbpdi.template", "return $aiu");
+    configuration.put("ia.query.Query.librarypdi.entity.path", "/n:object/n:objects");
+    configuration.put("ia.query.Query.librarypdi.schema", NAMESPACE);
+    configuration.put("ia.query.Query.librarypdi.template", "return $aiu");
 
-    String queryPrefix = "ia.query.Query.xdbpdi[";
+    String queryPrefix = "ia.query.Query.librarypdi[";
     configuration.put(queryPrefix + NAMESPACE + "].operand.name", "name");
     configuration.put(queryPrefix + NAMESPACE + "].operand.path", "n:name");
     configuration.put(queryPrefix + NAMESPACE + "].operand.type", "STRING");
@@ -571,9 +571,9 @@ class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations 
   @Test
   void shouldRetryWhenTemporarilyUnavailable() throws IOException {
     configuration.put(
-        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.FEDERATION_NAME,
+        com.opentext.ia.sdk.server.configuration.properties.InfoArchiveConfigurationProperties.DATANODE_NAME,
         randomString());
-    when(restClient.createCollectionItem(eq(federations), any(XdbFederation.class), eq(LINK_ADD),
+    when(restClient.createCollectionItem(eq(rdbDataNodes), any(RdbDataNode.class), eq(LINK_ADD),
         eq(LINK_SELF))).then(invocation -> {
           throw new HttpException(503, "");
         });
@@ -583,7 +583,7 @@ class WhenUsingInfoArchive extends TestCase implements InfoArchiveLinkRelations 
             configuration),
         connection);
 
-    verify(restClient, times(5)).createCollectionItem(eq(federations), any(XdbFederation.class),
+    verify(restClient, times(5)).createCollectionItem(eq(rdbDataNodes), any(RdbDataNode.class),
         eq(LINK_ADD), eq(LINK_SELF));
   }
 

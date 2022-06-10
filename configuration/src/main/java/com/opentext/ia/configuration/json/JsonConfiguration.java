@@ -67,18 +67,8 @@ public class JsonConfiguration implements Configuration<ConfigurationObject> {
   }
 
   @Override
-  public List<ConfigurationObject> getSpaceRootXdbLibraries(ConfigurationObject space) {
-    return childrenOf(space, "spaceRootXdbLibraries");
-  }
-
-  @Override
   public List<ConfigurationObject> getSpaceRootRdbDatabases(ConfigurationObject space) {
     return childrenOf(space, "spaceRootRdbDatabases");
-  }
-
-  @Override
-  public List<ConfigurationObject> getXdbLibraries(ConfigurationObject spaceRootXdbLibrary) {
-    return childrenOf(spaceRootXdbLibrary, "xdbLibraries");
   }
 
   @Override
@@ -99,16 +89,6 @@ public class JsonConfiguration implements Configuration<ConfigurationObject> {
   @Override
   public List<ConfigurationObject> getCryptoObjects() {
     return childrenOf(container, "cryptoObjects");
-  }
-
-  @Override
-  public List<ConfigurationObject> getXdbFederations() {
-    return childrenOf(container, "xdbFederations");
-  }
-
-  @Override
-  public List<ConfigurationObject> getXdbDatabases(ConfigurationObject xdbDatabase) {
-    return childrenOf(xdbDatabase, "xdbDatabases");
   }
 
   @Override

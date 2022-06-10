@@ -44,10 +44,10 @@ class EnsureEnumConstant extends PropertyVisitor {
         Collections.singletonList("units"));
     result.put("/retentionPolicies/\\d+/dispositionStrategy", JUST_TYPE);
     result.put("/searches/\\d+", Collections.singletonList("state"));
-    result.put("/spaceRootXdbLibraries/\\d+", JUST_TYPE);
+    result.put("/spaceRootRdbDatabases/\\d+", JUST_TYPE);
     result.put("/storageEndPoints/\\d+", JUST_TYPE);
     result.put("/stores/\\d+", Arrays.asList("status", "storeType", TYPE));
-    result.put("/xdbLibraryPolicies/\\d+", Collections.singletonList("closeMode"));
+    result.put("/libraryPolicies/\\d+", Collections.singletonList("closeMode"));
     result.put("/xforms/\\d+", Collections.singletonList("creator"));
     return result;
   }

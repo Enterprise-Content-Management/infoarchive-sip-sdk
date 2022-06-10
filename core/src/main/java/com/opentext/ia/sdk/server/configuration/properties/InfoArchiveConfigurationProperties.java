@@ -20,13 +20,13 @@ public interface InfoArchiveConfigurationProperties extends InfoArchiveConnectio
 
   String TENANT_NAME = PREFIX + "tenant." + NAME;
 
-  String XDB_PREFIX = PREFIX + "xdb.";
-  String FEDERATION_PREFIX = XDB_PREFIX + "federation.";
-  String FEDERATION_NAME = FEDERATION_PREFIX + NAME;
-  String FEDERATION_SUPERUSER_PASSWORD = FEDERATION_PREFIX + "superuser.password";
-  String FEDERATION_BOOTSTRAP = FEDERATION_PREFIX + "bootstrap.uri";
+  String RDB_PREFIX = PREFIX + "rdb.";
+  String DATANODE_PREFIX = RDB_PREFIX + "datanode.";
+  String DATANODE_NAME = DATANODE_PREFIX + NAME;
+  String DATANODE_SUPERUSER_PASSWORD = DATANODE_PREFIX + "superuser.password";
+  String DATANODE_BOOTSTRAP = DATANODE_PREFIX + "bootstrap.uri";
 
-  String DATABASE = XDB_PREFIX + "database.";
+  String DATABASE = RDB_PREFIX + "database.";
   String DATABASE_NAME = DATABASE + NAME;
   String DATABASE_ADMIN_PASSWORD = DATABASE + "admin.password";
 

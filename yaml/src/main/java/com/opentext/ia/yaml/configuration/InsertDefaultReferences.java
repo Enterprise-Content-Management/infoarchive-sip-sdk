@@ -29,11 +29,12 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
   private static final String STORE = "store";
   private static final String CI_STORE = "ciStore";
   private static final String LOG_STORE = "logStore";
-  private static final String MANAGED_ITEM_STORE = "managedItemStore";
+  private static final String RETENTION_BACKUP_STORE = "retentionBackupStore";
   private static final String RENDITION_STORE = "renditionStore";
   private static final String SIP_STORE = "sipStore";
   private static final String STAGING_STORE = "stagingStore";
-  private static final String XDB_STORE = "xdbStore";
+  private static final String LIBRARY_BACKUP_STORE = "libraryBackupStore";
+  private static final String BACKUP_STORE = "backupStore";
   private static final String XML_STORE = "xmlStore";
   private static final String SEARCH = "search";
   private static final String SEARCH_COMPOSITION = "searchComposition";
@@ -50,19 +51,19 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     put(result, "/.+/((.+\\.)?q|.+Q)uery", NAMESPACE);
     put(result, "/accessNodes/\\d+", APPLICATION);
     put(result, "/aics/\\d+", APPLICATION);
-    put(result, "/aips/\\d+", APPLICATION, "xdbLibrary");
+    put(result, "/aips/\\d+", APPLICATION, "library");
     put(result, "/applicationCategories/\\d+", TENANT);
     put(result, "/applications/\\d+", TENANT);
     put(result, "/buckets/\\d+", "spaceRootObject");
     put(result, "/confirmations/\\d+", APPLICATION, "deliveryChannel");
     put(result, "/customPresentationConfigurations/\\d+", EXPORT_PIPELINE);
-    put(result, "/databases/\\d+", APPLICATION, CI_STORE, MANAGED_ITEM_STORE, XDB_STORE);
+    put(result, "/databases/\\d+", APPLICATION, CI_STORE, RETENTION_BACKUP_STORE, BACKUP_STORE);
     put(result, "/databaseCryptoes/\\d+", APPLICATION, DATABASE);
     put(result, "/deliveryChannels/\\d+", APPLICATION, STORE);
     put(result, "/exportConfigurations/\\d+", "pipeline", "transformation");
     put(result, "/holds/\\d+", TENANT);
-    put(result, "/holdings/\\d+", APPLICATION, CI_STORE, "ingest", LOG_STORE, MANAGED_ITEM_STORE,
-        RENDITION_STORE, SIP_STORE, STAGING_STORE, "xdbLibraryPolicy", XDB_STORE, XML_STORE);
+    put(result, "/holdings/\\d+", APPLICATION, CI_STORE, "ingest", LOG_STORE, RETENTION_BACKUP_STORE,
+        RENDITION_STORE, SIP_STORE, STAGING_STORE, "libraryPolicy", LIBRARY_BACKUP_STORE, XML_STORE);
     put(result, "/holdings/\\d+/ingestConfigs/\\d+", "ingest");
     put(result, "/holdings/\\d+/pdiConfigs/\\d+", "pdi");
     put(result, "/holdingCryptoes/\\d+", APPLICATION, "holding");
@@ -83,7 +84,7 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     put(result, "/resultMasters/\\d+/panels/\\d+/tabs/\\d+/customPresentation", APPLICATION, TENANT);
     put(result, "/retentionPolicies/\\d+", TENANT);
     put(result, "/rules/\\d+", APPLICATION);
-    put(result, "/schemas/\\d+", DATABASE, XDB_STORE);
+    put(result, "/schemas/\\d+", DATABASE, BACKUP_STORE);
     put(result, "/searches/\\d+", AIC, APPLICATION, DATABASE, QUERY);
     put(result, "/searchDebugs/\\d+", SEARCH);
     put(result, "/searchGroups/\\d+", APPLICATION);
@@ -91,14 +92,14 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     put(result, "/spaces/\\d+", APPLICATION);
     put(result, "/spaceRootFolders/\\d+", "fileSystemRoot", SPACE);
     put(result, "/spaceRootObjects/\\d+", SPACE, "customStorage", "storageEndPointCredential");
-    put(result, "/spaceRootXdbLibraries/\\d+", SPACE, "xdbDatabase");
+    put(result, "/spaceRootRdbDatabases/\\d+", SPACE, "rdbDatabase");
     put(result, "/stores/\\d+", APPLICATION, "bucket", "fileSystemFolder");
     put(result, "/storageEndPointCredentials/\\d+", "storageEndPoint");
     put(result, "/tables/\\d+", APPLICATION, "schema");
     put(result, "/transformations/\\d+", APPLICATION);
     put(result, "/valueLists/\\d+", APPLICATION);
-    put(result, "/xdbLibraries/\\d+", APPLICATION);
-    put(result, "/xdbLibraryPolicies/\\d+", APPLICATION);
+    put(result, "/libraries/\\d+", APPLICATION);
+    put(result, "/libraryPolicies/\\d+", APPLICATION);
     put(result, "/xforms/\\d+", SEARCH, SEARCH_COMPOSITION);
     put(result, "/xqueries/\\d+", SEARCH, SEARCH_COMPOSITION);
     put(result, "/sqlQueries/\\d+", SEARCH, SEARCH_COMPOSITION);
@@ -120,11 +121,12 @@ class InsertDefaultReferences extends BaseInsertDefaultReferences {
     result.put("transformation", "exportTransformation");
     result.put(CI_STORE, STORE);
     result.put(LOG_STORE, STORE);
-    result.put(MANAGED_ITEM_STORE, STORE);
+    result.put(RETENTION_BACKUP_STORE, STORE);
     result.put(RENDITION_STORE, STORE);
     result.put(SIP_STORE, STORE);
     result.put(STAGING_STORE, STORE);
-    result.put(XDB_STORE, STORE);
+    result.put(LIBRARY_BACKUP_STORE, STORE);
+    result.put(BACKUP_STORE, STORE);
     result.put(XML_STORE, STORE);
     return result;
   }

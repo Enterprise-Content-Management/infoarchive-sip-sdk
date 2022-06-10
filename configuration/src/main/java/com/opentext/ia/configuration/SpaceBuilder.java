@@ -5,6 +5,7 @@ package com.opentext.ia.configuration;
 
 /**
  * Build a space.
+ * 
  * @author Ray Sinnema
  * @since 9.5.0
  *
@@ -18,11 +19,13 @@ public class SpaceBuilder<C extends Configuration<?>>
   }
 
   /**
-   * Start building a space root xDB library.
+   * Start building a space root folder.
+   * 
+   * @param fileSystemRootName the name of the file system root in which information in this space root folder is stored
    * @return A new builder
    */
-  public SpaceRootXdbLibraryBuilder<C> withSpaceRootXdbLibrary() {
-    return new SpaceRootXdbLibraryBuilder<>(this);
+  public SpaceRootFolderBuilder<C> withSpaceRootFolder(String fileSystemRootName) {
+    return new SpaceRootFolderBuilder<>(this, fileSystemRootName);
   }
 
   /**
@@ -31,16 +34,6 @@ public class SpaceBuilder<C extends Configuration<?>>
    */
   public SpaceRootRdbDatabaseBuilder<C> withSpaceRootRdbDatabase() {
     return new SpaceRootRdbDatabaseBuilder<>(this);
-  }
-
-  /**
-   * Start building a space root folder.
-   * @param fileSystemRootName the name of the file system root in which information in this space
-   *          root folder is stored
-   * @return A new builder
-   */
-  public SpaceRootFolderBuilder<C> withSpaceRootFolder(String fileSystemRootName) {
-    return new SpaceRootFolderBuilder<>(this, fileSystemRootName);
   }
 
 }

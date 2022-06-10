@@ -55,7 +55,6 @@ import com.opentext.ia.sdk.dto.Ingests;
 import com.opentext.ia.sdk.dto.ItemContainer;
 import com.opentext.ia.sdk.dto.NamedLinkContainer;
 import com.opentext.ia.sdk.dto.Namespace;
-import com.opentext.ia.sdk.dto.Operand;
 import com.opentext.ia.sdk.dto.Pdi;
 import com.opentext.ia.sdk.dto.PdiConfig;
 import com.opentext.ia.sdk.dto.PdiCrypto;
@@ -67,6 +66,10 @@ import com.opentext.ia.sdk.dto.Queries;
 import com.opentext.ia.sdk.dto.Query;
 import com.opentext.ia.sdk.dto.QueryQuota;
 import com.opentext.ia.sdk.dto.QueryQuotas;
+import com.opentext.ia.sdk.dto.RdbDataNode;
+import com.opentext.ia.sdk.dto.RdbDataNodes;
+import com.opentext.ia.sdk.dto.RdbDatabase;
+import com.opentext.ia.sdk.dto.RdbDatabases;
 import com.opentext.ia.sdk.dto.ReceiverNode;
 import com.opentext.ia.sdk.dto.ReceiverNodes;
 import com.opentext.ia.sdk.dto.ResultConfigurationHelper;
@@ -83,8 +86,8 @@ import com.opentext.ia.sdk.dto.Sip;
 import com.opentext.ia.sdk.dto.Space;
 import com.opentext.ia.sdk.dto.SpaceRootFolder;
 import com.opentext.ia.sdk.dto.SpaceRootFolders;
-import com.opentext.ia.sdk.dto.SpaceRootXdbLibraries;
-import com.opentext.ia.sdk.dto.SpaceRootXdbLibrary;
+import com.opentext.ia.sdk.dto.SpaceRootRdbDatabase;
+import com.opentext.ia.sdk.dto.SpaceRootRdbDatabases;
 import com.opentext.ia.sdk.dto.Spaces;
 import com.opentext.ia.sdk.dto.StorageEndPoint;
 import com.opentext.ia.sdk.dto.StorageEndPoints;
@@ -93,13 +96,6 @@ import com.opentext.ia.sdk.dto.Stores;
 import com.opentext.ia.sdk.dto.SubPriority;
 import com.opentext.ia.sdk.dto.Tenant;
 import com.opentext.ia.sdk.dto.XForm;
-import com.opentext.ia.sdk.dto.XdbDatabase;
-import com.opentext.ia.sdk.dto.XdbDatabases;
-import com.opentext.ia.sdk.dto.XdbFederation;
-import com.opentext.ia.sdk.dto.XdbFederations;
-import com.opentext.ia.sdk.dto.XdbLibraries;
-import com.opentext.ia.sdk.dto.XdbLibrary;
-import com.opentext.ia.sdk.dto.XdbPdiConfig;
 import com.opentext.ia.sdk.dto.export.ExportConfiguration;
 import com.opentext.ia.sdk.dto.export.ExportConfiguration.DefaultOption;
 import com.opentext.ia.sdk.dto.export.ExportConfiguration.Transformation;
@@ -126,19 +122,22 @@ import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 import com.opentext.ia.sdk.support.http.rest.RestClient;
 import com.opentext.ia.sdk.support.io.RuntimeIoException;
 
-
 /**
  * Configure an InfoArchive application based on properties in a map. This is less convenient for repeating and/or
  * hierarchical configuration. For a more convenient way of specifying the configuration, see
  * {@linkplain YamlBasedApplicationConfigurer}.
  *
- *@deprecated Use {@linkplain YamlBasedApplicationConfigurer} instead.
+ * @deprecated Use {@linkplain YamlBasedApplicationConfigurer} instead.
  */
 @Deprecated
-@SuppressWarnings({ "PMD.ExcessiveClassLength", "PMD.ExcessiveImports", "PMD.CouplingBetweenObjects",
-  "PMD.CyclomaticComplexity", "PMD.UseObjectForClearerAPI" })
-public class PropertiesBasedApplicationConfigurer implements ApplicationConfigurer, InfoArchiveLinkRelations,
-    InfoArchiveConfigurationProperties {
+@SuppressWarnings({
+    "PMD.ExcessiveClassLength",
+    "PMD.ExcessiveImports",
+    "PMD.CouplingBetweenObjects",
+    "PMD.CyclomaticComplexity",
+    "PMD.UseObjectForClearerAPI" })
+public class PropertiesBasedApplicationConfigurer
+    implements ApplicationConfigurer, InfoArchiveLinkRelations, InfoArchiveConfigurationProperties {
 
   private static final String EXPORT_CONFIGURATION = "export-configuration";
   private static final String TYPE_EXPORT_PIPELINE = "export-pipeline";
@@ -192,7 +191,7 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
 
   protected void applyConfiguration() throws IOException {
     ensureTenant();
-    ensureFederation();
+    ensureDataNode();
     ensureDatabase();
     ensureFileSystemRoot();
     ensureStorageEndPoint();
@@ -204,7 +203,7 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     ensureTenantLevelExportConfigurations();
     ensureApplication();
     ensureSpace();
-    ensureSpaceRootLibrary();
+    ensureSpaceRootRdbDatabase();
     ensureSpaceRootFolder();
     ensureFileSystemFolder();
     ensureStores();
@@ -216,7 +215,7 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     ensurePdi();
     ensurePdiSchema();
     ensureIngest();
-    ensureLibrary();
+
     ensureHolding();
     ensureAic();
     ensureQuota();
@@ -231,27 +230,27 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private void ensureTenant() throws IOException {
-    cache.setTenant(Objects.requireNonNull(
-        restClient.follow(cache.getServices(), LINK_TENANT, Tenant.class), "Missing tenant"));
+    cache.setTenant(
+        Objects.requireNonNull(restClient.follow(cache.getServices(), LINK_TENANT, Tenant.class), "Missing tenant"));
   }
 
-  private void ensureFederation() throws IOException {
-    XdbFederation federation = ensureItem(cache.getServices(), LINK_FEDERATIONS, XdbFederations.class, FEDERATION_NAME,
-        this::createFederation);
-    cache.setFederation(federation);
+  private void ensureDataNode() throws IOException {
+    RdbDataNode rDBDataNode =
+        ensureItem(cache.getServices(), LINK_RDB_DATA_NODES, RdbDataNodes.class, DATANODE_NAME, this::createDataNode);
+    cache.setRdbDataNode(rDBDataNode);
   }
 
   @Nullable
-  private <T extends NamedLinkContainer> T ensureItem(LinkContainer collectionOwner,
-      String collectionLinkRelation, Class<? extends ItemContainer<T>> collectionType, String objectName,
-          Function<String, ? extends T> objectCreator) throws IOException {
+  private <T extends NamedLinkContainer> T ensureItem(LinkContainer collectionOwner, String collectionLinkRelation,
+      Class<? extends ItemContainer<T>> collectionType, String objectName, Function<String, ? extends T> objectCreator)
+      throws IOException {
     return ensureItem(collectionOwner, collectionLinkRelation, collectionType, objectName, objectCreator, false);
   }
 
   @Nullable
-  private <T extends NamedLinkContainer> T ensureItem(LinkContainer collectionOwner,
-      String collectionLinkRelation, Class<? extends ItemContainer<T>> collectionType, String objectName,
-          Function<String, ? extends T> objectCreator, boolean optional) throws IOException {
+  private <T extends NamedLinkContainer> T ensureItem(LinkContainer collectionOwner, String collectionLinkRelation,
+      Class<? extends ItemContainer<T>> collectionType, String objectName, Function<String, ? extends T> objectCreator,
+      boolean optional) throws IOException {
     String name = configuration.get(objectName);
     if (optional && name == null) {
       return null;
@@ -259,9 +258,9 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     return ensureNamedItem(collectionOwner, collectionLinkRelation, collectionType, name, objectCreator);
   }
 
-  private <T extends NamedLinkContainer> T ensureNamedItem(LinkContainer collectionOwner,
-      String collectionLinkRelation, Class<? extends ItemContainer<T>> collectionType, String name,
-      Function<String, ? extends T> objectCreator) throws IOException {
+  private <T extends NamedLinkContainer> T ensureNamedItem(LinkContainer collectionOwner, String collectionLinkRelation,
+      Class<? extends ItemContainer<T>> collectionType, String name, Function<String, ? extends T> objectCreator)
+      throws IOException {
     ItemContainer<T> collection = restClient.follow(collectionOwner, collectionLinkRelation, collectionType);
     Objects.requireNonNull(collection, "Missing " + nameOf(collectionType));
     T result = collection.byName(name);
@@ -281,10 +280,10 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     return type.getSimpleName().toLowerCase(Locale.ENGLISH);
   }
 
-  private XdbFederation createFederation(String name) {
-    XdbFederation result = createObject(name, XdbFederation.class);
-    result.setSuperUserPassword(configuration.get(FEDERATION_SUPERUSER_PASSWORD));
-    result.setBootstrap(configuration.get(FEDERATION_BOOTSTRAP));
+  private RdbDataNode createDataNode(String name) {
+    RdbDataNode result = createObject(name, RdbDataNode.class);
+    result.setSuperUserPassword(configuration.get(DATANODE_SUPERUSER_PASSWORD));
+    result.setBootstrap(configuration.get(DATANODE_BOOTSTRAP));
     return result;
   }
 
@@ -347,12 +346,13 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private void ensureDatabase() throws IOException {
-    cache.setDatabaseUri(ensureItem(cache.getFederation(), LINK_DATABASES, XdbDatabases.class,
-        DATABASE_NAME, this::createDatabase).getSelfUri());
+    cache.setDatabaseUri(
+        ensureItem(cache.getRdbDataNode(), LINK_DATABASES, RdbDatabases.class, DATABASE_NAME, this::createDatabase)
+            .getSelfUri());
   }
 
-  private XdbDatabase createDatabase(String name) {
-    XdbDatabase result = createObject(name, XdbDatabase.class);
+  private RdbDatabase createDatabase(String name) {
+    RdbDatabase result = createObject(name, RdbDatabase.class);
     result.setAdminPassword(configured(DATABASE_ADMIN_PASSWORD));
     return result;
   }
@@ -362,14 +362,15 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private void ensureFileSystemRoot() throws IOException {
-    FileSystemRoots existingFileSystemRoots = Objects.requireNonNull(restClient.follow(cache.getServices(),
-        LINK_FILE_SYSTEM_ROOTS, FileSystemRoots.class), "Missing file system roots");
+    FileSystemRoots existingFileSystemRoots =
+        Objects.requireNonNull(restClient.follow(cache.getServices(), LINK_FILE_SYSTEM_ROOTS, FileSystemRoots.class),
+            "Missing file system roots");
     cache.setFileSystemRootUri(existingFileSystemRoots.first().getSelfUri());
   }
 
   private void ensureApplication() throws IOException {
-    Application application = ensureItem(cache.getTenant(), LINK_APPLICATIONS, Applications.class,
-        APPLICATION_NAME, this::createApplication);
+    Application application =
+        ensureItem(cache.getTenant(), LINK_APPLICATIONS, Applications.class, APPLICATION_NAME, this::createApplication);
     cache.setApplication(application);
   }
 
@@ -381,8 +382,8 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private void ensureSpace() throws IOException {
-    Space space = ensureNamedItem(cache.getApplication(), LINK_SPACES, Spaces.class, getApplicationName(),
-        this::createSpace);
+    Space space =
+        ensureNamedItem(cache.getApplication(), LINK_SPACES, Spaces.class, getApplicationName(), this::createSpace);
     cache.setSpace(space);
   }
 
@@ -390,14 +391,15 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     return createObject(name, Space.class);
   }
 
-  private void ensureSpaceRootLibrary() throws IOException {
-    cache.setSpaceRootLibrary(ensureItem(cache.getSpace(), LINK_SPACE_ROOT_LIBRARIES, SpaceRootXdbLibraries.class,
-        HOLDING_NAME, this::createSpaceRootLibrary));
+  private void ensureSpaceRootRdbDatabase() throws IOException {
+    SpaceRootRdbDatabase spaceRootRdbDatabase = ensureItem(cache.getSpace(), LINK_SPACE_ROOT_RDB_DATABASES,
+        SpaceRootRdbDatabases.class, HOLDING_NAME, this::createSpaceRootRdbDatabase);
+    cache.setSpaceRootRdbDatabase(spaceRootRdbDatabase);
   }
 
-  private SpaceRootXdbLibrary createSpaceRootLibrary(String name) {
-    SpaceRootXdbLibrary result = createObject(name, SpaceRootXdbLibrary.class);
-    result.setXdbDatabase(cache.getDatabaseUri());
+  private SpaceRootRdbDatabase createSpaceRootRdbDatabase(String name) {
+    SpaceRootRdbDatabase result = createObject(name, SpaceRootRdbDatabase.class);
+    result.setRdbDatabase(cache.getDatabaseUri());
     return result;
   }
 
@@ -434,9 +436,8 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private Collection<String> commaSeparatedItems(String items) {
-    return StringUtils.isBlank(items) ? Collections.emptyList() : Arrays.stream(items.split("\\s*,\\s*"))
-        .filter(StringUtils::isNotBlank)
-        .collect(Collectors.toList());
+    return StringUtils.isBlank(items) ? Collections.emptyList()
+        : Arrays.stream(items.split("\\s*,\\s*")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
   }
 
   private FileSystemFolder ensureFileSystemFolder(String name) throws IOException {
@@ -460,13 +461,12 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   private void ensureStores() throws IOException {
     cache.setStoreUri(ensureStore(DEFAULT_STORE_NAME, null, cache.getFileSystemFolderUri(), null).getSelfUri());
     for (Map<String, String> cfg : getStoreConfigurations()) {
-      ensureStore(cfg.get(STORE_NAME), cfg.get(STORE_STORETYPE), cache.getObjectUri("filesystemfolder",
-          cfg.get(STORE_FOLDER)), cfg.get(STORE_TYPE));
+      ensureStore(cfg.get(STORE_NAME), cfg.get(STORE_STORETYPE),
+          cache.getObjectUri("filesystemfolder", cfg.get(STORE_FOLDER)), cfg.get(STORE_TYPE));
     }
   }
 
-  private Store ensureStore(String name, String storeType, String fileSystemFolderUri, String type)
-      throws IOException {
+  private Store ensureStore(String name, String storeType, String fileSystemFolderUri, String type) throws IOException {
     Store store = ensureNamedItem(cache.getApplication(), LINK_STORES, Stores.class, name,
         storeName -> createStore(storeName, storeType, fileSystemFolderUri, type));
     return cacheObject("store", store);
@@ -593,8 +593,8 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private ExportPipeline ensureExportPipeline(String name) throws IOException {
-    ExportPipeline exportPipeline = ensureNamedItem(cache.getApplication(), LINK_EXPORT_PIPELINE,
-        ExportPipelines.class, name, this::createExportPipeline);
+    ExportPipeline exportPipeline = ensureNamedItem(cache.getApplication(), LINK_EXPORT_PIPELINE, ExportPipelines.class,
+        name, this::createExportPipeline);
     return cacheObject(TYPE_EXPORT_PIPELINE, exportPipeline);
   }
 
@@ -637,8 +637,8 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   private ExportConfiguration createExportConfiguration(String name) {
     ExportConfiguration result = createObject(name, ExportConfiguration.class);
     result.setExportType(templatedString(EXPORT_CONFIG_TYPE_TEMPLATE, name));
-    result.setPipeline(cache.getObjectUri(TYPE_EXPORT_PIPELINE, templatedString(EXPORT_CONFIG_PIPELINE_TEMPLATE,
-        name)));
+    result
+        .setPipeline(cache.getObjectUri(TYPE_EXPORT_PIPELINE, templatedString(EXPORT_CONFIG_PIPELINE_TEMPLATE, name)));
     fillExportConfigurationTransformations(result);
     fillExportConfigurationOptions(result);
     fillExportConfigurationEncryptedOptions(result);
@@ -656,10 +656,10 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
 
   private void fillExportConfigurationTransformation(ExportConfiguration config, String name) {
     ExportConfiguration.Transformation result = new ExportConfiguration.Transformation();
-    result.setPortName(templatedString(EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_PORTNAME_TEMPLATE,
-        config.getName(), name));
-    result.setName(cache.getObjectUri(TYPE_EXPORT_TRANSFORMATION, templatedString(
-        EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_TRANSFORMATION_TEMPLATE, config.getName(), name)));
+    result
+        .setPortName(templatedString(EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_PORTNAME_TEMPLATE, config.getName(), name));
+    result.setName(cache.getObjectUri(TYPE_EXPORT_TRANSFORMATION,
+        templatedString(EXPORT_CONFIG_TRANSFORMATIONS_TEMPLATE_TRANSFORMATION_TEMPLATE, config.getName(), name)));
     addTransformation(config, result);
   }
 
@@ -668,9 +668,8 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
         templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_XSL_RESULTFORMAT_TEMPLATE, config.getName()));
     addOption(config, ExportConfiguration.DefaultOption.XQUERY_RESULT_FORMAT,
         templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_XQUERY_RESULTFORMAT_TEMPLATE, config.getName()));
-    forEach(templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_NAME, config.getName()), name ->
-        addOption(config, name, templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_VALUE_TEMPLATE,
-        config.getName(), name)));
+    forEach(templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_NAME, config.getName()), name -> addOption(config, name,
+        templatedString(EXPORT_CONFIG_OPTIONS_TEMPLATE_VALUE_TEMPLATE, config.getName(), name)));
   }
 
   private void addOption(ExportConfiguration exportConfiguration, DefaultOption option, String value) {
@@ -685,8 +684,8 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
 
   private void fillExportConfigurationEncryptedOptions(ExportConfiguration config) {
     forEach(templatedString(EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_NAME, config.getName()),
-        name -> addEncryptedOption(config, name, templatedString(EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_VALUE_TEMPLATE,
-        config.getName(), name)));
+        name -> addEncryptedOption(config, name,
+            templatedString(EXPORT_CONFIG_ENCRYPTED_OPTIONS_TEMPLATE_VALUE_TEMPLATE, config.getName(), name)));
   }
 
   private void addEncryptedOption(ExportConfiguration exportConfiguration, String key, String value) {
@@ -700,8 +699,8 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private ExportTransformation ensureExportTransformation(String name) throws IOException {
-    ExportTransformation exportTransformation = ensureNamedItem(cache.getApplication(),
-        LINK_EXPORT_TRANSFORMATION, ExportTransformations.class, name, this::createExportTransformation);
+    ExportTransformation exportTransformation = ensureNamedItem(cache.getApplication(), LINK_EXPORT_TRANSFORMATION,
+        ExportTransformations.class, name, this::createExportTransformation);
     return cacheObject(TYPE_EXPORT_TRANSFORMATION, exportTransformation);
   }
 
@@ -752,14 +751,14 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     String content = configured(configurationName);
     try (InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
       perform(() -> restClient.post(state.getUri(LINK_CONTENTS), null,
-            new TextPart("content", MediaTypes.HAL, "{ \"format\": \"" + format + "\" }"),
-            new BinaryPart("file", stream, configurationName)));
+          new TextPart("content", MediaTypes.HAL, "{ \"format\": \"" + format + "\" }"),
+          new BinaryPart("file", stream, configurationName)));
     }
   }
 
   private void ensurePdiSchema() throws IOException {
-    PdiSchema pdiSchema = ensureItem(cache.getApplication(), LINK_PDI_SCHEMAS, PdiSchemas.class, PDI_SCHEMA_NAME,
-        this::createPdiSchema);
+    PdiSchema pdiSchema =
+        ensureItem(cache.getApplication(), LINK_PDI_SCHEMAS, PdiSchemas.class, PDI_SCHEMA_NAME, this::createPdiSchema);
     cache.setPdiSchema(pdiSchema);
     ensureContents(pdiSchema, PDI_SCHEMA, FORMAT_XSD);
   }
@@ -769,26 +768,14 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private void ensureIngest() throws IOException {
-    Ingest ingest = ensureNamedItem(cache.getApplication(), LINK_INGESTS, Ingests.class, INGEST_NAME,
-        this::createIngest);
+    Ingest ingest =
+        ensureNamedItem(cache.getApplication(), LINK_INGESTS, Ingests.class, INGEST_NAME, this::createIngest);
     cache.setIngestUri(ingest.getSelfUri());
     ensureContents(ingest, INGEST_XML, FORMAT_XML);
   }
 
   private Ingest createIngest(String name) {
     return createObject(name, Ingest.class);
-  }
-
-  private void ensureLibrary() throws IOException {
-    XdbLibrary library = ensureItem(cache.getSpaceRootLibrary(), LINK_LIBRARIES, XdbLibraries.class, HOLDING_NAME,
-        this::createLibrary);
-    cache.setLibraryUri(library.getSelfUri());
-  }
-
-  private XdbLibrary createLibrary(String name) {
-    XdbLibrary result = createObject(name, XdbLibrary.class);
-    result.setSubPath("aips/" + getApplicationName().replace(' ', '-'));
-    return result;
   }
 
   @Override
@@ -798,8 +785,8 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private void ensureHolding() throws IOException {
-    Holding holding = ensureItem(cache.getApplication(), LINK_HOLDINGS, Holdings.class, HOLDING_NAME,
-        this::createHolding);
+    Holding holding =
+        ensureItem(cache.getApplication(), LINK_HOLDINGS, Holdings.class, HOLDING_NAME, this::createHolding);
     cache.setHoldingUri(holding.getSelfUri());
   }
 
@@ -819,7 +806,7 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     priority.setPriority(1);
     priority.setDeadline(200);
     subPriorities.add(priority);
-    result.setXdbLibraryParent(cache.getLibraryUri());
+
     RetentionClass retentionClass = new RetentionClass();
     retentionClass.getPolicies().add(configured(RETENTION_POLICY_NAME));
     result.getRetentionClasses().add(retentionClass);
@@ -835,9 +822,9 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     holding.setLogStore(store);
     holding.setRenditionStore(store);
     holding.setSipStore(store);
-    holding.setXdbStore(store);
+    holding.setLibraryBackupStore(store);
     holding.setXmlStore(store);
-    holding.setManagedItemStore(store);
+    holding.setRetentionBackupStore(store);
   }
 
   private void ensureAic() throws IOException {
@@ -904,12 +891,11 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     Query result = createObject(name, Query.class);
 
     result.setResultRootElement(templatedString(QUERY_RESULT_ROOT_ELEMENT_TEMPLATE, name));
-    result.setResultRootNsEnabled(
-        Boolean.parseBoolean(templatedString(QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, name)));
+    result.setResultRootNsEnabled(Boolean.parseBoolean(templatedString(QUERY_RESULT_ROOT_NS_ENABLED_TEMPLATE, name)));
     result.setResultSchema(templatedString(QUERY_RESULT_SCHEMA_TEMPLATE, name));
 
     result.setNamespaces(createNamespaces(name));
-    result.setXdbPdiConfigs(createXdbPdiConfigs(name));
+    // result.setXdbPdiConfigs(createXdbPdiConfigs(name));
 
     String quotaUri = cache.getQuotaUri();
     result.setQuota(quotaUri);
@@ -920,11 +906,10 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private List<Namespace> createNamespaces(String name) {
-    RepeatingConfigReader reader = new RepeatingConfigReader("namespace", resolveTemplatedKeys(Arrays.asList(
-        QUERY_NAMESPACE_PREFIX_TEMPLATE, QUERY_NAMESPACE_URI_TEMPLATE), name));
+    RepeatingConfigReader reader = new RepeatingConfigReader("namespace",
+        resolveTemplatedKeys(Arrays.asList(QUERY_NAMESPACE_PREFIX_TEMPLATE, QUERY_NAMESPACE_URI_TEMPLATE), name));
     List<Map<String, String>> namespaceConfigurations = reader.read(configuration);
-    return namespaceConfigurations.stream()
-        .map(namespaceConfiguration -> toNamespace(name, namespaceConfiguration))
+    return namespaceConfigurations.stream().map(namespaceConfiguration -> toNamespace(name, namespaceConfiguration))
         .collect(Collectors.toList());
   }
 
@@ -936,56 +921,54 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private List<String> resolveTemplatedKeys(Collection<String> templatedKeys, Object... vars) {
-    return templatedKeys.stream()
-      .map(key -> resolveTemplatedKey(key, vars))
-      .collect(Collectors.toList());
+    return templatedKeys.stream().map(key -> resolveTemplatedKey(key, vars)).collect(Collectors.toList());
   }
 
-  private List<XdbPdiConfig> createXdbPdiConfigs(String name) {
-    return getPdiConfigs(name).stream()
-        .map(pdiConfig -> toXdbPdiConfig(name, pdiConfig))
-        .collect(Collectors.toList());
-  }
+//  private List<XdbPdiConfig> createXdbPdiConfigs(String name) {
+//    return getPdiConfigs(name).stream()
+//        .map(pdiConfig -> toXdbPdiConfig(name, pdiConfig))
+//        .collect(Collectors.toList());
+//  }
+//
+//  private XdbPdiConfig toXdbPdiConfig(String name, Map<String, String> pdiConfig) {
+//    XdbPdiConfig result = new XdbPdiConfig();
+//    result.setEntityPath(pdiConfig.get(resolveTemplatedKey(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name)));
+//    result.setSchema(pdiConfig.get(resolveTemplatedKey(QUERY_XDBPDI_SCHEMA_TEMPLATE, name)));
+//    result.setTemplate(pdiConfig.get(resolveTemplatedKey(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name)));
+//    result.setOperands(createOperands(name, result.getSchema()));
+//    return result;
+//  }
+//
+//  private List<Map<String, String>> getPdiConfigs(String name) {
+//    return new RepeatingConfigReader("xdbpdiconfigs", resolveTemplatedKeys(
+//        Arrays.asList(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, QUERY_XDBPDI_SCHEMA_TEMPLATE, QUERY_XDBPDI_TEMPLATE_TEMPLATE),
+//        name)).read(configuration);
+//  }
+//
+//  private List<Operand> createOperands(String name, String schema) {
+//    return getOperandConfigs(name, schema).stream()
+//        .map(operandConfiguration -> toOperand(name, schema, operandConfiguration)).collect(Collectors.toList());
+//  }
 
-  private XdbPdiConfig toXdbPdiConfig(String name, Map<String, String> pdiConfig) {
-    XdbPdiConfig result = new XdbPdiConfig();
-    result.setEntityPath(pdiConfig.get(resolveTemplatedKey(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, name)));
-    result.setSchema(pdiConfig.get(resolveTemplatedKey(QUERY_XDBPDI_SCHEMA_TEMPLATE, name)));
-    result.setTemplate(pdiConfig.get(resolveTemplatedKey(QUERY_XDBPDI_TEMPLATE_TEMPLATE, name)));
-    result.setOperands(createOperands(name, result.getSchema()));
-    return result;
-  }
+//  private Operand toOperand(String name, String schema, Map<String, String> operandConfiguration) {
+//    Operand result = new Operand();
+//    result.setIndex(
+//        Boolean.parseBoolean(operandConfiguration.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_INDEX, name, schema))));
+//    result.setType(operandConfiguration.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_TYPE, name, schema)));
+//    result.setName(operandConfiguration.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_NAME, name, schema)));
+//    result.setPath(operandConfiguration.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_PATH, name, schema)));
+//    return result;
+//  }
 
-  private List<Map<String, String>> getPdiConfigs(String name) {
-    return new RepeatingConfigReader("xdbpdiconfigs", resolveTemplatedKeys(
-        Arrays.asList(QUERY_XDBPDI_ENTITY_PATH_TEMPLATE, QUERY_XDBPDI_SCHEMA_TEMPLATE, QUERY_XDBPDI_TEMPLATE_TEMPLATE),
-        name)).read(configuration);
-  }
-
-  private List<Operand> createOperands(String name, String schema) {
-    return getOperandConfigs(name, schema).stream()
-        .map(operandConfiguration -> toOperand(name, schema, operandConfiguration))
-        .collect(Collectors.toList());
-  }
-
-  private Operand toOperand(String name, String schema, Map<String, String> operandConfiguration) {
-    Operand result = new Operand();
-    result.setIndex(Boolean.parseBoolean(operandConfiguration.get(
-        resolveTemplatedKey(QUERY_XDBPDI_OPERAND_INDEX, name, schema))));
-    result.setType(operandConfiguration.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_TYPE, name, schema)));
-    result.setName(operandConfiguration.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_NAME, name, schema)));
-    result.setPath(operandConfiguration.get(resolveTemplatedKey(QUERY_XDBPDI_OPERAND_PATH, name, schema)));
-    return result;
-  }
-
-  private List<Map<String, String>> getOperandConfigs(String name, String schema) {
-    return new RepeatingConfigReader("operands", resolveTemplatedKeys(Arrays.asList(
-        QUERY_XDBPDI_OPERAND_NAME, QUERY_XDBPDI_OPERAND_PATH, QUERY_XDBPDI_OPERAND_TYPE, QUERY_XDBPDI_OPERAND_INDEX),
-        name, schema)).read(configuration);
-  }
+//  private List<Map<String, String>> getOperandConfigs(String name, String schema) {
+//    return new RepeatingConfigReader("operands", resolveTemplatedKeys(Arrays.asList(QUERY_XDBPDI_OPERAND_NAME,
+//        QUERY_XDBPDI_OPERAND_PATH, QUERY_XDBPDI_OPERAND_TYPE, QUERY_XDBPDI_OPERAND_INDEX), name, schema))
+//            .read(configuration);
+//  }
 
   private void ensureQuota() throws IOException {
-    QueryQuota quota = ensureItem(cache.getApplication(), LINK_QUERY_QUOTAS, QueryQuotas.class, QUOTA_NAME, this::createQuota);
+    QueryQuota quota =
+        ensureItem(cache.getApplication(), LINK_QUERY_QUOTAS, QueryQuotas.class, QUOTA_NAME, this::createQuota);
     cache.setQuotaUri(quota.getSelfUri());
 
   }
@@ -1068,8 +1051,8 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     components.setSearchComposition(composition);
     components.setXform(createXForm(searchName, composition.getName(), composition.getVersion()));
     components.setResultMaster(createResultMaster(searchName, composition.getName(), composition.getVersion()));
-    SearchComposition updatedComposition = restClient.put(composition.getUri(LINK_ALLCOMPONENTS),
-        SearchComposition.class, components);
+    SearchComposition updatedComposition =
+        restClient.put(composition.getUri(LINK_ALLCOMPONENTS), SearchComposition.class, components);
     Objects.requireNonNull(updatedComposition, "Failed to update search composition");
   }
 
@@ -1088,22 +1071,21 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     Tab defaultTab = result.getDefaultTab();
     List<Column> columns = defaultTab.getColumns();
 
-    defaultTab.setExportEnabled(templatedBoolean(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE,
-        searchName));
-    defaultTab.getExportConfigurations().addAll(uriFromNamesAndType(EXPORT_CONFIGURATION, getStrings(
-          SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName)));
+    defaultTab.setExportEnabled(templatedBoolean(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_ENABLED_TEMPLATE, searchName));
+    defaultTab.getExportConfigurations().addAll(uriFromNamesAndType(EXPORT_CONFIGURATION,
+        getStrings(SEARCH_COMPOSITION_RESULT_MAIN_EXPORT_CONFIG_TEMPLATE, searchName)));
 
     for (Map<String, String> config : getSearchColumnConfigs(searchName, compositionName)) {
-      String name = config.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, searchName,
-          compositionName));
-      String label = config.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, searchName,
-          compositionName));
-      String path = config.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName,
-          compositionName));
-      DataType dataType = DataType.valueOf(config.get(resolveTemplatedKey(
-          SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName, compositionName)));
-      DefaultSort sortOrder = DefaultSort.valueOf(config.get(resolveTemplatedKey(
-          SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT, searchName, compositionName)));
+      String name =
+          config.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, searchName, compositionName));
+      String label =
+          config.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, searchName, compositionName));
+      String path =
+          config.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, searchName, compositionName));
+      DataType dataType = DataType.valueOf(
+          config.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, searchName, compositionName)));
+      DefaultSort sortOrder = DefaultSort.valueOf(
+          config.get(resolveTemplatedKey(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT, searchName, compositionName)));
 
       Column column = Column.fromSchema(name, label, path, dataType, sortOrder);
       columns.add(column);
@@ -1116,16 +1098,15 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
   }
 
   private Collection<String> uriFromNamesAndType(String type, Collection<String> names) {
-    return names.stream()
-      .map(name -> cache.getObjectUri(type, name))
-      .collect(Collectors.toList());
+    return names.stream().map(name -> cache.getObjectUri(type, name)).collect(Collectors.toList());
   }
 
   private List<Map<String, String>> getSearchColumnConfigs(String searchName, String compositionName) {
-    return new RepeatingConfigReader("maincolumns", resolveTemplatedKeys(Arrays.asList(
-        SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL,
-        SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE,
-        SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT), searchName, compositionName)).read(configuration);
+    return new RepeatingConfigReader("maincolumns",
+        resolveTemplatedKeys(Arrays.asList(SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_NAME,
+            SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_LABEL, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_PATH,
+            SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_TYPE, SEARCH_COMPOSITION_RESULT_MAIN_COLUMN_SORT), searchName,
+            compositionName)).read(configuration);
   }
 
   private void ensureCryptoObject() throws IOException {
@@ -1135,7 +1116,7 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
 
   private <T extends NamedLinkContainer> Optional<T> ensureOptionalItem(LinkContainer collectionOwner,
       String collectionLinkRelation, Class<? extends ItemContainer<T>> collectionType, String objectName,
-          Function<String, ? extends T> objectCreator) throws IOException {
+      Function<String, ? extends T> objectCreator) throws IOException {
     return Optional.ofNullable(
         ensureItem(collectionOwner, collectionLinkRelation, collectionType, objectName, objectCreator, true));
   }
@@ -1157,8 +1138,7 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
 
   private void ensurePdiCrypto() throws IOException {
     ensureOptionalItem(cache.getApplication(), LINK_PDI_CRYPTOS, PdiCryptoes.class, PDI_CRYPTO_NAME,
-        this::createPdiCrypto).ifPresent(pdiCrypto ->
-      cache.setPdiCryptoUri(pdiCrypto.getSelfUri()));
+        this::createPdiCrypto).ifPresent(pdiCrypto -> cache.setPdiCryptoUri(pdiCrypto.getSelfUri()));
   }
 
   private PdiCrypto createPdiCrypto(String name) {
@@ -1228,20 +1208,21 @@ public class PropertiesBasedApplicationConfigurer implements ApplicationConfigur
     ContentAddressedStorage result = createObject(name, ContentAddressedStorage.class);
     result.setConnexionString(configuration.get(CONTENT_ADDRESSED_STORAGE_CONNEXION_STRING));
     Map<String, String> peas = new HashMap<>();
-    peas.put(configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_NAME), configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_VALUE));
+    peas.put(configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_NAME),
+        configuration.get(CONTENT_ADDRESSED_STORAGE_PEA_VALUE));
     result.setPeas(peas);
     return result;
   }
 
-
   @FunctionalInterface
   interface Operation<T> {
+
     T perform() throws IOException;
   }
 
-
   @FunctionalInterface
   private interface Processor {
+
     Object accept(String name) throws IOException;
   }
 

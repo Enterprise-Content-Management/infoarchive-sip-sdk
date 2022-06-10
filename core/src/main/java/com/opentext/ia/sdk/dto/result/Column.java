@@ -5,7 +5,6 @@ package com.opentext.ia.sdk.dto.result;
 
 import com.opentext.ia.sdk.support.JavaBean;
 
-
 @SuppressWarnings("PMD.TooManyFields") // Dictated by IA
 public class Column extends JavaBean {
 
@@ -38,7 +37,8 @@ public class Column extends JavaBean {
 
   private String name;
   private String label;
-  private String xdbElementName;
+  private String binding;
+
   private boolean hidden;
   private boolean encrypt;
   private boolean masked;
@@ -69,12 +69,12 @@ public class Column extends JavaBean {
     this.label = label;
   }
 
-  public String getXdbElementName() {
-    return xdbElementName;
+  public String getBinding() {
+    return binding;
   }
 
-  public void setXdbElementName(String xdbElementName) {
-    this.xdbElementName = xdbElementName;
+  public void setBinding(String binding) {
+    this.binding = binding;
   }
 
   public boolean isHidden() {

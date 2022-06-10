@@ -13,7 +13,7 @@ public class Holding extends NamedLinkContainer {
   private String logStore;
   private boolean keepSipAfterCommitEnabled;
   private String renditionStore;
-  private String xdbMode;
+  private String libraryMode;
   private String ciStore;
   private boolean syncCommitEnabled;
   private boolean ciHashValidationEnabled;
@@ -23,13 +23,13 @@ public class Holding extends NamedLinkContainer {
   private List<IngestConfig> ingestConfigs;
   private String defaultRetentionClass;
   private List<String> ingestNodes;
-  private String xdbStore;
+  private String libraryBackupStore;
   private boolean logStoreEnabled;
   private List<SubPriority> subPriorities;
-  private String xdbLibraryParent;
+
   private boolean pdiXmlHashEnforced;
   private String sipStore;
-  private String managedItemStore;
+  private String retentionBackupStore;
   private List<RetentionClass> retentionClasses;
   private List<PdiConfig> pdiConfigs;
 
@@ -44,7 +44,7 @@ public class Holding extends NamedLinkContainer {
     setPdiConfigs(new ArrayList<>());
     setRetentionClasses(new ArrayList<>());
     setLogStoreEnabled(true);
-    setXdbMode("PRIVATE");
+    setLibraryMode("PRIVATE");
     setPriority(1);
   }
 
@@ -72,12 +72,12 @@ public class Holding extends NamedLinkContainer {
     this.renditionStore = renditionStore;
   }
 
-  public String getXdbMode() {
-    return xdbMode;
+  public String getLibraryMode() {
+    return libraryMode;
   }
 
-  public final void setXdbMode(String xdbMode) {
-    this.xdbMode = xdbMode;
+  public final void setLibraryMode(String libraryMode) {
+    this.libraryMode = libraryMode;
   }
 
   public String getCiStore() {
@@ -152,12 +152,12 @@ public class Holding extends NamedLinkContainer {
     this.ingestNodes = ingestNodes;
   }
 
-  public String getXdbStore() {
-    return xdbStore;
+  public String getLibraryBackupStore() {
+    return libraryBackupStore;
   }
 
-  public final void setXdbStore(String xdbStore) {
-    this.xdbStore = xdbStore;
+  public final void setLibraryBackupStore(String libraryBackupStore) {
+    this.libraryBackupStore = libraryBackupStore;
   }
 
   public boolean isLogStoreEnabled() {
@@ -176,14 +176,6 @@ public class Holding extends NamedLinkContainer {
     this.subPriorities = subPriorities;
   }
 
-  public String getXdbLibraryParent() {
-    return xdbLibraryParent;
-  }
-
-  public final void setXdbLibraryParent(String xdbLibraryParent) {
-    this.xdbLibraryParent = xdbLibraryParent;
-  }
-
   public boolean isPdiXmlHashEnforced() {
     return pdiXmlHashEnforced;
   }
@@ -200,12 +192,12 @@ public class Holding extends NamedLinkContainer {
     this.sipStore = sipStore;
   }
 
-  public String getManagedItemStore() {
-    return managedItemStore;
+  public String getRetentionBackupStore() {
+    return retentionBackupStore;
   }
 
-  public void setManagedItemStore(String managedItemStore) {
-    this.managedItemStore = managedItemStore;
+  public void setRetentionBackupStore(String retentionBackupStore) {
+    this.retentionBackupStore = retentionBackupStore;
   }
 
   public List<RetentionClass> getRetentionClasses() {

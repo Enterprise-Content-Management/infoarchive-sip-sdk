@@ -13,7 +13,6 @@ public class Query extends NamedLinkContainer {
   private String resultRootElement = "result";
   private boolean resultRootNsEnabled;
   private List<Namespace> namespaces = new ArrayList<>();
-  private List<XdbPdiConfig> xdbPdiConfigs = new ArrayList<>();
   private String quotaAsync;
   private String quota;
   private List<String> aics = new ArrayList<>();
@@ -72,14 +71,6 @@ public class Query extends NamedLinkContainer {
 
   public void setNamespaces(List<Namespace> namespaces) {
     this.namespaces = namespaces;
-  }
-
-  public List<XdbPdiConfig> getXdbPdiConfigs() {
-    return xdbPdiConfigs;
-  }
-
-  public void setXdbPdiConfigs(List<XdbPdiConfig> xdbPdiConfigs) {
-    this.xdbPdiConfigs = xdbPdiConfigs;
   }
 
 }

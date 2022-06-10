@@ -25,9 +25,6 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   private static final String TENANT = "tenant";
   private static final String APPLICATION = "application";
   private static final String SPACE = "space";
-  private static final String XDB_FEDERATION = "xdbFederation";
-  private static final String XDB_DATABASE = "xdbDatabase";
-  private static final String SPACE_ROOT_XDB_LIBRARY = "spaceRootXdbLibrary";
 
   private static final String RDB_DATANODE = "rdbDataNode";
   private static final String RDB_DATABASE = "rdbDatabase";
@@ -103,16 +100,6 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   }
 
   @Override
-  public List<YamlMap> getSpaceRootXdbLibraries(YamlMap space) {
-    return childList(space, SPACE, SPACE_ROOT_XDB_LIBRARY);
-  }
-
-  @Override
-  public List<YamlMap> getXdbLibraries(YamlMap spaceRootXdbLibrary) {
-    return childList(spaceRootXdbLibrary, SPACE_ROOT_XDB_LIBRARY, "xdbLibrary");
-  }
-
-  @Override
   public List<YamlMap> getSpaceRootRdbDatabases(YamlMap space) {
     return childList(space, SPACE, SPACE_ROOT_RDB_DATABASE);
   }
@@ -135,18 +122,6 @@ public class YamlMapConfiguration implements Configuration<YamlMap> {
   @Override
   public List<YamlMap> getCryptoObjects() {
     return toList(streamOfType("cryptoObject"));
-  }
-
-  @Override
-  public List<YamlMap> getXdbFederations() {
-    return toList(streamOfType(XDB_FEDERATION));
-  }
-
-  @Override
-  public List<YamlMap> getXdbDatabases(YamlMap xdbFederation) {
-    List<YamlMap> result = new ArrayList<>();
-    result.addAll(childList(xdbFederation, XDB_FEDERATION, XDB_DATABASE));
-    return result;
   }
 
   @Override

@@ -12,16 +12,15 @@ import com.opentext.ia.sdk.dto.Application;
 import com.opentext.ia.sdk.dto.CryptoObject;
 import com.opentext.ia.sdk.dto.JobDefinition;
 import com.opentext.ia.sdk.dto.PdiSchema;
+import com.opentext.ia.sdk.dto.RdbDataNode;
 import com.opentext.ia.sdk.dto.Search;
 import com.opentext.ia.sdk.dto.SearchComposition;
 import com.opentext.ia.sdk.dto.Services;
 import com.opentext.ia.sdk.dto.Space;
 import com.opentext.ia.sdk.dto.SpaceRootFolder;
-import com.opentext.ia.sdk.dto.SpaceRootXdbLibrary;
+import com.opentext.ia.sdk.dto.SpaceRootRdbDatabase;
 import com.opentext.ia.sdk.dto.Tenant;
 import com.opentext.ia.sdk.dto.XForm;
-import com.opentext.ia.sdk.dto.XdbFederation;
-
 
 @SuppressWarnings({ "PMD.TooManyFields", "PMD.ExcessivePublicCount" })
 public class ApplicationResourcesCache {
@@ -30,7 +29,7 @@ public class ApplicationResourcesCache {
   private Tenant tenant;
   private Application application;
   private String ingestUri;
-  private XdbFederation federation;
+  private RdbDataNode rdbDataNode;
   private String fileSystemRootUri;
   private Space space;
   private String databaseUri;
@@ -38,7 +37,7 @@ public class ApplicationResourcesCache {
   private String fileSystemFolderUri;
   private String receptionFolderUri;
   private String storeUri;
-  private SpaceRootXdbLibrary spaceRootLibrary;
+  private SpaceRootRdbDatabase spaceRootRdbDatabase;
   private String libraryUri;
   private String pdiUri;
   private String ingestNodeUri;
@@ -99,12 +98,12 @@ public class ApplicationResourcesCache {
     this.tenant = tenant;
   }
 
-  public XdbFederation getFederation() {
-    return federation;
+  public RdbDataNode getRdbDataNode() {
+    return rdbDataNode;
   }
 
-  public void setFederation(XdbFederation federation) {
-    this.federation = federation;
+  public void setRdbDataNode(RdbDataNode rdbDataNode) {
+    this.rdbDataNode = rdbDataNode;
   }
 
   public String getDatabaseUri() {
@@ -139,12 +138,12 @@ public class ApplicationResourcesCache {
     this.space = space;
   }
 
-  public SpaceRootXdbLibrary getSpaceRootLibrary() {
-    return spaceRootLibrary;
+  public SpaceRootRdbDatabase getSpaceRootRdbDatabase() {
+    return spaceRootRdbDatabase;
   }
 
-  public void setSpaceRootLibrary(SpaceRootXdbLibrary spaceRootLibrary) {
-    this.spaceRootLibrary = spaceRootLibrary;
+  public void setSpaceRootRdbDatabase(SpaceRootRdbDatabase spaceRootRdbDatabase) {
+    this.spaceRootRdbDatabase = spaceRootRdbDatabase;
   }
 
   public SpaceRootFolder getSpaceRootFolder() {

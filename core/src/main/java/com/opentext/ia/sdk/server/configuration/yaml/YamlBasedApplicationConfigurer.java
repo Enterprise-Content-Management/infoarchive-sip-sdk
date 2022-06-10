@@ -24,21 +24,21 @@ import com.opentext.ia.sdk.server.configuration.ApplicationConfigurer;
 import com.opentext.ia.sdk.support.http.MediaTypes;
 import com.opentext.ia.yaml.configuration.YamlConfiguration;
 
-
 /**
  * Configure an InfoArchive application using data in YAML format. This class also supports configuring more than one
  * application or non-application objects <em>provided the InfoArchive server supports this</em> (version 16EP3 or
  * newer).
- * <dl><dt>Warning:</dt><dd>Support for client-side processing of declarative configuration will be removed in a
- * future version.</dd></dl>
+ * <dl>
+ * <dt>Warning:</dt>
+ * <dd>Support for client-side processing of declarative configuration will be removed in a future version.</dd>
+ * </dl>
  * @since 6.0.0
  */
 @SuppressWarnings("deprecation")
 public class YamlBasedApplicationConfigurer implements ApplicationConfigurer {
 
   private final YamlConfiguration yaml;
-  private final BiFunction<YamlConfiguration, ArchiveConnection, ApplicationConfigurer>
-      clientSideApplicationConfigurerFactory;
+  private final BiFunction<YamlConfiguration, ArchiveConnection, ApplicationConfigurer> clientSideApplicationConfigurerFactory;
 
   public YamlBasedApplicationConfigurer(YamlConfiguration configuration) {
     this(configuration, YamlBasedApplicationConfigurer::defaultClientSideApplicationConfigurer);

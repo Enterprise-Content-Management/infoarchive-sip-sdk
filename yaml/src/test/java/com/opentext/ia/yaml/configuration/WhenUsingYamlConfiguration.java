@@ -20,7 +20,6 @@ import com.opentext.ia.yaml.core.Entry;
 import com.opentext.ia.yaml.core.YamlMap;
 import com.opentext.ia.yaml.resource.ResourceResolver;
 
-
 class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   private static final String VERSION = "version";
@@ -49,7 +48,7 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   private static final String XQUERIES = "xqueries";
   private static final String QUERY = "query";
   private static final String QUERIES = "queries";
-  private static final String XDB_PDI_CONFIGS = "xdbPdiConfigs";
+  private static final String LIBRARY_PDI_CONFIGS = "xdbPdiConfigs";
   private static final String OPERANDS = "operands";
   private static final String INGESTS = "ingests";
   private static final String INGEST = "ingest";
@@ -108,8 +107,7 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String type = APPLICATION;
     String otherType = someType();
     String value = someName();
-    yaml.put(type, new YamlMap().put(NAME, name))
-        .put(otherType, Collections.singletonList(value));
+    yaml.put(type, new YamlMap().put(NAME, name)).put(otherType, Collections.singletonList(value));
 
     normalizeYaml();
 
@@ -148,14 +146,10 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String fileSystemFolder = someName();
     String store = someName();
     String cryptoObject = someName();
-    String xdbFederation = someName();
-    String xdbDatabase = someName();
     yaml.put("cryptoObjects", Collections.singletonList(new YamlMap().put(NAME, cryptoObject)));
     yaml.put(TENANTS, Collections.singletonList(new YamlMap().put(NAME, tenant)));
-    yaml.put(APPLICATIONS, Arrays.asList(
-        new YamlMap().put(NAME, someName()),
-        new YamlMap().put(NAME, application)
-            .put(DEFAULT, Boolean.TRUE)));
+    yaml.put(APPLICATIONS, Arrays.asList(new YamlMap().put(NAME, someName()),
+        new YamlMap().put(NAME, application).put(DEFAULT, Boolean.TRUE)));
     yaml.put(SPACES, Collections.singletonList(new YamlMap().put(NAME, space)));
     yaml.put("spaceRootFolders", Collections.singletonList(new YamlMap().put(NAME, spaceRootFolder)));
     yaml.put("fileSystemRoots", Collections.singletonList(new YamlMap().put(NAME, fileSystemRoot)));
@@ -163,19 +157,15 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     yaml.put(STORES, Collections.singletonList(new YamlMap().put(NAME, store)));
     yaml.put(DATABASES, Collections.singletonList(new YamlMap().put(NAME, someName())));
     yaml.put("holdingCryptoes", Collections.singletonList(new YamlMap().put(NAME, someName())));
-    yaml.put("xdbFederations", Collections.singletonList(new YamlMap().put(NAME, xdbFederation)));
-    yaml.put("xdbDatabases", Collections.singletonList(new YamlMap().put(NAME, xdbDatabase)));
 
     normalizeYaml();
 
     assertValue(tenant, yaml.get(APPLICATIONS, 0, TENANT), "Tenant");
     assertValue(application, yaml.get(SPACES, 0, APPLICATION), "Application");
-    assertValue(spaceRootFolder, yaml.get(FILE_SYSTEM_FOLDERS, 0, "parentSpaceRootFolder"),
-        "Space root folder");
-    assertValue(xdbFederation, yaml.get("xdbDatabases", 0, "xdbFederation"), "xDB federation");
-    assertDatabaseStore("xdb", store);
+    assertValue(spaceRootFolder, yaml.get(FILE_SYSTEM_FOLDERS, 0, "parentSpaceRootFolder"), "Space root folder");
+    assertDatabaseStore("backup", store);
     assertDatabaseStore("ci", store);
-    assertDatabaseStore("managedItem", store);
+    assertDatabaseStore("retentionBackup", store);
     assertFalse(yaml.get("holdingCryptoes", 0, "ci").toMap().containsKey("cryptoObject"),
         "Should NOT insert CryptoObject");
   }
@@ -187,10 +177,7 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String aic = someName();
     String query = someName();
 
-    yaml.put(SEARCHES, Collections.singletonList(
-        new YamlMap()
-            .put(NAME, search)
-            .put(QUERY, query)));
+    yaml.put(SEARCHES, Collections.singletonList(new YamlMap().put(NAME, search).put(QUERY, query)));
     yaml.put(AICS, Collections.singletonList(new YamlMap().put(NAME, aic)));
     yaml.put(QUERIES, Collections.singletonList(new YamlMap().put(NAME, query)));
     yaml.put(DATABASES, Collections.singletonList(new YamlMap().put(NAME, database)));
@@ -209,11 +196,8 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String aic = someName();
     String query = someName();
 
-    yaml.put(SEARCHES, Collections.singletonList(
-        new YamlMap()
-            .put(NAME, search)
-            .put(QUERY, query)
-            .put(DATABASE, null)));
+    yaml.put(SEARCHES,
+        Collections.singletonList(new YamlMap().put(NAME, search).put(QUERY, query).put(DATABASE, null)));
     yaml.put(AICS, Collections.singletonList(new YamlMap().put(NAME, aic)));
     yaml.put(QUERIES, Collections.singletonList(new YamlMap().put(NAME, query)));
     yaml.put(DATABASES, Collections.singletonList(new YamlMap().put(NAME, database)));
@@ -232,9 +216,7 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String aic = someName();
     String query = someName();
 
-    yaml.put(SEARCHES, Collections.singletonList(
-        new YamlMap().put(NAME, search)
-            .put(DATABASE, database)));
+    yaml.put(SEARCHES, Collections.singletonList(new YamlMap().put(NAME, search).put(DATABASE, database)));
     yaml.put(AICS, Collections.singletonList(new YamlMap().put(NAME, aic)));
     yaml.put(QUERIES, Collections.singletonList(new YamlMap().put(NAME, query)));
     yaml.put(DATABASES, Collections.singletonList(new YamlMap().put(NAME, database)));
@@ -251,8 +233,7 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String search = someName();
     String database = someName();
 
-    yaml.put(SEARCHES, Collections.singletonList(
-        new YamlMap().put(NAME, search)));
+    yaml.put(SEARCHES, Collections.singletonList(new YamlMap().put(NAME, search)));
     yaml.put(DATABASES, Collections.singletonList(new YamlMap().put(NAME, database)));
 
     normalizeYaml();
@@ -266,10 +247,7 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String search = someName();
     String database = someName();
 
-    yaml.put(SEARCHES, Collections.singletonList(
-        new YamlMap().put(NAME, search)
-            .put(AIC, null)
-            .put(QUERY, null)));
+    yaml.put(SEARCHES, Collections.singletonList(new YamlMap().put(NAME, search).put(AIC, null).put(QUERY, null)));
     yaml.put(DATABASES, Collections.singletonList(new YamlMap().put(NAME, database)));
 
     normalizeYaml();
@@ -285,10 +263,7 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String aic = someName();
     String query = someName();
 
-    yaml.put(SEARCHES, Collections.singletonList(
-        new YamlMap().put(NAME, search)
-            .put(AIC, aic)
-            .put(QUERY, query)));
+    yaml.put(SEARCHES, Collections.singletonList(new YamlMap().put(NAME, search).put(AIC, aic).put(QUERY, query)));
     yaml.put("databases", Collections.singletonList(new YamlMap().put(NAME, database)));
 
     normalizeYaml();
@@ -305,14 +280,11 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   @Test
   void shouldNotInsertDefaultReferenceForExplicitNull() {
     yaml.put(TENANTS, Collections.singletonList(new YamlMap().put(NAME, someName())));
-    yaml.put(APPLICATIONS, Collections.singletonList(new YamlMap()
-        .put(NAME, someName())
-        .put(TENANT, null)));
+    yaml.put(APPLICATIONS, Collections.singletonList(new YamlMap().put(NAME, someName()).put(TENANT, null)));
 
     normalizeYaml();
 
-    assertTrue(yaml.get(APPLICATIONS, 0, TENANT).isEmpty(),
-        "Explicit null is overridden with default");
+    assertTrue(yaml.get(APPLICATIONS, 0, TENANT).isEmpty(), "Explicit null is overridden with default");
   }
 
   @Test
@@ -326,8 +298,7 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertTrue(yaml.get(SEARCHES, 0, "searchGroup").isEmpty(),
-        "Search group should not be inserted");
+    assertTrue(yaml.get(SEARCHES, 0, "searchGroup").isEmpty(), "Search group should not be inserted");
     assertTrue(yaml.get("searchCompositions", 0, "customPresentationConfiguration").isEmpty(),
         "Custom presentation configuration should not be inserted");
   }
@@ -340,9 +311,8 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    assertTrue(yaml.get("exportPipelines", 0, "includesContent").toBoolean(),
-        "exportPipeline.includesContent");
-    assertValue("PRIVATE", yaml.get(HOLDINGS, 0, "xdbMode"), "holding.xdbMode");
+    assertTrue(yaml.get("exportPipelines", 0, "includesContent").toBoolean(), "exportPipeline.includesContent");
+    assertTrue(yaml.get("holdings", 0, "syncCommitEnabled").toBoolean(), "holding.syncCommitEnabled");
   }
 
   @Test
@@ -357,15 +327,13 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   @Test
   void shouldReplaceSingularObjectReferenceWithSequenceForReferenceCollections() throws IOException {
     String name = someName();
-    yaml.put(HOLDINGS, Collections.singletonList(new YamlMap().put(NAME, name)))
-        .put(CONFIRMATIONS, Collections.singletonList(new YamlMap().put("holding", name)));
+    yaml.put(HOLDINGS, Collections.singletonList(new YamlMap().put(NAME, name))).put(CONFIRMATIONS,
+        Collections.singletonList(new YamlMap().put("holding", name)));
 
     normalizeYaml();
 
-    assertValue(name, yaml.get(CONFIRMATIONS, 0, HOLDINGS, 0),
-        "Sequence of references not created");
-    assertFalse(yaml.get(CONFIRMATIONS, 0).toMap().containsKey("holding"),
-        "Singular reference not removed");
+    assertValue(name, yaml.get(CONFIRMATIONS, 0, HOLDINGS, 0), "Sequence of references not created");
+    assertFalse(yaml.get(CONFIRMATIONS, 0).toMap().containsKey("holding"), "Singular reference not removed");
   }
 
   @Test
@@ -373,18 +341,14 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String query = someName();
     String operand = someName();
     String path = someName();
-    yaml.put(QUERIES, Collections.singletonList(new YamlMap()
-        .put(NAME, query)
-        .put(XDB_PDI_CONFIGS, new YamlMap()
-            .put(OPERANDS, new YamlMap()
-                .put(operand, new YamlMap()
-                    .put(PATH, path))))));
+    yaml.put(QUERIES, Collections.singletonList(new YamlMap().put(NAME, query).put(LIBRARY_PDI_CONFIGS,
+        new YamlMap().put(OPERANDS, new YamlMap().put(operand, new YamlMap().put(PATH, path))))));
 
     normalizeYaml();
 
     assertValue(query, yaml.get(QUERIES, 0, NAME), NAME);
-    assertValue(operand, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, NAME), "Operand");
-    assertValue(path, yaml.get(QUERIES, 0, XDB_PDI_CONFIGS, OPERANDS, 0, PATH), "Path");
+    assertValue(operand, yaml.get(QUERIES, 0, LIBRARY_PDI_CONFIGS, OPERANDS, 0, NAME), "Operand");
+    assertValue(path, yaml.get(QUERIES, 0, LIBRARY_PDI_CONFIGS, OPERANDS, 0, PATH), "Path");
   }
 
   @Test
@@ -392,18 +356,14 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String prefix = "n";
     String uri = randomUri();
     String text = "current-dateTime()";
-    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
-            .put(PREFIX, prefix)
-            .put(URI, uri)))
-        .put("xdbLibraryPolicies", Collections.singletonList(new YamlMap()
-            .put(NAME, someName())
-            .put("closeHintDateQuery", new YamlMap()
-                .put(TEXT, text))));
+    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap().put(PREFIX, prefix).put(URI, uri)))
+        .put("LibraryPolicies", Collections.singletonList(
+            new YamlMap().put(NAME, someName()).put("closeHintDateQuery", new YamlMap().put(TEXT, text))));
 
     normalizeYaml();
 
     assertValue(String.format("declare namespace %s = \"%s\";%n%s", prefix, uri, text),
-        yaml.get("xdbLibraryPolicies", 0, "closeHintDateQuery"), "Query");
+        yaml.get("LibraryPolicies", 0, "closeHintDateQuery"), "Query");
   }
 
   @Test
@@ -411,27 +371,20 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String prefix = "n";
     String uri = randomUri();
     String text = "current-dateTime()";
-    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
-            .put(PREFIX, prefix)
-            .put(URI, uri)))
-        .put(XQUERIES, Collections.singletonList(new YamlMap()
-            .put(NAME, someName())
-            .put(QUERY, new YamlMap()
-                .put(TEXT, text))));
+    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap().put(PREFIX, prefix).put(URI, uri))).put(XQUERIES,
+        Collections.singletonList(new YamlMap().put(NAME, someName()).put(QUERY, new YamlMap().put(TEXT, text))));
 
     normalizeYaml();
 
-    assertValue(String.format("declare namespace %s = \"%s\";%n%s", prefix, uri, text),
-        yaml.get(XQUERIES, 0, QUERY), "Query");
+    assertValue(String.format("declare namespace %s = \"%s\";%n%s", prefix, uri, text), yaml.get(XQUERIES, 0, QUERY),
+        "Query");
   }
 
   @Test
   void shouldReplaceXqueryQueryObjectWithText() {
     String text = "current-dateTime()";
-    yaml.put(XQUERIES, Collections.singletonList(new YamlMap()
-            .put(NAME, someName())
-            .put(QUERY, new YamlMap()
-                .put(TEXT, text))));
+    yaml.put(XQUERIES,
+        Collections.singletonList(new YamlMap().put(NAME, someName()).put(QUERY, new YamlMap().put(TEXT, text))));
 
     normalizeYaml();
 
@@ -442,18 +395,13 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   void shouldReplacePdiSchemaNamespaceWithName() {
     String prefix = "n";
     String uri = randomUri();
-    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
-            .put(PREFIX, prefix)
-            .put(URI, uri)))
-        .put("pdiSchemas", Collections.singletonList(new YamlMap()
-            .put(CONTENT, new YamlMap()
-                .put(FORMAT, XML))));
+    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap().put(PREFIX, prefix).put(URI, uri))).put("pdiSchemas",
+        Collections.singletonList(new YamlMap().put(CONTENT, new YamlMap().put(FORMAT, XML))));
 
     normalizeYaml();
 
     assertValue(uri, yaml.get("pdiSchemas", 0, NAME), String.format("Name%n%s", yaml));
-    assertTrue(yaml.get("pdiSchemas", 0, NAMESPACE).isEmpty(),
-        String.format("Leaves namespace:%n%s", yaml));
+    assertTrue(yaml.get("pdiSchemas", 0, NAMESPACE).isEmpty(), String.format("Leaves namespace:%n%s", yaml));
   }
 
   @Test
@@ -462,32 +410,29 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String uri1 = randomUri();
     String prefix2 = "ex";
     String uri2 = randomUri();
-    yaml.put(NAMESPACES, Arrays.asList(new YamlMap()
-            .put(PREFIX, prefix1)
-            .put(URI, uri1),
-        new YamlMap()
-            .put(PREFIX, prefix2)
-            .put(URI, uri2)))
-        .put(PDIS, Collections.singletonList(new YamlMap()
-            .put(NAME, someName())
-            .put(CONTENT, new YamlMap()
-                .put(FORMAT, "yaml")
-                .put(DATA, Arrays.asList(new YamlMap()
-                    .put("id", "pdi.index.creator")
-                    .put("key.document.name", "xdb.pdi.name")
-                    .put(INDEXES, Arrays.asList(new YamlMap()
-                        .put(someName(), new YamlMap()
-                            .put(TYPE, PATH_VALUE_INDEX)
-                            .put(PATH, "/n:gnu/n:gnat")), new YamlMap()
-                        .put(someName(), new YamlMap()
-                            .put(TYPE, PATH_VALUE_INDEX)
-                            .put(PATH, "/n:foo/n:bar[n:baz]")), new YamlMap()
-                        .put(someName(), new YamlMap()
-                            .put(TYPE, "full.text.index")))),
-                new YamlMap()
-                    .put("id", "pdi.transformer")
-                    .put("result.schema", prefix2)
-                    .put("level", 2))))));
+    yaml.put(NAMESPACES,
+        Arrays.asList(new YamlMap().put(PREFIX, prefix1).put(URI, uri1),
+            new YamlMap().put(PREFIX, prefix2).put(URI, uri2)))
+        .put(PDIS,
+            Collections
+                .singletonList(
+                    new YamlMap().put(NAME, someName())
+                        .put(CONTENT,
+                            new YamlMap().put(FORMAT, "yaml").put(DATA,
+                                Arrays.asList(
+                                    new YamlMap().put("id", "pdi.index.creator")
+                                        .put("key.document.name", "xdb.pdi.name").put(INDEXES,
+                                            Arrays.asList(
+                                                new YamlMap().put(someName(),
+                                                    new YamlMap().put(TYPE, PATH_VALUE_INDEX).put(PATH,
+                                                        "/n:gnu/n:gnat")),
+                                                new YamlMap().put(someName(),
+                                                    new YamlMap().put(TYPE, PATH_VALUE_INDEX).put(PATH,
+                                                        "/n:foo/n:bar[n:baz]")),
+                                                new YamlMap().put(someName(),
+                                                    new YamlMap().put(TYPE, "full.text.index")))),
+                                    new YamlMap().put("id", "pdi.transformer").put("result.schema", prefix2)
+                                        .put("level", 2))))));
 
     normalizeYaml();
 
@@ -502,31 +447,19 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   @Test
   void shouldTranslateResultConfigurationHelperYamlToXml() {
-    yaml.put(NAMESPACES, Arrays.asList(
-        new YamlMap()
-            .put(PREFIX, "n")
-            .put(URI, "urn:eas-samples:en:xsd:phonecalls.1.0")
-            .put(DEFAULT, Boolean.TRUE),
-        new YamlMap()
-            .put(PREFIX, "pdi")
-            .put(URI, "urn:x-emc:ia:schema:pdi")))
-        .put("resultConfigurationHelper", new YamlMap()
-            .put(NAME, "PhoneCalls-result-configuration-helper")
-            .put("propagateChanges", Boolean.FALSE)
-            .put(CONTENT, new YamlMap()
-                .put(FORMAT, "yaml")
-                .put(NAMESPACES, Arrays.asList("n", "pdi"))
-                .put(DATA, Arrays.asList(
-                    new YamlMap()
-                        .put("id", new YamlMap()
-                            .put("label", "ID")
-                            .put(PATH, "@pdi:id")
-                            .put(TYPE, "id")),
-                    new YamlMap()
-                        .put("SentToArchiveDate", new YamlMap()
-                            .put("label", "Sent to")
-                            .put(PATH, "n:SentToArchiveDate")
-                            .put(TYPE, "date time"))))));
+    yaml.put(NAMESPACES,
+        Arrays
+            .asList(
+                new YamlMap().put(PREFIX, "n").put(URI, "urn:eas-samples:en:xsd:phonecalls.1.0").put(DEFAULT,
+                    Boolean.TRUE),
+                new YamlMap().put(PREFIX, "pdi").put(URI, "urn:x-emc:ia:schema:pdi")))
+        .put("resultConfigurationHelper",
+            new YamlMap().put(NAME, "PhoneCalls-result-configuration-helper").put("propagateChanges", Boolean.FALSE)
+                .put(CONTENT, new YamlMap().put(FORMAT, "yaml").put(NAMESPACES, Arrays.asList("n", "pdi")).put(DATA,
+                    Arrays.asList(
+                        new YamlMap().put("id", new YamlMap().put("label", "ID").put(PATH, "@pdi:id").put(TYPE, "id")),
+                        new YamlMap().put("SentToArchiveDate", new YamlMap().put("label", "Sent to")
+                            .put(PATH, "n:SentToArchiveDate").put(TYPE, "date time"))))));
 
     normalizeYaml();
 
@@ -536,125 +469,68 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
     String xml = content.get(TEXT).toString();
     assertEquals(String.format(
         "<resultConfigurationHelper xmlns:n=\"urn:eas-samples:en:xsd:phonecalls.1.0\" xmlns:pdi=\"urn:x-emc:ia:schema:pdi\">%n"
-        + "  <element>%n"
-        + "    <label>ID</label>%n"
-        + "    <name>id</name>%n"
-        + "    <path>@pdi:id</path>%n"
-        + "    <type>ID</type>%n"
-        + "  </element>%n"
-        + "  <element>%n"
-        + "    <label>Sent to</label>%n"
-        + "    <name>SentToArchiveDate</name>%n"
-        + "    <path>n:SentToArchiveDate</path>%n"
-        + "    <type>DATE_TIME</type>%n"
-        + "  </element>%n"
-            + "</resultConfigurationHelper>"),
+            + "  <element>%n" + "    <label>ID</label>%n" + "    <name>id</name>%n" + "    <path>@pdi:id</path>%n"
+            + "    <type>ID</type>%n" + "  </element>%n" + "  <element>%n" + "    <label>Sent to</label>%n"
+            + "    <name>SentToArchiveDate</name>%n" + "    <path>n:SentToArchiveDate</path>%n"
+            + "    <type>DATE_TIME</type>%n" + "  </element>%n" + "</resultConfigurationHelper>"),
         xml, "XML");
   }
 
-
   @Test
   void shouldTranslateIngestYamlToXml() {
-    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
-            .put(PREFIX, "ri")
-            .put(URI, "urn:x-emc:ia:schema:ri")))
-        .put(INGEST, new YamlMap()
-            .put(NAME, "PhoneCalls-ingest")
-            .put(CONTENT, new YamlMap()
-                .put(FORMAT, "yaml")
-                .put("processors", Arrays.asList(
-                    new YamlMap()
-                        .put("id", "sip.download"),
-                    new YamlMap()
-                        .put("id", "pdi.index.creator")
-                        .put(DATA, new YamlMap()
-                            .put("key.document.name", "xdb.pdi.name")
-                            .put(INDEXES, null)),
-                    new YamlMap()
-                        .put("id", "ri.index")
-                        .put(DATA, new YamlMap()
-                            .put("key.document.name", "xdb.ri.name")
-                            .put(INDEXES, new YamlMap()
-                                .put("key", new YamlMap()
-                                    .put(TYPE, PATH_VALUE_INDEX)
-                                    .put(PATH, "/ri:ris/ri:ri[@key<STRING>]")))),
-                    new YamlMap()
-                        .put("id", "ci.hash")
-                        .put(DATA, new YamlMap()
-                            .put("select.query", new YamlMap()
-                                .put(NAMESPACE, "ri")
-                                .put(TEXT, String.format("let $uri := replace(document-uri(.), '\\.pdi$', '.ri')%n"
-                                    + "for $c in doc($uri)/ri:ris/ri:ri%n"
-                                    + "return <content filename=\"{ $c/@key }\">%n"
-                                    + "  <hash encoding=\"hex\" algorithm=\"SHA-1\" provided=\"false\" />%n"
-                                    + "</content>"))))))));
+    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap().put(PREFIX, "ri").put(URI, "urn:x-emc:ia:schema:ri")))
+        .put(INGEST,
+            new YamlMap().put(NAME, "PhoneCalls-ingest").put(CONTENT, new YamlMap().put(FORMAT, "yaml")
+                .put("processors", Arrays.asList(new YamlMap().put("id", "sip.download"),
+                    new YamlMap().put("id", "pdi.index.creator").put(DATA,
+                        new YamlMap().put("key.document.name", "xdb.pdi.name").put(INDEXES, null)),
+                    new YamlMap().put("id", "ri.index").put(DATA,
+                        new YamlMap().put("key.document.name", "xdb.ri.name").put(INDEXES,
+                            new YamlMap().put("key",
+                                new YamlMap().put(TYPE, PATH_VALUE_INDEX).put(PATH, "/ri:ris/ri:ri[@key<STRING>]")))),
+                    new YamlMap().put("id", "ci.hash").put(DATA,
+                        new YamlMap().put("select.query", new YamlMap().put(NAMESPACE, "ri").put(TEXT,
+                            String.format("let $uri := replace(document-uri(.), '\\.pdi$', '.ri')%n"
+                                + "for $c in doc($uri)/ri:ris/ri:ri%n" + "return <content filename=\"{ $c/@key }\">%n"
+                                + "  <hash encoding=\"hex\" algorithm=\"SHA-1\" provided=\"false\" />%n"
+                                + "</content>"))))))));
 
     normalizeYaml();
 
     YamlMap content = yaml.get(INGESTS, 0, CONTENT).toMap();
     assertValue(XML, content.get(FORMAT), "Format");
     String xml = content.get(TEXT).toString();
-    assertEquals(String.format("<processors>%n"
-        + START_PROCESSOR
+    assertEquals(String.format("<processors>%n" + START_PROCESSOR
         + "    <class>com.emc.ia.ingestion.processor.downloader.SipContentDownloader</class>%n"
-        + "    <id>sip.download</id>%n"
-        + "    <name>SIP downloader processor</name>%n"
-        + END_PROCESSOR
-        + START_PROCESSOR
-        + "    <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>%n"
-        + "    <data>%n"
-        + "      <indexes/>%n"
-        + "      <key.document.name>xdb.pdi.name</key.document.name>%n"
-        + "    </data>%n"
-        + "    <id>pdi.index.creator</id>%n"
-        + "    <name>XDB PDI index processor</name>%n"
-        + END_PROCESSOR
-        + START_PROCESSOR
-        + "    <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>%n"
-        + "    <data>%n"
-        + "      <indexes>%n"
-        + "        <path.value.index>%n"
+        + "    <id>sip.download</id>%n" + "    <name>SIP downloader processor</name>%n" + END_PROCESSOR
+        + START_PROCESSOR + "    <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>%n" + "    <data>%n"
+        + "      <indexes/>%n" + "      <key.document.name>xdb.pdi.name</key.document.name>%n" + "    </data>%n"
+        + "    <id>pdi.index.creator</id>%n" + "    <name>XDB PDI index processor</name>%n" + END_PROCESSOR
+        + START_PROCESSOR + "    <class>com.emc.ia.ingestion.processor.index.IndexesCreator</class>%n" + "    <data>%n"
+        + "      <indexes>%n" + "        <path.value.index>%n"
         + "          <build.without.logging>false</build.without.logging>%n"
-        + "          <compressed>false</compressed>%n"
-        + "          <concurrent>false</concurrent>%n"
+        + "          <compressed>false</compressed>%n" + "          <concurrent>false</concurrent>%n"
         + "          <name>key</name>%n"
         + "          <path>/{urn:x-emc:ia:schema:ri}ris/{urn:x-emc:ia:schema:ri}ri[@key&lt;STRING>]</path>%n"
-        + "          <unique.keys>true</unique.keys>%n"
-        + "        </path.value.index>%n"
-        + "      </indexes>%n"
-        + "      <key.document.name>xdb.ri.name</key.document.name>%n"
-        + "    </data>%n"
-        + "    <id>ri.index</id>%n"
-        + "    <name>RI XDB indexes</name>%n"
-        + END_PROCESSOR
-        + START_PROCESSOR
-        + "    <class>com.emc.ia.ingestion.processor.content.CiHashProcessor</class>%n"
-        + "    <data>%n"
-        + "      <select.query><![CDATA[%n"
-        + "        declare namespace ri = \"urn:x-emc:ia:schema:ri\";%n"
+        + "          <unique.keys>true</unique.keys>%n" + "        </path.value.index>%n" + "      </indexes>%n"
+        + "      <key.document.name>xdb.ri.name</key.document.name>%n" + "    </data>%n" + "    <id>ri.index</id>%n"
+        + "    <name>RI XDB indexes</name>%n" + END_PROCESSOR + START_PROCESSOR
+        + "    <class>com.emc.ia.ingestion.processor.content.CiHashProcessor</class>%n" + "    <data>%n"
+        + "      <select.query><![CDATA[%n" + "        declare namespace ri = \"urn:x-emc:ia:schema:ri\";%n"
         + "        let $uri := replace(document-uri(.), '\\.pdi$', '.ri')%n"
-        + "        for $c in doc($uri)/ri:ris/ri:ri%n"
-        + "        return <content filename=\"{ $c/@key }\">%n"
-        + "          <hash encoding=\"hex\" algorithm=\"SHA-1\" provided=\"false\" />%n"
-        + "        </content>%n"
-        + "      ]]></select.query>%n"
-        + "    </data>%n"
-        + "    <id>ci.hash</id>%n"
-        + "    <name>CI hash generator and validator</name>%n"
-        + END_PROCESSOR
-        + "</processors>"), xml, "XML");
+        + "        for $c in doc($uri)/ri:ris/ri:ri%n" + "        return <content filename=\"{ $c/@key }\">%n"
+        + "          <hash encoding=\"hex\" algorithm=\"SHA-1\" provided=\"false\" />%n" + "        </content>%n"
+        + "      ]]></select.query>%n" + "    </data>%n" + "    <id>ci.hash</id>%n"
+        + "    <name>CI hash generator and validator</name>%n" + END_PROCESSOR + "</processors>"), xml, "XML");
   }
 
   @Test
   void shouldExpandNamespaceInResultMaster() {
     String prefix = "n";
     String uri = randomUri();
-    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
-            .put(PREFIX, prefix)
-            .put(URI, uri)))
-        .put("resultMasters", Collections.singletonList(new YamlMap()
-            .put(NAME, someName())
-            .put(NAMESPACES, Collections.singletonList(prefix))));
+    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap().put(PREFIX, prefix).put(URI, uri)))
+        .put("resultMasters", Collections
+            .singletonList(new YamlMap().put(NAME, someName()).put(NAMESPACES, Collections.singletonList(prefix))));
 
     normalizeYaml();
 
@@ -667,12 +543,9 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
   void shouldExpandNamespaceInQuery() {
     String prefix = "n";
     String uri = randomUri();
-    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap()
-            .put(PREFIX, prefix)
-            .put(URI, uri)))
-        .put("queries", Collections.singletonList(new YamlMap()
-            .put(NAME, someName())
-            .put(NAMESPACES, Collections.singletonList(prefix))));
+    yaml.put(NAMESPACES, Collections.singletonList(new YamlMap().put(PREFIX, prefix).put(URI, uri))).put("queries",
+        Collections
+            .singletonList(new YamlMap().put(NAME, someName()).put(NAMESPACES, Collections.singletonList(prefix))));
 
     normalizeYaml();
 
@@ -704,7 +577,8 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   private void addPseudoContent(String... types) {
     for (String type : types) {
-      yaml.put(English.plural(type), Collections.singletonList(new YamlMap().put(CONTENT, new YamlMap().put(TEXT, someName()))));
+      yaml.put(English.plural(type),
+          Collections.singletonList(new YamlMap().put(CONTENT, new YamlMap().put(TEXT, someName()))));
     }
   }
 
@@ -714,18 +588,14 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
     normalizeYaml();
 
-    Arrays.asList("pipeline", TRANSFORMATION).forEach(property ->
-    assertFalse(yaml.get("exportConfigurations", 0, property).isEmpty(), "Missing " + property));
+    Arrays.asList("pipeline", TRANSFORMATION).forEach(
+        property -> assertFalse(yaml.get("exportConfigurations", 0, property).isEmpty(), "Missing " + property));
   }
 
   @Test
   void shouldEnableAuditEventByDefault() {
-    yaml.put("auditEvents", Arrays.asList(new YamlMap()
-        .put(NAME, someName())
-        .put(TYPE, someName()), new YamlMap()
-        .put(NAME, someName())
-        .put(TYPE, someName())
-        .put("enabled", Boolean.FALSE)));
+    yaml.put("auditEvents", Arrays.asList(new YamlMap().put(NAME, someName()).put(TYPE, someName()),
+        new YamlMap().put(NAME, someName()).put(TYPE, someName()).put("enabled", Boolean.FALSE)));
 
     normalizeYaml();
 
@@ -735,16 +605,14 @@ class WhenUsingYamlConfiguration extends TestCase { // NOPMD
 
   @Test
   void shouldNotInsertDefaultValueWhenNotConfiguring() {
-    yaml.put("fileSystemRoots", Collections.singletonList(new YamlMap()
-        .put(NAME, someName())
-        .put(CONFIGURE, "use existing")));
+    yaml.put("fileSystemRoots",
+        Collections.singletonList(new YamlMap().put(NAME, someName()).put(CONFIGURE, "use existing")));
 
     normalizeYaml();
 
-    assertEquals(Arrays.asList(CONFIGURE, NAME), yaml.get("fileSystemRoots", 0).toMap().entries()
-        .sorted()
-        .map(Entry::getKey)
-        .collect(Collectors.toList()), "Keys");
+    assertEquals(Arrays.asList(CONFIGURE, NAME),
+        yaml.get("fileSystemRoots", 0).toMap().entries().sorted().map(Entry::getKey).collect(Collectors.toList()),
+        "Keys");
   }
 
   @Test

@@ -20,14 +20,13 @@ public interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_APPLICATIONS = LINK_PREFIX + "applications";
   String LINK_CI = LINK_PREFIX + "ci";
   String LINK_CONTENTS = LINK_PREFIX + "contents";
-  String LINK_DATABASES = LINK_PREFIX + "xdb-databases";
+  String LINK_DATABASES = LINK_PREFIX + "rdb-databases";
   String LINK_DOWNLOAD = LINK_PREFIX + "content-download";
   String LINK_EXPORT = LINK_PREFIX + "export";
   String LINK_EXPORT_CONFIG = LINK_PREFIX + "export-configurations";
   String LINK_EXPORT_PIPELINE = LINK_PREFIX + "export-pipelines";
   String LINK_EXPORT_TRANSFORMATION = LINK_PREFIX + "export-transformations";
   String LINK_EXPORT_TRANSFORMATION_ZIP = LINK_PREFIX + "zip";
-  String LINK_FEDERATIONS = LINK_PREFIX + "federations";
   String LINK_FILE_SYSTEM_FOLDERS = LINK_PREFIX + "file-system-folders";
   String LINK_FILE_SYSTEM_ROOTS = LINK_PREFIX + "file-system-roots";
   String LINK_HOLDINGS = LINK_PREFIX + "holdings";
@@ -38,7 +37,7 @@ public interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_JOB_CONFIRMATION = "?spel=?[name=='Confirmation']";
   String LINK_JOB_DEFINITIONS = LINK_PREFIX + "job-definitions";
   String LINK_JOB_INSTANCES = LINK_PREFIX + "job-instances";
-  String LINK_LIBRARIES = LINK_PREFIX + "xdb-libraries";
+  String LINK_RDB_DATA_NODES = LINK_PREFIX + "rdb-data-nodes";
   String LINK_PDI_SCHEMAS = LINK_PREFIX + "pdi-schemas";
   String LINK_PDIS = LINK_PREFIX + "pdis";
   String LINK_QUERIES = LINK_PREFIX + "queries";
@@ -50,7 +49,7 @@ public interface InfoArchiveLinkRelations extends StandardLinkRelations {
   String LINK_SEARCH_COMPOSITIONS = LINK_PREFIX + "search-compositions";
   String LINK_SEARCHES = LINK_PREFIX + "searches";
   String LINK_SPACE_ROOT_FOLDERS = LINK_PREFIX + "space-root-folders";
-  String LINK_SPACE_ROOT_LIBRARIES = LINK_PREFIX + "space-root-xdb-libraries";
+  String LINK_SPACE_ROOT_RDB_DATABASES = LINK_PREFIX + "space-root-rdb-databases";
   String LINK_SPACES = LINK_PREFIX + "spaces";
   String LINK_STORES = LINK_PREFIX + "stores";
   String LINK_TENANT = LINK_PREFIX + "tenant";

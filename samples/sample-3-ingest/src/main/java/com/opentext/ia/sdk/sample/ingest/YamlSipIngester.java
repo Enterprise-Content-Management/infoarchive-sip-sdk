@@ -35,7 +35,6 @@ import com.opentext.ia.sdk.support.io.FileSupplier;
 import com.opentext.ia.sdk.support.io.StringStream;
 import com.opentext.ia.yaml.configuration.YamlConfiguration;
 
-
 @SuppressWarnings("PMD")
 public class YamlSipIngester implements InfoArchiveConnectionProperties {
 
@@ -60,7 +59,7 @@ public class YamlSipIngester implements InfoArchiveConnectionProperties {
   }
 
   private void run(String rootPath) throws IOException {
-    System.out.printf("%nSample 3: Assemble SIP from %s and ingest into InfoArchive%n", rootPath);
+    // System.out.printf("%nSample 3: Assemble SIP from %s and ingest into InfoArchive%n", rootPath);
 
     // Load the configuration
     YamlConfiguration configuration = new YamlConfiguration(new File(rootPath, "configuration.yml"));
@@ -68,33 +67,26 @@ public class YamlSipIngester implements InfoArchiveConnectionProperties {
     // Tell InfoArchive where and how to archive the data
     URI entityUri = URI.create(configuration.getPdiSchemaName());
     String entityName = "animal";
-    PackagingInformation prototype = PackagingInformation.builder()
-        .dss()
-        .application(configuration.getApplicationName())
-        .holding(configuration.getHoldingName())
-        .producer("SIP-SDK")
-        .entity(entityName)
-        .schema(entityUri.toString())
-        .end()
-        .build();
+    PackagingInformation prototype = PackagingInformation.builder().dss()
+        .application(configuration.getApplicationName()).holding(configuration.getHoldingName()).producer("SIP-SDK")
+        .entity(entityName).schema(entityUri.toString()).end().build();
 
     // Define a mapping from our domain object to the PDI XML
     XmlPdiAssembler<File> pdiAssembler;
     try (InputStream schema = new StringStream(configuration.getPdiSchema())) {
       pdiAssembler = new XmlPdiAssembler<File>(entityUri, entityName, schema) {
+
         @Override
         protected void doAdd(File value, Map<String, ContentInfo> ignored) {
           String name = value.getName();
-          getBuilder()
-              .element("animal_name", name.substring(0, name.lastIndexOf('.')))
-              .element("file_path", relativePath(value, rootPath));
+          getBuilder().element("animal_name", name.substring(0, name.lastIndexOf('.'))).element("file_path",
+              relativePath(value, rootPath));
         }
       };
     }
 
-    DigitalObjectsExtraction<File> contentAssembler = file -> Collections.singleton(
-        DigitalObject.fromFile(relativePath(file, rootPath), file)
-    ).iterator();
+    DigitalObjectsExtraction<File> contentAssembler =
+        file -> Collections.singleton(DigitalObject.fromFile(relativePath(file, rootPath), file)).iterator();
 
     // Assemble the SIP
     SipAssembler<File> sipAssembler = SipAssembler.forPdiAndContent(prototype, pdiAssembler, contentAssembler);
@@ -112,8 +104,8 @@ public class YamlSipIngester implements InfoArchiveConnectionProperties {
     // the SIP we've just assembled.
     // Use ArchiveClients.usingAlreadyConfiguredServer() instead if you already configured the server with application,
     // holding, etc.
-    ArchiveClient archiveClient = ArchiveClients.configuringApplicationUsing(
-        new YamlBasedApplicationConfigurer(configuration), newArchiveConnection(rootPath));
+    ArchiveClient archiveClient = ArchiveClients
+        .configuringApplicationUsing(new YamlBasedApplicationConfigurer(configuration), newArchiveConnection(rootPath));
 
     // Ingest the SIP into InfoArchive
     try (InputStream sip = Files.newInputStream(assembledSip.toPath(), StandardOpenOption.READ)) {
@@ -127,8 +119,8 @@ public class YamlSipIngester implements InfoArchiveConnectionProperties {
   }
 
   private ArchiveConnection newArchiveConnection(String rootPath) throws IOException {
-    try (InputStream connectionProperties = Files.newInputStream(Paths.get(rootPath, "connection.properties"),
-        StandardOpenOption.READ)) {
+    try (InputStream connectionProperties =
+        Files.newInputStream(Paths.get(rootPath, "connection.properties"), StandardOpenOption.READ)) {
       Properties properties = new Properties();
       properties.load(connectionProperties);
       override(properties);

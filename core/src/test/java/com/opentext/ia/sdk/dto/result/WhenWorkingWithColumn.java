@@ -31,7 +31,7 @@ class WhenWorkingWithColumn {
     Column column = new Column();
     assertNull(column.getName());
     assertNull(column.getLabel());
-    assertNull(column.getXdbElementName());
+    assertNull(column.getBinding());
     assertFalse(column.isHidden());
     assertFalse(column.isEncrypt());
     assertFalse(column.isMasked());

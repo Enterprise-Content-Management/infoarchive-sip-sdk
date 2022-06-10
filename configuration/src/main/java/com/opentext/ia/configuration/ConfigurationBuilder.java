@@ -86,40 +86,20 @@ public class ConfigurationBuilder<C extends Configuration<?>>
   }
 
   /**
-   * Start building an xDB federation.
-   * 
-   * @return A builder for the new xDB federation
-   * @since 9.6.0
-   */
-  public XdbFederationBuilder<C> withXdbFederation() {
-    return new XdbFederationBuilder<>(this);
-  }
-
-  /**
    * Start building an rDB data node.
    * 
    * @return A builder for the new rDB data node
-   * @since 12.5.7
+   * @since 12.6.0
    */
   public RdbDataNodeBuilder<C> withRdbDataNode() {
     return new RdbDataNodeBuilder<C>(this);
   }
 
   /**
-   * Start building an xDB database in a new xDB federation.
-   * 
-   * @return A builder for the new xDB database
-   * @since 9.6.0
-   */
-  public XdbDatabaseBuilder<XdbFederationBuilder<C>, C> withXdbDatabase() {
-    return withXdbFederation().withXdbDatabase();
-  }
-
-  /**
    * Start building an rDB database in a new rDB data node.
    * 
    * @return A builder for the new rDB database
-   * @since 12.5.7
+   * @since 12.6.0
    */
   public RdbDatabaseBuilder<RdbDataNodeBuilder<C>, C> withRdbDatabase() {
     return withRdbDataNode().withRdbDatabase();

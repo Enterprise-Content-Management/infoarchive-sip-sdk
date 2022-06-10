@@ -14,12 +14,12 @@ store:
   name: export
   storeType: result
   
-xdbFederation:
-  name: mainFederation
-  bootstrap: xhive://localhost:2910
+rdbDataNode:
+  name: mainDataNode
+  bootstrap: jdbc:postgresql://localhost:5432
   superUserPassword: secret
   
-xdbDatabase:
+rdbDatabase:
   name: Messages
   adminPassword: test
 
@@ -52,7 +52,7 @@ queries:
     - c
     - n
     resultRootElement: confirmations
-    xdbPdiConfigs:
+    libraryPdiConfigs:
       entityPath: /n:messages/n:message
       template: |
         return <c:confirmation>
@@ -64,7 +64,7 @@ queries:
         </c:confirmation>
   DefaultQuery:
     default: true
-    xdbPdiConfigs:
+    libraryPdiConfigs:
       entityPath: /n:messages/n:message
       template: return $aiu
       operands:

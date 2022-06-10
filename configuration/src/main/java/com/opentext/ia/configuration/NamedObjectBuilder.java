@@ -20,7 +20,7 @@ public class NamedObjectBuilder<P extends BaseBuilder<?, C>, S extends NamedObje
     C extends Configuration<?>> extends BaseBuilder<P, C> {
 
   private static final Collection<String> COMMON_TYPE_PREFIXES = Arrays.asList(
-      "xdb", "space", "search", "root", "query");
+      "rdb", "space", "search", "root", "query");
 
   protected NamedObjectBuilder(P parent, String type) {
     super(parent, type);

@@ -111,7 +111,6 @@ holding:
     priority: 0
   - deadLine: 200
     priority: 1
-  xdbLibraryParent: null
   xmlStore: Animals-store
 
 ingestNode:
@@ -121,7 +120,7 @@ ingestNode:
   enumerationMinusRunning: true
 
 libraryPolicy:
-  name: Animals-holding-xdb-library-policy
+  name: Animals-holding-library-policy
   aipQuota: 10
   aiuQuota: 100
   cacheInMode: parent

@@ -5,6 +5,7 @@ package com.opentext.ia.configuration;
 
 /**
  * Build a holding.
+ * 
  * @author Ray Sinnema
  * @since 9.5.0
  *
@@ -15,20 +16,20 @@ public class HoldingBuilder<C extends Configuration<?>>
 
   protected HoldingBuilder(ApplicationBuilder<C> parent) {
     super(parent, "holding");
-    setXdbMode("PRIVATE");
+    setLibraryMode("PRIVATE");
   }
 
-  private void setXdbMode(String xdbMode) {
-    setProperty("xdbMode", xdbMode);
+  private void setLibraryMode(String libraryMode) {
+    setProperty("libraryMode", libraryMode);
   }
 
   public HoldingBuilder<C> inPool() {
-    setXdbMode("POOLED");
+    setLibraryMode("POOLED");
     return this;
   }
 
   public HoldingBuilder<C> inAggregate() {
-    setXdbMode("AGGREGATE");
+    setLibraryMode("AGGREGATE");
     return this;
   }
 
