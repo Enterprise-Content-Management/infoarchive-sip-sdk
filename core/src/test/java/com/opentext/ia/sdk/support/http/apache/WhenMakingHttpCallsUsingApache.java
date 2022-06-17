@@ -129,7 +129,7 @@ class WhenMakingHttpCallsUsingApache extends TestCase {
 
   @Test
   void shouldAllowCustomProcessingOfResponse() throws IOException {
-    String uri = "http://google.com";
+    String uri = "https://google.com";
     String expected = randomString();
     ResponseFactory<String> responseFactory = (resp, closer) -> {
       return expected;
@@ -185,26 +185,26 @@ class WhenMakingHttpCallsUsingApache extends TestCase {
 
   @Test
   void shouldBuildUris() {
-    assertEquals("http://google.com?q=foo+bar",
-        httpClient.uri("http://google.com").addParameter("q", "foo bar").build());
+    assertEquals("https://google.com?q=foo+bar",
+        httpClient.uri("https://google.com").addParameter("q", "foo bar").build());
   }
 
   @Test
   void shouldBuildUrisWithParameters() {
-    assertEquals("http://google.com/?q=foo",
-        httpClient.uri("http://google.com/?q=foo").build());
+    assertEquals("https://google.com/?q=foo",
+        httpClient.uri("https://google.com/?q=foo").build());
   }
 
   @Test
   void shouldAddRequestParameterOnlyOnce() {
-    assertEquals("http://google.com/?q=bar",
-        httpClient.uri("http://google.com/?q=foo").addParameter("q", "bar").build());
+    assertEquals("https://google.com/?q=bar",
+        httpClient.uri("https://google.com/?q=foo").addParameter("q", "bar").build());
   }
 
   @Test
   void shouldAddRequestParameterMultipleTimes() {
-    assertEquals("http://google.com/?q=foo&q=bar",
-        httpClient.uri("http://google.com/").addParameter("q", "foo").addParameter("q", "bar").build());
+    assertEquals("https://google.com/?q=foo&q=bar",
+        httpClient.uri("https://google.com/").addParameter("q", "foo").addParameter("q", "bar").build());
   }
 
   @Test
