@@ -3,7 +3,6 @@
  */
 package com.opentext.ia.configuration;
 
-
 /**
  * Build a space.
  * @author Ray Sinnema
@@ -27,8 +26,17 @@ public class SpaceBuilder<C extends Configuration<?>>
   }
 
   /**
+   * Start building a space root RDB Database.
+   * @return A new builder
+   */
+  public SpaceRootRdbDatabaseBuilder<C> withSpaceRootRdbDatabase() {
+    return new SpaceRootRdbDatabaseBuilder<>(this);
+  }
+
+  /**
    * Start building a space root folder.
-   * @param fileSystemRootName the name of the file system root in which information in this space root folder is stored
+   * @param fileSystemRootName the name of the file system root in which information in this space
+   *          root folder is stored
    * @return A new builder
    */
   public SpaceRootFolderBuilder<C> withSpaceRootFolder(String fileSystemRootName) {

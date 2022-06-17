@@ -69,7 +69,7 @@ class WhenBuildingConfigurations {
   private static final String SUPER_USER_PASSWORD = "superUserPassword";
   private static final String SOME_PASSWORD = "super_secret";
   private static final String XDB_BOOTSTRAP = "xhives://xdb.com:2345";
-  private static final String XDB_CLUSTER_NAME = "myXdbCluster";
+
   private static final String XDB_DATABASE_NAME = "myXdbDatabase";
   private static final String CONTENT1 = "foo";
   private static final String CONTENT2 = "bar";
@@ -504,50 +504,6 @@ class WhenBuildingConfigurations {
   }
 
   @Test
-  void shouldUseDefaultPropertiesForXdbCluster() {
-    Configuration<ConfigurationObject> configuration = builder.withXdbCluster().build();
-    ConfigurationObject xdbCluster = configuration.getXdbCluster();
-
-    assertRandomName(xdbCluster);
-    assertProperties(xdbCluster,
-        DESCRIPTION, "",
-        SUPER_USER_PASSWORD, "test",
-        "bootstraps", "[]");
-  }
-
-  @Test
-  void shouldSetPropertiesForXdbCluster() {
-    Configuration<ConfigurationObject> configuration = builder.withXdbCluster()
-        .named(XDB_CLUSTER_NAME)
-        .withDescription(DESCRIPTIVE_TEXT)
-        .protectedWithPassword(SOME_PASSWORD)
-        .withBootstrap(XDB_BOOTSTRAP)
-    .build();
-    ConfigurationObject xdbCluster = configuration.getXdbCluster();
-
-    assertProperties(xdbCluster,
-        NAME, XDB_CLUSTER_NAME,
-        DESCRIPTION, DESCRIPTIVE_TEXT,
-        SUPER_USER_PASSWORD, SOME_PASSWORD,
-        "bootstraps", '[' + XDB_BOOTSTRAP + ']');
-  }
-
-  @Test
-  void shouldAddXdbDatabaseToXdbCluster() {
-    Configuration<ConfigurationObject> configuration = builder.withXdbCluster()
-        .withXdbDatabase()
-            .named(XDB_DATABASE_NAME)
-            .protectedWithPassword(SOME_PASSWORD)
-    .build();
-    ConfigurationObject xdbCluster = configuration.getXdbCluster();
-    ConfigurationObject xdbDatabase = configuration.getXdbDatabase(xdbCluster);
-
-    assertProperties(xdbDatabase,
-        NAME, XDB_DATABASE_NAME,
-        "adminPassword", SOME_PASSWORD);
-  }
-
-  @Test
   void shouldUseDefaultPropertiesForPdi() {
     Configuration<ConfigurationObject> configuration = builder.withApplication()
         .withPdi()
@@ -572,6 +528,7 @@ class WhenBuildingConfigurations {
   }
 
   @Test
+  // TODO - should be removed as we do not support pdi having content anymore as of 20.4
   void shouldAddMultipleContentObjectsToPdi() throws IOException {
     Configuration<ConfigurationObject> configuration;
     try (InputStream content2 = IOUtils.toInputStream(CONTENT2, StandardCharsets.UTF_8)) {
