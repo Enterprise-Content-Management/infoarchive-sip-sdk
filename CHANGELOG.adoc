@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 12.6.1 = 2022-06-20
+
+- Disable testcases using google.com because agent of build server has an issue with it.
+
 == 12.6.0 = 2022-06-06
 
 - Add rdb related objects and builders to support new architecture

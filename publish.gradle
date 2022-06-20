@@ -9,7 +9,7 @@ nexusPublishing {
         username = nexusUsername
       }
       if (project.hasProperty('nexusPassword')) {
-        username = nexusPassword
+        password = nexusPassword
       }
       stagingProfileId = 'a74884fea6f3c'
     }
