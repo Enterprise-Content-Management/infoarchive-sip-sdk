@@ -34,6 +34,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -47,6 +48,7 @@ import com.opentext.ia.test.TestCase;
 @Tag("external")
 class WhenMakingHttpCallsUsingApache extends TestCase {
 
+  private static final String TEAMCITY_AGENTS_CANNOT_ACCESS_URL = "Teamcity agents cannot access url";
   private final TestApacheHttpClient httpClient = new TestApacheHttpClient();
   private final HttpResponse response = mock(HttpResponse.class);
   private final StatusLine statusLine = mock(StatusLine.class);
@@ -128,8 +130,9 @@ class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
+  @Disabled(TEAMCITY_AGENTS_CANNOT_ACCESS_URL)
   void shouldAllowCustomProcessingOfResponse() throws IOException {
-    String uri = "http://google.com";
+    String uri = "https://google.com";
     String expected = randomString();
     ResponseFactory<String> responseFactory = (resp, closer) -> {
       return expected;
@@ -184,27 +187,31 @@ class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
+  @Disabled(TEAMCITY_AGENTS_CANNOT_ACCESS_URL)
   void shouldBuildUris() {
-    assertEquals("http://google.com?q=foo+bar",
-        httpClient.uri("http://google.com").addParameter("q", "foo bar").build());
+    assertEquals("https://google.com?q=foo+bar",
+        httpClient.uri("https://google.com").addParameter("q", "foo bar").build());
   }
 
   @Test
+  @Disabled(TEAMCITY_AGENTS_CANNOT_ACCESS_URL)
   void shouldBuildUrisWithParameters() {
-    assertEquals("http://google.com/?q=foo",
-        httpClient.uri("http://google.com/?q=foo").build());
+    assertEquals("https://google.com/?q=foo",
+        httpClient.uri("https://google.com/?q=foo").build());
   }
 
   @Test
+  @Disabled(TEAMCITY_AGENTS_CANNOT_ACCESS_URL)
   void shouldAddRequestParameterOnlyOnce() {
-    assertEquals("http://google.com/?q=bar",
-        httpClient.uri("http://google.com/?q=foo").addParameter("q", "bar").build());
+    assertEquals("https://google.com/?q=bar",
+        httpClient.uri("https://google.com/?q=foo").addParameter("q", "bar").build());
   }
 
   @Test
+  @Disabled(TEAMCITY_AGENTS_CANNOT_ACCESS_URL)
   void shouldAddRequestParameterMultipleTimes() {
-    assertEquals("http://google.com/?q=foo&q=bar",
-        httpClient.uri("http://google.com/").addParameter("q", "foo").addParameter("q", "bar").build());
+    assertEquals("https://google.com/?q=foo&q=bar",
+        httpClient.uri("https://google.com/").addParameter("q", "foo").addParameter("q", "bar").build());
   }
 
   @Test
