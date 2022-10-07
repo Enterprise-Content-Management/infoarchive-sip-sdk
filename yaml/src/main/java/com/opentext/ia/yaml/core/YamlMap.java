@@ -114,6 +114,7 @@ public class YamlMap {
     }
   }
 
+  @SuppressWarnings("deprecation")
   private static Yaml newLoader() {
     return new Yaml(new Constructor(), new Representer(), new DumperOptions(), new YamlTypeResolver());
   }
