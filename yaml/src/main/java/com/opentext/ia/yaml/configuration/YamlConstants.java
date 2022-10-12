@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public final class InfoarchiveYamlConstant {
+public final class YamlConstants {
 
     public static final List<String> RESOURCE_CONTAINER_PATHS = Collections.unmodifiableList(Arrays.asList("/.+/content(/\\d+)?",
         "/customPresentationConfiguration(s/[^/]+)?/htmlTemplate", "/database(s/[^/]+)?/metadata/\\d+",
@@ -16,7 +16,7 @@ public final class InfoarchiveYamlConstant {
 
     public static final String TEXT = "text";
 
-    private InfoarchiveYamlConstant() {
+    private YamlConstants() {
 
     }
 }
