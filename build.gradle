@@ -198,7 +198,7 @@ subprojects {
     }
   
     apply from: rootProject.file('jdepend.gradle')
-    apply from: rootProject.file('coverage.gradle')
+//    apply from: rootProject.file('coverage.gradle')
   
     apply plugin: 'eclipse'
 
