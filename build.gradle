@@ -107,7 +107,7 @@ subprojects {
   }
 
   tasks.withType(JavaCompile) {
-    options.compilerArgs << '-Xlint:all' << '-Xlint:-processing' << '-Xlint:-serial' << '-Werror'
+    options.compilerArgs << '-Xlint:all' << '-Xlint:-processing' << '-Xlint:-serial'
   }
   
   javadoc {
@@ -261,22 +261,10 @@ if (!project.hasProperty('compileOnly')) {
   }
 }
 
-project(':infoarchive-configuration') {
-  description = 'InfoArchive configuration library'
-
-  configurations {
-    api.extendsFrom commonsIo, evoInflector, json
-  }
-}
-
-
 project(':infoarchive-yaml') {
   description = 'InfoArchive YAML library'
   configurations {
     api.extendsFrom commonsIo, commonsLang, evoInflector, yaml
-  }
-  dependencies {
-    api project(':infoarchive-configuration')
   }
 }
 
