@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 12.6.6 - 2022-10-24
+
+ - tested version for SDK refactory - stringtemplate configuration project removal
+
 == 12.6.5 - 2022-10-18
 
-- tested version for SDK refactory - yaml project cleanup and configuration project removal
+ - tested version for SDK refactory - yaml project cleanup and configuration project removal
 
 == 12.6.5.rc1 - 2022-10-12
 
