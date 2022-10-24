@@ -264,7 +264,7 @@ if (!project.hasProperty('compileOnly')) {
 project(':infoarchive-yaml') {
   description = 'InfoArchive YAML library'
   configurations {
-    api.extendsFrom commonsIo, commonsLang, evoInflector, yaml
+    api.extendsFrom commonsIo, commonsLang, evoInflector, yaml, json
   }
 }
 
