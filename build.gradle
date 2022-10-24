@@ -292,23 +292,6 @@ project(':infoarchive-sdk-core') {
   }
 }
 
-
-project(':infoarchive-sdk-stringtemplate') {
-  description = 'InfoArchive SDK stringtemplate library'
-
-  configurations {
-    stringtemplate
-    api.extendsFrom stringtemplate
-  }
-
-  dependencies {
-    stringtemplate "org.antlr:ST4:$stringTemplateVersion"
-    api project(':infoarchive-sdk-core')
-    testImplementation project(':infoarchive-yaml').sourceSets.test.output
-  }
-}
-
-
 project(':infoarchive-sdk-velocity') {
   description = 'InfoArchive SDK velocity library'
 

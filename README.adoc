@@ -20,7 +20,7 @@ You can also use the SDK to ingest SIPs into InfoArchive and even to configure I
 The SDK consists of the following jars:
 
 * `https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/core[infoarchive-sdk-core]` is the core of the SDK
-* `https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/stringtemplate[infoarchive-sdk-stringtemplate]` contains code for working with the http://www.stringtemplate.org/[StringTemplate] template engine
+
 * `https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/velocity[infoarchive-sdk-velocity]` contains code for working with the http://velocity.apache.org/[Velocity] template engine
 
 * `https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/tree/master/yaml[infoarchive-yaml]` contains code for working with InfoArchive https://github.com/Enterprise-Content-Management/infoarchive-sip-sdk/wiki/Declarative-Configuration[declarative configurations] in YAML
@@ -33,7 +33,7 @@ All jars can be found in the https://repo1.maven.org/maven2/com/opentext/ia/[Cen
 [source,groovy]
 ----
 dependencies { 
-  compile 'com.opentext.ia:infoarchive-sdk-core:12.6.6'
+  compile 'com.opentext.ia:infoarchive-sdk-core:12.6.7'
 }
 ----
 
@@ -45,7 +45,7 @@ dependencies {
   <dependency>
     <groupId>com.opentext.ia</groupId>
     <artifactId>infoarchive-sdk-core</artifactId>
-    <version>12.6.6</version>
+    <version>12.6.7</version>
   </dependency>
 </dependencies>
 ----

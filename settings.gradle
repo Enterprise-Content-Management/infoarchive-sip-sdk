@@ -6,9 +6,6 @@ project(':core').name = 'infoarchive-sdk-core'
 include 'yaml'
 project(':yaml').name = 'infoarchive-yaml'
 
-include 'stringtemplate'
-project(':stringtemplate').name = 'infoarchive-sdk-stringtemplate'
-
 include 'velocity'
 project(':velocity').name = 'infoarchive-sdk-velocity'
 

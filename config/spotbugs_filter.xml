@@ -298,11 +298,6 @@
   </Match>
 
   <Match>
-    <Bug pattern="PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS" />
-    <Class name="com.opentext.ia.sip.assembly.stringtemplate.StringTemplate" />
-  </Match>
-
-  <Match>
     <!-- False positive -->
     <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
     <Class name="com.opentext.ia.yaml.configuration.MapOfMapsToSequence" />
