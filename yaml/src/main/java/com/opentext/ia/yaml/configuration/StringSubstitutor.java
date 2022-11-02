@@ -33,12 +33,12 @@ public class StringSubstitutor implements Visitor {
 
   @Override
   public void accept(Visit visit) {
-    boolean isResourceContainer = InlineExternalContent.RESOURCE_CONTAINER_PATHS.stream()
+    boolean isResourceContainer = YamlConstants.RESOURCE_CONTAINER_PATHS.stream()
         .anyMatch(visit.getPath()::matches);
     YamlMap yaml = visit.getMap();
     yaml.entries()
         .filter(entry -> entry.getValue().isString())
-        .filter(entry -> !isResourceContainer || !InlineExternalContent.TEXT.equals(entry.getKey()))
+        .filter(entry -> !isResourceContainer || !YamlConstants.TEXT.equals(entry.getKey()))
         .forEach(this::substituteValue);
     yaml.entries()
         .filter(this::isListOfStrings)

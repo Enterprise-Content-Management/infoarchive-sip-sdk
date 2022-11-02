@@ -107,7 +107,7 @@ subprojects {
   }
 
   tasks.withType(JavaCompile) {
-    options.compilerArgs << '-Xlint:all' << '-Xlint:-processing' << '-Xlint:-serial' << '-Werror'
+    options.compilerArgs << '-Xlint:all' << '-Xlint:-processing' << '-Xlint:-serial'
   }
   
   javadoc {
@@ -198,7 +198,7 @@ subprojects {
     }
   
     apply from: rootProject.file('jdepend.gradle')
-    apply from: rootProject.file('coverage.gradle')
+//    apply from: rootProject.file('coverage.gradle')
   
     apply plugin: 'eclipse'
 
@@ -261,22 +261,10 @@ if (!project.hasProperty('compileOnly')) {
   }
 }
 
-project(':infoarchive-configuration') {
-  description = 'InfoArchive configuration library'
-
-  configurations {
-    api.extendsFrom commonsIo, evoInflector, json
-  }
-}
-
-
 project(':infoarchive-yaml') {
   description = 'InfoArchive YAML library'
   configurations {
-    api.extendsFrom commonsIo, commonsLang, evoInflector, yaml
-  }
-  dependencies {
-    api project(':infoarchive-configuration')
+    api.extendsFrom commonsIo, commonsLang, evoInflector, yaml, json
   }
 }
 
@@ -303,23 +291,6 @@ project(':infoarchive-sdk-core') {
     inputs.file overview
   }
 }
-
-
-project(':infoarchive-sdk-stringtemplate') {
-  description = 'InfoArchive SDK stringtemplate library'
-
-  configurations {
-    stringtemplate
-    api.extendsFrom stringtemplate
-  }
-
-  dependencies {
-    stringtemplate "org.antlr:ST4:$stringTemplateVersion"
-    api project(':infoarchive-sdk-core')
-    testImplementation project(':infoarchive-yaml').sourceSets.test.output
-  }
-}
-
 
 project(':infoarchive-sdk-velocity') {
   description = 'InfoArchive SDK velocity library'

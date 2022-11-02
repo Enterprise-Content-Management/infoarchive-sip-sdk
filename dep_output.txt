@@ -1,0 +1,32 @@
+
+> Task :dependencies
+
+------------------------------------------------------------
+Root project 'infoarchive-sdk'
+------------------------------------------------------------
+
+codenarc - The CodeNarc libraries to be used for this project.
+\--- org.codenarc:CodeNarc:1.6.1
+     +--- org.codehaus.groovy:groovy:2.4.17
+     +--- org.codehaus.groovy:groovy-xml:2.4.17
+     |    \--- org.codehaus.groovy:groovy:2.4.17
+     +--- org.codehaus.groovy:groovy-json:2.4.17
+     |    \--- org.codehaus.groovy:groovy:2.4.17
+     +--- org.codehaus.groovy:groovy-ant:2.4.17
+     |    +--- org.codehaus.groovy:groovy:2.4.17
+     |    +--- org.codehaus.groovy:groovy-groovydoc:2.4.17
+     |    |    +--- org.codehaus.groovy:groovy:2.4.17
+     |    |    \--- org.codehaus.groovy:groovy-templates:2.4.17
+     |    |         +--- org.codehaus.groovy:groovy:2.4.17
+     |    |         \--- org.codehaus.groovy:groovy-xml:2.4.17 (*)
+     |    +--- org.apache.ant:ant-junit:1.9.4
+     |    \--- org.apache.ant:ant-antlr:1.9.4
+     +--- org.codehaus.groovy:groovy-templates:2.4.17 (*)
+     \--- org.gmetrics:GMetrics:1.1
+
+(*) - dependencies omitted (listed previously)
+
+A web-based, searchable dependency report is available by adding the --scan option.
+
+BUILD SUCCESSFUL in 1s
+1 actionable task: 1 executed
