@@ -650,4 +650,14 @@ class WhenWorkingWithYamlInAGenericYetTypeSafeManner extends TestCase {
     return new YamlMap().put(NAME, fieldValue).toString().trim();
   }
 
+  @Test
+  void shouldAddQuotesToFieldWithColon() {
+    assertEquals(expectedYamlNameValue("'First Name:'"), actualYamlNameValue("First Name:"));
+    assertEquals(expectedYamlNameValue("'Last: Name'"), actualYamlNameValue("Last: Name"));
+
+    // no need to add quote since there is no space after colon
+    assertEquals(expectedYamlNameValue("Last:Name"), actualYamlNameValue("Last:Name"));
+    assertEquals(expectedYamlNameValue(":Last Name"), actualYamlNameValue(":Last Name"));
+  }
+
 }
