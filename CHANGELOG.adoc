@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 12.7.2 = 2022-12-15
+
+- Fix a YamlMap newLoader() to use SafeConstructor() instead.
+
 == 12.7.1 = 2022-11-03
 
 - Fix a YamlMap toString() issue to add a single quote to a value that ends with colon.
