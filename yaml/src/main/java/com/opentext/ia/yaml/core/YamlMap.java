@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.MarkedYAMLException;
@@ -116,7 +117,7 @@ public class YamlMap {
 
   @SuppressWarnings("deprecation")
   private static Yaml newLoader() {
-    return new Yaml(new SafeConstructor(), new Representer(), new DumperOptions(), new YamlTypeResolver());
+    return new Yaml(new SafeConstructor(new LoaderOptions()), new Representer(new DumperOptions()), new DumperOptions(), new YamlTypeResolver());
   }
 
   /**
