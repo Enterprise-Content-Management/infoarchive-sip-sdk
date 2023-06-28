@@ -88,12 +88,28 @@
     
   <Match>
     <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
-    <Class name="~com\.opentext\.ia\.sdk\.sip\.(DataSubmissionSession|PackagingInformation)(\$.*)?" />
+    <Or>
+        <Class name="com.opentext.ia.sdk.client.api.ArchiveConnection" />
+        <Class name="com.opentext.ia.sdk.client.api.AuthenticationStrategyFactory" />
+        <Class name="com.opentext.ia.sdk.client.impl.InfoArchiveRestClient" />
+        <Class name="~com\.opentext\.ia\.sdk\.dto\..*" />
+        <Class name="com.opentext.ia.sdk.server.configuration.ApplicationResourcesCache" />
+        <Class name="~com\.opentext\.ia\.sdk\.sip\..*" />
+        <Class name="com.opentext.ia.sdk.support.RepeatingConfigReader" />
+        <Class name="com.opentext.ia.sdk.support.http.rest.LinkContainer" />  
+        <Class name="com.opentext.ia.sdk.support.xml.DomXmlBuilder" />
+        <Class name="com.opentext.ia.sdk.support.xml.PrintingXmlBuilder" />
+        <Class name="com.opentext.ia.sdk.support.io.MemoryBuffer" />
+        <Class name="~com\.opentext\.ia\.yaml\.core\..*" />
+    </Or>    
   </Match>
 
   <Match>
     <Bug pattern="EI_EXPOSE_REP2" />
-    <Class name="~com\.opentext\.ia\.sdk\.sample\..*" />
+    <Or>
+        <Class name="~com\.opentext\.ia\.sdk\.sample\..*" />
+        <Class name="com.opentext.ia.test.RandomData" />
+    </Or>
   </Match>
 
   <Match>

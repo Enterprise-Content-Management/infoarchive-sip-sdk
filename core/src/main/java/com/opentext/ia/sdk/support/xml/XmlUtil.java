@@ -463,11 +463,13 @@ public final class XmlUtil {
 
   @SuppressWarnings({ "PMD.AvoidCatchingNPE", "PMD.AvoidCatchingGenericException" }) // Want better error message
   public static Validator newXmlSchemaValidator(InputStream xmlSchema) {
+    Objects.requireNonNull(xmlSchema);
+
     try (InputStream xmlSchemaToClose = xmlSchema) {
       return SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
           .newSchema(new StreamSource(xmlSchemaToClose))
         .newValidator();
-    } catch (SAXException | NullPointerException | IOException e) {
+    } catch (SAXException | IOException e) { // NullPointerException
       throw new ValidationException("Invalid XML Schema", e);
     }
   }

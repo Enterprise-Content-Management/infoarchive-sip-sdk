@@ -39,7 +39,8 @@ public class SearchResult extends NamedLinkContainer {
   }
 
   public final void setRows(List<Row> rows) {
-    this.rows = rows;
+    this.rows = new ArrayList<>(rows.size());
+    this.rows.addAll(rows);
   }
 
   public boolean isEmpty() {

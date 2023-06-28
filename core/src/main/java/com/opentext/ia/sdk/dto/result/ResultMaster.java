@@ -39,7 +39,8 @@ public class ResultMaster extends VersionedJavaBean {
   }
 
   public void setPanels(List<Panel> panels) {
-    this.panels = panels;
+    this.panels = new ArrayList<>(panels.size());
+    this.panels.addAll(panels);
   }
 
   public List<Namespace> getNamespaces() {
@@ -47,7 +48,9 @@ public class ResultMaster extends VersionedJavaBean {
   }
 
   public void setNamespaces(List<Namespace> namespaces) {
-    this.namespaces = namespaces;
+    this.namespaces = new ArrayList<>(namespaces.size());
+    this.namespaces.addAll(namespaces);
+
   }
 
 }

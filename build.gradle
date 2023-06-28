@@ -38,7 +38,7 @@ subprojects {
   apply plugin: 'distribution'
   apply plugin: 'ca.cutterslade.analyze'
 
-  sourceCompatibility = 11
+  sourceCompatibility = 17
 
   analyzeClassesDependencies {
     warnUsedUndeclared = true
@@ -180,7 +180,7 @@ subprojects {
     
     spotbugs {
       reportLevel = 'low'
-      toolVersion = '4.2.1'
+      toolVersion = '4.7.3'
       ignoreFailures = false
       effort = 'max'
       excludeFilter = rootProject.file('config/spotbugs_filter.xml')
@@ -306,7 +306,6 @@ project(':infoarchive-sdk-velocity') {
     testImplementation project(':infoarchive-yaml').sourceSets.test.output
   }
 }
-
 
 defaultTasks 'build'
 

@@ -38,7 +38,8 @@ public class ReceiverNode extends NamedLinkContainer {
   }
 
   public final void setSips(List<Sip> sips) {
-    this.sips = sips;
+    this.sips = new ArrayList<>(sips.size());
+    this.sips.addAll(sips);
   }
 
 }

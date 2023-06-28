@@ -46,7 +46,7 @@ public class BatchSipAssemblerWithCallback<D> extends BatchSipAssembler<D> {
     getCallback().accept(metrics);
   }
 
-  protected Object getLock() {
+  protected final Object getLock() {
     return lock;
   }
 

@@ -32,7 +32,8 @@ public class RetentionClass extends JavaBean {
   }
 
   public final void setPolicies(List<String> policies) {
-    this.policies = policies;
+    this.policies = new ArrayList<>(policies.size());
+    this.policies.addAll(policies);
   }
 
 }

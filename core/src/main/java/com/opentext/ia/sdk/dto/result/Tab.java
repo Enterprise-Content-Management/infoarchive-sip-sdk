@@ -39,7 +39,8 @@ public class Tab extends JavaBean {
   }
 
   public void setColumns(List<Column> columns) {
-    this.columns = columns;
+    this.columns = new ArrayList<>(columns.size());
+    this.columns.addAll(columns);
   }
 
   public String getTitle() {
@@ -71,7 +72,8 @@ public class Tab extends JavaBean {
   }
 
   public void setExportConfigurations(List<String> exportConfigurations) {
-    this.exportConfigurations = exportConfigurations;
+    this.exportConfigurations = new ArrayList<>(exportConfigurations.size());
+    this.exportConfigurations.addAll(exportConfigurations);
   }
 
 }

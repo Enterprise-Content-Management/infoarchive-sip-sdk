@@ -6,7 +6,6 @@ package com.opentext.ia.sdk.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @SuppressWarnings("PMD.TooManyFields") // Dictated by IA
 public class Holding extends NamedLinkContainer {
 
@@ -133,7 +132,9 @@ public class Holding extends NamedLinkContainer {
   }
 
   public final void setIngestConfigs(List<IngestConfig> ingestConfigs) {
-    this.ingestConfigs = ingestConfigs;
+    this.ingestConfigs = new ArrayList<>(ingestConfigs.size());
+
+    this.ingestConfigs.addAll(ingestConfigs);
   }
 
   public String getDefaultRetentionClass() {
@@ -149,7 +150,9 @@ public class Holding extends NamedLinkContainer {
   }
 
   public final void setIngestNodes(List<String> ingestNodes) {
-    this.ingestNodes = ingestNodes;
+    this.ingestNodes = new ArrayList<>(ingestNodes.size());
+
+    this.ingestNodes.addAll(ingestNodes);
   }
 
   public String getLibraryBackupStore() {
@@ -173,7 +176,9 @@ public class Holding extends NamedLinkContainer {
   }
 
   public final void setSubPriorities(List<SubPriority> subPriorities) {
-    this.subPriorities = subPriorities;
+    this.subPriorities = new ArrayList<>(subPriorities.size());
+
+    this.subPriorities.addAll(subPriorities);
   }
 
   public boolean isPdiXmlHashEnforced() {
@@ -205,7 +210,9 @@ public class Holding extends NamedLinkContainer {
   }
 
   public final void setRetentionClasses(List<RetentionClass> retentionClasses) {
-    this.retentionClasses = retentionClasses;
+    this.retentionClasses = new ArrayList<>(retentionClasses.size());
+
+    this.retentionClasses.addAll(retentionClasses);
   }
 
   public List<PdiConfig> getPdiConfigs() {
@@ -213,7 +220,9 @@ public class Holding extends NamedLinkContainer {
   }
 
   public final void setPdiConfigs(List<PdiConfig> pdiConfigs) {
-    this.pdiConfigs = pdiConfigs;
+    this.pdiConfigs = new ArrayList<>(pdiConfigs.size());
+
+    this.pdiConfigs.addAll(pdiConfigs);
   }
 
 }

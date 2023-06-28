@@ -6,6 +6,8 @@ package com.opentext.ia.sdk.dto;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 
 public class ContentAddressedStorage extends NamedLinkContainer {
 
@@ -25,7 +27,7 @@ public class ContentAddressedStorage extends NamedLinkContainer {
   }
 
   public void setPeas(Map<String, String> peas) {
-    this.peas = peas;
+    this.peas = SerializationUtils.clone(new HashMap<>(peas));
   }
 
 }

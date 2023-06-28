@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 import com.opentext.ia.sdk.dto.NamedLinkContainer;
 
 
@@ -49,11 +51,12 @@ public class ExportConfiguration extends NamedLinkContainer {
   }
 
   public void setTransformations(List<Transformation> transformations) {
-    this.transformations = transformations;
+    this.transformations = new ArrayList<>(transformations.size());
+    this.transformations.addAll(transformations);
   }
 
   public Map<String, String> getOptions() {
-    return options;
+    return new HashMap<String, String>(options);
   }
 
   public void setOptions(Map<String, String> options) {
@@ -61,11 +64,11 @@ public class ExportConfiguration extends NamedLinkContainer {
   }
 
   public Map<String, String> getEncryptedOptions() {
-    return encryptedOptions;
+    return new HashMap<String, String>(encryptedOptions);
   }
 
   public void setEncryptedOptions(Map<String, String> encryptedOptions) {
-    this.encryptedOptions = encryptedOptions;
+    this.encryptedOptions = SerializationUtils.clone(new HashMap<>(encryptedOptions));
   }
 
 

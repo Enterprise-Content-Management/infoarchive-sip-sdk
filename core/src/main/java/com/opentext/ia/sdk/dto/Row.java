@@ -31,7 +31,8 @@ public class Row extends JavaBean {
   }
 
   public final void setColumns(List<Column> columns) {
-    this.columns = columns;
+    this.columns = new ArrayList<>(columns.size());
+    this.columns.addAll(columns);
   }
 
 }

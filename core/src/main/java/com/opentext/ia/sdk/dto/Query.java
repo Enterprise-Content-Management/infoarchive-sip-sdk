@@ -38,7 +38,8 @@ public class Query extends NamedLinkContainer {
   }
 
   public void setAics(List<String> aics) {
-    this.aics = aics;
+    this.aics = new ArrayList<>(aics.size());
+    this.aics.addAll(aics);
   }
 
   public String getResultSchema() {
@@ -70,7 +71,8 @@ public class Query extends NamedLinkContainer {
   }
 
   public void setNamespaces(List<Namespace> namespaces) {
-    this.namespaces = namespaces;
+    this.namespaces = new ArrayList<>(namespaces.size());
+    this.namespaces.addAll(namespaces);
   }
 
 }

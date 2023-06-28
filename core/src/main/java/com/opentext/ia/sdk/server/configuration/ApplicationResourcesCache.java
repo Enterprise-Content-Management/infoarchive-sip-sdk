@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.server.configuration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -247,7 +248,8 @@ public class ApplicationResourcesCache {
   }
 
   public void setQueryUris(List<String> queryUris) {
-    this.queryUris = queryUris;
+    this.queryUris = new ArrayList<>(queryUris.size());
+    this.queryUris.addAll(queryUris);
   }
 
   public SearchComposition getSearchComposition() {

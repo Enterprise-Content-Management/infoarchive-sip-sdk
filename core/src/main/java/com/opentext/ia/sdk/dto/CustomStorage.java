@@ -6,6 +6,8 @@ package com.opentext.ia.sdk.dto;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 
 public class CustomStorage extends NamedLinkContainer {
 
@@ -26,7 +28,7 @@ public class CustomStorage extends NamedLinkContainer {
   }
 
   public void setProperties(Map<String, String> properties) {
-    this.properties = properties;
+    this.properties = SerializationUtils.clone(new HashMap<>(properties));
   }
 
   public String getFactoryServiceName() {

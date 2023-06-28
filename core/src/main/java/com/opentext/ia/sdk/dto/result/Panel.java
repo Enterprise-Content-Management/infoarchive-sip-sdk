@@ -8,7 +8,6 @@ import java.util.List;
 
 import com.opentext.ia.sdk.support.JavaBean;
 
-
 public class Panel extends JavaBean {
 
   private String name;
@@ -52,7 +51,8 @@ public class Panel extends JavaBean {
   }
 
   public void setTabs(List<Tab> tabs) {
-    this.tabs = tabs;
+    this.tabs = new ArrayList<>(tabs.size());
+    this.tabs.addAll(tabs);
   }
 
   public String getTitle() {

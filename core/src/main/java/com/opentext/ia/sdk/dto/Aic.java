@@ -17,7 +17,8 @@ public class Aic extends NamedLinkContainer {
   }
 
   public void setCriterias(List<Criterion> criterias) {
-    this.criterias = criterias;
+    this.criterias = new ArrayList<>(criterias.size());
+    this.criterias.addAll(criterias);
   }
 
   public List<String> getHoldings() {
@@ -25,7 +26,9 @@ public class Aic extends NamedLinkContainer {
   }
 
   public void setHoldings(List<String> holdings) {
-    this.holdings = holdings;
+    this.holdings = new ArrayList<>(holdings.size());
+
+    this.holdings.addAll(holdings);
   }
 
 }

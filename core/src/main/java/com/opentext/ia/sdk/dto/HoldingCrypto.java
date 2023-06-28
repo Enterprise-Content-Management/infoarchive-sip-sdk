@@ -3,6 +3,7 @@
  */
 package com.opentext.ia.sdk.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -37,7 +38,8 @@ public class HoldingCrypto extends NamedLinkContainer {
   }
 
   public void setPdis(List<PdiCryptoConfig> pdis) {
-    this.pdis = pdis;
+    this.pdis = new ArrayList<>(pdis.size());
+    this.pdis.addAll(pdis);
   }
 
   public String getCryptoEncoding() {
