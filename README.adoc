@@ -33,7 +33,7 @@ All jars can be found in the https://repo1.maven.org/maven2/com/opentext/ia/[Cen
 [source,groovy]
 ----
 dependencies { 
-  compile 'com.opentext.ia:infoarchive-sdk-core:12.7.5'
+  compile 'com.opentext.ia:infoarchive-sdk-core:12.8.0'
 }
 ----
 
@@ -45,7 +45,7 @@ dependencies {
   <dependency>
     <groupId>com.opentext.ia</groupId>
     <artifactId>infoarchive-sdk-core</artifactId>
-    <version>12.7.5</version>
+    <version>12.8.0</version>
   </dependency>
 </dependencies>
 ----

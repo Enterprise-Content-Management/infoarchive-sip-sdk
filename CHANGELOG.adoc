@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 12.8.0 = 2023-06-28
+
+- Major release to 12.8.0:
+- Moving JDK to 17 from 11
+- Update SpotBugs version from 4.2.1 to 4.7.3
+
 == 12.7.5 = 2023-05-30
 
 - Upgrade json from 20220320 to 20230227.
