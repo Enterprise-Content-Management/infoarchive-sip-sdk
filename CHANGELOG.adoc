@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 12.8.2 = 2023-11-08
+- Upgrade json from 20230227 to 20231013.
+
 == 12.8.1 = 2023-08-30
 - Update com.github.ben-manes.versions to 0.47.0
 
