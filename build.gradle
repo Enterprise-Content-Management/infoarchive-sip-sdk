@@ -13,7 +13,7 @@ buildscript {
 
 plugins {
   id 'com.github.ben-manes.versions' version '0.47.0'
-  id 'com.github.spotbugs' version '5.0.7' apply false
+  id 'com.github.spotbugs' version '6.0.18' apply false
   id 'maven-publish'
   id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
   id 'ca.cutterslade.analyze' version '1.9.0'
@@ -39,6 +39,11 @@ subprojects {
   apply plugin: 'ca.cutterslade.analyze'
 
   sourceCompatibility = 17
+
+  ext.PmdTask = org.gradle.api.plugins.quality.Pmd
+  ext.SpotBugsTask = com.github.spotbugs.snom.SpotBugsTask
+  ext.Confidence = com.github.spotbugs.snom.Confidence
+  ext.Effort = com.github.spotbugs.snom.Effort
 
   analyzeClassesDependencies {
     warnUsedUndeclared = true
@@ -179,10 +184,10 @@ subprojects {
     }
     
     spotbugs {
-      reportLevel = 'low'
+      reportLevel = Confidence.LOW
       toolVersion = '4.7.3'
       ignoreFailures = false
-      effort = 'max'
+      effort = Effort.MAX
       excludeFilter = rootProject.file('config/spotbugs_filter.xml')
     }
     
@@ -196,7 +201,7 @@ subprojects {
         }
       }
     }
-  
+
     apply from: rootProject.file('jdepend.gradle')
 //    apply from: rootProject.file('coverage.gradle')
   

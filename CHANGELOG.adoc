@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 12.9.0 = 2024-07-09
+
+- Major release to 12.9.0:
+- Moving JDK to 21 from 17
+- Upgrade gradle from 7.4.2 to 8.5
+- Update SpotBugs plugins version to 6.0.18
+- Upgrade mockito to 4.11.0
+
 == 12.8.2 = 2023-11-08
 - Upgrade json from 20230227 to 20231013.
 

@@ -23,12 +23,12 @@ configure(publishProjects) {
   // OSSRH requires both javadoc and sources jars
   task javadocJar(type: Jar) {
     from javadoc
-    classifier 'javadoc'
+    archiveClassifier = 'javadoc'
   }
 
   task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
-    classifier 'sources'
+    archiveClassifier = 'sources'
   }
     
   assemble.dependsOn sourcesJar, javadocJar
