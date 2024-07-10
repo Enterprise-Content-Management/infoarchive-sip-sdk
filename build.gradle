@@ -16,7 +16,7 @@ plugins {
   id 'com.github.spotbugs' version '6.0.18' apply false
   id 'maven-publish'
   id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
-  id 'ca.cutterslade.analyze' version '1.9.0'
+  id 'ca.cutterslade.analyze' version '1.9.2'
 }
 
 ext.SpotBugsTask = com.github.spotbugs.snom.SpotBugsTask
@@ -185,7 +185,7 @@ subprojects {
     
     spotbugs {
       reportLevel = Confidence.LOW
-      toolVersion = '4.7.3'
+      toolVersion = '4.8.3'
       ignoreFailures = false
       effort = Effort.MAX
       excludeFilter = rootProject.file('config/spotbugs_filter.xml')

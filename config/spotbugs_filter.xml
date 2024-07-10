@@ -46,6 +46,9 @@
       <!-- Too many false positives -->
       <Bug pattern="AFBR_ABNORMAL_FINALLY_BLOCK_RETURN" />
       <Bug pattern="BED_BOGUS_EXCEPTION_DECLARATION" />
+      
+      <!-- Be wary of letting constructors throw exceptions --> 
+      <Bug pattern="CT_CONSTRUCTOR_THROW" />
     </Or>
   </Match>
   
