@@ -14,6 +14,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,7 +123,8 @@ class WhenMakingJwtAuthentication extends TestCase {
 
   @Test
   void shouldCorrectlyFormPayload() throws IOException {
-    String payload = "grant_type=password&username=" + username + "&password=" + password;
+    String charsetEncoding = StandardCharsets.UTF_8.toString();
+    String payload = "grant_type=password&username=" + URLEncoder.encode(username, charsetEncoding) + "&password=" + URLEncoder.encode(password, charsetEncoding);
     authentication.issueAuthHeader();
     verify(httpClient).post(any(), any(), eq(AuthenticationSuccess.class), eq(payload));
   }

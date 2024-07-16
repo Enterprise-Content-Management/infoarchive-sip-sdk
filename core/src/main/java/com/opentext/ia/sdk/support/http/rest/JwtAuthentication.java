@@ -4,12 +4,16 @@
 package com.opentext.ia.sdk.support.http.rest;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -86,12 +90,17 @@ public final class JwtAuthentication implements AuthenticationStrategy {
 
   @Override
   public Header issueAuthHeader() {
-    authenticationResult = issueAuthentication();
+    try {
+      authenticationResult = issueAuthentication();
+    } catch (UnsupportedEncodingException ue) {
+      throw new RuntimeIoException(ue);
+    }
+
     return new Header("Authorization", authenticationResult.getTokenType() + " "
         + authenticationResult.getAccessToken());
   }
 
-  private AuthenticationSuccess issueAuthentication() {
+  private AuthenticationSuccess issueAuthentication() throws UnsupportedEncodingException {
     if (authenticationResult == null) {
       AuthenticationSuccess firstResult = fetchAuthentication();
       startRefreshingTimer(TimeUnit.MILLISECONDS.convert(firstResult.getExpiresIn(), TimeUnit.SECONDS));
@@ -100,26 +109,34 @@ public final class JwtAuthentication implements AuthenticationStrategy {
     return authenticationResult;
   }
 
-  private AuthenticationSuccess fetchAuthentication() {
-    return postToGateway("grant_type=password&username=" + userName + "&password=" + password + getScopesParam());
+  private AuthenticationSuccess fetchAuthentication() throws UnsupportedEncodingException {
+    String charsetEncoding = StandardCharsets.UTF_8.toString();
+
+    return postToGateway("grant_type=password&username=" + URLEncoder.encode(userName, charsetEncoding)
+     + "&password=" + URLEncoder.encode(password, charsetEncoding) + appendScopesParamIfNeeded());
   }
 
   private void startRefreshingTimer(long expiresInMilliseconds) {
     long time = expiresInMilliseconds > REFRESHING_TIME_BORDER ? expiresInMilliseconds - RESERVE_TIME
         : expiresInMilliseconds / 2;
+
     timer = new Timer(time, this::refreshAuthentication, clock);
   }
 
   private void refreshAuthentication() {
+    try {
     authenticationResult = postToGateway("grant_type=refresh_token&refresh_token="
-        + authenticationResult.getRefreshToken() + getScopesParam());
+        + authenticationResult.getRefreshToken() + appendScopesParamIfNeeded());
+    } catch (UnsupportedEncodingException ue) {
+      throw new RuntimeIoException(ue);
+    }
   }
 
-  private String getScopesParam() {
-    if (this.scopes == null || this.scopes.isEmpty()) {
+  private String appendScopesParamIfNeeded() throws UnsupportedEncodingException  {
+    if (StringUtils.isBlank(this.scopes)) {
       return "";
     } else {
-      return "&scope=" + this.scopes;
+      return "&scope=" + URLEncoder.encode(this.scopes, StandardCharsets.UTF_8.toString());
     }
   }
 

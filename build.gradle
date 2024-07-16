@@ -38,7 +38,11 @@ subprojects {
   apply plugin: 'distribution'
   apply plugin: 'ca.cutterslade.analyze'
 
-  sourceCompatibility = 17
+  // sourceCompatibility = 17
+  // this is to ensure byte code in JDK 17 as it is required to run both JDK 17 and 21
+   compileJava {
+    options.release = 17
+  }
 
   ext.PmdTask = org.gradle.api.plugins.quality.Pmd
   ext.SpotBugsTask = com.github.spotbugs.snom.SpotBugsTask
