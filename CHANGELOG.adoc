@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 12.8.4 = 2024-09-03
+
+- Increase codePointLimit of LoaderOptions in Snakeyaml from 3M to 10M
+
 == 12.8.3 = 2024-07-16
 
 - Fix an issue in post to Gateway to have payload encoded

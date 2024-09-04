@@ -32,13 +32,13 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.MarkedYAMLException;
 import org.yaml.snakeyaml.representer.Representer;
 
-
 /**
  * Type-safe access to a <a href="http://www.yaml.org/spec/1.2/spec.html">YAML</a> map.
  */
 @SuppressWarnings("unchecked")
 public class YamlMap {
 
+  public static final int CODE_POINT_LIMIT = 10 * 1024 * 1024;
   private static final String LINE_SEPARATOR = System.lineSeparator();
 
   private static final int MAX_LINE_LENGTH = 80;
@@ -116,7 +116,10 @@ public class YamlMap {
   }
 
   private static Yaml newLoader() {
-    return new Yaml(new SafeConstructor(new LoaderOptions()), new Representer(new DumperOptions()), new DumperOptions(), new YamlTypeResolver());
+    LoaderOptions loaderOptions = new LoaderOptions();
+    loaderOptions.setCodePointLimit(CODE_POINT_LIMIT);
+
+    return new Yaml(new SafeConstructor(loaderOptions), new Representer(new DumperOptions()), new DumperOptions(), loaderOptions, new YamlTypeResolver());
   }
 
   /**
