@@ -1,6 +1,7 @@
 buildscript {
   repositories {
     maven { url mavenRepo }
+    maven { url 'https://artifactory.otxlab.net/artifactory/libs-release' }
     maven { url 'https://plugins.gradle.org/m2/' }
     mavenCentral()
   }
@@ -87,7 +88,7 @@ subprojects {
   }
 
   dependencies {
-    commonsBeanutils "commons-beanutils:commons-beanutils:$commonsBeanutilsVersion"
+    commonsBeanutils "org.apache.commons:commons-beanutils2:$commonsBeanutilsVersion"
     commonsCodec "commons-codec:commons-codec:$commonsCodecVersion"
     commonsCollections "org.apache.commons:commons-collections4:$commonsCollectionsVersion"
     commonsIo "commons-io:commons-io:$commonsIoVersion"

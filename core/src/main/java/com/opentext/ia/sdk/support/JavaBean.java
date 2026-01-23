@@ -6,7 +6,7 @@ package com.opentext.ia.sdk.support;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils2.BeanUtils;
 
 
 /**
