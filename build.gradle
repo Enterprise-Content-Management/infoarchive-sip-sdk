@@ -1,7 +1,6 @@
 buildscript {
   repositories {
     maven { url mavenRepo }
-    maven { url 'https://artifactory.otxlab.net/artifactory/libs-release' }
     maven { url 'https://plugins.gradle.org/m2/' }
     mavenCentral()
   }
