@@ -5,13 +5,16 @@ ext.publishProjects = subprojects.findAll { it.name.startsWith('infoarchive-') }
 nexusPublishing {
   repositories {
     sonatype {
-      if (project.hasProperty('nexusUsername')) {
-        username = nexusUsername
+      // The OSSRH service reached end-of-life on June 30th, 2025. It was transferred to the Central Publishing Portal
+      nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+      snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+
+      if (project.hasProperty('sonatypeUsername')) {
+        username = sonatypeUsername
       }
-      if (project.hasProperty('nexusPassword')) {
-        password = nexusPassword
+      if (project.hasProperty('sonatypePassword')) {
+        password = sonatypePassword
       }
-      stagingProfileId = 'a74884fea6f3c'
     }
   }
 }
