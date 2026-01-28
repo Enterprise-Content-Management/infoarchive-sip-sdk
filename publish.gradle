@@ -6,8 +6,8 @@ nexusPublishing {
   repositories {
     sonatype {
       // The OSSRH service reached end-of-life on June 30th, 2025. It was transferred to the Central Publishing Portal
-      nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
-      snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+      nexusUrl.set(uri('https://ossrh-staging-api.central.sonatype.com/service/local/'))
+      snapshotRepositoryUrl.set(uri('https://central.sonatype.com/repository/maven-snapshots/'))
 
       if (project.hasProperty('sonatypeUsername')) {
         username = sonatypeUsername
