@@ -9,12 +9,13 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-import javax.validation.ValidationException;
 import javax.xml.transform.stream.StreamSource;
 
 import org.xml.sax.SAXException;
 
 import com.opentext.ia.sdk.support.xml.XmlUtil;
+
+import jakarta.validation.ValidationException;
 
 
 /**

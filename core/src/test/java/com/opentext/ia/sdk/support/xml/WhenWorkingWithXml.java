@@ -11,13 +11,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import javax.validation.ValidationException;
 import javax.xml.XMLConstants;
 
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
 import com.opentext.ia.test.TestCase;
+
+import jakarta.validation.ValidationException;
 
 
 class WhenWorkingWithXml extends TestCase {

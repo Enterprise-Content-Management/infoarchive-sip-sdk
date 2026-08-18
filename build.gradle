@@ -102,7 +102,7 @@ subprojects {
                     "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
     json "org.json:json:$jsonVersion"
     semVer "com.github.zafarkhaja:java-semver:$semVerVersion"
-    validation "javax.validation:validation-api:$validationVersion"
+    validation "jakarta.validation:jakarta.validation-api:$validationVersion"
     yaml "org.yaml:snakeyaml:$snakeYamlVersion"
 
     api libs.jaxb.api

@@ -5,7 +5,7 @@ package com.opentext.ia.sdk.sip;
 
 import java.io.InputStream;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 
 
 /**

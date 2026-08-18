@@ -11,11 +11,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
-import javax.validation.ValidationException;
 
 import org.apache.commons.io.IOUtils;
 
 import com.opentext.ia.sdk.support.io.DataBuffer;
+
+import jakarta.validation.ValidationException;
 
 
 /**
