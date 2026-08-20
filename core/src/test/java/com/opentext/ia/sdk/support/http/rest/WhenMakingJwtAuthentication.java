@@ -104,7 +104,7 @@ class WhenMakingJwtAuthentication extends TestCase {
   @Test
   void shouldCorrectlyFormUrl() throws IOException {
     authentication.issueAuthHeader();
-    verify(httpClient).post(eq("http://authgateway.com/oauth/token"), any(),
+    verify(httpClient).post(eq("http://authgateway.com/oauth2/token"), any(),
         eq(AuthenticationSuccess.class), anyString());
   }
 

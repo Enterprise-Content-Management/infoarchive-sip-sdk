@@ -23,7 +23,7 @@ class WhenUsingGatewayInfo extends TestCase {
 
   @Test
   void shouldCorrectlyFormUrl() {
-    assertEquals(GATEWAY_URL + "oauth/token", gatewayInfo.getGatewayUrl(),
+    assertEquals(GATEWAY_URL + "oauth2/token", gatewayInfo.getGatewayUrl(),
         "Endpoint suffix should be added");
   }
 

@@ -30,9 +30,9 @@ public final class GatewayInfo {
 
   public GatewayInfo(final String gatewayUrl, final String clientId, final String clientSecret) {
     if (gatewayUrl.endsWith("/")) {
-      this.gatewayUrl = gatewayUrl + "oauth/token";
+      this.gatewayUrl = gatewayUrl + "oauth2/token";
     } else {
-      this.gatewayUrl = gatewayUrl + "/oauth/token";
+      this.gatewayUrl = gatewayUrl + "/oauth2/token";
     }
     if (clientId.isEmpty()) {
       throw new IllegalArgumentException("Client Id is empty");

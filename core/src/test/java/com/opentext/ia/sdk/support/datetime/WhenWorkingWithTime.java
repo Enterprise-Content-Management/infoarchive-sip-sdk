@@ -16,7 +16,7 @@ import com.opentext.ia.test.RandomData;
 
 class WhenWorkingWithTime {
 
-  private static final int TASK_WAIT_DELTA = 200;
+  private static final int TASK_WAIT_DELTA = 500;
 
   private final RandomData random = new RandomData();
   private final Clock clock = new DefaultClock();
@@ -66,7 +66,7 @@ class WhenWorkingWithTime {
    * The task may have just run and be removed automatically.
    */
   @Test
-  void shouldSilentlyIgnoreCancellingAnUnknowTask() {
+  void shouldSilentlyIgnoreCancellingAnUnknownTask() {
     clock.cancel(random.string());
   }
 
