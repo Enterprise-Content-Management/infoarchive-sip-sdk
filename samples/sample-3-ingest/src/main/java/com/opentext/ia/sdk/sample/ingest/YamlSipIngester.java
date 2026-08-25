@@ -41,7 +41,7 @@ public class YamlSipIngester implements InfoArchiveConnectionProperties {
   }
 
   private void run(String rootPath) throws IOException {
-    System.out.printf("%nThis test is not working anymore after yaml cleanup refactory, it can be removed - Sample 3: Assemble SIP from %s and ingest into InfoArchive%n", rootPath);
+    System.out.printf("%nThis test is not working anymore after yaml cleanup refactory @TODO - Sample 3: Assemble SIP from %s and ingest into InfoArchive%n", rootPath);
   }
 
 }

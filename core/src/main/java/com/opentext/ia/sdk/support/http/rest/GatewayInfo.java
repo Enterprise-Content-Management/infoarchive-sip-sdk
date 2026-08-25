@@ -21,8 +21,9 @@ public final class GatewayInfo {
   private final String clientId;
   private final String clientSecret;
 
+
   public static Optional<GatewayInfo> optional(String gatewayUri, String clientId, String clientSecret) {
-    if (gatewayUri == null || clientId == null || clientSecret == null) {
+    if (gatewayUri == null || clientId == null) {
       return Optional.empty();
     }
     return Optional.of(new GatewayInfo(gatewayUri, clientId, clientSecret));
@@ -39,11 +40,7 @@ public final class GatewayInfo {
     } else {
       this.clientId = clientId;
     }
-    if (clientSecret.isEmpty()) {
-      throw new IllegalArgumentException("Client Secret is empty");
-    } else {
-      this.clientSecret = clientSecret;
-    }
+    this.clientSecret = clientSecret;
   }
 
   public Header getAuthorizationHeader() {

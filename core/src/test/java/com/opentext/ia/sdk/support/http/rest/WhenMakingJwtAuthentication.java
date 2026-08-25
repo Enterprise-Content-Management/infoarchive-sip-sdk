@@ -76,13 +76,6 @@ class WhenMakingJwtAuthentication extends TestCase {
   }
 
   @Test
-  void shouldFailBecauseOfClientSecret() {
-    String illegalSecret = "";
-    assertThrows(IllegalArgumentException.class,
-        () -> new GatewayInfo(GATEWAY_URL, clientId, illegalSecret));
-  }
-
-  @Test
   void shouldFailBecauseOfUsername() {
     String illegalUsername = "";
     assertThrows(IllegalArgumentException.class,
