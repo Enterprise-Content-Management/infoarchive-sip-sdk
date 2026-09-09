@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Format an object as <a href="https://tools.ietf.org/html/rfc7159">JavaScript Object Notation</a> (JSON).
@@ -18,12 +18,19 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class JsonFormatter {
 
   public String format(Object value) throws IOException {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-    mapper.configure(SerializationFeature.INDENT_OUTPUT, false);
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    mapper.registerModule(new JavaTimeModule());
-    return mapper.writer().writeValueAsString(Objects.requireNonNull(value));
+    JsonMapper mapper;
+
+    mapper = JsonMapper.builder()
+            .configure(SerializationFeature.WRAP_ROOT_VALUE, false)
+            .configure(SerializationFeature.INDENT_OUTPUT, false)
+            // added if you want byte-identical output to the old Jackson 2 behavior
+            // otherwise it will use the new behavior of writing dates as ISO-8601 strings
+            .configure(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS, true)
+            .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(JsonInclude.Include.NON_NULL))
+            .build();
+
+    return mapper.writer()
+        .writeValueAsString(Objects.requireNonNull(value));
   }
 
 }

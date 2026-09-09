@@ -6,10 +6,11 @@ package com.opentext.ia.sdk.client.impl;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import org.apache.http.HeaderElement;
-import org.apache.http.NameValuePair;
-import org.apache.http.entity.mime.MIME;
-import org.apache.http.message.BasicHeaderValueParser;
+import org.apache.hc.core5.http.HeaderElement;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicHeaderValueParser;
+import org.apache.hc.core5.http.message.ParserCursor;
+import org.apache.hc.core5.util.CharArrayBuffer;
 
 import com.opentext.ia.sdk.client.api.ContentResult;
 import com.opentext.ia.sdk.support.http.MediaTypes;
@@ -28,19 +29,23 @@ public class ContentResultFactory extends ResponseBodyFactory<ContentResult> {
   @Override
   protected ContentResult doCreate(Response response, InputStream resultStream, Runnable closeResult) {
     final int length = response.getHeaderValue("Content-Length", -1);
-    final String format = response.getHeaderValue(MIME.CONTENT_TYPE, MediaTypes.BINARY);
-    final String name = extractFileNameFrom(response.getHeaderValue(MIME.CONTENT_DISPOSITION, ""));
+    final String format = response.getHeaderValue("Content-Type", MediaTypes.BINARY);
+    final String name = extractFileNameFrom(response.getHeaderValue("Content-Disposition", ""));
     return new DefaultContentResult(name, length, format, resultStream, closeResult);
   }
 
   private String extractFileNameFrom(String contentDisposition) {
-    HeaderElement[] elements = BasicHeaderValueParser.parseElements(contentDisposition, null);
+    CharArrayBuffer buffer = new CharArrayBuffer(contentDisposition.length());
+    buffer.append(contentDisposition);
+    ParserCursor cursor = new ParserCursor(0, buffer.length());
+    HeaderElement[] elements = BasicHeaderValueParser.INSTANCE.parseElements(buffer, cursor);
+
     return Arrays.stream(elements)
-        .filter(element -> "attachment".equalsIgnoreCase(element.getName()))
-        .findAny()
-        .map(element -> element.getParameterByName("filename"))
-        .map(NameValuePair::getValue)
-        .orElse("");
+            .filter(element -> "attachment".equalsIgnoreCase(element.getName()))
+            .findAny()
+            .map(element -> element.getParameterByName("filename"))
+            .map(NameValuePair::getValue)
+            .orElse("");
   }
 
 }

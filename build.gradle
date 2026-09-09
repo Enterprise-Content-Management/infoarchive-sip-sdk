@@ -71,11 +71,10 @@ subprojects {
     commonsLang
     evoInflector
     httpclient
-    httpmime
     jacksonCore
     jacksonDatabind
     jacksonDatabindXml
-    jacksonDataType
+    // jacksonDataType
     json
     semVer
     validation
@@ -93,13 +92,13 @@ subprojects {
     commonsIo "commons-io:commons-io:$commonsIoVersion"
     commonsLang "org.apache.commons:commons-lang3:$commonsLangVersion"
     evoInflector "org.atteo:evo-inflector:$evoInflectorVersion"
-    httpclient "org.apache.httpcomponents:httpclient:$httpclientVersion"
-    httpmime "org.apache.httpcomponents:httpmime:$httpmimeVersion"
-    jacksonCore "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
-    jacksonDatabind "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    jacksonDatabindXml "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion"
-    jacksonDataType "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion", 
-                    "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
+    httpclient "org.apache.httpcomponents.client5:httpclient5:$httpclientVersion"
+
+    jacksonCore "tools.jackson.core:jackson-core:$jacksonVersion"
+    jacksonDatabind "tools.jackson.core:jackson-databind:$jacksonVersion"
+    jacksonDatabindXml "tools.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion"
+    "com.fasterxml.jackson.core:jackson-annotations: 2.21.0"
+
     json "org.json:json:$jsonVersion"
     semVer "com.github.zafarkhaja:java-semver:$semVerVersion"
     validation "jakarta.validation:jakarta.validation-api:$validationVersion"
@@ -283,7 +282,7 @@ project(':infoarchive-sdk-core') {
 
   configurations {
     api.extendsFrom commonsBeanutils, commonsCollections, commonsCodec, commonsIo, commonsLang, evoInflector, 
-        httpclient, httpmime, jacksonCore, jacksonDataType, jacksonDatabind, semVer, validation, yaml
+        httpclient, jacksonCore, jacksonDatabind, semVer, validation, yaml
   }
   
   dependencies {

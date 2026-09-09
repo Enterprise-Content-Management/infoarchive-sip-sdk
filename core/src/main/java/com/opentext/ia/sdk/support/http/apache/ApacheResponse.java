@@ -6,12 +6,13 @@ package com.opentext.ia.sdk.support.http.apache;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
 
 import com.opentext.ia.sdk.support.http.Response;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Implementation of {@linkplain Response} using the <a href="https://hc.apache.org/">Apache HttpComponents</a>
@@ -19,9 +20,11 @@ import com.opentext.ia.sdk.support.http.Response;
  */
 public class ApacheResponse implements Response {
 
-  private final CloseableHttpResponse wrapped;
+  private final ClassicHttpResponse wrapped;
 
-  public ApacheResponse(CloseableHttpResponse wrapped) {
+  @SuppressFBWarnings(value = "EI_EXPOSE_REP2",
+          justification = "ApacheResponse is a thin adapter over ClassicHttpResponse and intentionally retains the wrapped response.")
+  public ApacheResponse(ClassicHttpResponse wrapped) {
     this.wrapped = wrapped;
   }
 

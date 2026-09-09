@@ -3,7 +3,6 @@
  */
 package com.opentext.ia.sdk.client.impl;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -13,13 +12,8 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.hc.core5.net.URIBuilder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeCreator;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.opentext.ia.sdk.client.api.ArchiveClient;
 import com.opentext.ia.sdk.client.api.ContentResult;
 import com.opentext.ia.sdk.client.api.InfoArchiveLinkRelations;
@@ -47,6 +41,10 @@ import com.opentext.ia.sdk.support.http.TextPart;
 import com.opentext.ia.sdk.support.http.rest.LinkContainer;
 import com.opentext.ia.sdk.support.http.rest.RestClient;
 
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeCreator;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Implementation of {@linkplain ArchiveClient} that uses the REST API of a running InfoArchive server.
@@ -199,9 +197,9 @@ public class InfoArchiveRestClient implements ArchiveClient, InfoArchiveLinkRela
 
   private String getValidJsonRequestForExport(String exportConfigurationUri,
       Collection<SearchResult> searchResults) {
-    JsonNodeFactory jsonNodeFactory = new ObjectMapper().getNodeFactory();
+    JsonNodeFactory jsonNodeFactory = JsonNodeFactory.instance;
     ObjectNode root = jsonNodeFactory.objectNode();
-    root.set("exportConfiguration", jsonNodeFactory.textNode(exportConfigurationUri));
+    root.set("exportConfiguration", jsonNodeFactory.stringNode(exportConfigurationUri));
     root.set("includedRows", getIncludedRows(searchResults, jsonNodeFactory));
     return root.toString();
   }

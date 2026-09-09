@@ -5,7 +5,6 @@ package com.opentext.ia.sdk.support.http.apache;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
@@ -14,33 +13,25 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.InputStreamBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.entity.mime.ContentBody;
+import org.apache.hc.client5.http.entity.mime.InputStreamBody;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.client5.http.entity.mime.StringBody;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.http.*;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.InputStreamEntity;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.message.BasicHeader;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.opentext.ia.sdk.support.http.BinaryPart;
 import com.opentext.ia.sdk.support.http.Header;
 import com.opentext.ia.sdk.support.http.HttpClient;
@@ -51,7 +42,11 @@ import com.opentext.ia.sdk.support.http.TextPart;
 import com.opentext.ia.sdk.support.http.UriBuilder;
 import com.opentext.ia.sdk.support.io.ByteArrayInputOutputStream;
 import com.opentext.ia.sdk.support.io.IOStreams;
-import com.opentext.ia.sdk.support.io.RuntimeIoException;
+
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 
 /**
@@ -65,10 +60,10 @@ public class ApacheHttpClient implements HttpClient {
   private static final int STATUS_CODE_RANGE_MAX = 300;
   private static final int MAX_HTTP_CONNECTIONS = 50;
   private static final int DEFAULT_CONNECTIONS_PER_ROUTE = 50;
-  private static final String NL = System.getProperty("line.separator");
+  private static final String NL = System.lineSeparator();
 
   private final CloseableHttpClient client;
-  private final ObjectMapper mapper;
+  private final JsonMapper mapper;
 
   public ApacheHttpClient() {
     this(MAX_HTTP_CONNECTIONS, DEFAULT_CONNECTIONS_PER_ROUTE);
@@ -86,9 +81,12 @@ public class ApacheHttpClient implements HttpClient {
     client = HttpClients.custom()
       .setConnectionManager(manager)
       .build();
-    mapper = new ObjectMapper();
-    mapper.registerModule(new JavaTimeModule());
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    mapper = JsonMapper.builder()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            // added if you want byte-identical output to the old Jackson 2 behavior
+            // otherwise it will use the new behavior of writing dates as ISO-8601 strings
+            .configure(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS, true)
+            .build();
   }
 
   public ApacheHttpClient(int maxHttpConnections, int maxConnectionsPerRoute, String proxyHost, int proxyPort) {
@@ -103,9 +101,9 @@ public class ApacheHttpClient implements HttpClient {
       .setConnectionManager(manager)
       .setDefaultRequestConfig(defaultRequestConfig)
       .build();
-    mapper = new ObjectMapper();
-    mapper.registerModule(new JavaTimeModule());
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    mapper = JsonMapper.builder()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .build();
   }
 
   @Override
@@ -125,93 +123,94 @@ public class ApacheHttpClient implements HttpClient {
     return result;
   }
 
-  private void setHeaders(HttpRequestBase request, Collection<Header> headers) {
+  private void setHeaders(ClassicHttpRequest request, Collection<Header> headers) {
     headers.stream()
         .map(header -> new BasicHeader(header.getName(), header.getValue()))
         .forEach(request::addHeader);
   }
 
-  protected <T> T execute(HttpRequestBase request, Class<T> type) throws IOException {
+  protected <T> T execute(ClassicHttpRequest request, Class<T> type) throws IOException {
     Objects.requireNonNull(request, "Missing request");
-    try {
-      return client.execute(request, getResponseHandler(request.getMethod(), request.getURI().toString(),
-          request.getAllHeaders(), type));
-    } finally {
-      request.releaseConnection();
-    }
+    return client.execute(request, getResponseHandler(
+            request.getMethod(),
+            request.getRequestUri(),
+            request.getHeaders(),
+            type));
   }
 
-  protected <T> T execute(HttpRequestBase request, ResponseFactory<T> factory) throws IOException {
-    CloseableHttpResponse httpResponse = client.execute(request); // NOPMD closing is handled
-    Runnable closeResponse = () -> {
-      IOStreams.close(httpResponse);
-      request.releaseConnection();
-    };
-    boolean shouldCloseResponse = true;
-    try {
-      StatusLine statusLine = httpResponse.getStatusLine();
-      if (!isOk(statusLine)) {
-        throw requestFailed(request, httpResponse, statusLine);
+  protected <T> T execute(ClassicHttpRequest request, ResponseFactory<T> factory) throws IOException {
+    return client.execute(request, response -> {
+      int statusCode = response.getCode();
+      String reasonPhrase = response.getReasonPhrase();
+
+      if (!isOk(statusCode)) {
+        throw requestFailed(request, response, statusCode, reasonPhrase);
       }
-      T result = factory.create(new ApacheResponse(httpResponse), closeResponse);
-      shouldCloseResponse = false;
-      return result;
-    } finally {
-      if (shouldCloseResponse) {
-        closeResponse.run();
-      }
-    }
+
+      return factory.create(new ApacheResponse(response), () -> { });
+    });
   }
 
-  private HttpException requestFailed(HttpRequestBase request, CloseableHttpResponse httpResponse,
-      StatusLine statusLine) throws IOException {
-    int statusCode = statusLine.getStatusCode();
-    HttpEntity entity = httpResponse.getEntity();
-    String body = toString(entity);
+  private HttpException requestFailed(ClassicHttpRequest request, HttpEntityContainer httpResponse,
+      int statusCode, String reasonPhrase) throws IOException {
     String method = request.getMethod();
-    URI uri = request.getURI();
-    String reasonPhrase = statusLine.getReasonPhrase();
-    return new HttpException(statusCode, String.format("%n%s %s%n==> %d %s%n%s", method, uri, statusCode,
-        reasonPhrase, body));
+    String uri = request.getRequestUri();
+    HttpEntity entity = httpResponse.getEntity(); // NOPMD - consumed in finally
+    String body;
+
+    try {
+      body = entity == null ? "" : EntityUtils.toString(entity);
+    } catch (ParseException e) {
+      body = "exception caught - body is unparseable";
+    } finally {
+      EntityUtils.consumeQuietly(entity);
+    }
+
+    return new HttpException(statusCode, String.format("%n%s %s%n==> %d %s%n%s",
+            method, uri, statusCode, reasonPhrase, body));
   }
 
-  private String toString(HttpEntity entity) throws IOException {
+  private String toString(HttpEntity entity) throws IOException, ParseException {
     return entity == null ? "" : EntityUtils.toString(entity);
   }
 
-  <T> ResponseHandler<T> getResponseHandler(String method, String uri, org.apache.http.Header[] headers,
-      Class<T> type) {
+  <T> HttpClientResponseHandler<T> getResponseHandler(String method, String uri,
+        org.apache.hc.core5.http.Header[] headers, Class<T> type) {
+
     return response -> {
-      try {
-        StatusLine statusLine = response.getStatusLine();
-        HttpEntity entity = response.getEntity();
-        boolean isBinary = InputStream.class.equals(type);
-        String body = isBinary ? "<binary>" : toString(entity);
-        if (!isOk(statusLine)) {
-          int status = statusLine.getStatusCode();
-          throw new HttpException(status, String.format("%n%s %s%n%s==> %d %s%n%s%n%s", method, uri, headersToString(headers),
-              status, statusLine.getReasonPhrase(), headersToString(response.getAllHeaders()), body));
-        }
+      int statusCode = response.getCode();
+      boolean isBinary = InputStream.class.equals(type);
+      String body;
+
+      try (HttpEntity entity = response.getEntity()) {
+         body = isBinary ? "<binary>" : toString(entity);
+
+         if (!isOk(statusCode)) {
+           throw new HttpException(statusCode, String.format(
+                   "%n%s %s%n%s==> %d %s%n%s%n%s",
+                   method,
+                   uri,
+                   headersToString(headers),
+                   statusCode,
+                   response.getReasonPhrase(),
+                   headersToString(response.getHeaders()),
+                   body));
+         }
         return isBinary ? binaryResponse(entity, type) : textResponse(body, type);
-      } finally {
-        if (response instanceof CloseableHttpResponse) {
-          IOStreams.close((CloseableHttpResponse)response);
-        }
       }
     };
   }
 
-  private String headersToString(org.apache.http.Header... headers) {
+  private String headersToString(org.apache.hc.core5.http.Header... headers) {
     if (headers == null) {
       return "";
     }
     return Arrays.stream(headers)
-        .map(org.apache.http.Header::toString)
+        .map(org.apache.hc.core5.http.Header::toString)
         .collect(Collectors.joining(NL));
   }
 
-  private boolean isOk(StatusLine statusLine) {
-    int status = statusLine.getStatusCode();
+  private boolean isOk(int status) {
     return STATUS_CODE_RANGE_MIN <= status && status < STATUS_CODE_RANGE_MAX;
   }
 
@@ -225,7 +224,7 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   @Nullable
-  private <T> T textResponse(String body, Class<T> type) {
+  private <T> T textResponse(String body, Class<T> type) throws HttpException {
     if (type == null || body.isEmpty()) {
       return null;
     }
@@ -234,8 +233,8 @@ public class ApacheHttpClient implements HttpClient {
     }
     try {
       return mapper.readValue(body, type);
-    } catch (IOException e) {
-      throw new RuntimeIoException(e);
+    } catch (JacksonException e) {
+      throw new HttpException(0, e);
     }
   }
 
@@ -264,7 +263,7 @@ public class ApacheHttpClient implements HttpClient {
   public <T> T put(String uri, Collection<Header> headers, Class<T> type, InputStream payload) throws IOException {
     HttpPut request = newPut(uri, headers);
     if (payload != null) {
-      request.setEntity(new InputStreamEntity(payload));
+      request.setEntity(new InputStreamEntity(payload, -1, ContentType.APPLICATION_OCTET_STREAM));
     }
     return execute(request, type);
   }
@@ -284,7 +283,7 @@ public class ApacheHttpClient implements HttpClient {
   public <T> T post(String uri, Collection<Header> headers, Class<T> type, InputStream payload) throws IOException {
     HttpPost request = newPost(uri, headers);
     if (payload != null) {
-      request.setEntity(new InputStreamEntity(payload));
+      request.setEntity(new InputStreamEntity(payload, -1, ContentType.APPLICATION_OCTET_STREAM));
     }
     return execute(request, type);
   }
@@ -318,13 +317,11 @@ public class ApacheHttpClient implements HttpClient {
 
   private ContentBody newContentBody(Part part) {
     ContentType contentType = ContentType.create(part.getMediaType());
-    if (part instanceof TextPart) {
-      TextPart textPart = (TextPart)part;
-      return new StringBody(textPart.getText(), contentType);
+    if (part instanceof TextPart textPart) {
+        return new StringBody(textPart.getText(), contentType);
     }
-    if (part instanceof BinaryPart) {
-      BinaryPart binaryPart = (BinaryPart)part;
-      return new InputStreamBody(binaryPart.getData(), contentType, binaryPart.getDownloadName());
+    if (part instanceof BinaryPart binaryPart) {
+        return new InputStreamBody(binaryPart.getData(), contentType, binaryPart.getDownloadName());
     }
     throw new IllegalArgumentException("Expected part type: " + part.getClass().getName());
   }

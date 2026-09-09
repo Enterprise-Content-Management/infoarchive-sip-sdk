@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
+== 12.9.0 = 2026-09-09
+
+-  Upgrade httpclient from v4 to v5.6.1
+-  Upgrade jackson from v2 to v3.2.2
+-  Upgrade 3rd-party lib such as commons-io commons-lang3 to the latest.
+
 == 12.8.7 = 2026-08-25
 
 -  Make clientSecret property optional

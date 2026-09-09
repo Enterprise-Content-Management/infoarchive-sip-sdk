@@ -31,7 +31,7 @@ class WhenListeningForFilesInDirectories extends TestCase {
 
   @Test
   void shouldReportAddedFilesExactlyOnce() throws IOException {
-    DirectoryListener listener = new DefaultDirectoryListener(0);
+    DirectoryListener listener = new DefaultDirectoryListener(100);
     startListening(listener);
     File file1 = addFile();
     File file2 = addFile();

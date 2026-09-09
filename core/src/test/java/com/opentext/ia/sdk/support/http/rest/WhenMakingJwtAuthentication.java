@@ -22,7 +22,7 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.entity.ContentType;
+import org.apache.hc.core5.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

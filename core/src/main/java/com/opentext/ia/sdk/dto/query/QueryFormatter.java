@@ -3,25 +3,28 @@
  */
 package com.opentext.ia.sdk.dto.query;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+
 
 
 public class QueryFormatter {
 
-  private final ObjectMapper mapper = new ObjectMapper();
+  private final JsonMapper mapper;
 
   public QueryFormatter() {
-    mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-    mapper.configure(SerializationFeature.INDENT_OUTPUT, false);
+    mapper = JsonMapper.builder()
+    .configure(SerializationFeature.WRAP_ROOT_VALUE, true)
+    .configure(SerializationFeature.INDENT_OUTPUT, false)
+    .build();
   }
 
   public String format(SearchQuery request) {
     try {
       return mapper.writer()
         .writeValueAsString(request);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new IllegalStateException("Failed to process JSON", e);
     }
   }

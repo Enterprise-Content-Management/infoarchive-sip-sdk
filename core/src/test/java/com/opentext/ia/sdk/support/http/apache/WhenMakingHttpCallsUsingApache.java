@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -21,17 +19,16 @@ import java.util.Locale;
 
 import javax.net.ssl.SSLHandshakeException;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -39,7 +36,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.opentext.ia.sdk.support.http.BinaryPart;
-import com.opentext.ia.sdk.support.http.Header;
 import com.opentext.ia.sdk.support.http.HttpException;
 import com.opentext.ia.sdk.support.http.ResponseFactory;
 import com.opentext.ia.sdk.support.http.TextPart;
@@ -50,13 +46,12 @@ class WhenMakingHttpCallsUsingApache extends TestCase {
 
   private static final String TEAMCITY_AGENTS_CANNOT_ACCESS_URL = "Teamcity agents cannot access url";
   private final TestApacheHttpClient httpClient = new TestApacheHttpClient();
-  private final HttpResponse response = mock(HttpResponse.class);
-  private final StatusLine statusLine = mock(StatusLine.class);
+  private final BasicClassicHttpResponse response = new BasicClassicHttpResponse(200);
 
   @BeforeEach
-  public void init() throws IOException {
-    when(response.getStatusLine()).thenReturn(statusLine);
-    when(statusLine.getStatusCode()).thenReturn(200);
+  public void init() {
+    response.setCode(200);
+    response.setReasonPhrase("OK");
   }
 
   @AfterEach
@@ -71,42 +66,47 @@ class WhenMakingHttpCallsUsingApache extends TestCase {
     String header = randomString();
     String value = randomString();
 
-    String actual = httpClient.get(uri, Collections.singleton(new Header(header, value)), String.class);
+    String actual = httpClient.get(uri,
+            Collections.singleton(new com.opentext.ia.sdk.support.http.Header(header, value)),
+            String.class);
 
     assertEquals(uri, actual, "Response");
-    HttpUriRequest request = assertRequest(uri, HttpGet.class);
-    org.apache.http.Header[] headers = request.getAllHeaders();
+    ClassicHttpRequest request = assertRequest(uri, HttpGet.class);
+    org.apache.hc.core5.http.Header[] headers = request.getHeaders();
+
     assertEquals(1, headers.length, "# headers");
     assertEquals(header, headers[0].getName(), "Header name");
     assertEquals(value, headers[0].getValue(), "Header value");
   }
 
-  private <T extends HttpUriRequest> T assertRequest(String expectedUri, Class<T> expectedClass) {
-    HttpUriRequest request = httpClient.getExecutedRequest();
+  private <T extends ClassicHttpRequest> T assertRequest(String expectedUri, Class<T> expectedClass) {
+    ClassicHttpRequest request = httpClient.getExecutedRequest();
     assertEquals(expectedClass, request.getClass(), "Request");
-    assertEquals(expectedUri, request.getURI().toString(), "Request URI");
+    assertEquals(expectedUri, request.getRequestUri(), "Request URI");
     return expectedClass.cast(request);
   }
 
   @Test
   void shouldThrowExceptionOnNonOkStatusCode() throws IOException {
-    when(statusLine.getStatusCode()).thenReturn(400);
+    response.setCode(400);
+    response.setReasonPhrase("Bad Request");
+
     assertThrows(HttpException.class, () -> getResponse(null));
   }
 
-  private <T> T getResponse(Class<T> type) throws IOException {
-    return httpClient.getResponseHandler(randomString(), randomString(), new org.apache.http.Header[0], type)
-        .handleResponse(response);
+  private <T> T getResponse(Class<T> type) throws IOException, org.apache.hc.core5.http.HttpException {
+    return httpClient.getResponseHandler(randomString(), randomString(), new org.apache.hc.core5.http.Header[0], type)
+            .handleResponse(response);
   }
 
   @Test
-  void shouldReturnNullWhenNoEntity() throws IOException {
+  void shouldReturnNullWhenNoEntity() throws IOException, org.apache.hc.core5.http.HttpException {
     Object body = getResponse(null);
     assertNull(body);
   }
 
   @Test
-  void shouldReturnBodyAsString() throws IOException {
+  void shouldReturnBodyAsString() throws IOException, org.apache.hc.core5.http.HttpException {
     String expected = randomString();
     returnBody(expected);
 
@@ -116,11 +116,11 @@ class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   private void returnBody(String body) throws UnsupportedEncodingException {
-    when(response.getEntity()).thenReturn(new StringEntity(body));
+    response.setEntity(new StringEntity(body));
   }
 
   @Test
-  void shouldReturnBodyAsJson() throws IOException {
+  void shouldReturnBodyAsJson() throws IOException, org.apache.hc.core5.http.HttpException {
     String expected = randomString();
     returnBody("{ \"bar\": \"" + expected + "\" }");
 
@@ -162,7 +162,7 @@ class WhenMakingHttpCallsUsingApache extends TestCase {
   }
 
   @Test
-  void shouldPost() throws IOException {
+  void shouldPost() throws IOException, ParseException {
     String uri = randomString();
     String payload = randomString();
 
@@ -242,9 +242,9 @@ class WhenMakingHttpCallsUsingApache extends TestCase {
   private static class TestApacheHttpClient extends ApacheHttpClient {
 
     private Object preparedResponse;
-    private HttpUriRequest executedRequest;
+    private ClassicHttpRequest executedRequest;
 
-    public HttpUriRequest getExecutedRequest() {
+    public ClassicHttpRequest getExecutedRequest() {
       return executedRequest;
     }
 
@@ -253,7 +253,7 @@ class WhenMakingHttpCallsUsingApache extends TestCase {
     }
 
     @Override
-    protected <T> T execute(HttpRequestBase request, Class<T> type) throws IOException {
+    protected <T> T execute(ClassicHttpRequest request, Class<T> type) throws IOException {
       executedRequest = request;
       return type == null ? null : type.cast(preparedResponse);
     }

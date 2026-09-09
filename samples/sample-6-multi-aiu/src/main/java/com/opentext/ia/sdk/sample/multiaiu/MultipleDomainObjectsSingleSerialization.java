@@ -12,9 +12,6 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.opentext.ia.sdk.sip.ContentInfo;
 import com.opentext.ia.sdk.sip.HashedContents;
 import com.opentext.ia.sdk.sip.PdiAssembler;
@@ -22,6 +19,8 @@ import com.opentext.ia.sdk.sip.XmlPdiAssembler;
 import com.opentext.ia.sdk.support.io.DataBuffer;
 import com.opentext.ia.sdk.support.io.MemoryBuffer;
 
+import tools.jackson.core.JacksonException;
+import tools.jackson.dataformat.xml.XmlMapper;
 
 @SuppressWarnings("PMD")
 public class MultipleDomainObjectsSingleSerialization {
@@ -42,13 +41,13 @@ public class MultipleDomainObjectsSingleSerialization {
 
     // Assembler for PDI, where the domain object is flexible
     PdiAssembler<Object> pdiAssembler = new XmlPdiAssembler<Object>(NAMESPACE, "aiu") {
-      private final ObjectMapper mapper = new XmlMapper();
+      private final XmlMapper mapper = XmlMapper.builder().build();
 
       @Override
       protected void doAdd(Object domainObject, Map<String, ContentInfo> ignored) {
         try {
           getBuilder().xml(mapper.writeValueAsString(domainObject));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
           throw new RuntimeException(e);
         }
       }
