@@ -97,7 +97,6 @@ subprojects {
     jacksonCore "tools.jackson.core:jackson-core:$jacksonVersion"
     jacksonDatabind "tools.jackson.core:jackson-databind:$jacksonVersion"
     jacksonDatabindXml "tools.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion"
-    "com.fasterxml.jackson.core:jackson-annotations: 2.21.0"
 
     json "org.json:json:$jsonVersion"
     semVer "com.github.zafarkhaja:java-semver:$semVerVersion"
