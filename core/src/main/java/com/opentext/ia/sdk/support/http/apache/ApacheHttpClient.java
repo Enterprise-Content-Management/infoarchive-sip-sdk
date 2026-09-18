@@ -25,7 +25,13 @@ import org.apache.hc.client5.http.entity.mime.StringBody;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
-import org.apache.hc.core5.http.*;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpEntityContainer;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.InputStreamEntity;
@@ -139,16 +145,22 @@ public class ApacheHttpClient implements HttpClient {
   }
 
   protected <T> T execute(ClassicHttpRequest request, ResponseFactory<T> factory) throws IOException {
-    return client.execute(request, response -> {
-      int statusCode = response.getCode();
-      String reasonPhrase = response.getReasonPhrase();
-
+    ClassicHttpResponse httpResponse = client.executeOpen(null, request, null); // NOPMD - closed via closeResponse
+    Runnable closeResponse = () -> IOStreams.close(httpResponse);
+    boolean shouldCloseResponse = true;
+    try {
+      int statusCode = httpResponse.getCode();
       if (!isOk(statusCode)) {
-        throw requestFailed(request, response, statusCode, reasonPhrase);
+        throw requestFailed(request, httpResponse, statusCode, httpResponse.getReasonPhrase());
       }
-
-      return factory.create(new ApacheResponse(response), () -> { });
-    });
+      T result = factory.create(new ApacheResponse(httpResponse), closeResponse);
+      shouldCloseResponse = false;
+      return result;
+    } finally {
+      if (shouldCloseResponse) {
+        closeResponse.run();
+      }
+    }
   }
 
   private HttpException requestFailed(ClassicHttpRequest request, HttpEntityContainer httpResponse,
@@ -161,7 +173,7 @@ public class ApacheHttpClient implements HttpClient {
     try {
       body = entity == null ? "" : EntityUtils.toString(entity);
     } catch (ParseException e) {
-      body = "exception caught - body is unparseable";
+      body = "ParseException caught - body is unparseable";
     } finally {
       EntityUtils.consumeQuietly(entity);
     }

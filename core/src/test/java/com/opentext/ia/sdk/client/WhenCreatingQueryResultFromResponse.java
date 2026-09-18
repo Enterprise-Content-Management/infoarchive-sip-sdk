@@ -3,17 +3,18 @@
  */
 package com.opentext.ia.sdk.client;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -70,6 +71,30 @@ class WhenCreatingQueryResultFromResponse {
     }
 
     verify(body).close();
+    verify(response).close();
+  }
+
+  @Test
+  void shouldCreateQueryResultAndKeepResultStreamReadableUntilClosed() throws IOException {
+    Response response = mock(Response.class); // NOPMD mock only
+    byte[] bytes = "query-result".getBytes(StandardCharsets.UTF_8);
+
+    when(response.getBody()).thenReturn(new ByteArrayInputStream(bytes));
+    when(response.getHeaderValue("cacheOutAipIgnored", false)).thenReturn(Boolean.TRUE);
+    when(response.getHeaderValue("aipQuota", 0)).thenReturn(1);
+    when(response.getHeaderValue("resultSetCount", 0)).thenReturn(2);
+    when(response.getHeaderValue("aiuQuota", 0)).thenReturn(3);
+    when(response.getHeaderValue("resultSetQuota", 0)).thenReturn(4);
+
+    QueryResult result = factory.create(response, () -> { });
+
+    assertNotNull(result, "Query result");
+    verify(response, never()).close();
+
+    // Readable *after* create() returned - this is what the HC5 fix protects
+    assertEquals("query-result", IOUtils.toString(result.getResultStream(), StandardCharsets.UTF_8), "Body");
+
+    result.close();
     verify(response).close();
   }
 
