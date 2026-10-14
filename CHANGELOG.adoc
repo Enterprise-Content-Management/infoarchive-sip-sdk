@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+== 12.9.2 = 2026-10-14
+
+Testing the build and publishing
+
 The format is based on http://keepachangelog.com/en/1.0.0/[Keep a Changelog] and this project follows the rules of 
 http://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
